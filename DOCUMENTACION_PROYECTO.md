@@ -447,6 +447,19 @@ Datos o validaciones posibles:
 
 ## 15. Planificación del Proyecto
 
+La planificación debe seguir un enfoque profesional de desarrollo seguro y continuo, alineado con prácticas modernas de 2026: trabajo incremental, automatización de pruebas, seguridad desde el inicio, despliegues reproducibles y evidencia verificable antes de pasar a producción.
+
+El proyecto se gestionará bajo un enfoque **DevSecOps**, donde desarrollo, calidad, seguridad y despliegue no son fases aisladas, sino controles integrados durante todo el ciclo de vida del software.
+
+Herramientas principales del enfoque:
+
+| Herramienta | Rol en el proyecto | Uso principal |
+| --- | --- | --- |
+| Java | Base técnica de ejecución y compatibilidad | Runtime para Apache JMeter y posible backend empresarial. |
+| Apache JMeter | Herramienta de calidad y rendimiento | Pruebas de carga, estrés, concurrencia y tiempos de respuesta. |
+| OWASP ZAP | Herramienta de seguridad | Escaneo de vulnerabilidades web y APIs durante pruebas y CI/CD. |
+| Docker | Herramienta de CI/CD y despliegue | Contenerización, entornos reproducibles, pruebas automatizadas y despliegue controlado. |
+
 ### Fase 1: Levantamiento y Análisis
 
 Actividades:
@@ -466,6 +479,9 @@ Entregables:
 - Mapa de procesos propuestos.
 - Matriz de actores.
 - Matriz de riesgos.
+- Catálogo inicial de datos personales tratados.
+- Matriz de interoperabilidad institucional.
+- Criterios iniciales de calidad, seguridad y rendimiento.
 
 ### Fase 2: Diseño Funcional y Técnico
 
@@ -478,6 +494,11 @@ Actividades:
 - Diseñar flujos de usuario.
 - Diseñar paneles de funcionario y solicitante.
 - Definir reglas de negocio.
+- Definir arquitectura de contenedores con Docker.
+- Definir estrategia de CI/CD.
+- Definir estrategia de pruebas de rendimiento con Apache JMeter.
+- Definir estrategia de pruebas de seguridad con OWASP ZAP.
+- Definir políticas de calidad de código, ramas, revisiones y aprobaciones.
 
 Entregables:
 
@@ -487,8 +508,14 @@ Entregables:
 - Especificación de APIs.
 - Matriz de permisos.
 - Diseño de auditoría.
+- Diagrama de contenedores y servicios.
+- Documento de pipeline CI/CD.
+- Plan maestro de pruebas.
+- Plan de seguridad aplicativa.
 
 ### Fase 3: Desarrollo
+
+El desarrollo se realizará por iteraciones cortas, con control de versiones, revisiones de código y pruebas automatizadas. Ningún cambio debe pasar a ramas principales sin evidencia mínima de compilación, pruebas y revisión.
 
 Actividades:
 
@@ -501,6 +528,11 @@ Actividades:
 - Implementar notificaciones.
 - Crear APIs internas.
 - Integrar instituciones externas en ambiente de prueba.
+- Crear archivos Docker para servicios principales.
+- Crear configuración de Docker Compose para desarrollo local.
+- Configurar pipeline CI/CD.
+- Agregar pruebas unitarias y de integración.
+- Preparar scripts automatizados para JMeter y OWASP ZAP.
 
 Entregables:
 
@@ -509,18 +541,46 @@ Entregables:
 - Manual técnico inicial.
 - Manual de usuario inicial.
 - Pruebas unitarias.
+- Imágenes Docker versionadas.
+- Pipeline automatizado de integración continua.
+- Colecciones o contratos de APIs.
+- Planes base de JMeter.
+- Configuración base de OWASP ZAP.
 
-### Fase 4: Pruebas
+### Fase 4: Calidad y Pruebas con Apache JMeter
 
 Actividades:
 
 - Pruebas funcionales.
 - Pruebas de integración.
-- Pruebas de seguridad.
 - Pruebas de rendimiento.
 - Pruebas de usabilidad.
 - Pruebas con funcionarios.
 - Validación con casos reales simulados.
+- Pruebas de carga con Apache JMeter.
+- Pruebas de estrés para identificar límites del sistema.
+- Pruebas de concurrencia sobre inicio de sesión, carga documental, consulta de expediente y APIs.
+- Generación de reportes HTML de rendimiento.
+
+Apache JMeter se utilizará como herramienta formal de calidad para validar que la plataforma soporte el volumen esperado de usuarios y expedientes. Las pruebas deben ejecutarse desde línea de comandos dentro del pipeline o desde un contenedor controlado, evitando depender de ejecuciones manuales.
+
+Escenarios mínimos de JMeter:
+
+- Registro e inicio de sesión de solicitantes.
+- Creación de expediente digital.
+- Carga y consulta de documentos.
+- Consulta de estado del trámite.
+- Validación contra servicios simulados de TE, CSS y Registro Público.
+- Uso concurrente del panel de funcionarios.
+- Generación de observaciones y respuesta del solicitante.
+
+Criterios mínimos de aprobación:
+
+- El portal debe responder de forma estable bajo carga esperada.
+- Las APIs críticas deben mantener tiempos de respuesta definidos por el equipo.
+- No debe existir pérdida de expedientes ni documentos durante pruebas concurrentes.
+- El sistema debe manejar errores de instituciones externas sin detener el flujo principal.
+- Los reportes de JMeter deben conservarse como evidencia del ciclo de pruebas.
 
 Entregables:
 
@@ -528,9 +588,86 @@ Entregables:
 - Registro de defectos.
 - Plan de corrección.
 - Evidencia de validaciones.
+- Reporte HTML de Apache JMeter.
+- Línea base de rendimiento.
+- Recomendaciones de optimización.
 - Aprobación para piloto.
 
-### Fase 5: Piloto
+### Fase 5: Seguridad Aplicativa con OWASP ZAP
+
+La seguridad se implementará desde el diseño y se validará continuamente. OWASP ZAP será utilizado como herramienta de seguridad para analizar la aplicación web y las APIs antes de cada liberación importante.
+
+Actividades:
+
+- Ejecutar escaneos automáticos de OWASP ZAP sobre ambiente de pruebas.
+- Validar autenticación, autorización y manejo de sesiones.
+- Revisar exposición indebida de datos personales.
+- Analizar formularios, cabeceras HTTP, cookies, endpoints y respuestas.
+- Ejecutar pruebas contra riesgos comunes de aplicaciones web.
+- Clasificar hallazgos por severidad.
+- Corregir vulnerabilidades antes de pasar a preproducción.
+- Conservar reportes como evidencia de cumplimiento.
+
+Escenarios mínimos de OWASP ZAP:
+
+- Portal del solicitante.
+- Portal del funcionario.
+- Flujo de inicio de sesión.
+- Carga documental.
+- Consulta de expedientes.
+- APIs de interoperabilidad.
+- Endpoints administrativos protegidos.
+
+Criterios mínimos de aprobación:
+
+- No deben existir vulnerabilidades críticas abiertas.
+- Las vulnerabilidades altas deben corregirse o tener aceptación formal de riesgo.
+- No debe haber exposición de datos personales sin autorización.
+- Las sesiones deben tener controles adecuados de expiración, cookies seguras y protección contra acceso indebido.
+- Los resultados deben revisarse por el responsable técnico y el responsable de seguridad.
+
+Entregables:
+
+- Reporte de OWASP ZAP.
+- Matriz de vulnerabilidades.
+- Evidencia de corrección.
+- Registro de riesgos aceptados, si aplica.
+- Aprobación de seguridad para piloto o preproducción.
+
+### Fase 6: Integración Continua y Despliegue con Docker
+
+Actividades:
+
+- Construir imágenes Docker para frontend, backend, servicios auxiliares y pruebas.
+- Ejecutar pruebas unitarias, integración, JMeter y OWASP ZAP desde el pipeline CI/CD.
+- Mantener entornos separados: desarrollo, pruebas, preproducción y producción.
+- Versionar imágenes por rama, commit y liberación.
+- Usar variables de entorno y secretos administrados, sin credenciales dentro del código.
+- Publicar artefactos aprobados en un registro de imágenes.
+- Desplegar de forma controlada a preproducción y producción.
+
+Buenas prácticas Docker y CI/CD:
+
+- Imágenes livianas y reproducibles.
+- Separación entre build y runtime.
+- Escaneo de dependencias e imágenes cuando la herramienta institucional lo permita.
+- Uso de Docker Compose solo para desarrollo y pruebas locales.
+- Uso de orquestación o infraestructura institucional para producción.
+- Rollback documentado por versión de imagen.
+- Logs enviados a una plataforma centralizada.
+- Health checks para validar servicios activos.
+- No almacenar datos persistentes dentro de contenedores efímeros.
+
+Entregables:
+
+- Dockerfile por servicio.
+- Archivo Docker Compose para desarrollo.
+- Pipeline CI/CD documentado.
+- Registro de imágenes versionadas.
+- Evidencia de despliegues exitosos.
+- Procedimiento de rollback.
+
+### Fase 7: Piloto
 
 Actividades:
 
@@ -549,7 +686,7 @@ Entregables:
 - Ajustes funcionales.
 - Aprobación para producción.
 
-### Fase 6: Producción
+### Fase 8: Producción
 
 Actividades:
 
@@ -577,7 +714,11 @@ Antes de pasar a producción, el sistema debe cumplir:
 
 - Pruebas funcionales aprobadas.
 - Pruebas de integración aprobadas con instituciones participantes.
-- Pruebas de seguridad completadas.
+- Pruebas de rendimiento aprobadas con Apache JMeter.
+- Pruebas de seguridad aprobadas con OWASP ZAP.
+- Pipeline CI/CD ejecutado sin errores.
+- Imágenes Docker versionadas y aprobadas.
+- Procedimiento de rollback validado.
 - Roles y permisos configurados.
 - Auditoría activa.
 - Respaldos configurados.
@@ -588,6 +729,9 @@ Antes de pasar a producción, el sistema debe cumplir:
 - Mesa de soporte preparada.
 - Ambiente productivo separado de pruebas.
 - Datos de prueba eliminados o anonimizados.
+- Secretos y credenciales gestionados de forma segura.
+- Reportes de calidad y seguridad almacenados como evidencia.
+- Aprobación formal de negocio, tecnología y seguridad.
 
 ## 17. Pruebas Recomendadas
 
@@ -612,20 +756,27 @@ Antes de pasar a producción, el sistema debe cumplir:
 
 ### Pruebas de Seguridad
 
+- Escaneo automático con OWASP ZAP.
 - Intentos de acceso no autorizado.
 - Validación de roles.
 - Revisión de cifrado.
 - Pruebas de sesión.
 - Pruebas de auditoría.
 - Alertas por accesos anómalos.
+- Validación de cabeceras de seguridad.
+- Revisión de exposición de datos personales.
+- Revisión de endpoints administrativos.
 
 ### Pruebas de Rendimiento
 
-- Carga de 1,000 usuarios concurrentes.
+- Ejecución de planes de Apache JMeter.
+- Carga de 1,000 usuarios concurrentes, ajustable según capacidad real esperada.
 - Procesamiento masivo de expedientes.
 - Consulta simultánea a APIs.
 - Tiempo de respuesta del portal.
 - Tiempo de carga documental.
+- Pruebas de estrés hasta identificar límite operativo.
+- Pruebas de recuperación ante fallos temporales de integraciones.
 
 ### Pruebas de Usabilidad
 
@@ -673,7 +824,9 @@ Cada institución debe mantener responsabilidad sobre sus fuentes oficiales. La 
 
 ## 21. Propuesta de Implementación Tecnológica
 
-Una arquitectura posible:
+La implementación recomendada debe organizarse como una plataforma modular, contenerizada y preparada para integración continua. El objetivo técnico es que cualquier cambio pueda construirse, probarse, analizarse y desplegarse de forma repetible.
+
+### 21.1 Arquitectura Base
 
 - Frontend web responsive para solicitantes y funcionarios.
 - Backend modular con servicios de expedientes, documentos, reglas, auditoría e interoperabilidad.
@@ -684,32 +837,160 @@ Una arquitectura posible:
 - Sistema de autenticación centralizado.
 - Herramientas de monitoreo y logs.
 
-Tecnologías sugeridas:
+### 21.2 Tecnologías Sugeridas
 
-- Backend: Java, .NET, Node.js o Python.
+- Backend: Java como opción principal para un entorno institucional robusto, o .NET, Node.js o Python si la institución ya posee estándares internos.
 - Frontend: React, Angular o Vue.
 - Base de datos: PostgreSQL, SQL Server u Oracle.
 - Documentos: almacenamiento cifrado compatible con políticas institucionales.
 - APIs: REST o servicios gubernamentales estandarizados.
 - Seguridad: OAuth2, OpenID Connect, MFA, TLS y gestión segura de llaves.
+- Contenedores: Docker para desarrollo, pruebas, empaquetado y despliegue.
+- Calidad: Apache JMeter para rendimiento y carga.
+- Seguridad: OWASP ZAP para análisis dinámico de seguridad web y APIs.
+
+### 21.3 Uso de Java
+
+Java cumple dos funciones en el proyecto:
+
+- Servir como runtime requerido para Apache JMeter.
+- Ser una opción sólida para desarrollar el backend si el equipo decide usar una arquitectura empresarial basada en servicios.
+
+Buenas prácticas recomendadas:
+
+- Usar una versión LTS soportada por la institución.
+- Separar configuración por ambiente.
+- Implementar pruebas unitarias e integración continua.
+- Manejar dependencias con una herramienta formal como Maven o Gradle.
+- No almacenar secretos dentro del código fuente.
+
+### 21.4 Uso de Apache JMeter como Herramienta de Calidad
+
+Apache JMeter se integrará al proceso de calidad para medir rendimiento, concurrencia y estabilidad.
+
+Uso recomendado:
+
+- Crear planes de prueba versionados en el repositorio.
+- Ejecutar pruebas en modo no gráfico dentro del pipeline.
+- Usar datos de prueba anonimizados o ficticios.
+- Medir endpoints críticos del portal y de APIs.
+- Generar reportes HTML como evidencia.
+- Comparar resultados contra una línea base definida.
+
+Indicadores a medir:
+
+- Tiempo promedio de respuesta.
+- Percentiles de respuesta.
+- Errores por segundo.
+- Usuarios concurrentes soportados.
+- Rendimiento de carga documental.
+- Comportamiento ante caída de servicios externos.
+
+### 21.5 Uso de OWASP ZAP como Herramienta de Seguridad
+
+OWASP ZAP se utilizará para pruebas dinámicas de seguridad durante pruebas, preproducción y liberaciones importantes.
+
+Uso recomendado:
+
+- Ejecutar escaneo baseline en CI/CD.
+- Ejecutar escaneos autenticados sobre flujos protegidos cuando sea posible.
+- Probar formularios, cabeceras, cookies, sesiones y APIs.
+- Clasificar hallazgos en crítico, alto, medio y bajo.
+- Bloquear el pase a producción si existen vulnerabilidades críticas.
+- Documentar riesgos aceptados por una autoridad responsable.
+
+### 21.6 Uso de Docker como Herramienta de CI/CD
+
+Docker será la base para construir ambientes reproducibles y ejecutar el ciclo de CI/CD.
+
+Uso recomendado:
+
+- Crear una imagen por servicio.
+- Usar imágenes base oficiales o confiables.
+- Usar builds multi-stage para separar compilación y ejecución.
+- Mantener contenedores sin estado cuando sea posible.
+- Usar volúmenes o servicios externos para datos persistentes.
+- Etiquetar imágenes por versión, commit y ambiente.
+- Ejecutar pruebas automatizadas antes de publicar imágenes.
+- Mantener secretos fuera de las imágenes.
 
 ## 22. Estrategia de Despliegue
 
 ### Ambiente de Desarrollo
 
-Usado por el equipo técnico para construir funcionalidades.
+Usado por el equipo técnico para construir funcionalidades. Debe ejecutarse con Docker Compose o un mecanismo equivalente para levantar frontend, backend, base de datos de prueba y servicios simulados.
+
+Controles requeridos:
+
+- Datos ficticios.
+- Logs visibles para depuración.
+- Recarga rápida para desarrollo.
+- Documentación para instalación local.
 
 ### Ambiente de Pruebas
 
-Usado para validar funcionalidades con datos ficticios o anonimizados.
+Usado para validar funcionalidades con datos ficticios o anonimizados. Aquí se ejecutan pruebas automatizadas, planes de JMeter y escaneos de OWASP ZAP.
+
+Controles requeridos:
+
+- Pipeline CI/CD activo.
+- Datos anonimizados o sintéticos.
+- Evidencia de pruebas funcionales.
+- Evidencia de pruebas de seguridad y rendimiento.
 
 ### Ambiente de Preproducción
 
-Debe ser lo más parecido posible a producción. Aquí se hacen pruebas finales, seguridad y rendimiento.
+Debe ser lo más parecido posible a producción. Aquí se hacen pruebas finales, seguridad, rendimiento, integraciones y validación operativa.
+
+Controles requeridos:
+
+- Configuración equivalente a producción.
+- Integraciones institucionales en modo controlado.
+- Monitoreo activo.
+- Plan de rollback probado.
+- Aprobación formal antes de liberar.
 
 ### Ambiente de Producción
 
-Ambiente oficial para usuarios reales. Debe tener monitoreo, respaldos, control de cambios y soporte.
+Ambiente oficial para usuarios reales. Debe tener monitoreo, respaldos, control de cambios, soporte, auditoría y continuidad operativa.
+
+Controles requeridos:
+
+- Solo se despliegan imágenes aprobadas.
+- No se usan datos de prueba.
+- Auditoría activa desde el primer día.
+- Respaldos y restauración verificados.
+- Monitoreo de disponibilidad, errores, latencia y seguridad.
+- Mesa de soporte habilitada.
+
+### 22.1 Pipeline CI/CD Propuesto
+
+Flujo recomendado:
+
+1. Desarrollador crea una rama de trabajo.
+2. Se realiza revisión de código mediante pull request.
+3. El pipeline compila el proyecto.
+4. Se ejecutan pruebas unitarias e integración.
+5. Se construyen imágenes Docker.
+6. Se ejecutan pruebas funcionales automatizadas.
+7. Se ejecuta JMeter para validar rendimiento mínimo.
+8. Se ejecuta OWASP ZAP para seguridad dinámica.
+9. Si todo aprueba, se publica la imagen versionada.
+10. Se despliega primero a preproducción.
+11. Se valida con responsables técnicos y funcionales.
+12. Se libera a producción con plan de rollback.
+
+### 22.2 Criterios de Bloqueo del Pipeline
+
+El pipeline debe bloquear una liberación cuando ocurra cualquiera de estas condiciones:
+
+- Falla la compilación.
+- Fallan pruebas unitarias o de integración.
+- JMeter reporta errores o tiempos por encima del umbral definido.
+- OWASP ZAP detecta vulnerabilidades críticas.
+- Existen secretos expuestos en código o configuración.
+- La imagen Docker no puede construirse o iniciar correctamente.
+- No existe evidencia de aprobación para pasar a producción.
 
 ## 23. Operación y Mantenimiento
 
@@ -742,3 +1023,11 @@ Una vez en producción, el sistema debe contar con:
 La plataforma propuesta permite transformar el proceso migratorio desde un modelo manual y fragmentado hacia un modelo digital, interoperable y seguro. La clave del diseño es no comprometer la privacidad: cada institución conserva sus datos, las consultas se limitan a lo necesario, todas las acciones quedan auditadas y los casos de riesgo siguen bajo revisión humana.
 
 Con una implementación gradual, iniciando por trámites prioritarios y un piloto controlado, es posible reducir significativamente los tiempos de atención y mejorar la experiencia de más de 50,000 extranjeros residentes o solicitantes.
+
+## 26. Referencias Técnicas
+
+- Apache JMeter User Manual - Best Practices: https://jmeter.apache.org/usermanual/best-practices.html
+- OWASP ZAP Baseline Scan: https://www.zaproxy.org/docs/docker/baseline-scan/
+- Docker Build with GitHub Actions: https://docs.docker.com/build/ci/github-actions/
+- Docker Build Best Practices: https://docs.docker.com/build/building/best-practices/
+- OWASP SAMM: https://owasp.org/www-project-samm/
