@@ -2,11 +2,15 @@
 
 ## Documentación del proyecto
 
+La documentación describe el **producto de gestión de expedientes migratorios para bufetes de abogados** (Sistema Interoperable para la Gestión de Trámites Migratorios en Panamá), desarrollado como **MVP bajo la Ley 81 de 2019** y el Decreto Ejecutivo 285 de 2021. El **portal P-01…P-27 es el portal del cliente del bufete** (titular del trámite: sube documentos, consulta estado y vigencias, da su consentimiento informado y ejerce sus derechos ARCO) y el **módulo interno I-01…I-18 es el despacho** (recepción, analista, resolutor, notificador, administrador y auditoría). El bufete es el responsable del tratamiento de datos personales.
+
 La documentación se organiza en cuatro documentos independientes y un backlog de siete sprints. Los cinco entregables están conectados entre sí: la arquitectura define la estructura técnica; el plan de acción organiza el trabajo; el plan de desarrollo explica cómo se construirá el sistema; el plan de pruebas establece cómo se validará; y el backlog convierte el proyecto en épicas, historias de usuario y tareas ejecutables.
 
-La propuesta parte del problema identificado: los trámites migratorios pueden tardar entre 3 y 8 meses, según el caso planteado, debido a la entrega repetida de documentos y a las validaciones manuales. La solución busca reducir tareas redundantes mediante intercambios de información autorizados entre el Servicio Nacional de Migración (SNM), el Tribunal Electoral (TE), la Caja de Seguro Social (CSS) y el Registro Público de Panamá, con la posible participación de la Autoridad Nacional para la Innovación Gubernamental (AIG) en la coordinación tecnológica.
+La propuesta parte del problema identificado: el proceso oficial puede tardar entre 3 y 8 meses, según el caso planteado —**referencia externa del proceso oficial, no una meta del producto**— debido a la entrega repetida de documentos y a las verificaciones manuales. El producto reduce tareas redundantes preparando y organizando los expedientes del despacho.
 
-Alcance importante: la integración real con los sistemas institucionales dependerá de los permisos, convenios, interfaces disponibles y validaciones jurídicas correspondientes. Por ello, el prototipo académico debe poder funcionar con datos ficticios y servicios simulados, sin asumir acceso directo a bases de datos gubernamentales.
+Las **instituciones se abordan como fuentes externas de verificación** (fuentes públicas, p. ej. cédula del Tribunal Electoral y Registro Público; documentos obtenidos con consentimiento o autorización del titular), **no como socias con APIs**. El modo actual es la **verificación manual asistida**: la plataforma guarda solo el resultado mínimo de verificación (fuente, fecha, resultado y responsable), y la **capa de adaptadores queda preparada para futuros convenios** de verificación automática (p. ej. vía la AIG) sin rehacer el sistema; la posible participación de la AIG se limita a esa coordinación tecnológica futura.
+
+Alcance importante: cualquier convenio o integración automática dependerá de permisos, convenios, interfaces disponibles y validaciones jurídicas correspondientes. Por ello, el producto (MVP) debe poder funcionar con datos ficticios y fuentes de verificación simuladas, sin asumir acceso directo a bases de datos gubernamentales.
 
 ## Índice de entregables
 
@@ -18,6 +22,7 @@ Alcance importante: la integración real con los sistemas institucionales depend
 | 4 | Plan de pruebas | [04-plan-de-pruebas.md](04-plan-de-pruebas.md) |
 | 5 | Backlog detallado del proyecto: siete sprints | [05-backlog-siete-sprints.md](05-backlog-siete-sprints.md) |
 | 6 | Roles y accesos | [06-roles-y-accesos.md](06-roles-y-accesos.md) |
+| 7 | Marco legal y matriz de fuentes de verificación (HU-06) | [07-marco-legal-y-matriz-fuentes-verificacion.md](07-marco-legal-y-matriz-fuentes-verificacion.md) |
 
 ## Documentos por rama de trabajo
 
@@ -25,11 +30,13 @@ Derivados del backlog maestro (`05-backlog-siete-sprints.md`), cada documento ex
 
 | Rama | Archivo | Herramientas obligatorias principales |
 | --- | --- | --- |
-| Frontend | [Rama-01-Frontend.md](Rama-01-Frontend.md) | Docker, Java (lectura de API), JMeter y ZAP en correcciones |
-| Backend | [Rama-02-Backend.md](Rama-02-Backend.md) | Java, Docker, JMeter y ZAP en correcciones |
-| QA y Seguridad | [Rama-03-QA-Seguridad.md](Rama-03-QA-Seguridad.md) | OWASP ZAP, Apache JMeter, Docker, Java |
+| Frontend | [Rama-01-Frontend.md](../Frontend/Rama-01-Frontend.md) — checklist de trabajo: [tareas-frontend.md](../Frontend/tareas-frontend.md) — anexo con los campos de cada pantalla: [plan-de-ejecucion-frontend.md](../Frontend/plan-de-ejecucion-frontend.md) | Docker, Java (lectura de API), JMeter y ZAP en correcciones |
+| Backend | [Rama-02-Backend.md](../Backend/Rama-02-Backend.md) | Java, Docker, JMeter y ZAP en correcciones |
+| QA y Seguridad | [Rama-03-QA-Seguridad.md](../QA/Rama-03-QA-Seguridad.md) | OWASP ZAP, Apache JMeter, Docker, Java |
 | Producto y Documentación | [Rama-04-Producto-Documentacion.md](Rama-04-Producto-Documentacion.md) | Docker, revisión de informes ZAP/JMeter |
-| DevOps | [Rama-05-DevOps.md](Rama-05-DevOps.md) | Docker (central), Git/CI, Java (compilación), entornos de ZAP y JMeter |
+| DevOps | [Rama-05-DevOps.md](../DevOps/Rama-05-DevOps.md) | Docker (central), Git/CI, Java (compilación), entornos de ZAP y JMeter |
+
+> **Inventario oficial de pantallas adoptado: 45** (portal P-01…P-27 + módulo interno I-01…I-18), según `Pantallas_y_Datos_Migracion.md`; el cambio está registrado en el registro de cambios del backlog (`05-backlog-siete-sprints.md`) y el documento `06-roles-y-accesos.md`.
 
 ## Diferencia entre los documentos
 

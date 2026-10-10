@@ -2,13 +2,14 @@
 
 **Proyecto:** Sistema Interoperable para la Gestión de Trámites Migratorios en Panamá
 **Fuente:** `05-backlog-siete-sprints.md` (backlog maestro)
+**Inventario oficial de pantallas:** 45 (portal P-01…P-27 + módulo interno I-01…I-18) adoptado vía registro de cambios del backlog.
 **Roles responsables:** PO (Product Owner), DOC (responsable de documentación) y, en las tareas de decisión técnica, el líder técnico/arquitecto (LT)
 
 ---
 
 ## 1. Objetivo de la rama
 
-Mantener el alcance, las prioridades y la calidad documental del proyecto: definir y aceptar las historias, coordinar las decisiones de diseño con el líder técnico, producir la documentación de entrega y conducir la demostración final.
+Mantener el alcance, las prioridades y la calidad documental del producto: definir y aceptar las historias, coordinar las decisiones de diseño con el líder técnico, producir la documentación de entrega y conducir la demostración final. El **PO representa al despacho (bufete de abogados)**, cliente del producto y responsable del tratamiento de datos personales bajo la Ley 81 de 2019 y el Decreto Ejecutivo 285 de 2021: sus decisiones de alcance reflejan las necesidades del despacho (recepción, analista, resolutor, notificador, administrador y auditoría) y las de sus clientes titulares de los trámites.
 
 ## 2. Alcance de la rama por sprint
 
@@ -18,7 +19,7 @@ Mantener el alcance, las prioridades y la calidad documental del proyecto: defin
 | 2 | Guía de instalación (`.env.example`, `README` raíz) y aceptación de autenticación/autorización. |
 | 3 | Catálogos y reglas de negocio (tipos documentales, plantillas de notificación) y aceptación de historias. |
 | 4 | Matriz de transiciones por tipo de trámite (decisión de negocio clave). |
-| 5 | Matriz de datos por institución (minimización) y documentación de integración real. |
+| 5 | Matriz de datos por fuente de verificación (minimización) y documentación del convenio automático futuro. |
 | 6 | Guion de usabilidad, priorización de mejoras y recepción de informes. |
 | 7 | Aceptación final, documentación de entrega, informe de resultados y demostración. |
 
@@ -55,7 +56,7 @@ Una tarea de esta rama está terminada cuando:
 
 **Reglas de la rama:**
 
-* Todo documento distingue claramente: **prototipo simulado** vs. **integración real pendiente de autorización**.
+* Todo documento distingue claramente: **MVP con fuentes de verificación simuladas / verificación manual asistida** vs. **convenio automático futuro pendiente de autorización**.
 * Prohibido declarar reducciones de tiempos oficiales no medidas.
 * Ningún documento contiene datos personales reales.
 * Las decisiones de negocio (transiciones, catálogos, matrices) se toman con el PO y se documentan antes de programarse.
@@ -66,11 +67,11 @@ Una tarea de esta rama está terminada cuando:
 
 # Sprint 1 (semanas 1–2) — Viabilidad, criterios y gobernanza del backlog
 
-### HU-06 — Estudio de viabilidad de APIs institucionales reales
+### HU-06 — Estudio de viabilidad de integración automática futura con fuentes de verificación
 
 **Prioridad:** Crítica · **5 PH** · **Responsable:** LT con PO
 
-**Como** líder técnico, **quiero** verificar si existen APIs o mecanismos de intercambio reales con cada institución **para** decidir con evidencia que el prototipo se construye sobre simuladores y documentar los requisitos de una futura integración.
+**Como** líder técnico, **quiero** verificar si existen APIs o mecanismos de intercambio reales con cada fuente de verificación **para** decidir con evidencia que el producto se construye sobre **verificación manual asistida y fuentes de verificación simuladas**, y documentar los requisitos de un futuro convenio automático (p. ej. vía AIG).
 
 **Criterios de aceptación:**
 
@@ -78,7 +79,7 @@ Una tarea de esta rama está terminada cuando:
 2. Cada fila registra: canal de integración (API REST, web service, archivo, convenio, desconocido), fuente de la información, requisitos legales (Ley 81 de 2019, Decreto 285 de 2021, competencia institucional), dependencia, responsable y estado.
 3. Estado explícito por fila: `VIABLE`, `PENDIENTE DE PERMISO`, `SIN INTERFAZ PUBLICADA` o `NO APLICABLE`.
 4. Conclusión operativa: qué mocks se requieren y qué contrato mínimo deben cumplir.
-5. Sin asumir ni declarar acceso real a datos gubernamentales; toda integración real queda como pendiente de autorización.
+5. Sin asumir ni declarar acceso real a datos gubernamentales; toda integración automática futura queda como pendiente de convenio y autorización (el modo actual es la verificación manual asistida).
 6. Resultado revisado con el PO y enlazado desde la documentación del proyecto.
 
 **Tareas de esta rama:**
@@ -100,9 +101,11 @@ Una tarea de esta rama está terminada cuando:
 | TASK | Descripción | Responsable | Estimación |
 | --- | --- | --- | --- |
 | TASK-01.5 | Documentar el diseño base y convenciones del frontend (con FE). | DOC con FE | 2 h |
-| — | Revisar y aceptar los criterios de aceptación de HU-01…HU-05 antes de que FE empiece cada HU (Definition of Ready). | PO | 6 h |
+| — | Revisar y aceptar los criterios de aceptación de HU-01…HU-05 antes de que FE empiece cada HU (Definition of Ready). **Reparto:** Sprint 1 = portal (P-01…P-27); el módulo interno (I-01…I-18) se acepta en el Sprint 2. | PO | 6 h |
+| — | Aceptar la etiqueta **POR CONFIRMAR** de las pantallas P-15 (pagos: captura simulada sin pasarela), P-18, P-24 y P-25, y registrar la decisión en el registro de cambios del backlog. | PO | Incluido en la aceptación |
+| — | Resolver los **pendientes del inventario PEN-01…PEN-12** (backlog §5.5, detectados en el plan de ejecución del Frontend) antes de dar por aceptado el Sprint 1: visibilidad de `ARCHIVADO` (P-19), asociación de la ficha CSS (P-25), gate P-14/P-15/P-16, dueño de archivo/reactivación (I-13), SUPERVISOR, OTP de P-03, campos origen `S`, meta de tiempos, catálogos y vocabulario. Registrar cada cierre en el registro de cambios del backlog. | PO | 3 h |
 
-**Criterio:** ninguna HU de frontend entra al sprint sin criterios de aceptación aprobados por el PO.
+**Criterio:** ninguna HU de frontend entra al sprint sin criterios de aceptación aprobados por el PO; el portal (P-01…P-27) se acepta en el Sprint 1 y el módulo interno (I-01…I-18) en el Sprint 2.
 
 ---
 
@@ -188,14 +191,14 @@ Una tarea de esta rama está terminada cuando:
 
 | TASK | HU | Descripción | Responsable | Estimación |
 | --- | --- | --- | --- | --- |
-| TASK-25.1 | HU-25 | Formalizar la **matriz de datos por institución** (campo → finalidad → base legal → responsable) con el líder técnico. | PO con LT | 4 h |
-| TASK-23.6 | HU-23 | Documentar el procedimiento de sustitución de un mock por una integración real autorizada (con LT). | DOC con LT | 3 h |
-| — | HU-23 a HU-26 | Revisar y aceptar la interoperabilidad simulada; verificar la distinción error técnico vs. resultado negativo desde el negocio. | PO | 6 h |
+| TASK-25.1 | HU-25 | Formalizar la **matriz de datos por fuente de verificación** (campo → finalidad → base legal → responsable) con el líder técnico. | PO con LT | 4 h |
+| TASK-23.6 | HU-23 | Documentar el procedimiento de sustitución de una fuente simulada por un convenio automático futuro autorizado (con LT). | DOC con LT | 3 h |
+| — | HU-23 a HU-26 | Revisar y aceptar la verificación de fuentes (modo demostración y manual asistido); verificar la distinción error técnico vs. resultado negativo desde el negocio. | PO | 6 h |
 
 **Criterios de aceptación del sprint para la rama:**
 
-1. La matriz de datos cubre las tres instituciones simuladas con su base legal.
-2. La documentación de integración real lista prerrequisitos: convenio, permiso, contrato, validación jurídica.
+1. La matriz de datos cubre las tres fuentes de verificación simuladas con su base legal (Ley 81 de 2019 y Decreto Ejecutivo 285 de 2021).
+2. La documentación del convenio automático futuro lista prerrequisitos: convenio, permiso, contrato, validación jurídica.
 3. El PO confirma que ningún error técnico se presenta como resultado negativo en la experiencia de usuario.
 4. Las 4 historias aceptadas.
 
@@ -250,7 +253,7 @@ Una tarea de esta rama está terminada cuando:
 4. Diagramas actualizados: arquitectura lógica, modelo de datos, flujo de interoperabilidad.
 5. Manuales: técnico (mantenimiento) y de usuario (por rol) con capturas.
 6. Resultados de pruebas: informes de seguridad, rendimiento y usabilidad consolidados.
-7. Registro de decisiones técnicas y de la matriz de viabilidad institucional.
+7. Registro de decisiones técnicas y de la matriz de viabilidad de fuentes de verificación.
 
 **Tareas de esta rama:**
 
@@ -277,12 +280,13 @@ Una tarea de esta rama está terminada cuando:
 
 **Criterios de aceptación:**
 
-1. Escenario de demostración con datos ficticios preparado (solicitante, funcionario, validaciones con distintos escenarios).
-2. Flujo completo demostrado: login → creación → documentos → validaciones simuladas → observación → decisión → notificación.
-3. Métricas del plan de acción medidas en el prototipo, **sin afirmar resultados no medidos** sobre el proceso migratorio real.
-4. Limitaciones expuestas explícitamente: integraciones simuladas, permisos institucionales pendientes, alcance académico.
-5. El Product Owner valida los entregables finales y registra la aceptación.
+1. Escenario de demostración con datos ficticios preparado (titular, funcionario, verificaciones con distintos escenarios).
+2. Flujo completo demostrado: login → creación → documentos → verificaciones (fuente simulada o resultado registrado en modo manual asistido) → observación → decisión → notificación.
+3. Métricas **del despacho** medidas en el producto: preparación de expedientes, observaciones evitadas y documentos repetidos, **sin afirmar resultados no medidos ni tiempos oficiales** del proceso migratorio real (los 3–8 meses son solo referencia externa del proceso oficial).
+4. Limitaciones expuestas explícitamente: **sin integraciones institucionales reales** (verificación manual asistida; capa de adaptadores preparada para un futuro convenio automático), convenios y permisos pendientes, alcance del MVP.
+5. El Product Owner (que representa al despacho) valida los entregables finales y registra la aceptación.
 6. Presentación final e informe de resultados en el repositorio.
+7. **Validación jurídica** de la documentación de tratamiento de datos (Ley 81 de 2019 y Decreto Ejecutivo 285 de 2021: consentimiento informado, consentimiento expreso para datos sensibles, derechos ARCO, minimización) registrada como **entregable** o como **pendiente explícito**.
 
 **Tareas de esta rama:**
 
@@ -290,20 +294,22 @@ Una tarea de esta rama está terminada cuando:
 | --- | --- | --- | --- |
 | TASK-34.1 | Preparar datos ficticios y guion del escenario de demostración (con BE). | PO con BE | 5 h |
 | TASK-34.2 | Ensayar la demostración completa y corregir detalles. | Equipo | 4 h |
-| TASK-34.3 | Elaborar el informe de resultados, métricas, limitaciones y recomendaciones. | DOC con PO | 8 h |
+| TASK-34.3 | Elaborar el informe de resultados con métricas **del despacho** (preparación de expedientes, observaciones evitadas, documentos repetidos), limitaciones y recomendaciones. | DOC con PO | 8 h |
 | TASK-34.4 | Preparar y ejecutar la presentación final; registrar la aceptación. | PO | 5 h |
 
 ### Entregables del Sprint 7 (rama Producto y Documentación)
 
 * Documentación completa (técnica, de usuario, contratos, diagramas, informes).
 * Aceptación final del proyecto registrada.
-* Informe de resultados y presentación final.
+* Informe de resultados con métricas **del despacho** (preparación de expedientes, observaciones evitadas, documentos repetidos) y con las limitaciones explícitas (sin integraciones institucionales; verificación manual asistida).
+* **Validación jurídica (Ley 81 de 2019)** registrada como entregable o como pendiente explícito.
+* Presentación final.
 
 ### DoD de la rama (Sprint 7)
 
 * Aceptación documentada por historia y del proyecto en general.
 * Toda la documentación enlazada desde el `README` y verificada.
-* Informe final sin afirmaciones no medidas y con limitaciones explícitas.
+* Informe final con métricas del despacho (preparación de expedientes, observaciones evitadas, documentos repetidos), sin afirmar tiempos oficiales ni resultados no medidos, y con limitaciones explícitas (sin integraciones institucionales; verificación manual asistida).
 
 ---
 

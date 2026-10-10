@@ -2,13 +2,14 @@
 
 **Proyecto:** Sistema Interoperable para la Gestión de Trámites Migratorios en Panamá
 **Fuente:** `05-backlog-siete-sprints.md` (backlog maestro)
+**Inventario oficial de pantallas:** 45 (portal P-01…P-27 + módulo interno I-01…I-18) adoptado vía registro de cambios del backlog.
 **Rol responsable:** QA (responsable de pruebas), con foco en seguridad y rendimiento
 
 ---
 
 ## 1. Objetivo de la rama
 
-Garantizar la calidad del prototipo: pruebas funcionales, de autorización, de integración, de seguridad (**OWASP ZAP**), de rendimiento (**Apache JMeter**) y de usabilidad, dejando evidencias verificables y controlando las incidencias hasta su cierre.
+Garantizar la calidad del producto (MVP): pruebas funcionales, de autorización, de integración, de seguridad (**OWASP ZAP**), de rendimiento (**Apache JMeter**) y de usabilidad, dejando evidencias verificables y controlando las incidencias hasta su cierre, incluidas las pruebas de cumplimiento legal (Ley 81 de 2019 y Decreto Ejecutivo 285 de 2021).
 
 ## 2. Alcance de la rama por sprint
 
@@ -52,14 +53,15 @@ Una tarea de QA está terminada cuando:
 3. Las incidencias abiertas tienen severidad, responsable y estado; las corregidas se re-verifican.
 4. Los CP asociados a la HU quedan en verde o con incidencia formalizada.
 5. Los informes (seguridad, rendimiento, usabilidad) quedan en el repositorio y son enlazados desde la documentación.
-6. No se usan datos personales reales en las pruebas.
+6. No se usan datos personales reales en las pruebas; los datos de clientes del bufete están **prohibidos** (solo datos ficticios).
 
 **Reglas de la rama:**
 
 * Toda prueba crítica pasa antes de aceptar la historia en el sprint.
 * Sin evidencia de **OWASP ZAP** y **JMeter**, la entrega del Sprint 6/7 no se acepta.
 * Un escaneo automatizado no sustituye las pruebas manuales ni la revisión de permisos por rol.
-* Separar siempre: error técnico de integración ≠ resultado negativo de validación (verificarlo explícitamente en pruebas).
+* Separar siempre: error técnico de integración ≠ resultado negativo de verificación (verificarlo explícitamente en pruebas).
+* **Cumplimiento legal (Ley 81 de 2019 + Decreto Ejecutivo 285 de 2021):** probar el **consentimiento informado**, el **consentimiento expreso para datos sensibles** (salud, antecedentes), el ejercicio de **derechos ARCO**, la **minimización** y la **finalidad/conservación**, siguiendo el plan de pruebas (**CP-13 y CP-14**, nuevos). Sus evidencias son obligatorias para la aceptación.
 
 ---
 
@@ -74,13 +76,13 @@ Una tarea de QA está terminada cuando:
 | TASK | HU | Descripción | Responsable | Estimación |
 | --- | --- | --- | --- | --- |
 | TASK-08.6 | HU-08 | Escribir pruebas de contrato de cada mock contra `openapi.yaml` (TE, CSS, Registro Público, SNM × 6 escenarios). | QA con BE | 5 h |
-| TASK-09.5 | HU-09 | Recorrer el flujo completo con mocks (login → expediente → documentos → validaciones) y registrar incidencias de integración. | QA con FE | 4 h |
-| — | — | Elaborar el plan de pruebas del proyecto: qué CP se ejecutan en cada sprint y con qué evidencia. | QA | 4 h |
+| TASK-09.5 | HU-09 | Recorrer el flujo con mocks sobre el alcance del Sprint 1 — portal **P-01…P-17 y P-19 (estado)** con fixtures — (login → expediente → documentos → validaciones) y registrar incidencias de integración; el módulo interno **I-01…I-18 se prueba desde el Sprint 2**. | QA con FE | 4 h |
+| — | — | Elaborar el plan de pruebas del proyecto: qué CP se ejecutan en cada sprint y con qué evidencia, con el alcance del Sprint 1 limitado al portal (P-01…P-17 y P-19 (estado), con fixtures) y el módulo interno I-01…I-18 probado desde el Sprint 2. | QA | 4 h |
 
 **Criterios de aceptación del sprint para la rama:**
 
-1. Los cuatro mocks pasan las pruebas de contrato con los 6 escenarios.
-2. Existe un plan de pruebas que distribuye CP-01…CP-12 a lo largo de los 7 sprints.
+1. Los cuatro mocks (fuentes de verificación simuladas) pasan las pruebas de contrato con los 6 escenarios.
+2. Existe un plan de pruebas que distribuye CP-01…CP-14 (incluidos **CP-13 y CP-14 de cumplimiento legal**: consentimiento informado, derechos ARCO, minimización y datos sensibles) a lo largo de los 7 sprints.
 3. El recorrido de integración no tiene bloqueos de contrato abiertos.
 
 **DoD de la rama (Sprint 1):** informe de pruebas de contrato en verde + plan de pruebas publicado.
@@ -160,27 +162,29 @@ Una tarea de QA está terminada cuando:
 
 ---
 
-# Sprint 5 (semanas 9–10) — Interoperabilidad simulada
+# Sprint 5 (semanas 9–10) — Verificación de fuentes externas (modo demostración y manual asistido)
 
-**Objetivo de la rama:** probar los adaptadores, los fallos de las instituciones y la idempotencia.
+**Objetivo de la rama:** probar los adaptadores de fuentes de verificación, los fallos de las fuentes y la idempotencia.
 
 **Tareas de esta rama:**
 
 | TASK | HU | Descripción | Responsable | Estimación |
 | --- | --- | --- | --- | --- |
 | TASK-23.5 | HU-23 | Pruebas de contrato por adaptador: respuesta válida, sin resultado, error técnico y timeout. | QA con BE | 6 h |
-| TASK-24.4 | HU-24 | Pruebas de caída del mock, timeout, duplicación (idempotencia) y recuperación. | QA con BE | 6 h |
-| TASK-25.4 | HU-25 | Verificar la trazabilidad completa de las consultas y el contenido mínimo de los logs. | QA | 4 h |
+| TASK-24.4 | HU-24 | Pruebas de caída de la fuente simulada, timeout, duplicación (idempotencia) y recuperación. | QA con BE | 6 h |
+| TASK-25.4 | HU-25 | Verificar la trazabilidad completa de las verificaciones y el contenido mínimo de los logs. | QA | 4 h |
 | TASK-26.4 | HU-26 | Ejecutar el recorrido completo con escenarios forzados (`X-Scenario`) y registrar incidencias. | QA con FE | 6 h |
 
 **Criterios de aceptación del sprint para la rama:**
 
-1. CP-06 en verde: respuesta válida registrada y estado de validación actualizado.
-2. CP-07 en verde: caída de la institución → error técnico registrado y reintento permitido; **nunca** resultado negativo.
+1. CP-06 en verde: respuesta válida de la **fuente de verificación** registrada y estado actualizado.
+2. CP-07 en verde: caída de la fuente de verificación → error técnico registrado y reintento permitido; **nunca** resultado negativo.
 3. CP-08 en verde: petición repetida no crea operaciones duplicadas.
-4. Trazabilidad verificada: finalidad, fecha, referencia y resultado mínimo de cada consulta.
+4. Trazabilidad verificada: **fuente, fecha, resultado y responsable** de cada verificación, con su finalidad y referencia de correlación.
 
 **DoD de la rama (Sprint 5):** CP-06, CP-07 y CP-08 en verde con evidencia de los 6 escenarios.
+
+> **Nota (modo actual):** además de la fuente simulada de demostración, verificar el registro en **modo de verificación manual asistido** del despacho (resultado con fuente, fecha, responsable y usuario) y que el portal solo refleja ese resultado mínimo.
 
 ---
 
@@ -301,7 +305,7 @@ Una tarea de QA está terminada cuando:
 
 1. Lista de historias con estado y criterio de aceptación asociado.
 2. Ejecución de los escenarios de aceptación acordados con el PO por historia cerrada.
-3. Todas las pruebas críticas CP-01…CP-12 pasan con evidencia.
+3. Todas las pruebas críticas CP-01…CP-14 pasan con evidencia (incluidos CP-13 y CP-14 de cumplimiento legal).
 4. Regresión completa tras las últimas correcciones.
 5. Limitaciones y errores conocidos documentados con severidad y justificación.
 6. Aceptación o bloqueo por historia registrada por el PO.
@@ -344,7 +348,7 @@ Una tarea de QA está terminada cuando:
 
 ### DoD del Sprint 7 (rama QA)
 
-* CP-01…CP-12 en verde con evidencia.
+* CP-01…CP-14 en verde con evidencia (incluidos CP-13 y CP-14 de cumplimiento legal).
 * Errores conocidos publicados con severidad.
 * Instalación limpia reproducible certificada.
 

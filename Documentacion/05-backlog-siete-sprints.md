@@ -6,10 +6,22 @@
 
 ## 5.1. Cómo está organizado este backlog
 
+### Objetivo general del backlog
+
+Este backlog construye el **producto comercial destinado a bufetes de abogados** (MVP vendible): el despacho es el **responsable del tratamiento de datos** conforme a la Ley 81 de 2019 y al Decreto Ejecutivo 285 de 2021, y el sistema se construye para la operación diaria del despacho. Se mantiene el inventario oficial de **45 pantallas**: el portal **P-01…P-27** es el **portal del cliente del bufete** (titular del dato, representable por su abogado) y el módulo interno **I-01…I-18** es el **módulo interno del despacho** (recepción, analista, resolutor/director, notificador, administrador y auditoría). Las instituciones **no son socias con APIs**: son **fuentes externas de verificación**; la plataforma nunca recibe transferencias automáticas y la interoperabilidad se entrega como **verificación documental trazable en modo manual asistido**, con la **capa de adaptadores preparada** para una futura automatización sujeta a convenio (p. ej. vía AIG) sin rehacer el sistema.
+
+## Registro de cambios del backlog
+
+| # | Cambio | Motivo | Impacto | Estado |
+| --- | --- | --- | --- | --- |
+| RC-01 | Adopción del inventario oficial de **45 pantallas**: portal ciudadano **P-01…P-27** y módulo interno SNM **I-01…I-18** (fuente: `Pantallas_y_Datos_Migracion.md`), en sustitución del esquema anterior de 21 pantallas (P-01…P-21). | Fidelidad con el SNM real y cierre de la recomendación de `06-roles-y-accesos.md` §6.13.2. | Sprint 1 reorientado al portal (P-01…P-27); el módulo interno (I-01…I-18) inicia en el Sprint 2. | Aprobado por PO |
+| RC-02 | **Reencuadre del alcance: producto comercial para bufetes de abogados bajo la Ley 81 de 2019.** | Venta a bufetes de abogados; las instituciones no transfieren datos por lo que la interoperabilidad se entrega como verificación documental trazable + capa de adaptadores preparada. | El portal P-01…P-27 es el portal del cliente del bufete y el módulo interno I-01…I-18 el despacho; las verificaciones quedan en modo manual asistido con adaptadores preparados; nuevos HU de consentimiento informado y derechos ARCO; indicadores medidos en el despacho. | Aprobado por PO |
+
 ### Jerarquía
 
 * **Épica (EP):** agrupa funcionalidades relacionadas y atraviesa varios sprints.
 * **Historia de usuario (HU):** necesidad concreta desde el punto de vista del usuario, con valor verificable.
+* **Sufijo alfanumérico (p. ej. HU-18b):** historia incorporada al backlog después de la primera estimación; el sufijo permite agregarla **sin renumerar** las HU-01…HU-34 existentes.
 * **Tarea (TASK):** actividad técnica, de diseño o de documentación necesaria para implementar la historia.
 * **Criterios de aceptación (CA):** condiciones objetivas y verificables para dar por terminada una historia.
 * **Caso de prueba (CP):** verificación asociada del plan de pruebas (Documento 4).
@@ -29,7 +41,7 @@
 | QA | Responsable de pruebas |
 | DOC | Responsable de documentación |
 
-Una persona puede cubrir varios roles en un equipo académico; los códigos indican la responsabilidad, no necesariamente a una persona distinta.
+Una persona puede cubrir varios roles en el equipo; los códigos indican la responsabilidad, no necesariamente a una persona distinta.
 
 ### Estimación
 
@@ -39,7 +51,7 @@ Una persona puede cubrir varios roles en un equipo académico; los códigos indi
 
 ### Estado del documento
 
-Este backlog reemplaza la versión inicial del Documento 5. La principal diferencia es que el **Sprint 1 se enfoca en el frontend (todas las pantallas funcionales) y, en paralelo, en la evaluación de APIs institucionales reales y la implementación de APIs ficticias (mocks)** que sustituirán a las instituciones durante todo el prototipo.
+Este backlog reemplaza la versión inicial del Documento 5. La principal diferencia es que el **Sprint 1 se enfoca en el frontend (todas las pantallas funcionales) y, en paralelo, en el marco legal y la matriz de fuentes de verificación y en la implementación de fuentes de verificación simuladas (mocks)** que representan, durante todo el MVP, las integraciones futuras sujetas a convenio. El alcance comercial (RC-02) define el producto: se vende a bufetes de abogados y la verificación se entrega en modo manual asistido, con adaptadores preparados.
 
 ---
 
@@ -52,8 +64,8 @@ Este backlog reemplaza la versión inicial del Documento 5. La principal diferen
 | EP-03 | Autenticación y control de acceso | Proteger el sistema y separar permisos por rol. | Crítica |
 | EP-04 | Gestión de expedientes y documentos | Registrar, consultar y organizar los expedientes migratorios. | Crítica |
 | EP-05 | Flujo de estados y revisión | Controlar el ciclo de vida del expediente y las decisiones autorizadas. | Crítica |
-| EP-06 | Interoperabilidad institucional | Evaluar APIs reales, simular instituciones y normalizar consultas. | Crítica |
-| EP-07 | Auditoría, seguridad y privacidad | Registrar operaciones y aplicar controles de protección de datos. | Crítica |
+| EP-06 | Verificación documental y fuentes externas | Definir qué fuentes de verificación aplica el despacho, simularlas para la demostración y normalizar resultados. | Crítica |
+| EP-07 | Auditoría, seguridad y privacidad | Registrar operaciones y aplicar controles de protección de datos: consentimiento informado, minimización, finalidad y derechos ARCO. | Crítica |
 | EP-08 | Pruebas, usabilidad y rendimiento | Verificar calidad funcional, seguridad y rendimiento. | Alta |
 | EP-09 | Entrega y documentación | Preparar manuales, evidencias y demostración final. | Alta |
 | **EP-10** | **Frontend y experiencia de usuario** | **Construir todas las pantallas funcionales, la navegación y los estados de interfaz.** | **Crítica** |
@@ -64,11 +76,11 @@ Este backlog reemplaza la versión inicial del Documento 5. La principal diferen
 
 | Sprint | Sem. | Tema principal | Épicas | HU | PH |
 | --- | --- | --- | --- | --- | --- |
-| **1** | 1–2 | **Frontend completo + viabilidad de APIs reales + APIs ficticias** | EP-10, EP-01, EP-06 | HU-01 … HU-09 | 50 |
-| **2** | 3–4 | Base del backend: entorno, modelo de datos, autenticación | EP-02, EP-03 | HU-10 … HU-14 | 34 |
-| **3** | 5–6 | Expedientes y documentos conectados extremo a extremo | EP-04, EP-10 | HU-15 … HU-18 | 32 |
+| **1** | 1–2 | **Frontend del portal (P-01…P-27) + marco legal de verificación + fuentes simuladas** | EP-10, EP-01, EP-06 | HU-01 … HU-09 | 50 |
+| **2** | 3–4 | **Módulo interno (I-01…I-18)** + base del backend: entorno, modelo de datos, autenticación | EP-02, EP-03 | HU-10 … HU-14 (+ HU-05 si se desplaza) | 34 |
+| **3** | 5–6 | Expedientes y documentos conectados extremo a extremo, consentimiento informado y derechos ARCO | EP-04, EP-07, EP-10 | HU-15 … HU-18 (+ HU-18b, HU-18c) | 36 |
 | **4** | 7–8 | Estados, revisión, observaciones y auditoría | EP-05, EP-07 | HU-19 … HU-22 | 30 |
-| **5** | 9–10 | Interoperabilidad con instituciones simuladas | EP-06, EP-07 | HU-23 … HU-26 | 34 |
+| **5** | 9–10 | Verificación documental: modo manual asistido, adaptadores y trazabilidad | EP-06, EP-07 | HU-23 … HU-26 | 34 |
 | **6** | 11–12 | Seguridad, rendimiento y usabilidad | EP-08 | HU-27 … HU-30 | 30 |
 | **7** | 13–14 | Aceptación, documentación y entrega | EP-08, EP-09 | HU-31 … HU-34 | 24 |
 
@@ -78,11 +90,11 @@ Este backlog reemplaza la versión inicial del Documento 5. La principal diferen
 
 ### Herramientas obligatorias
 
-Estas cuatro herramientas están **definidas como obligatorias** por el equipo y deben usarse en el desarrollo y en la verificación del prototipo:
+Estas cuatro herramientas están **definidas como obligatorias** por el equipo y deben usarse en el desarrollo y en la verificación del producto:
 
 | Herramienta | Tipo | Uso obligatorio en el proyecto | Sprints | HU / TASK principales |
 | --- | --- | --- | --- | --- |
-| **Java** (JDK 17 o superior) | Lenguaje y runtime | Todo el backend del prototipo se implementa en Java sobre Spring Boot; sin Java no hay backend. | 1–7 | HU-08, HU-10 a HU-14, HU-15 a HU-25 |
+| **Java** (JDK 17 o superior) | Lenguaje y runtime | Todo el backend del producto se implementa en Java sobre Spring Boot; sin Java no hay backend. | 1–7 | HU-08, HU-10 a HU-14, HU-15 a HU-25 |
 | **Docker** | Contenedores | Entorno reproducible (backend + PostgreSQL + frontend), aislamiento del entorno de pruebas y ejecución de las suites de prueba. | 1–7 | TASK-10.4, TASK-27.3, TASK-33.1 |
 | **Apache JMeter** | Pruebas de rendimiento | Medición de latencia, P95, concurrencia, tasa de errores y comportamiento ante picos e indisponibilidad de dependencias. | 6 (y re-verificación en 7 si hay correcciones) | HU-29, TASK-29.1 a TASK-29.5, CP-10 |
 | **OWASP ZAP** | Pruebas de seguridad | Escaneo activo y pasivo de la aplicación web y sus API, con corrección de hallazgos críticos y altos antes de la entrega. | 6 (y verificación final en 7) | HU-28, TASK-28.1 a TASK-28.5, CP-11 |
@@ -102,7 +114,7 @@ Complementan el trabajo, pero no sustituyen a las obligatorias:
 | Herramienta | Uso | Sprints |
 | --- | --- | --- |
 | Spring Boot (sobre Java) | Framework del backend, seguridad y API REST. | 1–7 |
-| PostgreSQL | Base de datos operativa del prototipo. | 1–7 |
+| PostgreSQL | Base de datos operativa del producto. | 1–7 |
 | Git | Control de versiones, revisión y trazabilidad. | 1–7 |
 | Flyway o Liquibase | Migraciones versionadas del esquema. | 2 en adelante |
 | JUnit y Mockito | Pruebas unitarias y de servicio. | 2 en adelante |
@@ -125,41 +137,110 @@ Complementan el trabajo, pero no sustituyen a las obligatorias:
 
 ---
 
-## 5.5. Inventario de pantallas del prototipo (frontend)
+## 5.5. Inventario de pantallas del producto (frontend)
 
-Este inventario es la referencia obligatoria del Sprint 1: **todas las pantallas deben quedar creadas y navegables** antes de que termine la semana 2, aunque en esa etapa funcionen con datos ficticios locales o con las APIs ficticias del backend.
+El inventario oficial adoptado para este backlog es el de **45 pantallas** definido en `Pantallas_y_Datos_Migracion.md` (secciones 2, 3 y 5): **27 pantallas del portal (P-01…P-27)** y **18 pantallas del módulo interno (I-01…I-18)**. Con el reencuadre comercial (RC-02), **P-01…P-27 es el portal del cliente del bufete** (titular, representable por su abogado) e **I-01…I-18 es el módulo interno del despacho** (recepción, analista, resolutor/director, notificador, administrador, auditoría); los nombres de las tablas se conservan tal como figuran en la fuente oficial. Este inventario sustituye al esquema anterior de 21 pantallas y es la referencia obligatoria del Sprint 1: todas las pantallas del portal deben quedar creadas y navegables antes de que termine la semana 2 y el módulo interno debe iniciar en el Sprint 2 (ver *Registro de cambios del backlog*, §5.1), aunque en esa etapa funcionen con datos ficticios locales o con las fuentes de verificación simuladas del backend.
 
-| # | Pantalla | Ruta propuesta | Rol principal | Módulo |
+### Portal del cliente del bufete — P-01…P-27
+
+| ID | Pantalla | Ruta propuesta | Rol dueño |
+| --- | --- | --- | --- |
+| P-01 | Inicio de sesión | `/login` | Todos (portal) |
+| P-02 | Registro de cuenta | `/registro` | Ciudadano |
+| P-03 | Verificación de identidad (OTP) | `/verificacion-otp` | Ciudadano |
+| P-04 | Recuperación de contraseña | `/recuperar-contrasena` | Todos (portal) |
+| P-05 | Mi perfil / datos de contacto | `/perfil` | Todos (portal) |
+| P-06 | Mis trámites (bandeja) | `/solicitante/tramites` | Ciudadano / apoderado / representante |
+| P-07 | Nueva solicitud — selección de trámite | `/solicitante/solicitud/nueva` | Ciudadano / apoderado / representante |
+| P-08 | Titularidad y representación | `/solicitante/solicitud/titularidad` | Apoderado / representante legal |
+| P-09 | Paso 1 — Datos personales | `/solicitante/solicitud/paso-1` | Ciudadano / apoderado / representante |
+| P-10 | Paso 2 — Pasaporte e historial migratorio | `/solicitante/solicitud/paso-2` | Ciudadano / apoderado / representante |
+| P-11 | Paso 3 — Domicilio y notificaciones | `/solicitante/solicitud/paso-3` | Ciudadano / apoderado / representante |
+| P-12 | Paso 4 — Situación laboral, económica o de vínculos | `/solicitante/solicitud/paso-4` | Ciudadano / apoderado / representante |
+| P-13 | Paso 5 — Dependientes | `/solicitante/solicitud/paso-5` | Ciudadano / apoderado / representante |
+| P-14 | Paso 6 — Requisitos y carga de documentos | `/solicitante/solicitud/paso-6` | Ciudadano / apoderado / representante |
+| P-15 | Paso 7 — Pagos y tasas **(POR CONFIRMAR)** | `/solicitante/solicitud/paso-7` | Ciudadano |
+| P-16 | Paso 8 — Declaración jurada y firma | `/solicitante/solicitud/paso-8` | Ciudadano |
+| P-17 | Resumen y envío (número de expediente) | `/solicitante/solicitud/resumen` | Ciudadano / apoderado / representante |
+| P-18 | Reserva de cita **(POR CONFIRMAR)** | `/solicitante/cita` | Ciudadano |
+| P-19 | Estado del trámite (línea de tiempo) | `/solicitante/tramites/{id}` | Ciudadano / apoderado / representante |
+| P-20 | Observaciones y notificaciones | `/solicitante/tramites/{id}/observaciones` | Ciudadano / apoderado / representante |
+| P-21 | Subsanación (corrección del expediente) | `/solicitante/tramites/{id}/subsanacion` | Ciudadano / apoderado / representante |
+| P-22 | Resultados: resoluciones, carné digital y certificados | `/solicitante/resultados` | Ciudadano |
+| P-23 | Historial de pagos | `/solicitante/pagos` | Ciudadano |
+| P-24 | Edictos y citaciones **(POR CONFIRMAR)** | `/solicitante/edictos` | Ciudadano |
+| P-25 | Certificaciones en línea **(POR CONFIRMAR)** | `/solicitante/certificaciones` | Ciudadano |
+| P-26 | Naturalización — flujo específico | `/solicitante/naturalizacion` | Ciudadano |
+| P-27 | Ayuda, FAQ y peticiones | `/ayuda` | Todos (portal) |
+
+### Módulo interno del despacho (I-01…I-18)
+
+| ID | Pantalla | Ruta propuesta | Rol dueño |
+| --- | --- | --- | --- |
+| I-01 | Login institucional con MFA | `/snm/login` | Personal SNM |
+| I-02 | Tablero de gestión | `/snm/tablero` | Todos los roles internos |
+| I-03 | Bandeja de recepción (citas y turnos) | `/snm/recepcion/bandeja` | Recepcionista |
+| I-04 | Recepción y verificación de completitud | `/snm/recepcion/atencion` | Recepcionista |
+| I-05 | Asignación de analista | `/snm/asignacion` | Coordinador / resolutor |
+| I-06 | Análisis del expediente (checklist) | `/snm/analisis/{id}` | Analista |
+| I-07 | Panel de verificación interoperable | `/snm/analisis/{id}/verificaciones` | Analista |
+| I-08 | Emisión y atención de observaciones | `/snm/observaciones` | Recepcionista / analista |
+| I-09 | Edictos y publicaciones | `/snm/edictos` | Analista / notificador |
+| I-10 | Resolución (aprobar / negar) | `/snm/resolucion/{id}` | Resolutor |
+| I-11 | Notificación | `/snm/notificaciones` | Notificador |
+| I-12 | Entrega en ventanilla | `/snm/entrega` | Notificador / ventanilla |
+| I-13 | Expedientes archivados y reactivación | `/snm/archivados` | Analista / coordinador |
+| I-14 | Catálogos: trámites, requisitos, tasas y vigencias | `/snm/admin/catalogos` | Administrador de catálogos |
+| I-15 | Usuarios, roles y permisos | `/snm/admin/usuarios` | Administrador |
+| I-16 | Bitácora de auditoría | `/snm/admin/auditoria` | Auditor |
+| I-17 | Reportes y tiempos por etapa | `/snm/reportes` | Supervisor / directivo |
+| I-18 | Salud de las conexiones de interoperabilidad | `/snm/admin/interoperabilidad` | Administrador |
+
+### Vistas y componentes globales (sin ID de pantalla)
+
+* **Vistas de error:** las páginas de error **403, 404, 500 y error técnico** (`/error/{tipo}`) se mantienen como vistas globales transversales **sin ID de pantalla** (en el esquema anterior ocupaban el ID P-20).
+* **Modales de confirmación y avisos** (éxito, error, confirmación de acciones sensibles) se mantienen como **componentes globales sin ID de pantalla** (en el esquema anterior ocupaban el ID P-21).
+* Ambos se construyen en la HU-01 y se reutilizan en todas las pantallas P- e I-.
+
+### Pantallas con alcance POR CONFIRMAR (pendientes del §8 de `Pantallas_y_Datos_Migracion.md`)
+
+| ID | Pantalla | Pendiente del §8 |
+| --- | --- | --- |
+| P-15 | Paso 7 — Pagos y tasas | Pagos en línea: captura simulada, sin pasarela real; definir si el SNM habilita pago electrónico o la validación sigue siendo por cheque certificado capturado (§8.3). |
+| P-18 | Reserva de cita | Cobertura de ventanilla: confirmar qué trámites quedan 100 % en línea y cuáles requieren cita presencial (fotos, huella, firma de entrevista, retiro con identificación) (§8.4). |
+| P-24 | Edictos y citaciones | Alcance, plazos y canal de publicación por confirmar con las fuentes oficiales (§8). |
+| P-25 | Certificaciones en línea | Campos y disponibilidad de estatus y movimiento migratorio por confirmar con las fuentes oficiales (§8). |
+
+> Estas cuatro pantallas se construyen y navegan en el Sprint 1, pero sus reglas de negocio quedan marcadas como **POR CONFIRMAR** hasta que el PO cierre los pendientes del §8; cualquier cambio se registra en el *Registro de cambios del backlog* (§5.1).
+
+### Pendientes del PO sobre el inventario (PEN-01…PEN-12)
+
+Inconsistencias detectadas al elaborar el plan de ejecución del Frontend (`Frontend/plan-de-ejecucion-frontend.md`, Anexo A). El PO debe resolverlas; mientras estén **ABIERTAS**, el Frontend aplica el tratamiento indicado en el plan (marcar como POR DEFINIR/PO en lugar de inventar):
+
+| ID | Hallazgo | Dónde | Decisión requerida | Estado |
 | --- | --- | --- | --- | --- |
-| P-01 | Inicio de sesión | `/login` | Todos | Autenticación |
-| P-02 | Recuperación de contraseña | `/recuperar-contrasena` | Todos | Autenticación |
-| P-03 | Perfil y cambio de contraseña | `/perfil` | Todos | Autenticación |
-| P-04 | Listado de mis expedientes | `/solicitante/expedientes` | Solicitante | Expedientes |
-| P-05 | Crear expediente (asistente de pasos) | `/solicitante/expedientes/nuevo` | Solicitante | Expedientes |
-| P-06 | Detalle del expediente (estado, fechas, historial) | `/solicitante/expedientes/{id}` | Solicitante | Expedientes |
-| P-07 | Documentos del expediente (carga y consulta) | `/solicitante/expedientes/{id}/documentos` | Solicitante | Documentos |
-| P-08 | Notificaciones del solicitante | `/solicitante/notificaciones` | Solicitante | Notificaciones |
-| P-09 | Bandeja de trabajo del funcionario | `/funcionario/bandeja` | Funcionario | Revisión |
-| P-10 | Revisión del expediente (detalle ampliado) | `/funcionario/expedientes/{id}` | Funcionario | Revisión |
-| P-11 | Cambio de estado con validaciones | `/funcionario/expedientes/{id}/estado` | Funcionario | Estados |
-| P-12 | Registro de observaciones | `/funcionario/expedientes/{id}/observaciones` | Funcionario | Revisión |
-| P-13 | Panel de validaciones institucionales | `/funcionario/expedientes/{id}/validaciones` | Funcionario | Interoperabilidad |
-| P-14 | Reportes y métricas del supervisor | `/supervisor/reportes` | Supervisor | Reportes |
-| P-15 | Consulta de auditoría | `/auditor/auditoria` | Auditor | Auditoría |
-| P-16 | Gestión de usuarios | `/admin/usuarios` | Administrador | Administración |
-| P-17 | Gestión de roles y permisos | `/admin/roles` | Administrador | Administración |
-| P-18 | Catálogos (tipos de trámite, documentos, estados) | `/admin/catalogos` | Administrador | Administración |
-| P-19 | Monitoreo técnico y errores de integración | `/admin/monitoreo` | Administrador | Monitoreo |
-| P-20 | Pantallas de error (403, 404, 500, error técnico) | `/error/{tipo}` | Todos | Transversal |
-| P-21 | Pantalla de confirmación y avisos modales | componentes globales | Todos | Transversal |
+| PEN-01 | La cadena visible en P-19 omite `ARCHIVADO`, que sí aparece en la cadena general §7.2 e I-08/I-13 | P-19 vs §7.2 | ¿`ARCHIVADO` es visible para el cliente? | ABIERTO |
+| PEN-02 | §7.1 asocia la ficha CSS (90 días/9 cuotas) a P-25, pero P-25 no pide esa ficha | §7.1 vs P-25 | Corregir la asociación (la regla aplica en P-12/P-13/N-6) | ABIERTO |
+| PEN-03 | P-14 exige completitud 100 % para habilitar P-16; P-15 (pagos) queda intermedio sin regla clara | P-14/P-15, HU-03 CA-4 | ¿El pago requiere completitud previa? | ABIERTO |
+| PEN-04 | El backlog etiquetaba POR CONFIRMAR solo P-24/P-25; el §8 cuestiona también P-15 y P-18 | HU-04 CA-7 vs §8 | Confirmar las 4 pantallas POR CONFIRMAR (ya reflejadas arriba) | PENDIENTE DEL PO |
+| PEN-05 | El entregable del Sprint 1 dice "portal completo P-01…P-27" pero la nota de capacidad permite recortar P-26/P-27 | Rama-01 (Sprint 1) | Confirmar el recorte como excepción registrable | ABIERTO |
+| PEN-06 | I-13: la matriz de accesos da al notificador solo lectura, pero la fuente define acciones de archivo/reactivación sin dueño | `06-roles` §6.4 vs I-13 | Asignar rol dueño de la acción | ABIERTO |
+| PEN-07 | ¿SUPERVISOR es rol separado o atribución de FUNCIONARIO con reportes? | `06-roles` §6.13 | Confirmar (se usa como rol técnico separado) | ABIERTO |
+| PEN-08 | ¿El OTP de P-03 es solo verificación de identidad o también factor de autenticación obligatorio? | `06-roles` §6.13 | Confirmar alcance del OTP | ABIERTO |
+| PEN-09 | Campos de origen `S` (RUEX, expedientes previos): no existen sistemas del SNM en el producto del bufete | §1.3 vs `06-roles` §6.9 | Confirmar que se tratan como derivados sellados con registro manual en I-07 | ABIERTO |
+| PEN-10 | Sin datos oficiales de tiempos por etapa (línea base 3–8 meses) | §8.1 | Fijar meta de reducción medida en el despacho | ABIERTO |
+| PEN-11 | Catálogos no enumerados en las fuentes: sedes, tipos de consulta, motivos de negación, tipos documentales, división política, países | Varios | Definir valores oficiales (hoy van en fixtures de ejemplo) | ABIERTO |
+| PEN-12 | El documento fuente usa vocabulario de administración pública (ciudadano/SNM) y el producto es de bufetes | Inventario completo | Vocabulario ya traducido en los documentos del producto; validar que no se alteren campos ni numeración | EN CURSO |
+
+*Fuente: `Frontend/plan-de-ejecucion-frontend.md` (Anexo A). El cierre de cada punto se registra en el *Registro de cambios del backlog* (§5.1). El PO gestiona estos pendientes en `Rama-04-Producto-Documentacion.md`.*
 
 ---
 
-## 5.6. APIs ficticias requeridas (alcance del Sprint 1)
+## 5.6. Fuentes de verificación simuladas requeridas (mocks, alcance del Sprint 1)
 
-El backend expondrá un conjunto de endpoints simulados bajo el prefijo `/api/mock/`, con datos ficticios, que reemplazan a las instituciones durante todo el prototipo:
+El backend expondrá un conjunto de endpoints simulados bajo el prefijo `/api/mock/`, con datos ficticios, que **representan fuentes de verificación externas** durante todo el MVP. Son el mecanismo de demostración y de conexión del frontend: el **modo de producción es la verificación manual asistida** (el abogado o analista registra el resultado con fuente, fecha y responsable), y estos mocks representan las **futuras integraciones automatizadas**, que solo existirán cuando haya convenio (ver HU-06 y HU-08):
 
-| Institución simulada | Endpoint propuesto | Consulta que representa |
+| Fuente simulada (mock) | Endpoint propuesto | Consulta que representa |
 | --- | --- | --- |
 | Tribunal Electoral (TE) | `GET /api/mock/te/personas/{tipoDoc}/{numero}` | Verificación de identidad / Registro Civil |
 | Caja de Seguro Social (CSS) | `GET /api/mock/css/afiliaciones/{idPersona}` | Condición de afiliado / asegurado |
@@ -176,10 +257,10 @@ El backend expondrá un conjunto de endpoints simulados bajo el prefijo `/api/mo
 
 ---
 
-# Sprint 1 — Frontend completo, viabilidad de APIs y APIs ficticias
+# Sprint 1 — Frontend del portal (P-01…P-27), marco legal de verificación y fuentes simuladas
 
 **Semanas:** 1–2
-**Objetivo:** disponer de todas las pantallas funcionales del prototipo navegables y con diseño terminado, y de un backend con los contratos de API definidos, las APIs institucionales ficticias operativas y un estudio documentado sobre la viabilidad de usar APIs reales.
+**Objetivo:** disponer del **portal completo (P-01…P-27)** navegable y con diseño terminado, iniciar el módulo interno (I-01…I-18) o dejarlo listo para el arranque del Sprint 2, y contar con un backend con los contratos de API definidos, las fuentes de verificación simuladas operativas y el **marco legal y la matriz de fuentes de verificación** documentados.
 **Épicas:** EP-10, EP-01, EP-06.
 
 ### Resumen del sprint
@@ -187,16 +268,16 @@ El backend expondrá un conjunto de endpoints simulados bajo el prefijo `/api/mo
 | HU | Título | Prioridad | PH | Responsable |
 | --- | --- | --- | --- | --- |
 | HU-01 | Andamiaje del frontend y diseño base | Crítica | 5 | FE |
-| HU-02 | Pantallas de autenticación y perfil | Crítica | 3 | FE |
-| HU-03 | Pantallas del módulo de solicitante | Crítica | 8 | FE |
-| HU-04 | Pantallas del módulo de funcionario | Crítica | 8 | FE |
-| HU-05 | Pantallas de supervisor, auditoría y administración | Alta | 5 | FE |
-| HU-06 | Estudio de viabilidad de APIs institucionales reales | Crítica | 5 | LT, PO |
-| HU-07 | Contratos de API (OpenAPI) del prototipo | Crítica | 3 | LT, BE |
-| HU-08 | APIs ficticias (mocks) de las instituciones | Crítica | 8 | BE |
+| HU-02 | Pantallas de acceso y cuenta (P-01…P-05) | Crítica | 3 | FE |
+| HU-03 | Módulo de solicitante (P-06…P-18) | Crítica | 8 | FE |
+| HU-04 | Seguimiento del solicitante (P-19…P-27) | Crítica | 8 | FE |
+| HU-05 | Módulo interno del despacho (I-01…I-18) | Alta | 5 | FE |
+| HU-06 | Estudio del marco legal y fuentes de verificación | Crítica | 5 | LT, PO |
+| HU-07 | Contratos de API (OpenAPI) del producto | Crítica | 3 | LT, BE |
+| HU-08 | Fuentes de verificación simuladas (modo manual asistido) | Crítica | 8 | BE |
 | HU-09 | Integración del frontend con los mocks y estados de interfaz | Crítica | 5 | FE, BE |
 
-**PH total del sprint: 50** · **Nota de capacidad:** es un sprint exigente; si la capacidad real es menor, la HU-05 puede desplazarse al inicio del Sprint 2 sin afectar la ruta crítica.
+**PH total del sprint: 50** · **Nota de capacidad:** es un sprint exigente; si la capacidad real es menor, la HU-05 (módulo interno I-01…I-18) se ejecuta al inicio del Sprint 2 (fase E/F) y el PO registra el desplazamiento en el *Registro de cambios del backlog* (§5.1), sin afectar la ruta crítica.
 
 ### HU-01 — Andamiaje del frontend y diseño base
 
@@ -208,47 +289,50 @@ El backend expondrá un conjunto de endpoints simulados bajo el prefijo `/api/mo
 
 1. Existe una estructura de carpetas del frontend documentada en el repositorio (vistas, componentes, servicios, estilos, utilidades).
 2. El layout incluye encabezado, menú de navegación según rol, área de contenido y pie, y se adapta a escritorio y tablet.
-3. La navegación entre las 21 pantallas del inventario funciona sin recargas completas y respeta el rol activo (un rol no ve enlaces de otros roles).
-4. Existe una biblioteca mínima de componentes: botones, campos de formulario, tablas, tarjetas de estado, modales, avisos (éxito/error/carga) y paginación.
-5. La paleta de colores, tipografía y espaciados están definidos en un único archivo de variables y documentados en `README` del frontend.
-6. El frontend se ejecuta con un comando único documentado y no contiene credenciales ni secretos.
+3. La navegación entre las **45 pantallas del inventario oficial** (portal P-01…P-27 e interno I-01…I-18, §5.5) funciona sin recargas completas, usa enrutado con hash y respeta el rol activo (un rol no ve enlaces de otros roles).
+4. Están implementadas las vistas globales: el login (P-01) y las cuatro vistas de error (403, 404, 500 y error técnico), junto con los modales de confirmación y avisos, estos últimos como componentes globales sin ID de pantalla (§5.5), reutilizables desde cualquier pantalla.
+5. Existe una biblioteca mínima de componentes: botones, campos de formulario, tablas, tarjetas de estado, modales, avisos (éxito/error/carga) y paginación.
+6. La paleta de colores, tipografía y espaciados están definidos en un único archivo de variables y documentados en `README` del frontend.
+7. El frontend se ejecuta con un comando único documentado y no contiene credenciales ni secretos.
 
 **Tareas:**
 
 | TASK | Descripción | Responsable | Estimación |
 | --- | --- | --- | --- |
-| TASK-01.1 | Crear la estructura de carpetas del frontend y el archivo de variables de diseño (colores, tipografía, espaciados). | FE | 3 h |
+| TASK-01.1 | Crear la estructura de carpetas del frontend (alineada al inventario P-01…P-27 e I-01…I-18) y el archivo de variables de diseño (colores, tipografía, espaciados). | FE | 3 h |
 | TASK-01.2 | Implementar el layout base: encabezado, menú lateral/top por rol, área de contenido y pie. | FE | 5 h |
-| TASK-01.3 | Implementar el enrutado y la protección de rutas por rol (redirect a `/login` o `/error/403`). | FE | 4 h |
-| TASK-01.4 | Desarrollar la biblioteca de componentes reutilizables (botones, inputs, tablas, modales, avisos, paginación). | FE | 8 h |
-| TASK-01.5 | Documentar el diseño base y las convenciones en el `README` del frontend. | DOC, FE | 2 h |
+| TASK-01.3 | Implementar el enrutado con hash y la protección de rutas por rol (redirect a P-01 o a la vista de error 403), incluyendo las vistas globales: login (P-01) y errores (403, 404, 500 y error técnico). | FE | 4 h |
+| TASK-01.4 | Desarrollar la biblioteca de componentes reutilizables (botones, inputs, tablas, modales de confirmación, avisos, paginación). | FE | 8 h |
+| TASK-01.5 | Documentar el diseño base, las convenciones y la correspondencia rutas ↔ IDs del inventario en el `README` del frontend. | DOC, FE | 2 h |
 
 **Pruebas asociadas:** navegación básica y bloqueo de rutas por rol (caso base previo a CP-01/CP-03).
 
 ---
 
-### HU-02 — Pantallas de autenticación y perfil
+### HU-02 — Pantallas de acceso y cuenta (P-01…P-05)
 
 **Prioridad:** Crítica · **3 PH** · **Responsable:** FE · **Estado:** Por hacer
 
-**Como** usuario, **quiero** iniciar sesión, recuperar mi contraseña y gestionar mi perfil **para** acceder al sistema de forma segura.
+**Como** usuario, **quiero** registrarme, verificar mi identidad, iniciar sesión, recuperar mi contraseña y gestionar mi perfil **para** acceder al portal de forma segura.
 
 **Criterios de aceptación:**
 
-1. La pantalla P-01 valida campos obligatorios, formato de correo y muestra/oculta la contraseña.
+1. La pantalla P-01 (inicio de sesión) valida campos obligatorios, formato de correo y muestra/oculta la contraseña.
 2. El intento fallido muestra un mensaje genérico que no revela si el usuario existe (compatible con CP-02).
 3. Existe bloqueo visual tras intentos repetidos, con contador y mensaje claro.
-4. La pantalla P-02 solicita correo y muestra confirmación neutra sin revelar existencia de cuentas.
-5. La pantalla P-03 permite cambiar la contraseña con verificación de la actual y política de complejidad.
-6. Tras iniciar sesión, el menú y la ruta inicial cambian según el rol (solicitante, funcionario, supervisor, auditor, administrador).
-7. Cerrar sesión limpia el estado local y redirige a `/login`.
+4. La pantalla P-02 (registro de cuenta) solicita los datos obligatorios, incluye la autorización de tratamiento de datos (Ley 81) y envía código de verificación.
+5. La pantalla P-03 (verificación de identidad) consume un **OTP simulado** (código de 6 dígitos con expiración y número de intentos) sin depender de un proveedor externo.
+6. La pantalla P-04 (recuperación de contraseña) solicita correo y muestra confirmación neutra sin revelar existencia de cuentas.
+7. La pantalla P-05 (mi perfil) permite actualizar datos de contacto y cambiar la contraseña con verificación de la actual y política de complejidad.
+8. Tras iniciar sesión, el menú y la ruta inicial cambian según el rol (portal del cliente o módulo interno del despacho: recepción, analista, resolutor/director, notificador, administrador, auditoría).
+9. Cerrar sesión limpia el estado local y redirige a P-01 (`/login`).
 
 **Tareas:**
 
 | TASK | Descripción | Responsable | Estimación |
 | --- | --- | --- | --- |
 | TASK-02.1 | Construir la pantalla P-01 con validaciones de formulario en cliente. | FE | 4 h |
-| TASK-02.2 | Construir las pantallas P-02 y P-03 con sus estados de carga, éxito y error. | FE | 4 h |
+| TASK-02.2 | Construir las pantallas P-02 (registro), P-03 (OTP simulado), P-04 (recuperación de contraseña) y P-05 (mi perfil) con sus estados de carga, éxito y error. | FE | 4 h |
 | TASK-02.3 | Implementar el gestor de sesión en el cliente (almacenamiento del token, expiración, cierre de sesión). | FE | 4 h |
 | TASK-02.4 | Adaptar el layout y el menú al rol autenticado y a los cambios de rol. | FE | 3 h |
 
@@ -256,20 +340,20 @@ El backend expondrá un conjunto de endpoints simulados bajo el prefijo `/api/mo
 
 ---
 
-### HU-03 — Pantallas del módulo de solicitante
+### HU-03 — Módulo de solicitante (P-06…P-18)
 
 **Prioridad:** Crítica · **8 PH** · **Responsable:** FE · **Estado:** Por hacer
 
-**Como** solicitante, **quiero** crear, consultar y dar seguimiento a mis expedientes y documentos desde pantallas claras **para** evitar viajes repetidos y entregas duplicadas de documentación.
+**Como** solicitante, **quiero** iniciar, completar y enviar mis solicitudes y documentos desde pantallas claras **para** evitar viajes repetidos y entregas duplicadas de documentación.
 
 **Criterios de aceptación:**
 
-1. P-05 es un asistente de pasos (datos personales → tipo de trámite → documentos → revisión y confirmación) con validación de campos obligatorios en cada paso.
-2. P-04 muestra el listado de expedientes del usuario con filtros por estado y fecha, paginación y estados vacíos/carga/error.
-3. P-06 muestra identificador, tipo de trámite, estado actual con línea de tiempo de avance, fechas clave y responsable asignado.
-4. P-07 permite adjuntar documentos con selección de tipo documental, validación de formato y tamaño en cliente, barra de progreso y resultado del alta.
-5. P-07 muestra los documentos ya registrados con estado de revisión, y el botón de descarga está deshabilitado cuando el usuario no tiene permiso.
-6. P-08 lista notificaciones con fecha, tipo y estado de lectura, sin exponer datos confidenciales en el texto.
+1. P-07 permite seleccionar el tipo de trámite y P-08 registra la titularidad o la representación (poder notariado, parentesco o carácter jurídico), validando los campos obligatorios antes de entrar al asistente.
+2. El asistente P-09…P-16 (pasos 1–8) valida campos obligatorios en cada paso, permite avanzar y retroceder sin perder datos y muestra el progreso; P-14 (paso 6) centraliza la carga de requisitos y documentos.
+3. P-15 (paso 7, pagos y tasas) funciona con **captura simulada de pago y sin pasarela real**, y queda marcada como **POR CONFIRMAR** (§8 del documento de pantallas).
+4. P-17 resume y envía la solicitud generando el número de expediente, y P-18 permite reservar la cita presencial, también marcada como **POR CONFIRMAR** (§8 del documento de pantallas).
+5. P-06 (mis trámites) muestra el listado de solicitudes del usuario con filtros por estado y fecha, paginación y estados vacíos/carga/error.
+6. P-14 permite adjuntar documentos con selección de tipo documental, validación de formato y tamaño en cliente, barra de progreso y resultado del alta; muestra los documentos ya registrados con estado de revisión y deshabilita la descarga cuando el usuario no tiene permiso.
 7. Todas las pantallas del módulo funcionan con datos ficticios locales y tienen implementados los estados de error y de operación en curso.
 8. Los mensajes de error explican la causa en lenguaje no técnico y sugieren la acción siguiente.
 
@@ -277,108 +361,113 @@ El backend expondrá un conjunto de endpoints simulados bajo el prefijo `/api/mo
 
 | TASK | Descripción | Responsable | Estimación |
 | --- | --- | --- | --- |
-| TASK-03.1 | Construir P-05 (asistente de creación) con validaciones y revisión final. | FE | 8 h |
-| TASK-03.2 | Construir P-04 con filtros, paginación y estados vacío/carga/error. | FE | 5 h |
-| TASK-03.3 | Construir P-06 con línea de tiempo de estados y bloque de fechas. | FE | 6 h |
-| TASK-03.4 | Construir P-07 con carga de archivos, validación de tipo/tamaño y listado de documentos. | FE | 8 h |
-| TASK-03.5 | Construir P-08 de notificaciones con marcado de leídas. | FE | 3 h |
+| TASK-03.1 | Construir el asistente P-09…P-16 (pasos 1–8) y P-17 (resumen y envío) con validaciones por paso y revisión final. | FE | 8 h |
+| TASK-03.2 | Construir P-06 (mis trámites) con filtros, paginación y estados vacío/carga/error. | FE | 5 h |
+| TASK-03.3 | Construir P-07 (selección de trámite) y P-08 (titularidad y representación) como puerta de entrada al asistente. | FE | 6 h |
+| TASK-03.4 | Construir P-14 (paso 6: carga de documentos) con validación de tipo/tamaño y listado de documentos. | FE | 8 h |
+| TASK-03.5 | Construir P-15 (pagos, captura simulada) y P-18 (reserva de cita), ambas marcadas POR CONFIRMAR según el §8 del documento de pantallas. | FE | 3 h |
 | TASK-03.6 | Definir los datos ficticios de demostración del solicitante (fixtures) y su fuente única. | FE | 2 h |
 
 **Pruebas asociadas:** CP-03, CP-05, CP-12 (interfaz).
 
 ---
 
-### HU-04 — Pantallas del módulo de funcionario
+### HU-04 — Seguimiento del solicitante (P-19…P-27)
 
 **Prioridad:** Crítica · **8 PH** · **Responsable:** FE · **Estado:** Por hacer
 
-**Como** funcionario, **quiero** revisar expedientes, registrar observaciones, cambiar estados y consultar validaciones desde mi bandeja **para** tramitar solicitudes sin herramientas externas.
+**Como** solicitante, **quiero** consultar el estado de mis solicitudes, atender observaciones, recibir resultados y usar los servicios en línea **para** seguir mi trámite sin acudir a la ventanilla.
 
 **Criterios de aceptación:**
 
-1. P-09 (bandeja) muestra las colas de trabajo con filtros por estado, tipo de trámite, fecha y responsable, ordenación y paginación.
-2. P-10 reutiliza la vista de detalle del expediente con información ampliada: documentos, historial y bloque de acciones del funcionario.
-3. P-11 presenta solo las transiciones disponibles para el estado actual; las transiciones no permitidas no se muestran o aparecen deshabilitadas con explicación.
-4. P-11 exige motivo para transiciones a estados finales y muestra confirmación antes de enviar.
-5. P-12 permite registrar observaciones con texto obligatorio, y el listado muestra autor, fecha y respuesta del solicitante.
-6. P-13 muestra el panel de validaciones institucionales con su estado propio (pendiente, enviada, respondida, sin resultado, error técnico, reintento) y distingue visualmente el error técnico de un resultado negativo (compatible con CP-07).
-7. P-13 ofrece la acción "reintentar" solo cuando el estado lo permite, y avisa que la operación es idempotente (compatible con CP-08).
-8. Todas las pantallas del módulo tienen estados de carga, error y vacío implementados.
+1. P-19 muestra identificador, tipo de trámite, estado actual con línea de tiempo de avance, fechas clave y responsable asignado.
+2. P-20 lista observaciones y notificaciones con fecha, tipo y estado de lectura, sin exponer datos confidenciales en el texto, y permite responder.
+3. P-21 (subsanación) admite corregir documentos o datos observados dentro del plazo, con la misma validación de tipo/tamaño que P-14.
+4. P-22 muestra los resultados (resoluciones, carné digital y certificados) descargables, con la descarga deshabilitada cuando el usuario no tiene permiso.
+5. P-23 lista el historial de pagos con fecha, concepto, monto y estado.
+6. P-24 (edictos y citaciones) y P-25 (certificaciones en línea) están navegables pero marcadas como **POR CONFIRMAR** (§8 del documento de pantallas).
+7. P-26 (naturalización) presenta el flujo específico y P-27 (ayuda y FAQ) resuelve dudas y peticiones; ambas son navegables y coherentes con el diseño base.
+8. Todas las pantallas del módulo funcionan con datos ficticios locales, tienen implementados los estados de error y de operación en curso, y sus mensajes explican la causa en lenguaje no técnico.
 
 **Tareas:**
 
 | TASK | Descripción | Responsable | Estimación |
 | --- | --- | --- | --- |
-| TASK-04.1 | Construir P-09 con colas, filtros y ordenación. | FE | 6 h |
-| TASK-04.2 | Construir P-10 como vista ampliada reutilizando componentes de detalle. | FE | 5 h |
-| TASK-04.3 | Construir P-11 con transiciones dinámicas, motivo obligatorio y confirmación. | FE | 6 h |
-| TASK-04.4 | Construir P-12 de observaciones con hilo de comentarios. | FE | 5 h |
-| TASK-04.5 | Construir P-13 con estados de validación, reintento y semántica de error vs. resultado negativo. | FE | 6 h |
+| TASK-04.1 | Construir P-19 con línea de tiempo de estados, bloque de fechas y responsable. | FE | 6 h |
+| TASK-04.2 | Construir P-20 (observaciones y notificaciones) reutilizando el componente de detalle y con hilo de comentarios. | FE | 5 h |
+| TASK-04.3 | Construir P-21 (subsanación) y P-22 (resultados: resoluciones, carné digital y certificados). | FE | 6 h |
+| TASK-04.4 | Construir P-23 (historial de pagos) y P-24 (edictos y citaciones, POR CONFIRMAR). | FE | 5 h |
+| TASK-04.5 | Construir P-25 (certificaciones en línea, POR CONFIRMAR), P-26 (naturalización) y P-27 (ayuda y FAQ). | FE | 6 h |
 
 **Pruebas asociadas:** CP-04, CP-06, CP-07, CP-08, CP-09.
 
 ---
 
-### HU-05 — Pantallas de supervisor, auditoría y administración
+### HU-05 — Módulo interno del despacho (I-01…I-18)
 
 **Prioridad:** Alta · **5 PH** · **Responsable:** FE · **Estado:** Por hacer
 
-**Como** supervisor, auditor y administrador técnico, **quiero** contar con mis pantallas de reportes, consulta de auditoría y gestión de usuarios y catálogos **para** cumplir mis funciones sin acceso a expedientes que no me corresponden.
+**Como** personal del despacho (recepción, analista, resolutor/director, notificador, administrador y auditoría), **quiero** contar con las pantallas del módulo interno **para** recibir, analizar, resolver, notificar y auditar expedientes sin salir del sistema.
+
+**Nota de capacidad:** esta HU se ejecuta al inicio del Sprint 2 (fase E/F) si la capacidad del Sprint 1 no alcanza; el PO registra el desplazamiento en el *Registro de cambios del backlog* (§5.1).
 
 **Criterios de aceptación:**
 
-1. P-14 muestra indicadores del plan de acción (tiempo medio de procesamiento, expedientes por estado, tasa de documentos repetidos) con gráficos y periodo configurable.
-2. P-15 permite filtrar la auditoría por fecha, actor, operación y recurso, con paginación y exportación a CSV.
-3. P-16 permite listar, crear, deshabilitar usuarios y asignarles un rol, con confirmación de acciones sensibles.
-4. P-17 permite consultar roles y sus permisos en modo lectura (la edición puede quedar documentada como fuera de alcance).
-5. P-18 permite administrar catálogos: tipos de trámite, tipos documentales permitidos y estados.
-6. P-19 muestra errores técnicos de integración, intentos fallidos y métricas básicas, diferenciándolos de resultados de validación.
-7. Ninguna pantalla de este módulo muestra datos de expedientes a usuarios sin permiso (compatible con CP-03 y CP-09).
+1. I-01 exige credenciales institucionales y segundo factor (MFA simulado) para analistas, resolutores y administradores, y registra estación/IP.
+2. I-02 (tablero) muestra indicadores operativos y I-03 (bandeja de recepción) lista citas y turnos con filtros, estados de llegada y paginación.
+3. I-04 permite verificar completitud con checklist (identidad, pagos, sello, RUEX) y I-05 permite asignar analista con confirmación de la acción sensible.
+4. I-06 (análisis con checklist) e I-07 (panel de verificación interoperable) muestran cada verificación con su estado propio (pendiente, en atención manual o enviada, respondida, sin resultado, error técnico, reintento), distinguiendo visualmente el error técnico de un resultado negativo (compatible con CP-07).
+5. I-07 ofrece la acción "reintentar" solo cuando el estado lo permite, y avisa que la operación es idempotente (compatible con CP-08).
+6. I-08 (observaciones), I-09 (edictos), I-10 (resolución), I-11 (notificación), I-12 (entrega en ventanilla) e I-13 (archivados y reactivación) presentan solo las acciones autorizadas para el rol, exigen motivo en la resolución y piden confirmación antes de enviar.
+7. I-14 (catálogos), I-15 (usuarios, roles y permisos) e I-16 (bitácora de auditoría) están restringidos a sus roles; la bitácora permite filtrar por fecha, actor, operación y recurso, con paginación y exportación a CSV.
+8. I-17 (reportes y tiempos por etapa) e I-18 (salud de interoperabilidad) muestran indicadores, intentos fallidos y errores técnicos diferenciados de los resultados de verificación; ninguna pantalla del módulo muestra datos de expedientes a usuarios sin permiso (compatible con CP-03 y CP-09).
 
 **Tareas:**
 
 | TASK | Descripción | Responsable | Estimación |
 | --- | --- | --- | --- |
-| TASK-05.1 | Construir P-14 con tarjetas de indicadores y gráficos sencillos. | FE | 6 h |
-| TASK-05.2 | Construir P-15 con filtros avanzados y exportación CSV. | FE | 5 h |
-| TASK-05.3 | Construir P-16 y P-17 de gestión de usuarios y roles. | FE | 6 h |
-| TASK-05.4 | Construir P-18 de catálogos con alta/baja simple. | FE | 4 h |
-| TASK-05.5 | Construir P-19 de monitoreo técnico. | FE | 4 h |
+| TASK-05.1 | Construir I-01 (login institucional con MFA simulado) e I-02 (tablero) con indicadores. | FE | 6 h |
+| TASK-05.2 | Construir I-03 (bandeja de recepción), I-04 (recepción y completitud) e I-05 (asignación de analista). | FE | 5 h |
+| TASK-05.3 | Construir I-06 (análisis con checklist) e I-07 (panel de verificación interoperable) con estados de verificación y reintento. | FE | 6 h |
+| TASK-05.4 | Construir I-08 a I-13 (observaciones, edictos, resolución, notificación, entrega y archivados) con acciones por rol. | FE | 4 h |
+| TASK-05.5 | Construir I-14 a I-18 (catálogos, usuarios/roles/permisos, bitácora, reportes y salud de interoperabilidad). | FE | 4 h |
 
 **Pruebas asociadas:** CP-09, CP-12.
 
 ---
 
-### HU-06 — Estudio de viabilidad de APIs institucionales reales
+### HU-06 — Estudio del marco legal y fuentes de verificación
 
 **Prioridad:** Crítica · **5 PH** · **Responsable:** LT con PO · **Estado:** Por hacer
 
-**Como** líder técnico, **quiero** verificar si existen APIs o mecanismos de intercambio reales con cada institución **para** decidir con evidencia que el prototipo se construye sobre simuladores y documentar los requisitos de una futura integración.
+**Como** líder técnico del despacho, **quiero** determinar qué puede verificar la plataforma legalmente hoy y con qué base, **para** construir el producto sobre verificaciones trazables, consentimiento informado y minimización de datos (Ley 81 de 2019 y Decreto Ejecutivo 285 de 2021).
 
 **Criterios de aceptación:**
 
-1. Existe una **Matriz de viabilidad de integración** con una fila por institución (SNM, TE, CSS, Registro Público, AIG).
-2. La matriz registra para cada institución: canal de integración identificado (API REST, web service, archivo, convenio, desconocido), fuente de la información (portal oficial, publicación técnica, contacto), requisitos legales (Ley 81 de 2019, Decreto 285 de 2021, competencia institucional), dependencia (convenio/permiso), responsable y estado.
-3. Cada fila tiene un estado explícito: `VIABLE`, `PENDIENTE DE PERMISO`, `SIN INTERFAZ PUBLICADA` o `NO APLICABLE`.
-4. Se documenta la conclusión operativa: qué mocks se requieren y qué contrato mínimo deben cumplir para reflear la realidad futura.
-5. El estudio no asume ni declara acceso real a datos gubernamentales; toda integración real queda marcada como pendiente de autorización.
-6. El resultado se revisa con el PO y se enlaza desde la documentación del proyecto.
+1. Existe una **Matriz de fuentes de verificación** con una fila por fuente (Tribunal Electoral/Registro Civil, Registro Público, CSS, SNM, documentos aportados por el cliente) y con las columnas obligatorias: **fuente → tipo (`PÚBLICA` / `AUTORIZADA` por el titular) → qué se guarda (solo resultado: fuente, fecha, resultado, responsable) → base legal**.
+2. Queda mapeado qué puede verificar el despacho **legalmente hoy**: fuentes públicas (cédula del TE, Registro Público) y documentos aportados por el cliente u obtenidos por el despacho con consentimiento o autorización del titular.
+3. Queda confirmado y documentado que **no hay convenios ni APIs disponibles**, y se deja trazado el camino futuro de automatización (convenio con la institución, p. ej. vía AIG) sin rehacer el sistema.
+4. Está definido el **modelo de consentimiento informado** y de tratamiento de datos sensibles (consentimiento expreso), con validación jurídica, e incluye finalidad, alcance, vigencia y revocación (ver HU-18b).
+5. La matriz registra para cada fuente: canal de consulta (fuente pública, documento autorizado, futuro convenio), responsable, requisitos legales (Ley 81 de 2019, Decreto 285 de 2021, competencia institucional), dependencia (`NINGUNA`, `AUTORIZACIÓN DEL TITULAR`, `CONVENIO PENDIENTE`) y estado (`VERIFICABLE HOY`, `REQUIERE AUTORIZACIÓN`, `PENDIENTE DE CONVENIO`, `NO APLICABLE`).
+6. Se documenta la conclusión operativa: qué mocks se requieren, qué contrato mínimo deben cumplir para reflejar la verificación futura y que el modo de producción es la **verificación manual asistida**.
+7. El estudio no asume ni declara acceso automático a datos institucionales; toda integración automatizada futura queda marcada como pendiente de convenio.
+8. El resultado se revisa con el PO (y con asesoría jurídica del despacho) y se enlaza desde la documentación del proyecto.
 
 **Tareas:**
 
 | TASK | Descripción | Responsable | Estimación |
 | --- | --- | --- | --- |
-| TASK-06.1 | Definir la plantilla de la matriz de viabilidad y sus columnas obligatorias. | LT | 2 h |
-| TASK-06.2 | Investigar canales públicos de SNM, TE, CSS, Registro Público y AIG (portales, documentación técnica, marcos de interoperabilidad). | LT | 8 h |
-| TASK-06.3 | Registrar restricciones legales y de gobernanza por institución (finalidad, base legal, minimización). | LT, PO | 4 h |
-| TASK-06.4 | Derivar de la matriz los contratos y escenarios que deben cubrir los mocks. | LT, BE | 3 h |
-| TASK-06.5 | Socializar resultados con el PO y publicar la matriz en la documentación. | LT, DOC | 2 h |
+| TASK-06.1 | Definir la plantilla de la matriz de fuentes de verificación y sus columnas obligatorias (fuente, tipo, qué se guarda, base legal). | LT | 2 h |
+| TASK-06.2 | Mapear qué puede verificar el despacho hoy: fuentes públicas (cédula TE, Registro Público, consultas SNM) y documentos aportados u obtenidos con consentimiento o autorización del titular. | LT | 8 h |
+| TASK-06.3 | Confirmar la inexistencia de convenios o APIs disponibles, documentar el camino futuro (AIG) y registrar las restricciones legales por fuente (finalidad, base legal, minimización). | LT, PO | 4 h |
+| TASK-06.4 | Definir el modelo de consentimiento informado y de tratamiento de datos sensibles con validación jurídica, y derivar de la matriz los contratos y escenarios de las fuentes simuladas. | LT, BE | 3 h |
+| TASK-06.5 | Socializar resultados con el PO y publicar el marco legal y la matriz en la documentación. | LT, DOC | 2 h |
 
-**Entregable:** `docs/matriz-viabilidad-integracion.md`.
+**Entregable:** `07-marco-legal-y-matriz-fuentes-verificacion.md` (marco legal y matriz de fuentes de verificación, en `Documentacion/`).
 
 ---
 
-### HU-07 — Contratos de API (OpenAPI) del prototipo
+### HU-07 — Contratos de API (OpenAPI) del producto
 
 **Prioridad:** Crítica · **3 PH** · **Responsable:** LT con BE · **Estado:** Por hacer
 
@@ -386,10 +475,10 @@ El backend expondrá un conjunto de endpoints simulados bajo el prefijo `/api/mo
 
 **Criterios de aceptación:**
 
-1. Existe un archivo `openapi.yaml` con al menos: autenticación, expedientes, documentos, estados, validaciones, auditoría y los mocks institucionales.
+1. Existe un archivo `openapi.yaml` con al menos: autenticación, expedientes, documentos, estados, verificaciones, consentimiento, auditoría y las fuentes de verificación simuladas (mocks).
 2. Cada operación documenta método, ruta, parámetros, cuerpo, respuestas (2xx, 4xx, 5xx) y control de autorización asociado.
 3. Los nombres, códigos de estado y errores coinciden con las reglas del Documento 3 (400, 401, 403, 404, 409, 5xx).
-4. El contrato incluye los headers de escenario (`X-Scenario`) de los mocks.
+4. El contrato incluye los headers de escenario (`X-Scenario`) de las fuentes simuladas.
 5. El archivo valida sin errores con un linter de OpenAPI y se versiona en Git.
 6. Se acuerda el procedimiento de cambios: toda modificación se registra en el changelog del contrato antes de implementarse.
 
@@ -399,28 +488,31 @@ El backend expondrá un conjunto de endpoints simulados bajo el prefijo `/api/mo
 | --- | --- | --- | --- |
 | TASK-07.1 | Definir esquemas de datos compartidos (Expediente, Documento, Validación, Evento de auditoría, Error). | LT | 4 h |
 | TASK-07.2 | Escribir las operaciones de autenticación, expedientes y documentos. | BE | 4 h |
-| TASK-07.3 | Escribir las operaciones de estados, validaciones, auditoría y mocks. | BE | 4 h |
+| TASK-07.3 | Escribir las operaciones de estados, verificaciones, consentimiento, auditoría y mocks. | BE | 4 h |
 | TASK-07.4 | Validar el archivo con linter, corregir y versionar. | BE | 2 h |
 
 **Entregable:** `docs/openapi.yaml` + registro de cambios.
 
 ---
 
-### HU-08 — APIs ficticias (mocks) de las instituciones
+### HU-08 — Fuentes de verificación simuladas (modo manual asistido)
 
 **Prioridad:** Crítica · **8 PH** · **Responsable:** BE · **Estado:** Por hacer
 
-**Como** equipo de desarrollo, **quiero** exponer APIs ficticias de TE, CSS, Registro Público y SNM **para** construir y probar el flujo completo sin depender de integraciones reales.
+**Como** equipo de desarrollo, **quiero** exponer fuentes de verificación simuladas de TE, CSS, Registro Público y SNM (mocks) **para** construir y probar el flujo completo y para que el frontend conecte, sin depender de integraciones reales.
+
+**Nota de alcance (RC-02):** el **modo de producción es la verificación manual asistida**: el abogado o analista del despacho registra el resultado de la verificación con **fuente, fecha y responsable**. Los mocks de esta historia existen (a) para demostrar el flujo extremo a extremo y (b) para representar las **futuras integraciones automatizadas con las instituciones**, que solo se activarán cuando exista convenio; hasta entonces no hay transferencia automática de datos.
 
 **Criterios de aceptación:**
 
-1. Están implementados y responden los cuatro endpoints de la sección 5.6 con datos ficticios coherentes y sin datos personales reales.
+1. Están implementados y responden los cuatro endpoints de la sección 5.6 (`/api/mock/*`) con datos ficticios coherentes y sin datos personales reales.
 2. Cada mock soporta el header `X-Scenario` con, como mínimo, `OK`, `SIN_RESULTADO`, `ERROR_TECNICO`, `TIMEOUT`, `RATE_LIMIT` y `DATOS_INCOMPLETOS`.
 3. Las respuestas cumplen el contrato `openapi.yaml` (validado por pruebas de contrato).
 4. Los mocks incluyen latencia simulada configurable para poder probar tiempos de espera.
 5. Existe un conjunto de datos ficticios maestro (personas, afiliaciones, registros) con identificadores usados por las pantallas de demostración.
-6. Los mocks son reemplazables: la capa de integración del prototipo apunta a una interfaz, no a los mocks directamente (requisito de sustitución por una integración autorizada).
+6. Los mocks son reemplazables: la capa de integración del producto apunta a una interfaz, no a los mocks directamente (requisito de sustitución por una futura integración autorizada y convenida).
 7. El endpoint de SNM simulado devuelve coherencia con los expedientes creados en la plataforma (o explica su desfase en la respuesta).
+8. Queda documentado y probado que el registro manual asistido del resultado (fuente, fecha, responsable) produce la misma entidad de verificación que el modo simulado, de modo que la interfaz no cambia al alternar de modo.
 
 **Tareas:**
 
@@ -432,7 +524,7 @@ El backend expondrá un conjunto de endpoints simulados bajo el prefijo `/api/mo
 | TASK-08.4 | Implementar el mock del Registro Público con sus escenarios. | BE | 5 h |
 | TASK-08.5 | Implementar el mock del SNM y la lógica de escenarios y latencia simulada. | BE | 5 h |
 | TASK-08.6 | Escribir pruebas de contrato de cada mock contra `openapi.yaml`. | BE, QA | 5 h |
-| TASK-08.7 | Documentar el uso de los mocks y de `X-Scenario` para el equipo. | DOC | 2 h |
+| TASK-08.7 | Documentar el uso de los mocks y de `X-Scenario` para el equipo, dejando explícito que el modo de producción es la verificación manual asistida y que los mocks representan futuras integraciones sujetas a convenio. | DOC | 2 h |
 
 **Pruebas asociadas:** CP-06, CP-07.
 
@@ -448,10 +540,11 @@ El backend expondrá un conjunto de endpoints simulados bajo el prefijo `/api/mo
 
 1. Existe un único módulo de servicios HTTP en el frontend (llamadas centralizadas, manejo de token, manejo de errores).
 2. Cada pantalla implementa y muestra los cuatro estados: carga, éxito, vacío y error con reintento.
-3. P-13 (validaciones) puede mostrar los escenarios `OK`, `SIN_RESULTADO`, `ERROR_TECNICO` y `TIMEOUT` usando los mocks, manteniendo la distinción visual entre error técnico y resultado negativo.
+3. I-07 (panel de verificación interoperable) y el bloque de estado de P-19 pueden mostrar los escenarios `OK`, `SIN_RESULTADO`, `ERROR_TECNICO` y `TIMEOUT` usando los mocks, manteniendo la distinción visual entre error técnico y resultado negativo.
 4. Los errores HTTP se traducen a mensajes de usuario según el código (401, 403, 404, 409, 5xx) sin filtrar detalles técnicos.
-5. El flujo completo navegable con mocks funciona: login → crear expediente → adjuntar documentos → ver detalle → ver validaciones simuladas.
+5. El flujo completo navegable con mocks funciona: P-01 (login) → P-07…P-17 (crear solicitud) → P-14 (adjuntar documentos) → P-19 (ver estado) → I-07 (ver verificaciones simuladas).
 6. No hay llamadas a endpoints inexistentes ni errores de consola en el recorrido principal.
+7. Los fixtures locales comparten el mismo esquema JSON que los mocks del HU-08, de modo que conectar es cambiar la fuente de datos sin reescribir pantallas.
 
 **Tareas:**
 
@@ -459,7 +552,7 @@ El backend expondrá un conjunto de endpoints simulados bajo el prefijo `/api/mo
 | --- | --- | --- | --- |
 | TASK-09.1 | Implementar el módulo de servicios HTTP con manejo centralizado de errores y token. | FE | 5 h |
 | TASK-09.2 | Sustituir los fixtures locales por llamadas a los mocks en las pantallas del solicitante. | FE | 6 h |
-| TASK-09.3 | Sustituir los fixtures locales por llamadas a los mocks en las pantallas del funcionario. | FE | 6 h |
+| TASK-09.3 | Sustituir los fixtures locales por llamadas a los mocks en las pantallas del módulo interno (I-01…I-18). | FE | 6 h |
 | TASK-09.4 | Implementar el selector de escenarios en la UI de demostración para forzar errores de los mocks. | FE | 3 h |
 | TASK-09.5 | Recorrer el flujo completo y corregir incidencias (errores de consola, estados faltantes). | FE, QA | 4 h |
 
@@ -467,34 +560,35 @@ El backend expondrá un conjunto de endpoints simulados bajo el prefijo `/api/mo
 
 ### Entregables del Sprint 1
 
-* Frontend con las 21 pantallas navegables y diseño base documentado.
-* `openapi.yaml` con los contratos del prototipo.
-* APIs ficticias de TE, CSS, Registro Público y SNM operativas con escenarios de error.
-* Matriz de viabilidad de integración institucional.
+* Frontend con el portal del cliente (P-01…P-27) navegable y diseño base documentado.
+* Módulo interno del despacho (I-01…I-18) navegable, terminado al inicio del Sprint 2 si la capacidad del Sprint 1 no alcanza (ver registro de cambios, §5.1).
+* `openapi.yaml` con los contratos del producto.
+* Fuentes de verificación simuladas (mocks) de TE, CSS, Registro Público y SNM operativas con escenarios de error.
+* **Marco legal y matriz de fuentes de verificación** (fuente → tipo → qué se guarda → base legal).
 * Flujo navegable de extremo a extremo con datos ficticios.
 
 ### DoD del Sprint 1
 
-* Todas las pantallas del inventario existen y son navegables por rol.
+* Las 45 pantallas del inventario (P-01…P-27 e I-01…I-18) existen y son navegables por rol, con las cuatro vistas de error y los modales globales reutilizables (el módulo interno puede cerrarse al inicio del Sprint 2, según el registro de cambios).
 * El contrato OpenAPI valida sin errores y está versionado.
 * Los mocks responden según contrato, con al menos seis escenarios cada uno.
-* La matriz de viabilidad está revisada por el PO.
+* El marco legal y la matriz de fuentes de verificación están revisados por el PO.
 * No hay credenciales ni datos reales en el repositorio.
 
 ### Riesgos y bloqueos del Sprint 1
 
 | Riesgo | Señal de alerta | Acción |
 | --- | --- | --- |
-| Alcance de frontend demasiado amplio | Pantallas incompletas al final de la semana 1 | Priorizar P-01…P-13; postergar P-14…P-19 al Sprint 2 |
+| Alcance de frontend demasiado amplio | Pantallas incompletas al final de la semana 1 | Priorizar el portal P-01…P-27; desplazar el módulo interno I-01…I-18 al inicio del Sprint 2 y registrarlo en el §5.1 |
 | Contrato de API inestable | Cambios diarios en `openapi.yaml` | Congelar contrato al final de la semana 1; cambios vía registro |
-| Investigación institucional sin fuentes | Filas de la matriz sin evidencia | Marcar `SIN INTERFAZ PUBLICADA` y continuar con mocks |
+| Mapeo de fuentes sin evidencia | Filas de la matriz sin base legal identificada | Marcar `PENDIENTE DE CONVENIO` y continuar con verificación manual asistida y fuentes simuladas |
 
 ---
 
 # Sprint 2 — Base del backend: entorno, modelo de datos y autenticación
 
 **Semanas:** 3–4
-**Objetivo:** construir el entorno reproducible, el modelo de datos persistente y la autenticación/autorización reales, sustituyendo el login simulado del Sprint 1.
+**Objetivo:** construir el entorno reproducible, el modelo de datos persistente y la autenticación/autorización reales, sustituyendo el login simulado del Sprint 1. **Nota:** si la HU-05 (módulo interno I-01…I-18) se desplazó del Sprint 1, se completa al inicio de este sprint (fase E/F) antes que las HU-10…HU-14, quedando registrada en el *Registro de cambios del backlog* (§5.1).
 **Épicas:** EP-02, EP-03.
 
 ### Resumen del sprint
@@ -547,12 +641,12 @@ El backend expondrá un conjunto de endpoints simulados bajo el prefijo `/api/mo
 
 **Criterios de aceptación:**
 
-1. Están implementadas las entidades del Documento 3.4: Usuario, Rol, Expediente, Documento, Validación, Resultado de validación, Historial de estados, Evento de auditoría, Notificación.
+1. Están implementadas las entidades del Documento 3.4: Usuario, Rol, Expediente, Documento, Verificación y resultado de verificación, Consentimiento informado, Solicitud ARCO, Historial de estados, Evento de auditoría, Notificación.
 2. Las relaciones usan claves primarias y foráneas con restricciones de integridad (no nulos, unicidad, eliminación restringida donde aplique).
 3. Los repositorios o mappers están separados de los servicios de negocio.
 4. Existen datos semilla (seed) para roles, tipos de trámite, tipos documentales y usuarios de demostración por rol.
 5. Las consultas de listado por titularidad y estado están probadas con índices adecuados.
-6. Ningún dato personal de las instituciones ficticias se almacena cuando basta con la referencia de consulta (regla de minimización del Documento 3.4).
+6. Ningún dato personal devuelto por una fuente de verificación se almacena cuando basta con el resultado mínimo (fuente, fecha, resultado, responsable); no se conservan copias institucionales (regla de minimización del Documento 3.4, ver HU-25).
 
 **Tareas:**
 
@@ -560,7 +654,7 @@ El backend expondrá un conjunto de endpoints simulados bajo el prefijo `/api/mo
 | --- | --- | --- | --- |
 | TASK-11.1 | Implementar entidades y relaciones de usuarios, roles y permisos. | BE | 5 h |
 | TASK-11.2 | Implementar entidades de expediente, documento e historial de estados. | BE | 6 h |
-| TASK-11.3 | Implementar entidades de validación, resultado y evento de auditoría. | BE | 5 h |
+| TASK-11.3 | Implementar entidades de verificación y resultado de verificación (resultado mínimo), consentimiento informado, solicitud ARCO y evento de auditoría. | BE | 5 h |
 | TASK-11.4 | Escribir migraciones y datos semilla por tipo de trámite. | BE | 5 h |
 | TASK-11.5 | Escribir pruebas de integridad y consultas de listado. | BE, QA | 5 h |
 
@@ -592,7 +686,7 @@ El backend expondrá un conjunto de endpoints simulados bajo el prefijo `/api/mo
 | TASK-12.2 | Implementar `POST /api/auth/login`, emisión de token/sesión y expiración. | BE | 6 h |
 | TASK-12.3 | Implementar límite de intentos, bloqueo temporal y mensajes genéricos. | BE | 4 h |
 | TASK-12.4 | Implementar cierre de sesión y cambio de contraseña. | BE | 4 h |
-| TASK-12.5 | Conectar el frontend de login (P-01, P-02, P-03) al backend real. | FE | 5 h |
+| TASK-12.5 | Conectar las pantallas de acceso y cuenta (P-01, P-02, P-04 y P-05) al backend real. | FE | 5 h |
 | TASK-12.6 | Escribir pruebas de autenticación (positivas y negativas). | BE, QA | 5 h |
 
 **Pruebas asociadas:** CP-01, CP-02.
@@ -677,11 +771,11 @@ El backend expondrá un conjunto de endpoints simulados bajo el prefijo `/api/mo
 
 ---
 
-# Sprint 3 — Expedientes y documentos extremo a extremo
+# Sprint 3 — Expedientes, documentos, consentimiento y derechos ARCO
 
 **Semanas:** 5–6
-**Objetivo:** conectar las pantallas de expedientes y documentos con el backend real, cerrando el flujo principal del solicitante y del funcionario.
-**Épicas:** EP-04, EP-10.
+**Objetivo:** conectar las pantallas de expedientes y documentos con el backend real, cerrando el flujo principal del solicitante y del funcionario, y dejar registrado el **consentimiento informado** y los **derechos ARCO** del cliente conforme a la Ley 81 de 2019 y al Decreto Ejecutivo 285 de 2021.
+**Épicas:** EP-04, EP-07, EP-10.
 
 ### Resumen del sprint
 
@@ -691,21 +785,23 @@ El backend expondrá un conjunto de endpoints simulados bajo el prefijo `/api/mo
 | HU-16 | Consulta y seguimiento con filtrado por titularidad | Crítica | 5 | BE, FE |
 | HU-17 | Gestión documental protegida | Crítica | 8 | BE, FE |
 | HU-18 | Notificaciones del expediente | Alta | 5 | BE, FE |
+| HU-18b | Consentimiento informado de tratamiento de datos | Crítica | 5 | BE, FE |
+| HU-18c | Derechos ARCO desde el portal del cliente | Alta | 5 | BE, FE |
 
-**PH total del sprint: 26** · *Margen disponible para retrasos del Sprint 1 o refactors.*
+**PH total del sprint: 36** · *Margen disponible para retrasos del Sprint 1 o refactors. Las HU-18b y HU-18c se añadieron con el reencuadre RC-02 y se numeran con sufijo para no renumerar HU-01…HU-34.*
 
 ### HU-15 — Registro de expediente
 
 **Prioridad:** Crítica · **8 PH** · **Responsable:** BE con FE · **Estado:** Por hacer
 
-**Como** solicitante, **quiero** registrar una solicitud migratoria que quede asociada a mi cuenta **para** iniciar el seguimiento oficial de mi caso dentro del prototipo.
+**Como** solicitante, **quiero** registrar una solicitud migratoria que quede asociada a mi cuenta **para** iniciar el seguimiento de mi caso dentro del producto.
 
 **Criterios de aceptación:**
 
 1. `POST /api/expedientes` crea el expediente con identificador único, solicitante autenticado, tipo de trámite, fecha de creación y estado inicial `BORRADOR` o `PRESENTADO` según la regla acordada.
 2. Los campos obligatorios y el tipo de trámite se validan en el servidor (no solo en el cliente), devolviendo `400` con detalle de campo.
 3. Un usuario no puede crear expedientes a nombre de otro (compatible con CP-03).
-4. El asistente P-05 del frontend consume el endpoint real y muestra éxito/error con el identificador generado.
+4. El asistente P-09…P-16 con el envío P-17 consume el endpoint real y muestra éxito/error con el identificador generado.
 5. Existen pruebas de creación exitosa, datos inválidos y tentativa de asociación indebida.
 6. Cada creación genera evento de auditoría.
 
@@ -715,7 +811,7 @@ El backend expondrá un conjunto de endpoints simulados bajo el prefijo `/api/mo
 | --- | --- | --- | --- |
 | TASK-15.1 | Implementar servicio y endpoint de creación con validaciones de dominio. | BE | 6 h |
 | TASK-15.2 | Implementar la obtención del tipo de trámite y sus requisitos desde catálogos. | BE | 4 h |
-| TASK-15.3 | Conectar P-05 al endpoint, incluyendo manejo de errores de validación campo a campo. | FE | 6 h |
+| TASK-15.3 | Conectar el asistente P-09…P-16 y el envío P-17 al endpoint, incluyendo manejo de errores de validación campo a campo. | FE | 6 h |
 | TASK-15.4 | Emitir evento de auditoría en la creación. | BE | 3 h |
 | TASK-15.5 | Escribir pruebas de creación, validación y autorización. | BE, QA | 6 h |
 
@@ -734,7 +830,7 @@ El backend expondrá un conjunto de endpoints simulados bajo el prefijo `/api/mo
 1. `GET /api/expedientes` devuelve solo los expedientes accesibles al usuario según rol y titularidad, con filtros por estado, tipo y fecha, y paginación.
 2. `GET /api/expedientes/{id}` verifica acceso; un id ajeno responde `404`/`403` sin datos (compatible con CP-03).
 3. `GET /api/expedientes/{id}/historial` exige permiso específico de lectura.
-4. Las pantallas P-04, P-06, P-09 y P-10 consumen estos endpoints y mantienen los estados de carga/vacío/error.
+4. Las pantallas P-06, P-19, I-03/I-02 e I-06 consumen estos endpoints y mantienen los estados de carga/vacío/error.
 5. El rendimiento de listado es aceptable con 1.000 expedientes de prueba (sin N+1 consultas).
 6. Las consultas sensibles quedan registradas en auditoría.
 
@@ -744,7 +840,7 @@ El backend expondrá un conjunto de endpoints simulados bajo el prefijo `/api/mo
 | --- | --- | --- | --- |
 | TASK-16.1 | Implementar listado con filtros, paginación y proyección mínima de datos. | BE | 6 h |
 | TASK-16.2 | Implementar detalle e historial con verificación de acceso. | BE | 5 h |
-| TASK-16.3 | Conectar P-04, P-06, P-09 y P-10 a los endpoints reales. | FE | 6 h |
+| TASK-16.3 | Conectar P-06, P-19, I-03/I-02 e I-06 a los endpoints reales. | FE | 6 h |
 | TASK-16.4 | Escribir pruebas de titularidad, paginación y rendimiento básico del listado. | QA, BE | 5 h |
 
 **Pruebas asociadas:** CP-03, CP-09.
@@ -763,7 +859,7 @@ El backend expondrá un conjunto de endpoints simulados bajo el prefijo `/api/mo
 2. Los metadatos quedan en PostgreSQL y el archivo en almacenamiento protegido; la referencia al archivo no es un enlace público.
 3. La descarga exige autorización y está registrada en auditoría (compatible con CP-12).
 4. Cada documento queda vinculado al expediente correcto y muestra estado de revisión.
-5. El frontend P-07 muestra progreso, éxito y error, e impide el envío de archivos no permitidos.
+5. El frontend P-14 (paso 6) muestra progreso, éxito y error, e impide el envío de archivos no permitidos.
 6. Existen pruebas de archivo válido, tipo no permitido, tamaño excedido y descarga no autorizada.
 7. La duplicación se previene: subir un documento tipo ya válido genera aviso de duplicado.
 
@@ -774,7 +870,7 @@ El backend expondrá un conjunto de endpoints simulados bajo el prefijo `/api/mo
 | TASK-17.1 | Definir catálogo de tipos documentales permitidos, límites y reglas por trámite. | BE, PO | 4 h |
 | TASK-17.2 | Implementar carga con validación de MIME, tamaño e integridad. | BE | 8 h |
 | TASK-17.3 | Implementar descarga protegida con verificación de permiso y auditoría. | BE | 5 h |
-| TASK-17.4 | Conectar P-07 al backend con progreso y manejo de errores. | FE | 6 h |
+| TASK-17.4 | Conectar P-14 al backend con progreso y manejo de errores. | FE | 6 h |
 | TASK-17.5 | Escribir pruebas de carga, rechazo, descarga y permisos. | QA, BE | 6 h |
 
 **Pruebas asociadas:** CP-05, CP-12.
@@ -790,9 +886,9 @@ El backend expondrá un conjunto de endpoints simulados bajo el prefijo `/api/mo
 **Criterios de aceptación:**
 
 1. El servicio de notificaciones es desacoplado: se emite desde los servicios de negocio sin acoplar la lógica.
-2. Se generan notificaciones como mínimo ante: cambio a `PENDIENTE DE DOCUMENTOS`, observación del funcionario, resultado de validación y decisión final.
+2. Se generan notificaciones como mínimo ante: cambio a `PENDIENTE DE DOCUMENTOS`, observación del funcionario, resultado de verificación y decisión final.
 3. El mensaje no contiene datos confidenciales ni información personal innecesaria.
-4. P-08 lista las notificaciones del usuario con fecha, tipo y estado de lectura.
+4. P-20 lista las observaciones y notificaciones del usuario con fecha, tipo y estado de lectura.
 5. Marcar como leída actualiza el estado y no duplica eventos.
 6. Existen pruebas de generación, contenido seguro y marcado de lectura.
 
@@ -802,10 +898,71 @@ El backend expondrá un conjunto de endpoints simulados bajo el prefijo `/api/mo
 | --- | --- | --- | --- |
 | TASK-18.1 | Implementar entidad, endpoint y evento de notificaciones. | BE | 6 h |
 | TASK-18.2 | Definir plantillas de mensajes por tipo de evento sin datos sensibles. | PO, BE | 4 h |
-| TASK-18.3 | Conectar P-08 al backend con marcado de leídas. | FE | 4 h |
+| TASK-18.3 | Conectar P-20 al backend con marcado de leídas. | FE | 4 h |
 | TASK-18.4 | Escribir pruebas de generación y de contenido seguro. | QA | 4 h |
 
 **Pruebas asociadas:** CP-09 (visibilidad), verificación de no exposición de datos.
+
+---
+
+### HU-18b — Consentimiento informado de tratamiento de datos
+
+**Prioridad:** Crítica · **5 PH** · **Responsable:** BE con FE · **Estado:** Por hacer
+
+**Como** bufete de abogados (responsable del tratamiento), **quiero** registrar el consentimiento informado del cliente antes de tratar sus datos **para** cumplir con la Ley 81 de 2019 y el Decreto Ejecutivo 285 de 2021 y poder acreditarlo ante una revisión.
+
+**Nota de alcance (RC-02):** las pantallas nuevas se habilitan **dentro del inventario de 45 pantallas** (sección de consentimiento en P-05 *Mi perfil* y bloque de consentimiento en el módulo interno), sin añadir IDs al inventario.
+
+**Criterios de aceptación:**
+
+1. `POST /api/consentimientos` registra el consentimiento con: titular, responsable (despacho), finalidad, alcance de los datos, base legal, fecha, vigencia y estado (`VIGENTE` o `REVOCADO`).
+2. Sin un consentimiento vigente, el sistema **limita el tratamiento de los datos del cliente a lo estrictamente contractual** (minimización y finalidad): no se usan para otras finalidades ni se comparten.
+3. Los **datos sensibles exigen consentimiento expreso** y quedan marcados como tales; sin él, no se tratan y la operación se rechaza con mensaje claro.
+4. El cliente puede **ver y revocar su consentimiento desde el portal** (P-05): la revocación deja el consentimiento en `REVOCADO`, conserva la evidencia histórica y notifica al despacho.
+5. El módulo interno muestra el estado del consentimiento por cliente y por expediente antes de tratar datos o adjuntar documentos sensibles.
+6. Todo alta, consulta y revocación genera **evento de auditoría** con actor, fecha, finalidad, alcance y resultado.
+7. Existen pruebas de: alta correcta, tratamiento sin consentimiento vigente (limitado), datos sensibles sin consentimiento expreso (bloqueado), revocación y auditoría.
+
+**Tareas:**
+
+| TASK | Descripción | Responsable | Estimación |
+| --- | --- | --- | --- |
+| TASK-18b.1 | Implementar la entidad de consentimiento (titular, responsable, finalidad, alcance, base legal, fecha, vigencia, estado) y su endpoint con validaciones. | BE | 5 h |
+| TASK-18b.2 | Implementar la regla de limitación del tratamiento sin consentimiento vigente y la exigencia de consentimiento expreso para datos sensibles. | BE | 5 h |
+| TASK-18b.3 | Construir en el portal del cliente (P-05) la consulta y la revocación del consentimiento, con confirmación de la acción sensible. | FE | 4 h |
+| TASK-18b.4 | Construir el bloque de consentimiento en el módulo interno (recepción y analista) con estado por cliente y expediente. | FE | 3 h |
+| TASK-18b.5 | Escribir pruebas de alta, revocación, limitación del tratamiento y auditoría. | QA, BE | 4 h |
+
+**Pruebas asociadas:** CP-09 (trazabilidad), CP-11 (no exposición de datos), verificación de limitación del tratamiento.
+
+---
+
+### HU-18c — Derechos ARCO desde el portal del cliente
+
+**Prioridad:** Alta · **5 PH** · **Responsable:** BE con FE · **Estado:** Por hacer
+
+**Como** cliente del despacho, **quiero** ejercer mis derechos de **acceso, rectificación, cancelación y oposición (ARCO)** desde el portal **para** controlar mis datos personales conforme a la Ley 81 de 2019.
+
+**Criterios de aceptación:**
+
+1. El portal permite crear una solicitud ARCO con tipo (`ACCESO`, `RECTIFICACIÓN`, `CANCELACIÓN`, `OPPOSICIÓN`), descripción/motivo, fecha de creación y estado inicial `RECIBIDA`.
+2. La solicitud queda **registrada con tipo, fecha y estado**, y el cliente solo puede consultar las suyas (titularidad, compatible con CP-03), con historial de estados `RECIBIDA → EN_ATENCION → ATENDIDA` o `RECHAZADA` (con motivo).
+3. El despacho **recibe la solicitud en el módulo interno** (bandeja de atención), con responsable y **plazo de atención**; el vencimiento se marca con la alerta `FUERA_DE_PLAZO` sobre la solicitud, sin alterar su estado de atención.
+4. Las notificaciones asociadas **no exponen datos personales del contenido**: solo identificador de la solicitud, tipo, estado y fecha.
+5. Toda solicitud y cada cambio de estado generan **evento de auditoría** (actor, fecha, tipo, estado, resultado).
+6. Existen pruebas de registro, consulta por titularidad, cambio de estado, control de plazo y no exposición de datos en notificaciones.
+
+**Tareas:**
+
+| TASK | Descripción | Responsable | Estimación |
+| --- | --- | --- | --- |
+| TASK-18c.1 | Implementar la entidad de solicitud ARCO (tipo, fecha, estado, plazo, responsable) y sus endpoints con permisos por titularidad. | BE | 5 h |
+| TASK-18c.2 | Construir en el portal del cliente la pantalla de creación y seguimiento de la solicitud ARCO. | FE | 4 h |
+| TASK-18c.3 | Construir la bandeja del despacho (recepción/analista) con asignación, plazos y alerta de vencimiento. | FE | 4 h |
+| TASK-18c.4 | Definir plantillas de notificación sin datos personales y registrar la auditoría de cada evento. | PO, BE | 3 h |
+| TASK-18c.5 | Escribir pruebas de registro, titularidad, plazos, auditoría y no exposición de datos. | QA, BE | 4 h |
+
+**Pruebas asociadas:** CP-03 (titularidad), CP-09 (visibilidad), CP-11 (no exposición de datos).
 
 ### Entregables del Sprint 3
 
@@ -813,6 +970,7 @@ El backend expondrá un conjunto de endpoints simulados bajo el prefijo `/api/mo
 * Bandeja del funcionario conectada a datos reales.
 * Almacenamiento documental protegido con descarga autorizada.
 * Notificaciones operativas.
+* Consentimiento informado registrado, visible y revocable (HU-18b) y derechos ARCO atendidos con plazos (HU-18c).
 
 ### DoD del Sprint 3
 
@@ -820,6 +978,7 @@ El backend expondrá un conjunto de endpoints simulados bajo el prefijo `/api/mo
 * Suite de permisos en verde (accesos permitidos y denegados).
 * Ningún archivo accesible sin autorización.
 * Auditoría de creación, consulta y descarga verificada.
+* Consentimiento informado y solicitudes ARCO registrados, auditados y sin exposición de datos en notificaciones.
 
 ### Riesgos y bloqueos del Sprint 3
 
@@ -857,7 +1016,7 @@ El backend expondrá un conjunto de endpoints simulados bajo el prefijo `/api/mo
 
 1. `PATCH /api/expedientes/{id}/estado` aplica la matriz de transiciones permitidas por tipo de trámite.
 2. Las transiciones se validan en el backend; una transición no permitida responde `409` o `403` y conserva el estado original (compatible con CP-04).
-3. No se permite llegar a estados finales (`APROBADO`/`DENEGADO`) sin que se cumplan los controles previos: validaciones respondidas y requisitos obligatorios completos.
+3. No se permite llegar a estados finales (`APROBADO`/`DENEGADO`) sin que se cumplan los controles previos: verificaciones respondidas y requisitos obligatorios completos.
 4. Todo cambio registra estado anterior, nuevo, autor, fecha y motivo en el historial.
 5. Las transiciones concurrentes sobre el mismo expediente no producen pérdida de actualización (control de versión optimista o bloqueo).
 6. Los estados implementados incluyen como mínimo: `BORRADOR`, `PRESENTADO`, `EN_REVISION`, `PENDIENTE_DOCUMENTOS`, `EN_VALIDACION`, `LISTO_DECISION`, `APROBADO`, `DENEGADO`, más los complementarios (`OBSERVADO`, `CANCELADO`, `CERRADO`) si el PO los habilita.
@@ -870,7 +1029,7 @@ El backend expondrá un conjunto de endpoints simulados bajo el prefijo `/api/mo
 | TASK-19.1 | Definir con el PO la matriz de transiciones por tipo de trámite. | PO, LT | 4 h |
 | TASK-19.2 | Implementar el servicio de dominio de transiciones con validación de prerrequisitos. | BE | 8 h |
 | TASK-19.3 | Implementar el endpoint con control de concurrencia y motivo obligatorio. | BE | 5 h |
-| TASK-19.4 | Conectar P-11 al backend con transiciones dinámicas y confirmaciones. | FE | 5 h |
+| TASK-19.4 | Conectar I-10 (y I-04) al backend con transiciones dinámicas y confirmaciones. | FE | 5 h |
 | TASK-19.5 | Escribir pruebas de transiciones válidas, inválidas, concurrentes y de bloqueo. | QA, BE | 8 h |
 
 **Pruebas asociadas:** CP-04, CP-09.
@@ -889,7 +1048,7 @@ El backend expondrá un conjunto de endpoints simulados bajo el prefijo `/api/mo
 2. Un funcionario solo registra observaciones en expedientes de su ámbito.
 3. El solicitante consulta únicamente las observaciones de sus expedientes.
 4. Una observación no equivale a decisión final ni cambia de estado automáticamente.
-5. P-12 y P-06 muestran el hilo de observaciones y respuesta del solicitante.
+5. I-08 y P-20 muestran el hilo de observaciones y la respuesta del solicitante.
 6. Cada registro genera evento de auditoría.
 
 **Tareas:**
@@ -897,7 +1056,7 @@ El backend expondrá un conjunto de endpoints simulados bajo el prefijo `/api/mo
 | TASK | Descripción | Responsable | Estimación |
 | --- | --- | --- | --- |
 | TASK-20.1 | Implementar entidad, endpoints y permisos de observaciones. | BE | 6 h |
-| TASK-20.2 | Conectar P-12 y el bloque de observaciones de P-06. | FE | 5 h |
+| TASK-20.2 | Conectar I-08 y el bloque de observaciones de P-20. | FE | 5 h |
 | TASK-20.3 | Escribir pruebas de permisos y registro con auditoría. | QA | 4 h |
 
 **Pruebas asociadas:** CP-09, CP-04.
@@ -914,7 +1073,7 @@ El backend expondrá un conjunto de endpoints simulados bajo el prefijo `/api/mo
 
 1. `GET /api/expedientes/{id}/historial` devuelve los eventos en orden con autor, fecha, estado anterior/nuevo y motivo.
 2. El acceso exige permiso específico; los eventos no autorizados no se filtran ni se revelan (compatible con CP-09).
-3. P-06 y P-10 muestran la línea de tiempo con formato claro.
+3. P-19 y I-06 muestran la línea de tiempo con formato claro.
 4. El historial no expone datos sensibles innecesarios (por ejemplo, no muestra documentos completos ni notas internas restringidas).
 5. Pruebas de lectura autorizada y denegada en verde.
 
@@ -923,7 +1082,7 @@ El backend expondrá un conjunto de endpoints simulados bajo el prefijo `/api/mo
 | TASK | Descripción | Responsable | Estimación |
 | --- | --- | --- | --- |
 | TASK-21.1 | Implementar el endpoint de historial con proyección por rol. | BE | 5 h |
-| TASK-21.2 | Construir el componente de línea de tiempo y conectarlo a P-06/P-10. | FE | 5 h |
+| TASK-21.2 | Construir el componente de línea de tiempo y conectarlo a P-19/I-06. | FE | 5 h |
 | TASK-21.3 | Escribir pruebas de autorización del historial. | QA | 3 h |
 
 **Pruebas asociadas:** CP-09.
@@ -938,11 +1097,11 @@ El backend expondrá un conjunto de endpoints simulados bajo el prefijo `/api/mo
 
 **Criterios de aceptación:**
 
-1. Quedan registrados como mínimo: inicio y cierre de sesión, creación y cambio de estado de expedientes, carga y descarga de documentos, consultas institucionales y operaciones administrativas.
+1. Quedan registrados como mínimo: inicio y cierre de sesión, creación y cambio de estado de expedientes, carga y descarga de documentos, registro y consulta de verificaciones (manual asistido o simuladas), eventos de consentimiento y solicitudes ARCO, y operaciones administrativas.
 2. Cada evento contiene actor, operación, recurso, fecha, resultado y datos técnicos de correlación.
 3. Los registros están protegidos: solo el rol auditor los consulta y no pueden modificarse desde la API.
 4. Los logs no contienen contraseñas, tokens ni datos personales innecesarios (compatible con CP-11).
-5. P-15 permite filtrar por fecha, actor, operación y recurso con paginación y exportación CSV.
+5. I-16 permite filtrar por fecha, actor, operación y recurso con paginación y exportación CSV.
 6. Existe prueba de integridad: las operaciones críticas esperadas aparecen registradas (meta: 100 %).
 
 **Tareas:**
@@ -952,7 +1111,7 @@ El backend expondrá un conjunto de endpoints simulados bajo el prefijo `/api/mo
 | TASK-22.1 | Diseñar el modelo de eventos de auditoría y su política de retención. | LT, BE | 4 h |
 | TASK-22.2 | Instrumentar los servicios críticos con registro de eventos (sin bloquear la operación principal). | BE | 8 h |
 | TASK-22.3 | Implementar el endpoint de consulta con filtros, paginación y exportación, protegido por rol. | BE | 6 h |
-| TASK-22.4 | Conectar P-15 y verificar la exportación CSV. | FE | 4 h |
+| TASK-22.4 | Conectar I-16 y verificar la exportación CSV. | FE | 4 h |
 | TASK-22.5 | Escribir pruebas de cobertura de eventos críticos y de no exposición de datos en logs. | QA, BE | 6 h |
 
 **Pruebas asociadas:** CP-09, CP-11, indicador de trazabilidad (100 %).
@@ -979,37 +1138,37 @@ El backend expondrá un conjunto de endpoints simulados bajo el prefijo `/api/mo
 
 ---
 
-# Sprint 5 — Interoperabilidad institucional simulada
+# Sprint 5 — Verificación documental: modo manual asistido, adaptadores y trazabilidad
 
 **Semanas:** 9–10
-**Objetivo:** demostrar el intercambio controlado de información con las instituciones simuladas: adaptadores, orquestación de validaciones, manejo de errores y trazabilidad.
+**Objetivo:** demostrar la verificación documental controlada del expediente en **modo manual asistido** (con responsable humano que registra fuente, fecha y resultado) y en modo simulado con las fuentes del Sprint 1: adaptadores, orquestación de verificaciones, manejo de errores y trazabilidad. La capa de adaptadores queda **preparada** para una futura automatización sujeta a convenio, sin rehacer el sistema.
 **Épicas:** EP-06, EP-07.
 
 ### Resumen del sprint
 
 | HU | Título | Prioridad | PH | Responsable |
 | --- | --- | --- | --- | --- |
-| HU-23 | Adaptadores institucionales (TE, CSS, Registro Público) | Crítica | 8 | BE |
-| HU-24 | Orquestación de validaciones con reintentos e idempotencia | Crítica | 8 | BE |
-| HU-25 | Minimización y trazabilidad de consultas | Crítica | 5 | BE, LT |
-| HU-26 | Panel de validaciones conectado en el flujo real | Crítica | 8 | FE, BE |
+| HU-23 | Adaptadores de fuentes de verificación (TE, CSS, Registro Público) | Crítica | 8 | BE |
+| HU-24 | Orquestación de verificaciones con reintentos e idempotencia | Crítica | 8 | BE |
+| HU-25 | Minimización y trazabilidad de verificaciones | Crítica | 5 | BE, LT |
+| HU-26 | Panel de verificaciones conectado en el flujo real | Crítica | 8 | FE, BE |
 
 **PH total del sprint: 29**
 
-### HU-23 — Adaptadores institucionales
+### HU-23 — Adaptadores de fuentes de verificación
 
 **Prioridad:** Crítica · **8 PH** · **Responsable:** BE · **Estado:** Por hacer
 
-**Como** sistema, **quiero** consultar las instituciones mediante adaptadores independientes **para** poder sustituir un simulador por una integración autorizada sin tocar la lógica del expediente.
+**Como** sistema, **quiero** acceder a las fuentes de verificación mediante adaptadores independientes **para** poder sustituir una fuente simulada por una futura integración autorizada y convenida (p. ej. vía AIG) sin tocar la lógica del expediente, y para registrar hoy las verificaciones en modo manual asistido.
 
 **Criterios de aceptación:**
 
-1. Existe una interfaz (puerto) por institución: `TePort`, `CssPort`, `RegistroPublicoPort`, con implementación sobre los mocks del Sprint 1.
-2. Cada adaptador traduce la respuesta institucional a un formato normalizado compartido (resultado, referencia, fecha, estado técnico).
+1. Existe una interfaz (puerto) por fuente de verificación: `TePort`, `CssPort`, `RegistroPublicoPort`, con implementación sobre los mocks del Sprint 1 **y** una implementación de registro manual asistido (responsable humano).
+2. Cada adaptador traduce la respuesta o el registro manual a un formato normalizado compartido (fuente, resultado, referencia, fecha, responsable, estado técnico).
 3. La lógica de negocio del expediente no importa clases de los mocks ni conoce rutas concretas (desacoplamiento verificable en el código).
-4. Cada adaptador tiene configuración de timeout y reintentos por institución.
-5. Existen pruebas de contrato por adaptador: respuesta válida, sin resultado, error técnico y timeout (compatible con CP-06 y CP-07).
-6. Está documentado cómo sustituir el mock por una integración real autorizada (requisitos, configuración y contratos).
+4. Cada adaptador tiene configuración de timeout y reintentos por fuente, que solo aplica al modo simulado.
+5. Existen pruebas de contrato por adaptador: respuesta válida, sin resultado, error técnico y timeout (compatible con CP-06 y CP-07), más una prueba del registro manual asistido.
+6. Está documentado cómo sustituir el modo simulado por una futura integración automática autorizada y convenida (requisitos, configuración y contratos), dejando constancia de que hoy no existe convenio ni API disponible.
 
 **Tareas:**
 
@@ -1019,108 +1178,109 @@ El backend expondrá un conjunto de endpoints simulados bajo el prefijo `/api/mo
 | TASK-23.2 | Implementar el adaptador del TE sobre su mock, con timeout y traducción. | BE | 6 h |
 | TASK-23.3 | Implementar el adaptador de la CSS sobre su mock. | BE | 5 h |
 | TASK-23.4 | Implementar el adaptador del Registro Público sobre su mock. | BE | 5 h |
-| TASK-23.5 | Escribir pruebas de contrato por adaptador (4 escenarios c/u). | QA, BE | 6 h |
-| TASK-23.6 | Documentar el procedimiento de sustitución por integración real autorizada. | DOC, LT | 3 h |
+| TASK-23.5 | Escribir pruebas de contrato por adaptador (4 escenarios c/u) y del registro manual asistido. | QA, BE | 6 h |
+| TASK-23.6 | Documentar el procedimiento de sustitución por una futura integración automática sujeta a convenio. | DOC, LT | 3 h |
 
 **Pruebas asociadas:** CP-06, CP-07.
 
 ---
 
-### HU-24 — Orquestación de validaciones con reintentos e idempotencia
+### HU-24 — Orquestación de verificaciones con reintentos e idempotencia
 
 **Prioridad:** Crítica · **8 PH** · **Responsable:** BE · **Estado:** Por hacer
 
-**Como** funcionario, **quiero** que el sistema ejecute las validaciones necesarias y gestione fallos sin duplicar operaciones **para** confiar en los resultados y no repetir trabajo.
+**Como** analista del despacho, **quiero** que el sistema determine qué verificaciones documentales aplican y gestione su registro y sus fallos sin duplicar operaciones **para** confiar en los resultados y no repetir trabajo.
 
 **Criterios de aceptación:**
 
-1. El backend determina qué validaciones aplican según el tipo de trámite y las crea como entidades con estados propios: `PENDIENTE`, `ENVIADA`, `RESPONDIDA`, `SIN_RESULTADO`, `ERROR_TECNICO`, `REINTENTO_PROGRAMADO`.
-2. Los estados de la validación son independientes del estado del expediente.
-3. Un error técnico jamás se convierte en resultado negativo ni dispara aprobación/denegación (compatible con CP-07).
-4. Los reintentos son limitados, programados y usan idempotencia: una petición repetida no crea operaciones duplicadas (compatible con CP-08).
-5. Cada consulta guarda finalidad, fecha, referencia de correlación, estado técnico y resultado mínimo.
-6. Existen pruebas de indisponibilidad, timeout, respuesta inválida e idempotencia.
+1. El backend determina qué verificaciones aplican según el tipo de trámite y las crea como entidades con estados propios: `PENDIENTE`, `EN_ATENCION` (manual asistido), `ENVIADA` (modo simulado), `RESPONDIDA`, `SIN_RESULTADO`, `ERROR_TECNICO`, `REINTENTO_PROGRAMADO`.
+2. Cada verificación puede crearse en **modo manual asistido** (con **responsable humano** que registra fuente, fecha y resultado) o en **modo simulado** (fuentes simuladas del Sprint 1); el modo queda registrado en la entidad.
+3. Los estados de la verificación son independientes del estado del expediente.
+4. Un error técnico jamás se convierte en resultado negativo ni dispara aprobación/denegación (compatible con CP-07).
+5. Los reintentos son limitados, programados y usan idempotencia: una petición repetida no crea operaciones duplicadas (compatible con CP-08); el reintento solo aplica al modo simulado.
+6. Cada verificación guarda fuente, finalidad, fecha, responsable, referencia de correlación, estado técnico y resultado mínimo.
+7. Existen pruebas de indisponibilidad, timeout, respuesta inválida, idempotencia y registro manual asistido con responsable.
 
 **Tareas:**
 
 | TASK | Descripción | Responsable | Estimación |
 | --- | --- | --- | --- |
-| TASK-24.1 | Implementar entidad y estados de validación con transiciones propias. | BE | 6 h |
-| TASK-24.2 | Implementar el orquestador: determina validaciones necesarias y las ejecuta. | BE | 8 h |
-| TASK-24.3 | Implementar timeout, reintentos limitados con backoff y claves de idempotencia. | BE | 8 h |
-| TASK-24.4 | Escribir pruebas de caída del mock, timeout, duplicación y recuperación. | QA, BE | 6 h |
+| TASK-24.1 | Implementar entidad y estados de verificación con transiciones propias y registro del modo (manual asistido o simulado). | BE | 6 h |
+| TASK-24.2 | Implementar el orquestador: determina las verificaciones necesarias y las crea en modo manual asistido (con responsable humano) o simulado. | BE | 8 h |
+| TASK-24.3 | Implementar timeout, reintentos limitados con backoff y claves de idempotencia (modo simulado). | BE | 8 h |
+| TASK-24.4 | Escribir pruebas de caída de la fuente simulada, timeout, duplicación, recuperación y registro manual. | QA, BE | 6 h |
 
 **Pruebas asociadas:** CP-06, CP-07, CP-08.
 
 ---
 
-### HU-25 — Minimización y trazabilidad de consultas
+### HU-25 — Minimización y trazabilidad de verificaciones
 
 **Prioridad:** Crítica · **5 PH** · **Responsable:** BE con LT · **Estado:** Por hacer
 
-**Como** responsable de seguridad, **quiero** limitar los datos enviados y registrar la finalidad de cada consulta **para** reducir la exposición de información personal.
+**Como** responsable de protección de datos del despacho, **quiero** limitar los datos que se envían o se registran y dejar la finalidad de cada verificación **para** reducir la exposición de información personal (Ley 81 de 2019 y Decreto 285 de 2021).
 
 **Criterios de aceptación:**
 
-1. Existe una matriz de datos por institución (campo enviado → finalidad → base legal → responsable) derivada del Sprint 1.
-2. Antes de consultar se valida permiso y finalidad; sin ellos, la consulta no se emite.
-3. Las solicitudes contienen únicamente los campos autorizados de la matriz.
-4. Las respuestas se guardan con el resultado mínimo; no se copian bloques completos de datos personales.
-5. Los logs de integración no incluyen datos personales innecesarios.
-6. Pruebas que verifican el contenido efectivo de la petición y la trazabilidad completa de la consulta.
+1. Existe una **matriz de fuentes y finalidad** (fuente → finalidad → base legal → responsable → qué se guarda) derivada del marco legal del Sprint 1 (HU-06).
+2. Antes de emitir o registrar una verificación se valida permiso y finalidad; sin ellos, la verificación no se realiza.
+3. Las solicitudes o registros contienen únicamente los campos autorizados en la matriz.
+4. Las respuestas se guardan con el **resultado mínimo** (fuente, fecha, resultado, responsable); **no se almacenan copias de la información institucional ni bloques completos de datos personales**.
+5. Los registros de integración y los logs no incluyen datos personales innecesarios.
+6. Pruebas que verifican el contenido efectivo de la petición o del registro manual y la trazabilidad completa de la verificación.
 
 **Tareas:**
 
 | TASK | Descripción | Responsable | Estimación |
 | --- | --- | --- | --- |
-| TASK-25.1 | Formalizar la matriz de datos por institución y sus finalidades. | LT, PO | 4 h |
-| TASK-25.2 | Implementar la validación de permiso y finalidad previa a la consulta. | BE | 5 h |
-| TASK-25.3 | Aplicar minimización en el armado de peticiones y en el almacenamiento de respuestas. | BE | 5 h |
+| TASK-25.1 | Formalizar la matriz de fuentes y finalidad (fuente → finalidad → base legal → responsable → qué se guarda). | LT, PO | 4 h |
+| TASK-25.2 | Implementar la validación de permiso y finalidad previa a emitir o registrar la verificación. | BE | 5 h |
+| TASK-25.3 | Aplicar minimización en el armado de peticiones y en el almacenamiento de resultados (sin copias institucionales). | BE | 5 h |
 | TASK-25.4 | Verificar con pruebas la trazabilidad y el contenido mínimo de logs. | QA | 4 h |
 
 **Pruebas asociadas:** CP-11, indicador de trazabilidad.
 
 ---
 
-### HU-26 — Panel de validaciones conectado en el flujo real
+### HU-26 — Panel de verificaciones conectado en el flujo real
 
 **Prioridad:** Crítica · **8 PH** · **Responsable:** FE con BE · **Estado:** Por hacer
 
-**Como** funcionario y solicitante, **quiero** ver el estado real de las validaciones en el expediente **para** saber qué falta y cuándo puedo decidir.
+**Como** analista del despacho y cliente, **quiero** ver el estado real de las verificaciones en el expediente **para** saber qué falta y cuándo se puede decidir.
 
 **Criterios de aceptación:**
 
-1. `POST` y `GET /api/expedientes/{id}/validaciones` quedan conectados a P-13 y al bloque correspondiente de P-06.
-2. La UI muestra cada validación con su institución, fecha, estado técnico y resultado cuando exista.
+1. `POST` y `GET /api/expedientes/{id}/validaciones` quedan conectados a I-07 y al bloque correspondiente de P-19.
+2. La UI muestra cada verificación con su fuente, modo (manual asistido o simulado), fecha, responsable, estado técnico y resultado cuando exista.
 3. El error técnico se distingue visualmente del resultado negativo (color, icono y texto explicativo) — compatible con CP-07.
 4. La acción de reintento aparece solo en estados permitidos y muestra el resultado del reintento (compatible con CP-08).
-5. El solicitante ve el estado agregado sin exponer detalles internos innecesarios.
-6. Recorrido completo de demostración: expediente → validaciones simuladas → decisión del funcionario.
+5. El cliente ve el estado agregado sin exponer detalles internos innecesarios.
+6. Recorrido completo de demostración: expediente → verificaciones (manual asistido y simuladas) → decisión del responsable.
 
 **Tareas:**
 
 | TASK | Descripción | Responsable | Estimación |
 | --- | --- | --- | --- |
-| TASK-26.1 | Conectar P-13 a los endpoints de validaciones con recarga y refresco. | FE | 6 h |
+| TASK-26.1 | Conectar I-07 a los endpoints de verificaciones (`/api/expedientes/{id}/validaciones`) con recarga y refresco. | FE | 6 h |
 | TASK-26.2 | Implementar la distinción error técnico vs. resultado negativo y el botón de reintento. | FE | 5 h |
-| TASK-26.3 | Mostrar el bloque de validaciones en P-06 con nivel de detalle por rol. | FE | 5 h |
-| TASK-26.4 | Ejecutar el recorrido completo con escenarios forzados (`X-Scenario`) y corregir incidencias. | FE, QA | 6 h |
+| TASK-26.3 | Mostrar el bloque de verificaciones en P-19 con nivel de detalle por rol. | FE | 5 h |
+| TASK-26.4 | Ejecutar el recorrido completo con escenarios forzados (`X-Scenario`) y con registro manual, y corregir incidencias. | FE, QA | 6 h |
 
 **Pruebas asociadas:** CP-06, CP-07, CP-08.
 
 ### Entregables del Sprint 5
 
-* Adaptadores institucionales desacoplados y probados por contrato.
-* Orquestación de validaciones con reintentos e idempotencia.
-* Trazabilidad y minimización verificadas.
-* Panel de validaciones operativo en el flujo real.
+* Adaptadores de fuentes de verificación desacoplados y probados por contrato (modo manual asistido y modo simulado).
+* Orquestación de verificaciones con reintentos e idempotencia, con responsable humano en el modo manual.
+* Trazabilidad y minimización verificadas (matriz de fuentes y finalidad, solo resultado mínimo).
+* Panel de verificaciones operativo en el flujo real.
 
 ### DoD del Sprint 5
 
-* Los tres adaptadores responden según contrato con los 6 escenarios.
+* Los tres adaptadores responden según contrato con los 6 escenarios, y el registro manual asistido produce la misma entidad de verificación.
 * Ningún error técnico se interpreta como resultado negativo en pruebas.
 * Idempotencia verificada (CP-08 en verde).
-* Matriz de minimización aplicada y auditada.
+* Matriz de fuentes y finalidad aplicada y auditada; sin copias institucionales almacenadas.
 
 ### Riesgos y bloqueos del Sprint 5
 
@@ -1134,7 +1294,7 @@ El backend expondrá un conjunto de endpoints simulados bajo el prefijo `/api/mo
 # Sprint 6 — Seguridad, rendimiento y usabilidad
 
 **Semanas:** 11–12
-**Objetivo:** verificar la calidad del prototipo completo, detectar y corregir vulnerabilidades, cuellos de botella y problemas de uso antes de la aceptación.
+**Objetivo:** verificar la calidad del producto completo, detectar y corregir vulnerabilidades, cuellos de botella y problemas de uso antes de la aceptación.
 **Épica:** EP-08.
 
 ### Resumen del sprint
@@ -1156,18 +1316,18 @@ El backend expondrá un conjunto de endpoints simulados bajo el prefijo `/api/mo
 
 **Criterios de aceptación:**
 
-1. Existen pruebas unitarias (JUnit/Mockito) de reglas de negocio, transiciones y validaciones, con los casos críticos cubiertos.
+1. Existen pruebas unitarias (JUnit/Mockito) de reglas de negocio, transiciones y verificaciones, con los casos críticos cubiertos.
 2. Existen pruebas de API que verifican contratos, códigos de estado y errores de la sección 3.6.
 3. Existen pruebas de integración con base de datos y mocks en contenedor (Docker).
 4. La suite completa se ejecuta con un comando documentado y termina en menos de 10 minutos.
-5. La cobertura de los módulos críticos (estados, autorización, validaciones) es al menos del 70 %, medida y reportada.
+5. La cobertura de los módulos críticos (estados, autorización, verificaciones) es al menos del 70 %, medida y reportada.
 6. Las pruebas no dependen de datos externos ni de la red pública.
 
 **Tareas:**
 
 | TASK | Descripción | Responsable | Estimación |
 | --- | --- | --- | --- |
-| TASK-27.1 | Completar pruebas unitarias de dominio (estados, validaciones, permisos). | BE | 8 h |
+| TASK-27.1 | Completar pruebas unitarias de dominio (estados, verificaciones, permisos). | BE | 8 h |
 | TASK-27.2 | Completar pruebas de API de todos los endpoints con sus códigos esperados. | QA, BE | 8 h |
 | TASK-27.3 | Completar pruebas de integración con contenedores (DB + mocks). | QA | 8 h |
 | TASK-27.4 | Integrar la ejecución de la suite en CI (Git) con reporte de cobertura. | LT | 5 h |
@@ -1225,7 +1385,7 @@ El backend expondrá un conjunto de endpoints simulados bajo el prefijo `/api/mo
 | TASK | Descripción | Responsable | Estimación |
 | --- | --- | --- | --- |
 | TASK-29.1 | Definir y documentar escenarios y perfiles de carga. | QA, PO | 4 h |
-| TASK-29.2 | Preparar scripts y datos de **Apache JMeter** (herramienta obligatoria): login, listado, creación, documentos, validaciones. | QA | 8 h |
+| TASK-29.2 | Preparar scripts y datos de **Apache JMeter** (herramienta obligatoria): login, listado, creación, documentos, verificaciones. | QA | 8 h |
 | TASK-29.3 | Ejecutar las pruebas de carga con **Apache JMeter** y recopilar métricas en el entorno de pruebas. | QA | 6 h |
 | TASK-29.4 | Analizar cuellos de botella y corregir los prioritarios (índices, consultas, caché). | BE | 10 h |
 | TASK-29.5 | Repetir la medición y emitir el informe de rendimiento. | QA | 4 h |
@@ -1238,7 +1398,7 @@ El backend expondrá un conjunto de endpoints simulados bajo el prefijo `/api/mo
 
 **Prioridad:** Alta · **6 PH** · **Responsable:** FE con QA · **Estado:** Por hacer
 
-**Como** usuario, **quiero** completar las tareas principales sin ayuda **para** que el prototipo sea comprensible y eficiente.
+**Como** usuario, **quiero** completar las tareas principales sin ayuda **para** que el producto sea comprensible y eficiente.
 
 **Criterios de accesibilidad y uso:**
 
@@ -1287,7 +1447,7 @@ El backend expondrá un conjunto de endpoints simulados bajo el prefijo `/api/mo
 # Sprint 7 — Aceptación, documentación y entrega
 
 **Semanas:** 13–14
-**Objetivo:** cerrar el alcance acordado, validar cada historia, dejar documentación reproducible y presentar el prototipo.
+**Objetivo:** cerrar el alcance acordado, validar cada historia, dejar documentación reproducible y presentar el producto.
 **Épicas:** EP-08, EP-09.
 
 ### Resumen del sprint
@@ -1339,11 +1499,11 @@ El backend expondrá un conjunto de endpoints simulados bajo el prefijo `/api/mo
 
 1. Guía de instalación y ejecución paso a paso verificada en una máquina nueva.
 2. API documentada en OpenAPI actualizada al estado final del código.
-3. Documentación de roles, estados, módulos, reglas de negocio y limitaciones del prototipo.
-4. Diagramas actualizados: arquitectura lógica, modelo de datos, flujo de interoperabilidad.
+3. Documentación de roles, estados, módulos, reglas de negocio y limitaciones del producto.
+4. Diagramas actualizados: arquitectura lógica, modelo de datos, flujo de verificación documental.
 5. Manuales: técnico (para mantenimiento) y de usuario (por rol) con capturas.
 6. Resultados de pruebas: informes de seguridad, rendimiento y usabilidad consolidados.
-7. Registro de decisiones técnicas y de la matriz de viabilidad institucional.
+7. Registro de decisiones técnicas y del marco legal y la matriz de fuentes de verificación.
 
 **Tareas:**
 
@@ -1352,7 +1512,7 @@ El backend expondrá un conjunto de endpoints simulados bajo el prefijo `/api/mo
 | TASK-32.1 | Redactar el manual técnico (arquitectura, entorno, base de datos, despliegue). | DOC, LT | 8 h |
 | TASK-32.2 | Redactar el manual de usuario por rol con capturas actualizadas. | DOC, FE | 8 h |
 | TASK-32.3 | Actualizar `openapi.yaml`, diagramas y modelo de datos al estado final. | BE, LT | 5 h |
-| TASK-32.4 | Consolidar informes de pruebas, matriz de viabilidad y registro de decisiones. | DOC, QA | 5 h |
+| TASK-32.4 | Consolidar informes de pruebas, marco legal y matriz de fuentes de verificación, y registro de decisiones. | DOC, QA | 5 h |
 
 **Pruebas asociadas:** verificación de documentación (revisión del PO).
 
@@ -1390,15 +1550,15 @@ El backend expondrá un conjunto de endpoints simulados bajo el prefijo `/api/mo
 
 **Prioridad:** Alta · **6 PH** · **Responsable:** PO con equipo · **Estado:** Por hacer
 
-**Como** equipo de proyecto, **quiero** demostrar el prototipo y presentar los resultados frente a los objetivos **para** cerrar el proyecto con evidencias.
+**Como** equipo de proyecto, **quiero** demostrar el producto y presentar los resultados frente a los objetivos **para** cerrar la entrega con evidencias.
 
 **Criterios de aceptación:**
 
-1. Existe un escenario de demostración con datos ficticios preparado (solicitante, funcionario, validaciones con distintos escenarios).
-2. Se demuestra el flujo completo: login → creación de expediente → documentos → validaciones simuladas → observación → decisión → notificación.
-3. Se presentan las métricas del plan de acción medidas en el prototipo, sin afirmar resultados no medidos sobre el proceso migratorio real.
-4. Se exponen explícitamente las limitaciones: integraciones simuladas, permisos institucionales pendientes, alcance académico.
-5. El Product Owner valida los entregables finales y firma (o registra) la aceptación del proyecto.
+1. Existe un escenario de demostración con datos ficticios preparado (cliente, despacho, verificaciones con distintos escenarios).
+2. Se demuestra el flujo completo: login → creación de expediente → documentos → consentimiento → verificaciones (manual asistido y simuladas) → observación → decisión → notificación → derechos ARCO.
+3. Se presentan las métricas del plan de acción medidas en el producto y **en el despacho**, sin afirmar resultados no medidos sobre el proceso migratorio oficial (los plazos oficiales, del orden de 3–8 meses, son referencia externa del proceso, no meta del producto).
+4. Se exponen explícitamente las limitaciones: verificación en modo manual asistido, ausencia de convenios y APIs con instituciones (la integración automática es evolución futura sujeta a convenio), alcance del MVP y datos de demostración ficticios.
+5. El Product Owner valida los entregables finales y firma (o registra) la aceptación de la entrega.
 6. La presentación final y el informe de resultados quedan en el repositorio.
 
 **Tareas:**
@@ -1414,7 +1574,7 @@ El backend expondrá un conjunto de endpoints simulados bajo el prefijo `/api/mo
 
 ### Entregables del Sprint 7
 
-* Versión aceptada del prototipo con etiqueta de versión.
+* Versión aceptada del producto con etiqueta de versión.
 * Documentación técnica y de usuario completa.
 * Informes de pruebas consolidados.
 * Instalación limpia verificada.
@@ -1446,8 +1606,8 @@ Cada historia de usuario debe cumplir estas condiciones:
 * Incluir las pruebas relacionadas con la funcionalidad desarrollada.
 * No considerarse terminada solo porque el código compila.
 * Mantener la documentación y el contrato OpenAPI actualizados.
-* No utilizar datos personales reales en pruebas académicas sin autorización.
-* Registrar los bloqueos, especialmente los relacionados con permisos e integración institucional.
+* No utilizar datos personales reales ni de clientes en pruebas ni en demostraciones sin autorización expresa.
+* Registrar los bloqueos, especialmente los relacionados con consentimiento, permisos y acuerdos con fuentes externas.
 
 **Definition of Ready (una historia está lista para entrar al sprint cuando):**
 
@@ -1464,10 +1624,11 @@ Una historia se considera terminada cuando:
 2. Cumple todos sus criterios de aceptación.
 3. Las pruebas relevantes pasan (unitarias, de API e integración cuando aplique).
 4. La autorización y el tratamiento de datos se verifican cuando corresponda.
-5. La API o interfaz está documentada en OpenAPI o en el manual correspondiente.
-6. No existen defectos críticos conocidos asociados a la historia.
-7. Los cambios están integrados en la rama principal del repositorio.
-8. El Product Owner acepta el resultado.
+5. La historia respeta la Ley 81 de 2019: consentimiento registrado cuando aplique, minimización de datos y trazabilidad de verificaciones.
+6. La API o interfaz está documentada en OpenAPI o en el manual correspondiente.
+7. No existen defectos críticos conocidos asociados a la historia.
+8. Los cambios están integrados en la rama principal del repositorio.
+9. El Product Owner acepta el resultado.
 
 En los sprints que apliquen, se suma el uso obligatorio de las herramientas definidas en la sección 5.4: **Java** para el backend, **Docker** para el entorno y las pruebas de integración, **Apache JMeter** para las pruebas de rendimiento (Sprint 6) y **OWASP ZAP** para las pruebas de seguridad (Sprint 6), dejando sus resultados como evidencia.
 
@@ -1475,15 +1636,15 @@ En los sprints que apliquen, se suma el uso obligatorio de las herramientas defi
 
 | Entregable | Resultado esperado | Sprint en que queda listo |
 | --- | --- | --- |
-| Frontend completo | Todas las pantallas funcionales navegables por rol. | Sprint 1 (mejoras en 3, 4, 5, 6) |
-| Viabilidad de integración | Matriz documentada de APIs reales por institución. | Sprint 1 |
-| APIs ficticias | Mocks de TE, CSS, Registro Público y SNM con escenarios. | Sprint 1 |
+| Frontend completo | Portal del cliente P-01…P-27 y módulo interno del despacho I-01…I-18 navegables por rol (45 pantallas). | Sprint 1 (módulo interno al inicio del Sprint 2 si hay desplazamiento; mejoras en 3, 4, 5, 6) |
+| Marco legal y fuentes de verificación | Matriz fuente → tipo (pública/autorizada) → qué se guarda (solo resultado) → base legal, con consentimiento informado definido y camino futuro (AIG) documentado. | Sprint 1 |
+| Fuentes de verificación simuladas | Mocks de TE, CSS, Registro Público y SNM con escenarios, representando integraciones futuras sujetas a convenio. | Sprint 1 |
 | Entorno técnico | Java, PostgreSQL y Docker configurados y reproducibles. | Sprint 2 |
 | Autenticación y autorización | Acceso protegido y permisos por rol aplicados. | Sprint 2 |
-| Gestión de expedientes | Creación, consulta, documentos y notificaciones. | Sprint 3 |
+| Gestión de expedientes | Creación, consulta, documentos, notificaciones, consentimiento informado y derechos ARCO. | Sprint 3 |
 | Flujo de revisión | Estados, observaciones, historial y auditoría. | Sprint 4 |
-| Interoperabilidad | Adaptadores, orquestación de validaciones y trazabilidad. | Sprint 5 |
+| Verificación documental (modo manual asistido + adaptadores preparados) | Verificaciones con fuente, fecha y responsable, adaptadores desacoplados, orquestación con idempotencia y matriz de fuentes y finalidad. | Sprint 5 |
 | Calidad | Informes de pruebas automatizadas, OWASP ZAP, JMeter y usabilidad. | Sprint 6 |
 | Documentación final | Manuales, contratos API, diagramas, evidencias y limitaciones. | Sprint 7 |
 
-**Resultado esperado:** un prototipo académico funcional que demuestre cómo una plataforma interoperable puede reducir la repetición de documentos y agilizar las verificaciones migratorias, con controles de acceso, trazabilidad y protección de datos personales. La integración real con las instituciones y la reducción efectiva de los tiempos oficiales requerirán validaciones, autorizaciones y mediciones adicionales.
+**Resultado esperado:** un **producto funcional para bufetes de abogados** que elimina la duplicación documental y el retrabajo del despacho, con **consentimiento informado registrado, trazabilidad de verificaciones, control de acceso por rol y protección de datos** conforme a la Ley 81 de 2019 y al Decreto Ejecutivo 285 de 2021; los indicadores se miden en el despacho. La verificación se realiza hoy en modo manual asistido sobre fuentes públicas y documentos aportados con autorización; **la integración automática con las instituciones queda como evolución futura sujeta a convenios** (p. ej. vía AIG) y no forma parte del alcance de esta entrega.
