@@ -77,6 +77,26 @@ function render() {
     return;
   }
 
+  // Vistas del portal P-01–P-05 (Fase B)
+  if (key === "login") {
+    import("./views/p-01-login.js").then((m) => {
+      m.renderP01(els.content, {
+        onLoginSuccess: ({ rol }) => {
+          if (rol) state.role = rol;
+          state.isAuthenticated = true;
+          navigate(INITIAL_ROUTE[state.role]);
+        },
+        onGoToRegistro: () => navigate("#/registro"),
+        onGoToRecuperar: () => navigate("#/recuperar-clave"),
+      });
+    });
+    return;
+  }
+  if (key === "registro" || key === "recuperar" || key === "otp") {
+    renderView(els.content, { route: state.route, role: state.role });
+    return;
+  }
+
   // Provisional: vistas públicas y internas sin implementación aún → placeholder
   renderView(els.content, { route: state.route, role: state.role });
 }
