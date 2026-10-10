@@ -12,6 +12,12 @@ import { confirmModal } from "../components/modal.js";
 const MAX_ATTEMPTS = 3;
 const BLOCK_SECONDS = 60; // bloqueo visual temporal
 
+// Credencial demo (ficticia) para probar el flujo mientras no exista backend
+const DEMO_EMAIL = "demo@bufete.test";
+const DEMO_PASS = "Demo123!";
+const DEMO_ROL = "SOLICITANTE";
+const DEMO_NOMBRE = "María Demo";
+
 export function renderP01(container, { onLoginSuccess, onGoToRegistro, onGoToRecuperar } = {}) {
   container.innerHTML = "";
   const inner = el("div", "app-content__inner app-auth");
@@ -87,18 +93,25 @@ export function renderP01(container, { onLoginSuccess, onGoToRegistro, onGoToRec
     clearError();
     setLoading(true);
 
-    // Simular respuesta de backend (fixture/error)
+    // Simular respuesta de backend (fixture/demo)
     setTimeout(() => {
       setLoading(false);
-      // Para demo: simular fallo genérico (CP-02) en primer intento
       attempts += 1;
-      if (attempts < MAX_ATTEMPTS) {
-        setError("No pudimos iniciar sesión. Verifique el correo y la contraseña e intente de nuevo.");
-      } else {
+
+      // Credencial demo (ficticia) → éxito; cualquier otra → fallo genérico (CP-02)
+      if (email === DEMO_EMAIL && pass === DEMO_PASS) {
+        attempts = 0;
+        blockedUntil = 0;
+        onLoginSuccess?.({ rol: DEMO_ROL, usuario: { nombre: DEMO_NOMBRE, correo: email } });
+        return;
+      }
+
+      if (attempts >= MAX_ATTEMPTS) {
         blockedUntil = Date.now() + BLOCK_SECONDS * 1000;
         setError(`Demasiados intentos fallidos. Bloqueado temporalmente por ${BLOCK_SECONDS} segundos.`);
+      } else {
+        setError("No pudimos iniciar sesión. Verifique el correo y la contraseña e intente de nuevo.");
       }
-      // Éxito (comentado): onLoginSuccess?.({ rol: "SOLICITANTE" })
     }, 400);
   });
 
