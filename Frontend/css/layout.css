@@ -799,6 +799,64 @@ fieldset.form-field .form-field__label {
   border-color: var(--color-info);
 }
 
+/* ---------- Ficha de requisitos (P-07) ---------- */
+.ficha {
+  margin-top: var(--space-3);
+  background: var(--color-surface-alt);
+}
+.ficha__title {
+  margin: 0 0 var(--space-3);
+  font-size: var(--font-size-md);
+}
+.ficha__subtitle {
+  margin: var(--space-4) 0 var(--space-2);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.ficha__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+.ficha__item {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  font-size: var(--font-size-sm);
+}
+.ficha__marker {
+  flex: 0 0 20px;
+  height: 20px;
+  line-height: 20px;
+  text-align: center;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+}
+.ficha__item--auto .ficha__marker {
+  background: var(--color-verified-bg);
+  border-color: var(--color-verified);
+  color: var(--color-verified);
+}
+.ficha__tag {
+  font-size: var(--font-size-xs);
+  color: var(--color-verified);
+  background: var(--color-verified-bg);
+  border-radius: var(--radius-pill);
+  padding: 1px var(--space-2);
+}
+.ficha__note {
+  margin: var(--space-4) 0 0;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
 /* ---------- Estado vacío de vista ---------- */
 .app-empty {
   display: flex;
