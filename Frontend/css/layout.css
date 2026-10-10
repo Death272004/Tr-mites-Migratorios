@@ -870,6 +870,239 @@ fieldset.form-field .form-field__label {
   color: var(--color-text-muted);
 }
 
+/* ---------- Asistente de solicitud (P-09…P-16) ---------- */
+.wizard-summary {
+  margin: 0 0 var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-info-bg);
+  border-radius: var(--radius-sm);
+  color: var(--color-primary-dark);
+  font-size: var(--font-size-sm);
+}
+.wizard-body {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-5);
+}
+.wizard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--space-4);
+}
+.wizard-section-title {
+  grid-column: 1 / -1;
+  margin: var(--space-2) 0 0;
+  font-size: var(--font-size-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--color-text-muted);
+}
+.wizard-section {
+  border: 0;
+  padding: 0;
+  margin: 0 0 var(--space-5);
+}
+.form-field--check {
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+}
+.form-field--check .auth-check__label {
+  font-size: var(--font-size-sm);
+}
+
+/* Campos sellados [A] */
+.badge--verified {
+  background: var(--color-verified-bg);
+  color: var(--color-verified);
+}
+.verified-field__seal {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+}
+.verified-field__meta {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+.verified-field__actions {
+  margin-top: var(--space-1);
+}
+
+/* Carga de documentos */
+.file-upload {
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-surface);
+}
+.file-upload__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+.file-upload__label {
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-sm);
+  flex: 1 1 auto;
+}
+.file-upload__state {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+.file-upload__state.is-loaded {
+  color: var(--color-success);
+  font-weight: var(--font-weight-medium);
+}
+
+/* Firma manuscrita */
+.signature {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-2);
+  background: var(--color-surface);
+}
+.signature__canvas {
+  width: 100%;
+  height: 180px;
+  touch-action: none;
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-sm);
+  background: #fff;
+  cursor: crosshair;
+}
+.signature__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding-top: var(--space-2);
+}
+
+/* Checklist y barra de progreso */
+.checklist {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-3);
+}
+.checklist__item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+.checklist__item--auto {
+  background: var(--color-verified-bg);
+  border-color: var(--color-verified);
+}
+.checklist__item-main { flex: 1 1 auto; }
+.checklist__name { font-size: var(--font-size-sm); font-weight: var(--font-weight-medium); }
+.checklist__meta { font-size: var(--font-size-xs); color: var(--color-text-muted); }
+.progress {
+  height: 10px;
+  border-radius: var(--radius-pill);
+  background: var(--color-surface-alt);
+  overflow: hidden;
+  margin: var(--space-3) 0;
+}
+.progress__bar {
+  height: 100%;
+  width: 0;
+  background: var(--color-primary);
+  transition: width var(--transition-base);
+}
+
+/* Dependientes (P-13) */
+.dependent-list {
+  display: grid;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+.dependent-card {
+  padding: var(--space-4);
+}
+.dependent-card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+.dependent-card__title {
+  margin: 0;
+  font-size: var(--font-size-md);
+}
+
+/* Bloque de resultado / QR */
+.qr-box {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+.qr-box canvas { image-rendering: pixelated; }
+.qr-box__code {
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-sm);
+}
+
+/* Resumen / declaración / citas (P-16…P-18) */
+.detail-card {
+  width: 100%;
+}
+.detail-row--head {
+  background: var(--color-surface-alt, #f4f6f9);
+}
+.detail-row--head .detail-row__label {
+  color: var(--color-text);
+  font-weight: var(--font-weight-semibold, 600);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: var(--font-size-xs, 12px);
+}
+.detail-row:last-child {
+  border-bottom: 0;
+}
+.declaracion {
+  display: grid;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+.cita-day,
+.cita-hour {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+}
+.cita-day:has(input:checked),
+.cita-hour:has(input:checked) {
+  border-color: var(--color-primary);
+  background: var(--color-surface-alt, #eef4ff);
+}
+.wizard-section-title {
+  font-size: var(--font-size-md, 16px);
+  font-weight: var(--font-weight-semibold, 600);
+  margin: var(--space-3) 0 var(--space-2);
+}
+
 /* ---------- Responsive (escritorio y tablet) ---------- */
 @media (max-width: 1024px) {
   .app-nav {

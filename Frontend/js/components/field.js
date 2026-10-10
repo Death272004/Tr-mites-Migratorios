@@ -115,6 +115,47 @@
     return wrapper;
   }
 
+  function fieldDate({ id, label, value = "", required = false, disabled = false, helpText, errorText } = {}) {
+    const wrapper = el("div", "form-field");
+    const lbl = el("label", "form-field__label", label);
+    lbl.setAttribute("for", id);
+    wrapper.appendChild(lbl);
+
+    const input = el("input", "form-field__input");
+    input.type = "date";
+    input.id = id;
+    input.name = id;
+    if (value) input.value = value;
+    if (required) input.required = true;
+    if (disabled) input.disabled = true;
+    if (helpText) input.setAttribute("aria-describedby", `${id}-help`);
+    if (errorText) input.setAttribute("aria-invalid", "true");
+    wrapper.appendChild(input);
+    if (helpText) {
+      const help = el("span", "form-field__help", helpText);
+      help.id = `${id}-help`;
+      wrapper.appendChild(help);
+    }
+    if (errorText) wrapper.appendChild(setError(`${id}-error`, errorText));
+    return wrapper;
+  }
+
+  function fieldCheckbox({ id, label, checked = false, helpText, onChange } = {}) {
+    const wrap = el("div", "form-field form-field--check");
+    const row = el("label", "auth-check");
+    const input = el("input", "auth-check__input");
+    input.type = "checkbox";
+    input.id = id;
+    input.checked = !!checked;
+    if (onChange) input.addEventListener("change", () => onChange(input.checked));
+    const span = el("span", "auth-check__label", label);
+    row.appendChild(input);
+    row.appendChild(span);
+    wrap.appendChild(row);
+    if (helpText) wrap.appendChild(el("span", "form-field__help", helpText));
+    return wrap;
+  }
+
   function fieldTextarea({ id, label, value = "", rows = 4, required = false, disabled = false, helpText, errorText } = {}) {
     const wrapper = el("div", "form-field");
     const lbl = el("label", "form-field__label", label);
@@ -141,5 +182,5 @@
   }
 
   global.tm.ui = global.tm.ui || {};
-  global.tm.ui.field = { fieldText, fieldPassword, fieldSelect, fieldTextarea };
+  global.tm.ui.field = { fieldText, fieldPassword, fieldSelect, fieldTextarea, fieldDate, fieldCheckbox };
 })(window);

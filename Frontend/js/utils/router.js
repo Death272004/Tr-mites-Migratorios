@@ -117,12 +117,15 @@
       route === "#/mis-tramites" ||
       route === "#/perfil";
 
-    const needsMenu = isInner || isPortalRoute;
-    if (needsMenu && !findNavItem(role, route)) {
-      return ERRORS.NOT_FOUND;
-    }
-
-    if (!isInner && !isPortalRoute && !publicPortal.includes(route) && !mapHas(route)) {
+    if (isInner) {
+      if (!findNavItem(role, route)) return ERRORS.NOT_FOUND;
+    } else if (isPortalRoute) {
+      if (route.startsWith("#/solicitud/")) {
+        if (!mapHas(route)) return ERRORS.NOT_FOUND;
+      } else if (!findNavItem(role, route)) {
+        return ERRORS.NOT_FOUND;
+      }
+    } else if (!publicPortal.includes(route) && !mapHas(route)) {
       return ERRORS.NOT_FOUND;
     }
 

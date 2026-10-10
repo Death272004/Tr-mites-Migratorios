@@ -134,6 +134,19 @@
       return;
     }
 
+    var wizardOpts = { onNavigate: navigate };
+    if (key === "p-08") { global.tm.views.p08.renderP08(els.content, wizardOpts); return; }
+    if (key === "p-09") { global.tm.views.p09.renderP09(els.content, wizardOpts); return; }
+    if (key === "p-10") { global.tm.views.p10.renderP10(els.content, wizardOpts); return; }
+    if (key === "p-11") { global.tm.views.p11.renderP11(els.content, wizardOpts); return; }
+    if (key === "p-12") { global.tm.views.p12.renderP12(els.content, wizardOpts); return; }
+    if (key === "p-13") { global.tm.views.p13.renderP13(els.content, wizardOpts); return; }
+    if (key === "p-14") { global.tm.views.p14.renderP14(els.content, wizardOpts); return; }
+    if (key === "p-15") { global.tm.views.p15.renderP15(els.content, wizardOpts); return; }
+    if (key === "p-16") { global.tm.views.p16.renderP16(els.content, wizardOpts); return; }
+    if (key === "p-17") { global.tm.views.p17.renderP17(els.content, wizardOpts); return; }
+    if (key === "p-18") { global.tm.views.p18.renderP18(els.content, wizardOpts); return; }
+
     layout.renderView(els.content, { route: state.route, role: state.role });
   }
 
