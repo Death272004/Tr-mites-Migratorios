@@ -2,23 +2,24 @@
 
 **Proyecto:** Sistema Interoperable para la Gestión de Trámites Migratorios en Panamá
 **Fuente:** `05-backlog-siete-sprints.md` (backlog maestro)
+**Inventario oficial de pantallas:** 45 (portal P-01…P-27 + módulo interno I-01…I-18) adoptado vía registro de cambios del backlog.
 **Rol responsable:** BE (desarrollador backend) con el líder técnico/arquitecto (LT) en las tareas de diseño y contratos
 
 ---
 
 ## 1. Objetivo de la rama
 
-Implementar el servidor del prototipo en **Java**: API REST, reglas de negocio, persistencia, seguridad, auditoría y la capa de interoperabilidad con las instituciones (primero con APIs ficticias, después lista para sustituirlas por integraciones autorizadas).
+Implementar el servidor del producto (MVP) en **Java**: API REST, reglas de negocio, persistencia, seguridad, auditoría y la capa de verificación preparada. Las instituciones se tratan como **fuentes externas de verificación** (fuentes públicas: cédula TE, Registro Público; documentos obtenidos con consentimiento/autorización del titular), no como socios con APIs: el modo actual es la **verificación manual asistida**, se cuenta con **fuentes de verificación simuladas** para la demostración y la **capa de adaptadores queda preparada** para un futuro convenio automático (p. ej. vía AIG) sin rehacer el sistema.
 
 ## 2. Alcance de la rama por sprint
 
 | Sprint | Qué hace esta rama |
 | --- | --- |
-| 1 | Contratos de API (OpenAPI) y **APIs ficticias** de TE, CSS, Registro Público y SNM. |
+| 1 | Contratos de API (OpenAPI) y **fuentes de verificación simuladas** (modo demostración / futuro convenio) de TE, CSS, Registro Público y SNM. |
 | 2 | Entorno reproducible (Docker + Java + PostgreSQL), modelo de datos, autenticación, autorización y manejo de errores. |
 | 3 | Expedientes, documentos y notificaciones. |
 | 4 | Máquina de estados, observaciones, historial y auditoría. |
-| 5 | Adaptadores institucionales, orquestación de validaciones, reintentos, idempotencia y minimización. |
+| 5 | Adaptadores de fuentes de verificación, orquestación de verificaciones, reintentos, idempotencia, minimización y registro manual asistido. |
 | 6 | Pruebas unitarias/API/integración y corrección de hallazgos de seguridad y rendimiento. |
 | 7 | Correcciones finales, empaquetado y apoyo a documentación e instalación limpia. |
 
@@ -61,20 +62,21 @@ Una tarea de backend está terminada cuando:
 
 **Reglas de la rama:**
 
-* Todo funciona con **datos ficticios**; prohibido el uso de datos personales reales.
-* Los mocks institucionales son sustituibles: la lógica de negocio habla con interfaces (puertos), nunca con los mocks directamente.
-* Un error técnico de integración **jamás** se convierte en resultado negativo de una validación.
-* Cada consulta a una institución guarda finalidad, fecha, referencia y resultado mínimo.
+* Todo funciona con **datos ficticios**; prohibido el uso de datos personales reales, y los datos de clientes están prohibidos en cualquier entorno de prueba.
+* Las **fuentes de verificación simuladas** (modo demostración / futuro convenio) son sustituibles: la lógica de negocio habla con interfaces (puertos), nunca con los mocks directamente.
+* Un error técnico de integración **jamás** se convierte en resultado negativo de una verificación.
+* Cada verificación guarda solo el **resultado mínimo: fuente, fecha, resultado y responsable** (+ finalidad y referencia de correlación); nunca copias amplias de datos personales.
+* **Modo actual: verificación manual asistida.** Además del simulado, existe un endpoint que **registra el resultado de la verificación con fuente, fecha, responsable y usuario**, y la capa de adaptadores queda preparada para un futuro convenio automático (p. ej. vía AIG) sin rehacer el sistema.
 
 ---
 
 ## 5. Sprints
 
-# Sprint 1 (semanas 1–2) — APIs ficticias y contratos
+# Sprint 1 (semanas 1–2) — Fuentes de verificación simuladas y contratos
 
-**Objetivo de la rama:** dejar listos los contratos de la API y los mocks de las cuatro instituciones con sus escenarios de error, para que el frontend pueda integrar desde el día 1 del Sprint 2.
+**Objetivo de la rama:** dejar listos los contratos de la API y las **fuentes de verificación simuladas** (modo demostración / futuro convenio) de TE, CSS, Registro Público y SNM con sus escenarios de error, para que el frontend pueda integrar desde el día 1 del Sprint 2.
 
-### HU-07 — Contratos de API (OpenAPI) del prototipo
+### HU-07 — Contratos de API (OpenAPI) del producto (MVP)
 
 **Prioridad:** Crítica · **3 PH** · **Responsable:** LT con BE
 
@@ -100,11 +102,11 @@ Una tarea de backend está terminada cuando:
 
 ---
 
-### HU-08 — APIs ficticias (mocks) de las instituciones
+### HU-08 — Fuentes de verificación simuladas (mocks) de TE, CSS, Registro Público y SNM
 
 **Prioridad:** Crítica · **8 PH** · **Responsable:** BE
 
-**Como** equipo de desarrollo, **quiero** exponer APIs ficticias de TE, CSS, Registro Público y SNM **para** construir y probar el flujo completo sin depender de integraciones reales.
+**Como** equipo de desarrollo, **quiero** exponer **fuentes de verificación simuladas** (modo demostración y futuro convenio) de TE, CSS, Registro Público y SNM **para** construir y probar el flujo completo sin depender de integraciones reales con instituciones.
 
 **Criterios de aceptación:**
 
@@ -118,7 +120,9 @@ Una tarea de backend está terminada cuando:
 4. Latencia simulada configurable para probar tiempos de espera.
 5. Datos ficticios maestro (personas, afiliaciones, registros) en fixture versionado, coherente con las pantallas de demostración.
 6. La capa de integración apunta a interfaces, no a los mocks (requisito de sustitución por integración autorizada).
-7. El mock del SNM es coherente con los expedientes de la plataforma o explica su desfase.
+7. El mock del SNM cubre los flujos del módulo interno I-01…I-18 y del portal (por ejemplo, I-04 completitud e I-07 verificación), es coherente con los expedientes de la plataforma o explica su desfase, y se mantiene como **fuente simulada de referencia del despacho** (el SNM no es aquí un socio con API: es referencia interna del despacho y, en su caso, fuente externa de verificación futura).
+
+> **Nota (modo de producción):** en producción el modo es la **verificación manual asistida**: endpoint que registra el resultado de la verificación con **fuente, fecha, responsable y usuario**, además del simulado. El mock SNM queda como fuente simulada de referencia del despacho y la capa de adaptadores se conserva para un futuro convenio automático (p. ej. vía AIG).
 
 **Tareas de esta rama:**
 
@@ -154,6 +158,8 @@ Una tarea de backend está terminada cuando:
 
 * Mantener los mocks y el contrato estables durante la integración del frontend.
 * Resolver incidencias de contrato que aparezcan en el recorrido (TASK-09.5, con FE y QA).
+
+**Criterio de integración:** los mocks del HU-08 definen el esquema JSON que los fixtures del frontend compartirán (el frontend construye con fixtures y conecta a los mocks sin reescribir pantallas).
 
 ### Entregables del Sprint 1 (rama Backend)
 
@@ -209,12 +215,12 @@ Una tarea de backend está terminada cuando:
 
 **Criterios de aceptación:**
 
-1. Entidades implementadas: Usuario, Rol, Expediente, Documento, Validación, Resultado de validación, Historial de estados, Evento de auditoría, Notificación.
+1. Entidades implementadas: Usuario, Rol, Expediente, Documento, Validación, Resultado de verificación, Historial de estados, Evento de auditoría, Notificación, **Consentimiento** y **Solicitud ARCO** (Ley 81 de 2019 y Decreto Ejecutivo 285 de 2021).
 2. Claves primarias y foráneas con restricciones (no nulos, unicidad, eliminación restringida donde aplique).
 3. Repositorios/mappers separados de los servicios de negocio.
 4. Datos semilla: roles, tipos de trámite, tipos documentales y usuarios de demostración por rol.
 5. Consultas de listado por titularidad e estado probadas con índices adecuados.
-6. Minimización: no se almacena dato personal institucional cuando basta la referencia de consulta.
+6. Minimización: no se almacena dato personal de la fuente cuando basta la referencia de consulta.
 
 **Tareas de esta rama:**
 
@@ -222,7 +228,7 @@ Una tarea de backend está terminada cuando:
 | --- | --- | --- | --- |
 | TASK-11.1 | Implementar entidades y relaciones de usuarios, roles y permisos. | BE | 5 h |
 | TASK-11.2 | Implementar entidades de expediente, documento e historial de estados. | BE | 6 h |
-| TASK-11.3 | Implementar entidades de validación, resultado y evento de auditoría. | BE | 5 h |
+| TASK-11.3 | Implementar entidades de validación, resultado y evento de auditoría, más **Consentimiento** y **Solicitud ARCO**. | BE | 5 h |
 | TASK-11.4 | Escribir migraciones y datos semilla por tipo de trámite. | BE | 5 h |
 | TASK-11.5 | Escribir pruebas de integridad y consultas de listado. | BE con QA | 5 h |
 
@@ -252,7 +258,7 @@ Una tarea de backend está terminada cuando:
 | TASK-12.2 | Implementar `POST /api/auth/login`, emisión de token/sesión y expiración. | BE | 6 h |
 | TASK-12.3 | Implementar límite de intentos, bloqueo temporal y mensajes genéricos. | BE | 4 h |
 | TASK-12.4 | Implementar cierre de sesión y cambio de contraseña. | BE | 4 h |
-| TASK-12.5 | Conectar el frontend de login (P-01, P-02, P-03) al backend real. | FE (rama Frontend) | 5 h |
+| TASK-12.5 | Conectar las pantallas de acceso y cuenta (P-01, P-02, P-04 y P-05) al backend real. | FE (rama Frontend) | 5 h |
 | TASK-12.6 | Escribir pruebas de autenticación (positivas y negativas). | BE con QA | 5 h |
 
 ---
@@ -336,7 +342,7 @@ Una tarea de backend está terminada cuando:
 1. `POST /api/expedientes` crea el expediente con identificador único, solicitante autenticado, trámite, fecha de creación y estado inicial.
 2. Validación de campos obligatorios y tipo de trámite **en el servidor** (`400` con detalle de campo).
 3. No se pueden crear expedientes a nombre de otro usuario (CP-03).
-4. El asistente P-05 consume el endpoint real y muestra éxito/error con el identificador generado.
+4. El asistente P-09…P-16 con el envío P-17 consume el endpoint real y muestra éxito/error con el identificador generado.
 5. Pruebas de creación exitosa, datos inválidos y tentativa de asociación indebida.
 6. Cada creación genera evento de auditoría.
 
@@ -346,7 +352,7 @@ Una tarea de backend está terminada cuando:
 | --- | --- | --- | --- |
 | TASK-15.1 | Implementar servicio y endpoint de creación con validaciones de dominio. | BE | 6 h |
 | TASK-15.2 | Implementar la obtención del tipo de trámite y sus requisitos desde catálogos. | BE | 4 h |
-| TASK-15.3 | Conectar P-05 al endpoint (rama Frontend). | FE | 6 h |
+| TASK-15.3 | Conectar el asistente P-09…P-16 y el envío P-17 al endpoint (rama Frontend). | FE | 6 h |
 | TASK-15.4 | Emitir evento de auditoría en la creación. | BE | 3 h |
 | TASK-15.5 | Escribir pruebas de creación, validación y autorización. | BE con QA | 6 h |
 
@@ -361,7 +367,7 @@ Una tarea de backend está terminada cuando:
 1. `GET /api/expedientes` devuelve solo los expedientes accesibles según rol y titularidad, con filtros y paginación.
 2. `GET /api/expedientes/{id}` verifica acceso; id ajeno responde `404`/`403` sin datos (CP-03).
 3. `GET /api/expedientes/{id}/historial` exige permiso específico de lectura.
-4. P-04, P-06, P-09 y P-10 consumen estos endpoints con sus estados.
+4. Las pantallas P-06, P-19, I-03/I-02 e I-06 consumen estos endpoints con sus estados.
 5. Rendimiento aceptable con 1.000 expedientes de prueba (sin N+1).
 6. Consultas sensibles registradas en auditoría.
 
@@ -371,7 +377,7 @@ Una tarea de backend está terminada cuando:
 | --- | --- | --- | --- |
 | TASK-16.1 | Implementar listado con filtros, paginación y proyección mínima de datos. | BE | 6 h |
 | TASK-16.2 | Implementar detalle e historial con verificación de acceso. | BE | 5 h |
-| TASK-16.3 | Conectar P-04, P-06, P-09 y P-10 (rama Frontend). | FE | 6 h |
+| TASK-16.3 | Conectar P-06, P-19, I-03/I-02 e I-06 (rama Frontend). | FE | 6 h |
 | TASK-16.4 | Escribir pruebas de titularidad, paginación y rendimiento básico. | QA (rama QA) | 5 h |
 
 ---
@@ -386,7 +392,7 @@ Una tarea de backend está terminada cuando:
 2. Metadatos en PostgreSQL, archivo en almacenamiento protegido; sin enlaces públicos.
 3. Descarga con verificación de permiso y registro en auditoría (CP-12).
 4. Documento vinculado al expediente correcto con estado de revisión.
-5. P-07 con progreso, éxito y error, e impedimento de envío de archivos no permitidos.
+5. P-14 (paso 6) con progreso, éxito y error, e impedimento de envío de archivos no permitidos.
 6. Pruebas de archivo válido, tipo no permitido, tamaño excedido y descarga no autorizada.
 7. Prevención de duplicados: subir un tipo documental ya válido genera aviso de duplicado.
 
@@ -397,7 +403,7 @@ Una tarea de backend está terminada cuando:
 | TASK-17.1 | Definir catálogo de tipos documentales permitidos, límites y reglas por trámite. | BE con PO | 4 h |
 | TASK-17.2 | Implementar carga con validación de MIME, tamaño e integridad. | BE | 8 h |
 | TASK-17.3 | Implementar descarga protegida con verificación de permiso y auditoría. | BE | 5 h |
-| TASK-17.4 | Conectar P-07 al backend (rama Frontend). | FE | 6 h |
+| TASK-17.4 | Conectar P-14 al backend (rama Frontend). | FE | 6 h |
 | TASK-17.5 | Escribir pruebas de carga, rechazo, descarga y permisos. | QA (rama QA) | 6 h |
 
 ---
@@ -411,7 +417,7 @@ Una tarea de backend está terminada cuando:
 1. Servicio desacoplado: la notificación se emite desde los servicios de negocio sin acoplarlos.
 2. Eventos mínimos: cambio a `PENDIENTE DE DOCUMENTOS`, observación, resultado de validación, decisión final.
 3. Mensajes sin datos confidenciales ni personales innecesarios.
-4. P-08 lista notificaciones con fecha, tipo y estado de lectura.
+4. P-20 lista las observaciones y notificaciones con fecha, tipo y estado de lectura.
 5. Marcar como leída actualiza el estado sin duplicar eventos.
 6. Pruebas de generación, contenido seguro y marcado de lectura.
 
@@ -421,7 +427,7 @@ Una tarea de backend está terminada cuando:
 | --- | --- | --- | --- |
 | TASK-18.1 | Implementar entidad, endpoint y evento de notificaciones. | BE | 6 h |
 | TASK-18.2 | Definir plantillas de mensajes por tipo de evento sin datos sensibles. | BE con PO | 4 h |
-| TASK-18.3 | Conectar P-08 al backend (rama Frontend). | FE | 4 h |
+| TASK-18.3 | Conectar P-20 al backend (rama Frontend). | FE | 4 h |
 | TASK-18.4 | Escribir pruebas de generación y de contenido seguro. | QA (rama QA) | 4 h |
 
 ### Entregables del Sprint 3 (rama Backend)
@@ -463,7 +469,7 @@ Una tarea de backend está terminada cuando:
 | TASK-19.1 | Definir con el PO la matriz de transiciones por tipo de trámite. | PO con LT (rama Producto) | 4 h |
 | TASK-19.2 | Implementar el servicio de dominio de transiciones con prerrequisitos. | BE | 8 h |
 | TASK-19.3 | Implementar el endpoint con control de concurrencia y motivo obligatorio. | BE | 5 h |
-| TASK-19.4 | Conectar P-11 (rama Frontend). | FE | 5 h |
+| TASK-19.4 | Conectar I-10 (y I-04) al backend (rama Frontend). | FE | 5 h |
 | TASK-19.5 | Escribir pruebas de transiciones válidas, inválidas, concurrentes y bloqueo. | QA (rama QA) | 8 h |
 
 ---
@@ -478,7 +484,7 @@ Una tarea de backend está terminada cuando:
 2. Funcionario solo registra observaciones en expedientes de su ámbito.
 3. Solicitante consulta solo las observaciones de sus expedientes.
 4. Una observación no equivale a decisión final ni cambia estado automáticamente.
-5. P-12 y P-06 muestran el hilo.
+5. I-08 y P-20 muestran el hilo de observaciones y la respuesta del solicitante.
 6. Cada registro genera evento de auditoría.
 
 **Tareas de esta rama:**
@@ -486,7 +492,7 @@ Una tarea de backend está terminada cuando:
 | TASK | Descripción | Responsable | Estimación |
 | --- | --- | --- | --- |
 | TASK-20.1 | Implementar entidad, endpoints y permisos de observaciones. | BE | 6 h |
-| TASK-20.2 | Conectar P-12 y el bloque de P-06 (rama Frontend). | FE | 5 h |
+| TASK-20.2 | Conectar I-08 y el bloque de observaciones de P-20 (rama Frontend). | FE | 5 h |
 | TASK-20.3 | Escribir pruebas de permisos y registro con auditoría. | QA (rama QA) | 4 h |
 
 ---
@@ -499,7 +505,7 @@ Una tarea de backend está terminada cuando:
 
 1. `GET /api/expedientes/{id}/historial` devuelve eventos en orden con autor, fecha, cambio y motivo.
 2. Acceso con permiso específico; eventos no autorizados no se filtran ni revelan (CP-09).
-3. P-06 y P-10 muestran la línea de tiempo.
+3. P-19 e I-06 muestran la línea de tiempo.
 4. Sin datos sensibles innecesarios en el historial.
 5. Pruebas de lectura autorizada y denegada en verde.
 
@@ -508,7 +514,7 @@ Una tarea de backend está terminada cuando:
 | TASK | Descripción | Responsable | Estimación |
 | --- | --- | --- | --- |
 | TASK-21.1 | Implementar el endpoint de historial con proyección por rol. | BE | 5 h |
-| TASK-21.2 | Línea de tiempo en P-06/P-10 (rama Frontend). | FE | 5 h |
+| TASK-21.2 | Componente de línea de tiempo en P-19/I-06 (rama Frontend). | FE | 5 h |
 | TASK-21.3 | Escribir pruebas de autorización del historial. | QA (rama QA) | 3 h |
 
 ---
@@ -519,11 +525,11 @@ Una tarea de backend está terminada cuando:
 
 **Criterios de aceptación:**
 
-1. Registrados: inicio/cierre de sesión, creación y cambio de estado, carga y descarga de documentos, consultas institucionales y operaciones administrativas.
+1. Registrados: inicio/cierre de sesión, creación y cambio de estado, carga y descarga de documentos, consultas a fuentes de verificación y operaciones administrativas.
 2. Cada evento: actor, operación, recurso, fecha, resultado y correlación.
 3. Registros protegidos: solo el rol auditor los consulta y no se modifican vía API.
 4. Sin contraseñas, tokens ni datos personales innecesarios en logs (CP-11).
-5. P-15 con filtros, paginación y exportación CSV.
+5. I-16 con filtros, paginación y exportación CSV.
 6. Prueba de integridad: 100 % de operaciones críticas esperadas registradas.
 
 **Tareas de esta rama:**
@@ -533,7 +539,7 @@ Una tarea de backend está terminada cuando:
 | TASK-22.1 | Diseñar el modelo de eventos de auditoría y su política de retención. | LT con BE | 4 h |
 | TASK-22.2 | Instrumentar los servicios críticos con registro de eventos (sin bloquear la operación). | BE | 8 h |
 | TASK-22.3 | Implementar consulta con filtros, paginación y exportación, protegido por rol. | BE | 6 h |
-| TASK-22.4 | Conectar P-15 (rama Frontend). | FE | 4 h |
+| TASK-22.4 | Conectar I-16 (rama Frontend). | FE | 4 h |
 | TASK-22.5 | Pruebas de cobertura de eventos críticos y de no exposición en logs. | QA (rama QA) | 6 h |
 
 ### Entregables del Sprint 4 (rama Backend)
@@ -550,22 +556,22 @@ Una tarea de backend está terminada cuando:
 
 ---
 
-# Sprint 5 (semanas 9–10) — Interoperabilidad institucional simulada
+# Sprint 5 (semanas 9–10) — Verificación de fuentes externas (simulación y modo manual asistido)
 
-**Objetivo de la rama:** adaptadores desacoplados, orquestación de validaciones con reintentos e idempotencia, y trazabilidad con minimización.
+**Objetivo de la rama:** adaptadores de fuentes de verificación desacoplados, orquestación de verificaciones con reintentos e idempotencia, y trazabilidad con minimización.
 
-### HU-23 — Adaptadores institucionales
+### HU-23 — Adaptadores de fuentes de verificación
 
 **Prioridad:** Crítica · **8 PH** · **Responsable:** BE
 
 **Criterios de aceptación:**
 
-1. Interfaz (puerto) por institución: `TePort`, `CssPort`, `RegistroPublicoPort`, con implementación sobre los mocks.
+1. Interfaz (puerto) por **fuente de verificación**: `TePort`, `CssPort`, `RegistroPublicoPort`, con implementación sobre las fuentes simuladas (modo demostración / futuro convenio).
 2. Cada adaptador traduce la respuesta a un formato normalizado (resultado, referencia, fecha, estado técnico).
 3. La lógica del expediente no importa clases de los mocks ni conoce rutas concretas (desacoplamiento verificable).
-4. Configuración de timeout y reintentos por institución.
+4. Configuración de timeout y reintentos por fuente de verificación.
 5. Pruebas de contrato por adaptador: válida, sin resultado, error técnico y timeout (CP-06, CP-07).
-6. Documentado el procedimiento de sustitución por integración real autorizada.
+6. Documentado el procedimiento de sustitución por convenio automático futuro (p. ej. vía AIG) debidamente autorizado; mientras tanto, el modo de producción es la **verificación manual asistida** (registro de resultado con fuente, fecha, responsable y usuario) y la capa de adaptadores queda preparada sin rehacer el sistema.
 
 **Tareas de esta rama:**
 
@@ -610,7 +616,7 @@ Una tarea de backend está terminada cuando:
 
 **Criterios de aceptación:**
 
-1. Matriz de datos por institución (campo → finalidad → base legal → responsable) formalizada.
+1. Matriz de datos por **fuente de verificación** (campo → finalidad → base legal → responsable) formalizada.
 2. Validación de permiso y finalidad **antes** de emitir la consulta.
 3. Solicitudes solo con campos autorizados de la matriz.
 4. Respuestas guardadas con el resultado mínimo; sin copias amplias de datos personales.
@@ -621,7 +627,7 @@ Una tarea de backend está terminada cuando:
 
 | TASK | Descripción | Responsable | Estimación |
 | --- | --- | --- | --- |
-| TASK-25.1 | Formalizar la matriz de datos por institución y sus finalidades. | LT con PO (rama Producto) | 4 h |
+| TASK-25.1 | Formalizar la matriz de datos por fuente de verificación y sus finalidades. | LT con PO (rama Producto) | 4 h |
 | TASK-25.2 | Implementar la validación de permiso y finalidad previa a la consulta. | BE | 5 h |
 | TASK-25.3 | Aplicar minimización en peticiones y almacenamiento de respuestas. | BE | 5 h |
 | TASK-25.4 | Verificar trazabilidad y contenido mínimo de logs con pruebas. | QA (rama QA) | 4 h |
@@ -756,7 +762,7 @@ Una tarea de backend está terminada cuando:
 
 ### Entregables del Sprint 7 (rama Backend)
 
-* Versión etiquetada del prototipo.
+* Versión etiquetada del producto (MVP).
 * Contrato y diagramas actualizados.
 * Instalación limpia verificada.
 

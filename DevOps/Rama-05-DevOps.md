@@ -2,13 +2,14 @@
 
 **Proyecto:** Sistema Interoperable para la Gestión de Trámites Migratorios en Panamá
 **Fuente:** `05-backlog-siete-sprints.md` (backlog maestro)
+**Inventario oficial de pantallas:** 45 (portal P-01…P-27 + módulo interno I-01…I-18) adoptado vía registro de cambios del backlog.
 **Rol responsable:** DevOps (infraestructura, entornos y despliegue) — en un equipo pequeño puede cubrirse con el líder técnico (LT) y el desarrollador backend (BE)
 
 ---
 
 ## 1. Objetivo de la rama
 
-Garantizar que el prototipo sea **reproducible, aislado y verificable**: repositorio bien estructurado, entornos definidos, contenedores Docker, configuración y secretos fuera del código, integración continua y una instalación limpia que funcione en una máquina nueva.
+Garantizar que el producto (MVP) sea **reproducible, aislado y verificable**: repositorio bien estructurado, entornos definidos, contenedores Docker, configuración y secretos fuera del código, integración continua y una instalación limpia que funcione en una máquina nueva.
 
 ## 2. Alcance de la rama por sprint
 
@@ -56,8 +57,10 @@ Una tarea de esta rama está terminada cuando:
 
 **Reglas de la rama:**
 
-* Fuera del alcance del prototipo: **entorno de producción** (Documento 3.8), salvo aprobación expresa de requisitos institucionales, legales y de seguridad.
-* Ningún volumen ni base de datos del prototipo contiene datos personales reales.
+* Fuera del alcance del MVP: **entorno de producción** (Documento 3.8), salvo aprobación expresa de requisitos legales y de seguridad.
+* Ningún volumen ni base de datos del producto (MVP) contiene datos personales reales.
+* **Los datos de clientes están prohibidos en las pruebas:** todos los entornos (desarrollo, pruebas, demostración) funcionan solo con **datos ficticios**; ningún dato de clientes del bufete puede entrar en repositorios, volúmenes, imágenes, CI ni evidencias.
+* **Alojamiento de datos (nota breve, pendiente de validación):** considerar que los datos se alojen bajo **jurisdicción preferiblemente panameña**, en línea con la Ley 81 de 2019; decisión pendiente de validación jurídica.
 * Los datos de demostración (fixtures) se versionan; los secretos, nunca.
 * Si algo solo funciona "en la máquina de alguien", es un incidente de la rama, no un detalle.
 
@@ -147,7 +150,7 @@ Una tarea de esta rama está terminada cuando:
 | TASK | HU | Descripción | Responsable | Estimación |
 | --- | --- | --- | --- | --- |
 | — | HU-17 | Definir el volumen/ubicación del **almacenamiento documental protegido** en el contenedor, con acceso restringido y sin servirse como archivos públicos. | DevOps con BE | 5 h |
-| — | HU-17 | Documentar el respaldo y la eliminación de archivos de demostración (política de conservación del prototipo). | DevOps con DOC | 2 h |
+| — | HU-17 | Documentar el respaldo y la eliminación de archivos de demostración (política de conservación del producto / MVP). | DevOps con DOC | 2 h |
 | — | HU-15 a HU-18 | Preparar el **entorno de pruebas aislado** (datos semilla, base de datos reiniciable, sin datos del entorno de desarrollo). | DevOps con QA | 5 h |
 | — | HU-16 | Verificar que las consultas de listado con 1.000 expedientes de prueba rinden aceptablemente en el entorno contenedor (sin N+1). | DevOps con BE/QA | 3 h |
 
@@ -155,7 +158,7 @@ Una tarea de esta rama está terminada cuando:
 
 1. Los archivos subidos viven en un volumen con permisos de sistema operativo restringidos; no hay ruta pública.
 2. El entorno de pruebas se levanta, reinicia y limpia de forma independiente al de desarrollo.
-3. Los datos de prueba se generan con un comando documentado.
+3. Los datos de prueba se generan con un comando documentado y son **siempre ficticios** (datos de clientes prohibidos en pruebas).
 4. La instalación y el volumen documental quedan reflejados en la guía de instalación.
 
 **DoD de la rama (Sprint 3):** volumen documental protegido + entorno de pruebas aislado verificado.
@@ -173,7 +176,7 @@ Una tarea de esta rama está terminada cuando:
 | — | HU-22 | Definir volúmenes y política de retención de la **auditoría** (persistencia separada, sin rotura accidental). | DevOps con BE/LT | 4 h |
 | — | HU-22 | Configurar la rotación y el nivel de los **logs técnicos** en contenedor, verificando que no contengan contraseñas, tokens ni datos personales. | DevOps con QA | 4 h |
 | — | HU-14 | Verificar que los identificadores de correlación de error llegan a los logs y son consultables sin exponer el detalle sensible. | DevOps con BE | 2 h |
-| — | — | Preparar P-19 (monitoreo técnico) con los datos de infraestructura disponibles (errores, intentos fallidos, estado de servicios). | DevOps con FE/BE | 4 h |
+| — | — | Preparar I-18 (salud de las conexiones de interoperabilidad, antiguo monitoreo técnico) con los datos de infraestructura disponibles (errores, intentos fallidos, estado de servicios). | DevOps con FE/BE | 4 h |
 
 **Criterios de aceptación del sprint para la rama:**
 
