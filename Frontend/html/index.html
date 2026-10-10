@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Producto de gestión de expedientes migratorios para bufetes de abogados (Panamá, Ley 81 de 2019).">
+  <title>Gestión de Expedientes Migratorios | Bufete</title>
+
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/layout.css">
+</head>
+<body>
+  <a class="skip-link" href="#contenido">Saltar al contenido principal</a>
+
+  <div class="app-shell">
+    <header class="app-header" role="banner">
+      <button type="button" class="app-header__toggle" id="nav-toggle"
+              aria-label="Mostrar u ocultar menú" aria-expanded="false" aria-controls="app-nav">
+        <span class="app-header__toggle-bar" aria-hidden="true"></span>
+      </button>
+
+      <div class="app-header__brand">
+        <span class="app-header__logo" aria-hidden="true">TM</span>
+        <div class="app-header__titles">
+          <strong class="app-header__title">Trámites Migratorios</strong>
+          <span class="app-header__subtitle" id="app-context">Portal del cliente</span>
+        </div>
+      </div>
+
+      <div class="app-header__user" id="app-user"><!-- usuario + rol + salir --></div>
+    </header>
+
+    <div class="app-body">
+      <nav class="app-nav" id="app-nav" aria-label="Menú principal"><!-- menú por rol --></nav>
+
+      <main class="app-content" id="contenido" tabindex="-1">
+        <div class="app-loading" role="status" aria-live="polite">
+          <span class="spinner" aria-hidden="true"></span>
+          <span>Cargando…</span>
+        </div>
+      </main>
+    </div>
+
+    <footer class="app-footer" role="contentinfo">
+      <span>Sistema de gestión de expedientes migratorios · Demo con datos ficticios</span>
+      <span class="app-footer__legal">Ley 81 de 2019 · sin datos reales ni credenciales</span>
+    </footer>
+  </div>
+
+  <script type="module" src="../js/app.js"></script>
+</body>
+</html>
