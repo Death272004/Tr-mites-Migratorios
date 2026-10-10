@@ -51,11 +51,16 @@ Frontend/
 
 ## Cómo ejecutar (local, sin servidor)
 
-Simplemente abre `html/index.html` con un navegador moderno:
+Simplemente abre `html/index.html` con un navegador moderno (doble clic):
 
 ```text
 file:///C:/Users/Jonathan/Desktop/Repo/Tr-mites-Migratorios/Frontend/html/index.html
 ```
+
+> **Importante:** el frontend usa **scripts clásicos** (`<script src>`), **no** módulos ES.
+> Los módulos ES (`type="module"`) quedan bloqueados por CORS al abrirse con `file://`,
+> por lo que toda la lógica se expone en el espacio de nombres `window.tm`
+> (`tm.roles`, `tm.nav`, `tm.router`, `tm.layout`, `tm.ui`, `tm.session`, `tm.views`).
 
 ## Navegación (rutas principales)
 
@@ -71,11 +76,11 @@ file:///C:/Users/Jonathan/Desktop/Repo/Tr-mites-Migratorios/Frontend/html/index.
 | `#/interno/tablero` | Tablero interno (I-02) |
 | `#/error/403`, `#/error/404`, `#/error/500` | Vistas globales |
 
-## Próximos pasos (según fases)
+## Estado del avance (rama `Frontend`)
 
-- **TASK-01.5** (actual): README documentado.
-- **Fase B (Sprint 1):** vistas P-01…P-05 (acceso y cuenta).
-- **Fase C:** P-06…P-18 (bandeja + asistente).
+- **Fase A (HU-01):** armazón, router con guards, vistas globales, componentes base. ✔
+- **Fase B (HU-02, P-01…P-05):** acceso y cuenta (login, registro, OTP, recuperación, perfil) + gestor de sesión. ✔
+- **Fase C (actual):** P-06…P-18 (bandeja + asistente de solicitud).
 - **Fase D:** P-19…P-27 (seguimiento y servicios).
 - **Sprint 2:** módulo interno I-01…I-18 (fases E–F) + conexión backend (TASK-09, TASK-12, TASK-13).
 

@@ -1,66 +1,51 @@
 /**
- * errors.js — vistas globales 403, 404, 500.
- * Cumplen: mensaje en lenguaje no técnico, sin datos personales,
- * y botón de reintento cuando aplica (500).
+ * errors.js — vistas globales 403/404/500 (CP-05). Script clásico: expone `tm.ui.errors`.
  */
+(function (global) {
+  "use strict";
 
-import { el, pageHeader } from "./layout.js";
+  const { el, pageHeader } = global.tm.layout;
 
-export function renderForbidden(container, { onGoHome } = {}) {
-  const inner = el("div", "app-content__inner app-error");
-  inner.appendChild(pageHeader("Acceso denegado", "No tiene permisos para ver esta página"));
+  function panel(kind, title, hint) {
+    const card = el("div", "card app-error-state");
+    card.appendChild(pageHeader(title, hint));
 
-  const body = el("div", "app-error__body");
-  body.appendChild(
-    el(
-      "p",
-      null,
-      "Su sesión no tiene permisos suficientes para acceder a esta ruta. Verifique su rol o vuelva a la página de inicio."
-    )
-  );
+    const p = el("p", "app-error-state__message");
+    p.textContent =
+      kind === "forbidden"
+        ? "Esta ruta existe pero tu rol no tiene permiso para entrar."
+        : kind === "not-found"
+          ? "La ruta no existe en el inventario de pantallas."
+          : "El sistema no pudo procesar la solicitud en este momento.";
+    card.appendChild(p);
 
-  const actions = el("div", "app-error__actions");
-  const home = el("button", "btn btn--primary", "Volver al inicio");
-  home.type = "button";
-  home.addEventListener("click", () => onGoHome?.());
-  actions.appendChild(home);
-  body.appendChild(actions);
-  inner.appendChild(body);
-  container.appendChild(inner);
-}
+    const btn = el("button", "btn btn--primary");
+    btn.type = "button";
+    btn.textContent = kind === "forbidden" ? "Ir a mi inicio" : "Volver al inicio";
+    btn.addEventListener("click", () => {
+      if (kind === "forbidden") {
+        const role = global.tm.session.getSession()?.datos.rol;
+        window.location.hash = global.tm.roles.INITIAL_ROUTE[role] ?? "#/mis-tramites";
+      } else {
+        window.location.hash = global.tm.session.isAuthenticated() ? "#/mis-tramites" : "#/login";
+      }
+    });
+    card.appendChild(btn);
+    return card;
+  }
 
-export function renderNotFound(container, { onGoHome } = {}) {
-  const inner = el("div", "app-content__inner app-error");
-  inner.appendChild(pageHeader("Página no encontrada", "Error 404"));
+  function renderForbidden(container) {
+    container.appendChild(panel("forbidden", "403 — Sin acceso", "Permiso denegado"));
+  }
 
-  const body = el("div", "app-error__body");
-  body.appendChild(el("p", null, "La página solicitada no existe o no está disponible para su rol."));
+  function renderNotFound(container) {
+    container.appendChild(panel("not-found", "404 — Página no encontrada", "Ruta desconocida"));
+  }
 
-  const actions = el("div", "app-error__actions");
-  const home = el("button", "btn btn--primary", "Volver al inicio");
-  home.type = "button";
-  home.addEventListener("click", () => onGoHome?.());
-  actions.appendChild(home);
-  body.appendChild(actions);
-  inner.appendChild(body);
-  container.appendChild(inner);
-}
+  function renderServerError(container) {
+    container.appendChild(panel("server", "500 — Error interno", "Algo salió mal"));
+  }
 
-export function renderServerError(container, { onRetry } = {}) {
-  const inner = el("div", "app-content__inner app-error");
-  inner.appendChild(pageHeader("Ocurrió un error", "Error 500"));
-
-  const body = el("div", "app-error__body");
-  body.appendChild(
-    el("p", null, "No pudimos completar la operación. Inténtelo de nuevo en unos momentos.")
-  );
-
-  const actions = el("div", "app-error__actions");
-  const retry = el("button", "btn btn--primary", "Reintentar");
-  retry.type = "button";
-  retry.addEventListener("click", () => onRetry?.());
-  actions.appendChild(retry);
-  body.appendChild(actions);
-  inner.appendChild(body);
-  container.appendChild(inner);
-}
+  global.tm.ui = global.tm.ui || {};
+  global.tm.ui.errors = { renderForbidden, renderNotFound, renderServerError };
+})(window);

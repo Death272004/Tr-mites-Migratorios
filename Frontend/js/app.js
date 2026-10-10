@@ -1,151 +1,138 @@
 /**
- * app.js — arranque de la aplicación (Sprint 1, Fase A).
- * Monta el armazón (layout) y refleja el menú según el rol activo.
- * El enrutador con guards de rol se implementa en TASK-01.3.
+ * app.js — arranque de la aplicación (Sprint 1).
+ * Monta el armazón (layout), enruta por hash con guards de rol y
+ * delega cada vista. Script clásico (no depende de ES modules).
  */
+(function (global) {
+  "use strict";
 
-import { DEFAULT_ROLE, INITIAL_ROUTE, isInternalRole, ROLES } from "./utils/roles.js";
-import { renderHeaderUser, renderNav, renderView } from "./components/layout.js";
-import { getViewKey, resolveRoute, ERRORS, LOGIN_ROUTE, INTERNAL_LOGIN_ROUTE } from "./utils/router.js";
-import { renderForbidden, renderNotFound, renderServerError } from "./components/errors.js";
-import { saveSession, getSession, clearSession, isAuthenticated, updateSessionRole } from "./services/session.js";
+  var roles = global.tm.roles;
+  var layout = global.tm.layout;
+  var router = global.tm.router;
+  var errors = global.tm.ui.errors;
+  var session = global.tm.session;
 
-const session = getSession();
+  var DEFAULT_ROLE = roles.DEFAULT_ROLE;
+  var INITIAL_ROUTE = roles.INITIAL_ROUTE;
+  var isInternalRole = roles.isInternalRole;
 
-const state = {
-  user: session?.usuario ?? { nombre: "María Demo", correo: "cliente.demo@bufete.test" },
-  role: session?.rol ?? DEFAULT_ROLE,
-  route: window.location.hash || INITIAL_ROUTE[session?.rol ?? DEFAULT_ROLE],
-};
+  var sess = session.getSession();
 
-const els = {
-  context: document.getElementById("app-context"),
-  user: document.getElementById("app-user"),
-  nav: document.getElementById("app-nav"),
-  content: document.getElementById("contenido"),
-  navToggle: document.getElementById("nav-toggle"),
-};
+  var state = {
+    user: (sess && sess.datos && sess.datos.usuario) || { nombre: "María Demo", correo: "cliente.demo@bufete.test" },
+    role: (sess && sess.datos && sess.datos.rol) || DEFAULT_ROLE,
+    route: window.location.hash || INITIAL_ROUTE[(sess && sess.datos && sess.datos.rol) || DEFAULT_ROLE],
+  };
 
-function loginRoute(role) {
-  return isInternalRole(role) ? INTERNAL_LOGIN_ROUTE : LOGIN_ROUTE;
-}
+  var els = {
+    context: document.getElementById("app-context"),
+    user: document.getElementById("app-user"),
+    nav: document.getElementById("app-nav"),
+    content: document.getElementById("contenido"),
+    navToggle: document.getElementById("nav-toggle"),
+  };
 
-function navigate(route) {
-  if (window.location.hash === route) {
-    state.route = route;
-    render();
-  } else {
-    window.location.hash = route;
-  }
-}
-
-function render() {
-  const authed = isAuthenticated();
-  const resolved = resolveRoute(state.route, state.role, authed);
-  if (resolved !== state.route) {
-    state.route = resolved;
-    window.location.hash = resolved;
-    return;
+  function loginRoute(role) {
+    return isInternalRole(role) ? router.INTERNAL_LOGIN_ROUTE : router.LOGIN_ROUTE;
   }
 
-  els.context.textContent = isInternalRole(state.role) ? "Módulo interno" : "Portal del cliente";
-
-  renderHeaderUser(els.user, {
-    user: authed ? state.user : { nombre: "No autenticado" },
-    role: state.role,
-    onRoleChange: (role) => {
-      state.role = role;
-      if (authed) updateSessionRole(role);
-      navigate(INITIAL_ROUTE[role]);
-    },
-    onLogout: () => {
-      clearSession();
-      navigate(loginRoute(state.role));
-    },
-  });
-
-  renderNav(els.nav, { role: state.role, currentRoute: state.route });
-
-  // Vistas globales
-  const key = getViewKey(state.route);
-  if (key === "error/403") {
-    renderForbidden(els.content, { onGoHome: () => navigate(INITIAL_ROUTE[state.role]) });
-    return;
-  }
-  if (key === "error/404") {
-    renderNotFound(els.content, { onGoHome: () => navigate(INITIAL_ROUTE[state.role]) });
-    return;
-  }
-  if (key === "error/500") {
-    renderServerError(els.content, { onRetry: () => window.location.reload() });
-    return;
+  function navigate(route) {
+    if (window.location.hash === route) {
+      state.route = route;
+      render();
+    } else {
+      window.location.hash = route;
+    }
   }
 
-  // Vistas del portal P-01–P-05 (Fase B)
-  if (key === "login") {
-    import("./views/p-01-login.js").then((m) => {
-      m.renderP01(els.content, {
-        onLoginSuccess: ({ rol, usuario }) => {
-          saveSession({ token: "demo.token.simulado", rol, usuario });
-          state.role = rol;
-          state.user = usuario;
+  function render() {
+    var authed = session.isAuthenticated();
+    var resolved = router.resolveRoute(state.route, state.role, authed);
+    if (resolved !== state.route) {
+      state.route = resolved;
+      window.location.hash = resolved;
+      return;
+    }
+
+    els.context.textContent = isInternalRole(state.role) ? "Módulo interno" : "Portal del cliente";
+
+    layout.renderHeaderUser(els.user, {
+      user: authed ? state.user : { nombre: "No autenticado" },
+      role: state.role,
+      onRoleChange: function (role) {
+        state.role = role;
+        if (authed) session.updateSessionRole(role);
+        navigate(INITIAL_ROUTE[role]);
+      },
+      onLogout: function () {
+        session.clearSession();
+        navigate(loginRoute(state.role));
+      },
+    });
+
+    layout.renderNav(els.nav, { role: state.role, currentRoute: state.route });
+
+    var key = router.getViewKey(state.route);
+
+    if (key === "error/403") { errors.renderForbidden(els.content); return; }
+    if (key === "error/404") { errors.renderNotFound(els.content); return; }
+    if (key === "error/500") { errors.renderServerError(els.content); return; }
+
+    if (key === "login") {
+      global.tm.views.p01.renderP01(els.content, {
+        onLoginSuccess: function (res) {
+          session.saveSession({ rol: res.rol, usuario: res.usuario }, {});
+          state.role = res.rol;
+          state.user = res.usuario;
           navigate(INITIAL_ROUTE[state.role]);
         },
-        onGoToRegistro: () => navigate("#/registro"),
-        onGoToRecuperar: () => navigate("#/recuperar-clave"),
+        onGoToRegistro: function () { navigate("#/registro"); },
+        onGoToRecuperar: function () { navigate("#/recuperar-clave"); },
       });
-    });
-    return;
-  }
-  if (key === "registro") {
-    import("./views/p-02-registro.js").then((m) => {
-      m.renderP02(els.content, {
-        onRegistered: () => navigate("#/identidad/otp"),
-        onGoToLogin: () => navigate("#/login"),
+      return;
+    }
+    if (key === "registro") {
+      global.tm.views.p02.renderP02(els.content, {
+        onRegistered: function () { navigate("#/identidad/otp"); },
+        onGoToLogin: function () { navigate("#/login"); },
       });
-    });
-    return;
-  }
-  if (key === "otp") {
-    import("./views/p-03-otp.js").then((m) => {
-      m.renderP03(els.content, {
-        onVerified: () => navigate("#/login"),
-        onResend: () => window.alert("Código reenviado (simulado)."),
+      return;
+    }
+    if (key === "otp") {
+      global.tm.views.p03.renderP03(els.content, {
+        onVerified: function () { navigate("#/login"); },
+        onResend: function () { window.alert("Código reenviado (simulado)."); },
       });
-    });
-    return;
-  }
-  if (key === "recuperar") {
-    import("./views/p-04-recuperar.js").then((m) => {
-      m.renderP04(els.content, { onGoToLogin: () => navigate("#/login") });
-    });
-    return;
-  }
-  if (key === "p-05") {
-    import("./views/p-05-perfil.js").then((m) => {
-      m.renderP05(els.content, {
-        onRequestChangeEmail: () => navigate("#/identidad/otp"),
+      return;
+    }
+    if (key === "recuperar") {
+      global.tm.views.p04.renderP04(els.content, {
+        onGoToLogin: function () { navigate("#/login"); },
       });
-    });
-    return;
+      return;
+    }
+    if (key === "p-05") {
+      global.tm.views.p05.renderP05(els.content, {
+        onRequestChangeEmail: function () { navigate("#/identidad/otp"); },
+      });
+      return;
+    }
+
+    layout.renderView(els.content, { route: state.route, role: state.role });
   }
 
-  // Provisional: vistas públicas y internas sin implementación aún → placeholder
-  renderView(els.content, { route: state.route, role: state.role });
-}
-
-window.addEventListener("hashchange", () => {
-  state.route = window.location.hash || INITIAL_ROUTE[state.role];
-  render();
-});
-
-if (els.navToggle) {
-  els.navToggle.addEventListener("click", () => {
-    const open = els.nav.classList.toggle("is-open");
-    els.navToggle.setAttribute("aria-expanded", String(open));
+  window.addEventListener("hashchange", function () {
+    state.route = window.location.hash || INITIAL_ROUTE[state.role];
+    render();
   });
-}
 
-// Arranque
-if (!window.location.hash) window.location.hash = INITIAL_ROUTE[state.role];
-render();
+  if (els.navToggle) {
+    els.navToggle.addEventListener("click", function () {
+      var open = els.nav.classList.toggle("is-open");
+      els.navToggle.setAttribute("aria-expanded", String(open));
+    });
+  }
+
+  if (!window.location.hash) window.location.hash = INITIAL_ROUTE[state.role];
+  render();
+})(window);

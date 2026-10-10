@@ -1,147 +1,148 @@
 /**
- * router.js — enrutador con hash, guards por rol y vistas globales.
- * Sigue el inventario: rutas hash como en plan-de-ejecucion-frontend.md §3.
- * Vistas globales: 403, 404, 500.
+ * router.js — enrutador hash con guards por rol y vistas globales 403/404/500.
+ * Script clásico: expone `window.tm.router`.
  */
+(function (global) {
+  "use strict";
 
-import { ROLES, INITIAL_ROUTE, isInternalRole } from "../utils/roles.js";
-import { findNavItem } from "../utils/nav.js";
+  const { INITIAL_ROUTE, isInternalRole, ROLES } = global.tm.roles;
+  const { findNavItem } = global.tm.nav;
 
-const LOGIN_ROUTE = "#/login";
-const INTERNAL_LOGIN_ROUTE = "#/interno/login";
+  const LOGIN_ROUTE = "#/login";
+  const INTERNAL_LOGIN_ROUTE = "#/interno/login";
 
-const ERRORS = Object.freeze({
-  FORBIDDEN: "#/error/403",
-  NOT_FOUND: "#/error/404",
-  SERVER: "#/error/500",
-});
+  const ERRORS = Object.freeze({
+    FORBIDDEN: "#/error/403",
+    NOT_FOUND: "#/error/404",
+    SERVER: "#/error/500",
+  });
 
-/** Reglas de guard para comprobar que el rol puede acceder a la ruta. */
-function canAccess(route, role) {
-  // Rutas públicas del portal cliente
-  const publicPortal = [LOGIN_ROUTE, "#/registro", "#/recuperar-clave", "#/identidad/otp"];
-  if (publicPortal.includes(route)) return true;
+  function canAccess(route, role) {
+    const publicPortal = [LOGIN_ROUTE, "#/registro", "#/recuperar-clave", "#/identidad/otp"];
+    if (publicPortal.includes(route)) return true;
 
-  // Rutas internas (módulo interno)
-  if (route.startsWith("#/interno/")) {
-    if (route === INTERNAL_LOGIN_ROUTE) return true;
-    return isInternalRole(role);
+    if (route.startsWith("#/interno/")) {
+      if (route === INTERNAL_LOGIN_ROUTE) return true;
+      return isInternalRole(role);
+    }
+
+    if (
+      route.startsWith("#/solicitud/") ||
+      route.startsWith("#/seguimiento/") ||
+      route.startsWith("#/servicios/") ||
+      route === "#/perfil" ||
+      route === "#/mis-tramites"
+    ) {
+      return role === ROLES.SOLICITANTE;
+    }
+
+    if (route === ERRORS.FORBIDDEN || route === ERRORS.NOT_FOUND || route === ERRORS.SERVER) return true;
+
+    return false;
   }
 
-  // Rutas del portal cliente
-  if (route.startsWith("#/solicitud/") || route.startsWith("#/seguimiento/") || route.startsWith("#/servicios/") || route.startsWith("#/perfil") || route === "#/mis-tramites") {
-    return role === ROLES.SOLICITANTE;
+  function getViewKey(route) {
+    if (!route || !route.startsWith("#/")) return "not-found";
+
+    if (route.startsWith("#/interno/")) {
+      if (route === INTERNAL_LOGIN_ROUTE) return "interno-login";
+      return route.replace("#/interno/", "interno/");
+    }
+
+    const map = {
+      "#/login": "login",
+      "#/registro": "registro",
+      "#/recuperar-clave": "recuperar",
+      "#/identidad/otp": "otp",
+      "#/mis-tramites": "p-06",
+      "#/solicitud/tramite": "p-07",
+      "#/solicitud/titularidad": "p-08",
+      "#/solicitud/paso-1": "p-09",
+      "#/solicitud/paso-2": "p-10",
+      "#/solicitud/paso-3": "p-11",
+      "#/solicitud/paso-4": "p-12",
+      "#/solicitud/paso-5": "p-13",
+      "#/solicitud/paso-6": "p-14",
+      "#/solicitud/paso-7": "p-15",
+      "#/solicitud/paso-8": "p-16",
+      "#/solicitud/resumen": "p-17",
+      "#/solicitud/cita": "p-18",
+      "#/seguimiento/estado": "p-19",
+      "#/seguimiento/observaciones": "p-20",
+      "#/seguimiento/subsanacion": "p-21",
+      "#/seguimiento/resultados": "p-22",
+      "#/seguimiento/pagos": "p-23",
+      "#/seguimiento/edictos": "p-24",
+      "#/servicios/certificaciones": "p-25",
+      "#/servicios/naturalizacion": "p-26",
+      "#/servicios/ayuda": "p-27",
+      "#/perfil": "p-05",
+    };
+    if (map[route]) return map[route];
+    if (route === ERRORS.FORBIDDEN) return "error/403";
+    if (route === ERRORS.NOT_FOUND) return "error/404";
+    if (route === ERRORS.SERVER) return "error/500";
+    return "not-found";
   }
 
-  // Rutas de error públicas
-  if (route === ERRORS.FORBIDDEN || route === ERRORS.NOT_FOUND || route === ERRORS.SERVER) return true;
+  function resolveRoute(inputRoute, role, isAuthenticated) {
+    let route = inputRoute && inputRoute.startsWith("#/") ? inputRoute : null;
 
-  return false;
-}
+    if (!route) {
+      route = isAuthenticated
+        ? INITIAL_ROUTE[role]
+        : isInternalRole(role)
+          ? INTERNAL_LOGIN_ROUTE
+          : LOGIN_ROUTE;
+    }
 
-/** Mapear las rutas a "keys" de vista. */
-export function getViewKey(route) {
-  if (!route.startsWith("#/")) return route || "#/not-found";
+    const publicPortal = [LOGIN_ROUTE, "#/registro", "#/recuperar-clave", "#/identidad/otp", ERRORS.FORBIDDEN, ERRORS.NOT_FOUND, ERRORS.SERVER];
+    const needsAuth =
+      (!publicPortal.includes(route) && !isInternalRole(role)) ||
+      (route.startsWith("#/interno/") && route !== INTERNAL_LOGIN_ROUTE);
 
-  if (route.startsWith("#/interno/")) {
-    if (route === INTERNAL_LOGIN_ROUTE) return "interno-login";
-    return route.replace("#/interno/", "interno/");
+    if (needsAuth && !isAuthenticated) {
+      route = isInternalRole(role) ? INTERNAL_LOGIN_ROUTE : LOGIN_ROUTE;
+    }
+
+    if (!canAccess(route, role)) {
+      return ERRORS.FORBIDDEN;
+    }
+
+    const isInner = route.startsWith("#/interno/") && route !== INTERNAL_LOGIN_ROUTE;
+    const isPortalRoute =
+      route.startsWith("#/solicitud/") ||
+      route.startsWith("#/seguimiento/") ||
+      route.startsWith("#/servicios/") ||
+      route === "#/mis-tramites" ||
+      route === "#/perfil";
+
+    const needsMenu = isInner || isPortalRoute;
+    if (needsMenu && !findNavItem(role, route)) {
+      return ERRORS.NOT_FOUND;
+    }
+
+    if (!isInner && !isPortalRoute && !publicPortal.includes(route) && !mapHas(route)) {
+      return ERRORS.NOT_FOUND;
+    }
+
+    return route;
   }
 
-  switch (route) {
-    case LOGIN_ROUTE: return "login";
-    case "#/registro": return "registro";
-    case "#/recuperar-clave": return "recuperar";
-    case "#/identidad/otp": return "otp";
-    case "#/mis-tramites": return "p-06";
-    case "#/solicitud/tramite": return "p-07";
-    case "#/solicitud/titularidad": return "p-08";
-    case "#/solicitud/paso-1": return "p-09";
-    case "#/solicitud/paso-2": return "p-10";
-    case "#/solicitud/paso-3": return "p-11";
-    case "#/solicitud/paso-4": return "p-12";
-    case "#/solicitud/paso-5": return "p-13";
-    case "#/solicitud/paso-6": return "p-14";
-    case "#/solicitud/paso-7": return "p-15";
-    case "#/solicitud/paso-8": return "p-16";
-    case "#/solicitud/resumen": return "p-17";
-    case "#/solicitud/cita": return "p-18";
-    case "#/seguimiento/estado": return "p-19";
-    case "#/seguimiento/observaciones": return "p-20";
-    case "#/seguimiento/subsanacion": return "p-21";
-    case "#/seguimiento/resultados": return "p-22";
-    case "#/seguimiento/pagos": return "p-23";
-    case "#/seguimiento/edictos": return "p-24";
-    case "#/servicios/certificaciones": return "p-25";
-    case "#/servicios/naturalizacion": return "p-26";
-    case "#/servicios/ayuda": return "p-27";
-    case "#/perfil": return "p-05";
-    case ERRORS.FORBIDDEN: return "error/403";
-    case ERRORS.NOT_FOUND: return "error/404";
-    case ERRORS.SERVER: return "error/500";
-    default: return "not-found";
-  }
-}
-
-/** Resuelve la ruta destino tras validar guards. */
-export function resolveRoute(inputRoute, role, isAuthenticated = false) {
-  let route = inputRoute && inputRoute.startsWith("#/") ? inputRoute : null;
-
-  if (!route) {
-    route = isAuthenticated
-      ? INITIAL_ROUTE[role]
-      : (isInternalRole(role) ? INTERNAL_LOGIN_ROUTE : LOGIN_ROUTE);
+  function mapHas(route) {
+    const map = {
+      "#/login": 1, "#/registro": 1, "#/recuperar-clave": 1, "#/identidad/otp": 1,
+      "#/mis-tramites": 1, "#/solicitud/tramite": 1, "#/solicitud/titularidad": 1,
+      "#/solicitud/paso-1": 1, "#/solicitud/paso-2": 1, "#/solicitud/paso-3": 1,
+      "#/solicitud/paso-4": 1, "#/solicitud/paso-5": 1, "#/solicitud/paso-6": 1,
+      "#/solicitud/paso-7": 1, "#/solicitud/paso-8": 1, "#/solicitud/resumen": 1,
+      "#/solicitud/cita": 1, "#/seguimiento/estado": 1, "#/seguimiento/observaciones": 1,
+      "#/seguimiento/subsanacion": 1, "#/seguimiento/resultados": 1, "#/seguimiento/pagos": 1,
+      "#/seguimiento/edictos": 1, "#/servicios/certificaciones": 1, "#/servicios/naturalizacion": 1,
+      "#/servicios/ayuda": 1, "#/perfil": 1,
+    };
+    return !!map[route];
   }
 
-  // Reglas de autenticación (placeholders mientras llega HU-12)
-  const needsAuth =
-    !isInternalRole(role) &&
-    !(route === LOGIN_ROUTE || route === "#/registro" || route === "#/recuperar-clave" || route === "#/identidad/otp" || route === ERRORS.FORBIDDEN || route === ERRORS.NOT_FOUND || route === ERRORS.SERVER) ||
-    (route.startsWith("#/interno/") && route !== INTERNAL_LOGIN_ROUTE);
-
-  if (needsAuth && !isAuthenticated) {
-    route = isInternalRole(role) ? INTERNAL_LOGIN_ROUTE : LOGIN_ROUTE;
-  }
-
-  if (!canAccess(route, role)) {
-    return ERRORS.FORBIDDEN;
-  }
-
-  // Si no existe en el menú ni es pública válida → 404
-  const isKnown =
-    getViewKey(route).includes("error") ||
-    route === LOGIN_ROUTE ||
-    route === INTERNAL_LOGIN_ROUTE ||
-    route.startsWith("#/solicitud/") ||
-    route.startsWith("#/seguimiento/") ||
-    route.startsWith("#/servicios/") ||
-    route === "#/perfil" ||
-    route === "#/mis-tramites" ||
-    (route.startsWith("#/interno/") && route !== INTERNAL_LOGIN_ROUTE) ||
-    route === "#/registro" ||
-    route === "#/recuperar-clave" ||
-    route === "#/identidad/otp";
-
-  const hasMenu = findNavItem(role, route) != null;
-
-  if (route.startsWith("#/interno/") && route !== INTERNAL_LOGIN_ROUTE && !hasMenu) {
-    return ERRORS.NOT_FOUND;
-  }
-  if (route.startsWith("#/solicitud/") && !hasMenu) {
-    return ERRORS.NOT_FOUND;
-  }
-  if (route.startsWith("#/seguimiento/") && !hasMenu) {
-    return ERRORS.NOT_FOUND;
-  }
-  if (route.startsWith("#/servicios/") && !hasMenu) {
-    return ERRORS.NOT_FOUND;
-  }
-  if (route === "#/mis-tramites" && !hasMenu) return ERRORS.NOT_FOUND;
-  if (route === "#/perfil" && !hasMenu) return ERRORS.NOT_FOUND;
-
-  if (!isKnown && !hasMenu) return ERRORS.NOT_FOUND;
-
-  return route;
-}
-
-export { ERRORS, LOGIN_ROUTE, INTERNAL_LOGIN_ROUTE };
+  global.tm.router = { getViewKey, resolveRoute, ERRORS, LOGIN_ROUTE, INTERNAL_LOGIN_ROUTE };
+})(window);
