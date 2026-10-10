@@ -117,6 +117,22 @@
       });
       return;
     }
+    if (key === "p-06") {
+      global.tm.views.p06.renderP06(els.content, {
+        onNueva: function () { navigate("#/solicitud/tramite"); },
+        onContinue: function () { navigate("#/solicitud/tramite"); },
+        onVerObservacion: function () { navigate("#/seguimiento/observaciones"); },
+        onDescargar: function () { navigate("#/seguimiento/resultados"); },
+      });
+      return;
+    }
+    if (key === "p-07") {
+      global.tm.views.p07.renderP07(els.content, {
+        onBack: function () { navigate("#/mis-tramites"); },
+        onContinue: function () { navigate("#/solicitud/titularidad"); },
+      });
+      return;
+    }
 
     layout.renderView(els.content, { route: state.route, role: state.role });
   }

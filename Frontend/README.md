@@ -87,5 +87,7 @@ file:///C:/Users/Jonathan/Desktop/Repo/Tr-mites-Migratorios/Frontend/html/index.
 ## Notas
 
 - Los fixtures de `js/fixtures/` usan un **sobre provisional** `{ meta, data, error }` mientras no se publique el esquema definitivo de HU-08. Cuando se publique, **reemplazar sin desviarlo**.
+- Las vistas del Sprint 1 (P-01…P-05) usan **datos demo en memoria** porque `fetch()` de JSON también está bloqueado sobre `file://`. Los `.json` de `js/fixtures/` quedan como referencia del esquema hasta que exista el módulo de servicios HTTP (Sprint 2).
+- Cada vista de bandeja/asistente incluye un **selector “Vista (demo)”** para alternar los 4 estados (carga, éxito, vacío, error) sin depender del backend.
 - Selector de **rol (demo)** en la cabecera: temporal para probar guards/menú mientras no exista login real.
 - HTML/CSS/JS puro. Sin build, sin frameworks. 45 pantallas a construir.
