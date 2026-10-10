@@ -1,63 +1,80 @@
 /**
- * session.js — gestor de sesión en el cliente.
- * Sprint 1: token ficticio con expiración, guardado en sessionStorage.
- * Sprint 2 (HU-12): conectar con el backend real /api/auth/* sin cambiar la API.
- * Regla: nunca guardar secretos ni datos reales (Ley 81).
+ * session.js — gestor de sesión de demostración sobre sessionStorage.
+ * Token ficticio (no firma nada), expiración en segundos. Script clásico.
+ * Clave de almacenamiento: tm.session.v1. Expone `window.tm.session`.
  */
+(function (global) {
+  "use strict";
 
-const KEY = "tm.session.v1";
-const EXPIRA_DEFAULT_SEG = 3600;
+  var STORAGE_KEY = "tm.session.v1";
 
-export function saveSession({ token, rol, usuario, expiraEn = EXPIRA_DEFAULT_SEG } = {}) {
-  const session = {
-    token,
-    rol,
-    usuario,
-    expira: Date.now() + expiraEn * 1000,
-  };
-  try {
-    sessionStorage.setItem(KEY, JSON.stringify(session));
-  } catch {
-    /* almacenamiento no disponible: sesión en memoria */
+  function now() {
+    return Math.floor(Date.now() / 1000);
   }
-  return session;
-}
 
-export function getSession() {
-  let raw = null;
-  try {
-    raw = sessionStorage.getItem(KEY);
-  } catch {
-    raw = null;
-  }
-  if (!raw) return null;
-  try {
-    const session = JSON.parse(raw);
-    if (!session.expira || session.expira < Date.now()) {
-      clearSession();
+  function read() {
+    try {
+      var raw = global.sessionStorage.getItem(STORAGE_KEY);
+      if (!raw) return null;
+      var parsed = JSON.parse(raw);
+      if (parsed && typeof parsed === "object" && parsed.token && parsed.datos) return parsed;
+      return null;
+    } catch (e) {
       return null;
     }
+  }
+
+  function expired(s) {
+    return !s.expiraEn || s.expiraEn <= now();
+  }
+
+  function saveSession(datos, opts) {
+    var config = opts || {};
+    var ttl = typeof config.ttlSegundos === "number" ? config.ttlSegundos : 30 * 60;
+    var session = {
+      token: "demo." + String(now()) + "." + (datos.email || "anon").replace(/\s+/g, "_").toLowerCase(),
+      datos: datos,
+      expiraEn: now() + ttl,
+      creada: new Date().toISOString(),
+    };
+    global.sessionStorage.setItem(STORAGE_KEY, JSON.stringify(session));
     return session;
-  } catch {
-    clearSession();
-    return null;
   }
-}
 
-export function clearSession() {
-  try {
-    sessionStorage.removeItem(KEY);
-  } catch {
-    /* noop */
+  function updateSessionRole(role) {
+    var s = read();
+    if (!s) return null;
+    s.datos.rol = role;
+    global.sessionStorage.setItem(STORAGE_KEY, JSON.stringify(s));
+    return s;
   }
-}
 
-export function isAuthenticated() {
-  return getSession() != null;
-}
+  function getToken() {
+    var s = read();
+    if (!s || expired(s)) return null;
+    return s.token;
+  }
 
-export function updateSessionRole(rol) {
-  const session = getSession();
-  if (!session) return null;
-  return saveSession({ ...session, rol });
-}
+  function getSession() {
+    var s = read();
+    if (!s || expired(s)) return null;
+    return s;
+  }
+
+  function isAuthenticated() {
+    return !!getSession();
+  }
+
+  function clearSession() {
+    global.sessionStorage.removeItem(STORAGE_KEY);
+  }
+
+  global.tm.session = {
+    saveSession: saveSession,
+    updateSessionRole: updateSessionRole,
+    getToken: getToken,
+    getSession: getSession,
+    isAuthenticated: isAuthenticated,
+    clearSession: clearSession,
+  };
+})(window);

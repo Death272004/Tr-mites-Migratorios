@@ -1,15 +1,25 @@
 /**
- * Button — componente de botón con variantes.
- * Uso: button({ variant: "primary", text: "Aceptar", type: "button", onClick: fn })
+ * button.js — botón con variantes. Script clásico: expone `tm.ui.button`.
  */
+(function (global) {
+  "use strict";
 
-import { el } from "./layout.js";
+  const { el } = global.tm.layout;
 
-export function button({ variant = "ghost", text = "", type = "button", disabled = false, onClick } = {}) {
-  const cls = variant === "primary" ? "btn btn--primary" : variant === "secondary" ? "btn" : variant === "danger" ? "btn btn--danger" : "btn";
-  const btn = el("button", cls, text);
-  btn.type = type;
-  btn.disabled = disabled;
-  if (onClick) btn.addEventListener("click", onClick);
-  return btn;
-}
+  function button({ variant = "ghost", text = "", type = "button", disabled = false, onClick } = {}) {
+    const cls =
+      variant === "primary"
+        ? "btn btn--primary"
+        : variant === "danger"
+          ? "btn btn--danger"
+          : "btn";
+    const btn = el("button", cls, text);
+    btn.type = type;
+    btn.disabled = disabled;
+    if (onClick) btn.addEventListener("click", onClick);
+    return btn;
+  }
+
+  global.tm.ui = global.tm.ui || {};
+  global.tm.ui.button = button;
+})(window);
