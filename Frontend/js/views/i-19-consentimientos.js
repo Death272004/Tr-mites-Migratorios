@@ -89,13 +89,13 @@
         ver.type = "button";
         ver.addEventListener("click", function () { seleccion = idx; aviso = null; renderContent(); });
         return [
-          c.titular,
-          c.documento,
-          c.expediente,
-          c.tipo,
-          c.fecha,
-          c.vigencia,
-          c.responsable,
+          { text: c.titular },
+          { text: c.documento },
+          { text: c.expediente },
+          { text: c.tipo },
+          { text: c.fecha },
+          { text: c.vigencia },
+          { text: c.responsable },
           { node: estadoBadge(c.estado) },
           { node: ver }
         ];

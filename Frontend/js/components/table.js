@@ -6,6 +6,21 @@
 
   const { el } = global.tm.layout;
 
+  function setCell(td, cell) {
+    if (cell === null || cell === undefined) return;
+    if (cell.nodeType) {
+      td.appendChild(cell);
+      return;
+    }
+    if (typeof cell === "object") {
+      if (cell.node) td.appendChild(cell.node);
+      else td.textContent = cell.text !== null && cell.text !== undefined ? String(cell.text) : "";
+      if (cell.align) td.style.textAlign = cell.align;
+      return;
+    }
+    td.textContent = String(cell);
+  }
+
   function table({ headers = [], rows = [], emptyText = "No hay datos para mostrar" } = {}) {
     const wrapper = el("div", "table-wrapper");
     const tbl = el("table", "table");
@@ -36,9 +51,7 @@
         const tr = el("tr");
         for (const cell of row) {
           const td = el("td");
-          if (cell.node) td.appendChild(cell.node);
-          else td.textContent = cell.text ?? "";
-          if (cell.align) td.style.textAlign = cell.align;
+          setCell(td, cell);
           tr.appendChild(td);
         }
         tbody.appendChild(tr);
