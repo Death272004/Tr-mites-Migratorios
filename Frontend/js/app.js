@@ -214,6 +214,7 @@
     if (key === "interno/bitacora") { showView(global.tm.views.i16.renderI16, { onNavigate: navigate }); return; }
     if (key === "interno/reportes") { showView(global.tm.views.i17.renderI17, { onNavigate: navigate }); return; }
     if (key === "interno/conexiones") { showView(global.tm.views.i18.renderI18, { onNavigate: navigate }); return; }
+    if (key === "interno/consentimientos") { showView(global.tm.views.i19.renderI19, { onNavigate: navigate }); return; }
 
     layout.renderView(els.content, { route: state.route, role: state.role });
   }

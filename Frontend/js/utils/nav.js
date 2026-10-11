@@ -55,6 +55,7 @@
       { label: "Notificación", route: "#/interno/notificacion" },
       { label: "Entrega", route: "#/interno/entrega" },
       { label: "Archivo y reactivación", route: "#/interno/archivo" },
+      { label: "Consentimientos", route: "#/interno/consentimientos" },
     ],
   };
 
@@ -76,6 +77,7 @@
         title: "Auditoría",
         items: [
           { label: "Bitácora", route: "#/interno/bitacora" },
+          { label: "Consentimientos (lectura)", route: "#/interno/consentimientos" },
           { label: "Reportes y tiempos", route: "#/interno/reportes" },
         ],
       },
@@ -86,6 +88,7 @@
         items: [
           { label: "Catálogos", route: "#/interno/catalogos" },
           { label: "Usuarios y roles", route: "#/interno/usuarios" },
+          { label: "Consentimientos", route: "#/interno/consentimientos" },
           { label: "Salud de conexiones", route: "#/interno/conexiones" },
         ],
       },
