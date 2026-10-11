@@ -86,6 +86,7 @@ file:///C:/Users/Jonathan/Desktop/Repo/Tr-mites-Migratorios/Frontend/html/index.
 - **HU-09 (integración fixtures → mocks):** módulo único de servicios HTTP `tm.api`, cabecera `X-Scenario` y selector global de escenarios. ✔
 - **Inventario completo:** 45/45 pantallas (P-01…P-27 + I-01…I-18), todas con vista, fixtures y ruta.
 - **Pendiente (Sprint 2+):** conectar al backend real (`tm.api.setBaseUrl(...)`), Docker y consentimiento/ARCO.
+- **Alcance:** el Frontend se trabaja **hasta el Sprint 4 inclusive**; los Sprints 5–7 quedan fuera de alcance por ahora.
 
 ## Notas
 

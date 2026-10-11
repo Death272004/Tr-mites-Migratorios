@@ -2,6 +2,8 @@
 
 **Para:** encargado de la rama Frontend · **Fuente detallada:** [Rama-01-Frontend.md](Rama-01-Frontend.md) · **Producto:** gestión de expedientes migratorios para bufetes de abogados (Ley 81 de 2019).
 
+> **Alcance del trabajo Frontend (acordado con el encargado):** se ejecuta **hasta el Sprint 4 inclusive**. Los **Sprint 5, 6 y 7 quedan FUERA DE ALCANCE** por ahora; no se abordan salvo indicación posterior.
+
 > **Cómo usar este documento:** marca cada tarea con ☑ cuando esté terminada y cumpla su criterio. Si una tarea cambia de alcance, regístralo con el PO en el *Registro de cambios del backlog*. Ante cualquier duda de campo o regla, manda "POR DEFINIR (PO)" en lugar de inventar.
 
 ---
@@ -120,7 +122,7 @@
 | ☐ | TASK-21.2 — Componente de línea de tiempo conectado a P-19 e I-06 | 5 h |
 | ☐ | TASK-22.4 — Conectar I-16 (bitácora) y verificar exportación CSV | 4 h |
 
-## 6. Sprint 5 — panel de verificaciones conectado
+## 6. Sprint 5 — panel de verificaciones conectado **(FUERA DE ALCANCE)**
 
 | ☐ | Tarea | Horas |
 | --- | --- | --- |
@@ -129,7 +131,7 @@
 | ☐ | TASK-26.3 — Bloque de verificaciones en P-19 con detalle por rol | 5 h |
 | ☐ | TASK-26.4 — Recorrido completo con escenarios forzados (`X-Scenario`) y corrección de incidencias (con QA) | 6 h |
 
-## 7. Sprint 6 — seguridad y usabilidad
+## 7. Sprint 6 — seguridad y usabilidad **(FUERA DE ALCANCE)**
 
 | ☐ | Tarea | Horas |
 | --- | --- | --- |
@@ -137,7 +139,7 @@
 | ☐ | TASK-30.3 — Clasificar dificultades y priorizar correcciones con el PO | 4 h |
 | ☐ | TASK-30.4 — Corregir pantallas prioritarias y repetir tareas críticas | 8 h |
 
-## 8. Sprint 7 — documentación, empaquetado y demo
+## 8. Sprint 7 — documentación, empaquetado y demo **(FUERA DE ALCANCE)**
 
 | ☐ | Tarea | Horas |
 | --- | --- | --- |

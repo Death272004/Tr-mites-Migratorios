@@ -2,7 +2,8 @@
 ESTADO DEL PROYECTO FRONTEND - PUNTO DE CONTINUACION
 Producto: Gestion de expedientes migratorios para bufetes (Panama, Ley 81 de 2019)
 Rama: Frontend
-Ultima actualizacion de este archivo: HU-09 (integracion fixtures -> mocks) COMPLETA, sin commitear
+Ultima actualizacion de este archivo: HU-09 y cierre de Sprint 1; alcance fijado hasta Sprint 4
+ALCANCE: el Frontend se trabaja HASTA el Sprint 4 inclusive. Sprints 5, 6 y 7 FUERA DE ALCANCE.
 ========================================================================
 
 COMO ABRIR LA APP (arranque rapido)
@@ -20,8 +21,10 @@ COMO ABRIR LA APP (arranque rapido)
 ESTADO DE LA RAMA (git)
 -----------------------
 - Rama local: Frontend
-- Remoto: origin/Frontend  (sincronizado a 00d8798)
+- Remoto: origin/Frontend  (sincronizado a 7f2bcd2)
 - Commits (mas reciente arriba):
+    7f2bcd2  docs(frontend): cierre Sprint 1 (backlog, plan, README y estado)
+    2c195cb  feat(frontend): HU-09 modulo unico de servicios HTTP y selector X-Scenario (TASK-09.1..09.5)
     00d8798  feat(frontend): modulo interno I-01..I-18 (Fases E y F) - 45/45 pantallas
     141ccc3  feat(frontend): Fase D (P-19..P-27) y TASK-03.6 fixtures y 4 estados (P-06..P-18)
     af3a0b9  primeras 18 pantallas del programa de tramites de inmigrantes
@@ -148,7 +151,7 @@ QUE YA ESTA HECHO
     <script js/fixtures/...> tras services/session.js).
     Verificado con Edge headless: 13 vistas x 3 estados de datos = 39/39 OK,
     sin errores de consola; index.html arranca en login sin romper.
-- HU-09 COMPLETA - Integracion fixtures -> mocks (TASK-09.1 a 09.5), SIN COMMITEAR:
+- HU-09 COMPLETA - Integracion fixtures -> mocks (TASK-09.1 a 09.5), COMMITEADA (2c195cb):
     TASK-09.1  js/services/api.js (nuevo) -> modulo UNICO de servicios HTTP
                "tm.api". API: setBaseUrl/getBaseUrl/isOnline, token() (de
                tm.session), scenario(), headers() (Content-Type + Authorization
@@ -284,15 +287,20 @@ Frontend\
 
 SIGUIENTE PASO SUGERIDO
 -----------------------
-El inventario oficial de 45 pantallas esta COMPLETO: portal P-01..P-27
-(Fases A-D) y modulo interno I-01..I-18 (Fases E y F). HU-09 tambien COMPLETA
-(servicio HTTP central tm.api, X-Scenario + selector global, recorrido
-verificado) aunque AUN SIN COMMITEAR. Opciones siguientes:
-  1) Commitear HU-09 (js/services/api.js + cambios en fixtures.js, app.js,
-     layout.js, index.html, layout.css).
-  2) Publicar el esquema oficial de envelopes (PO / HU-08) y migrar los sobres
-     provisionales sin reescribir vistas.
-  3) Afinar POR DEFINIR (PO): I-10 (motivos y matriz de transiciones), I-13
-     (rol de la accion), I-15 (plazo de revision de fuentes), I-17 (meta de
-     reduccion de tiempos).
+ALCANCE ACORDADO: el Frontend se trabaja HASTA EL SPRINT 4 inclusive; los
+Sprints 5, 6 y 7 quedan FUERA DE ALCANCE.
+Sprint 1 (portal P-01..P-27 + HU-09) y el modulo interno I-01..I-18 estan
+COMPLETOS y COMMITEADOS (2c195cb, 7f2bcd2; sincronizado en origin/Frontend).
+Dentro del alcance (Sprints 2..4) queda, en su parte FRONTEND:
+  1) Sprint 2: TASK-13.5 mostrar/ocultar acciones por permisos del rol
+     (con permisos mock). TASK-10.4 Docker y TASK-12.5 conexion auth dependen
+     del backend (otra rama).
+  2) Sprint 3: pantallas nuevas de consentimiento informado (HU-18b: ver/revocar
+     en P-05 y panel del despacho) y formulario de derechos ARCO (HU-18c en P-27),
+     con fixtures y 4 estados. Las tareas TASK-15.3/16.3/17.4/18.3 son conexion
+     al backend.
+  3) Sprint 4: TASK-21.2 componente de linea de tiempo (ya usado por P-19/I-06);
+     TASK-19.4/20.2/22.4 son conexion al backend.
+Pendiente del PO (no bloquea frontend con fixtures): publicar el esquema oficial
+de envelopes (HU-08) y afinar POR DEFINIR (I-10, I-13, I-15, I-17).
 ========================================================================
