@@ -25,41 +25,41 @@
 
 | ☐ | Tarea | Horas |
 | --- | --- | --- |
-| ☐ | TASK-01.1 — Carpetas (`css/`, `js/views/`, `js/components/`, `js/services/`, `js/fixtures/`, `js/utils/`), variables de diseño y fixtures base | 3 h |
-| ☐ | TASK-01.2 — Layout base: encabezado, menú por rol, área de contenido y pie | 4 h |
-| ☐ | TASK-01.3 — Enrutado hash + protección por rol + vistas globales 403/404/500 + modales | 3 h |
-| ☐ | TASK-01.4 — Componentes reutilizables (incluidos stepper y línea de tiempo) | 3 h |
-| ☐ | TASK-01.5 — README del frontend con diseño base y convenciones | 2 h |
+| ☑ | TASK-01.1 — Carpetas (`css/`, `js/views/`, `js/components/`, `js/services/`, `js/fixtures/`, `js/utils/`), variables de diseño y fixtures base | 3 h |
+| ☑ | TASK-01.2 — Layout base: encabezado, menú por rol, área de contenido y pie | 4 h |
+| ☑ | TASK-01.3 — Enrutado hash + protección por rol + vistas globales 403/404/500 + modales | 3 h |
+| ☑ | TASK-01.4 — Componentes reutilizables (incluidos stepper y línea de tiempo) | 3 h |
+| ☑ | TASK-01.5 — README del frontend con diseño base y convenciones | 2 h |
 
 ### Fase B — Acceso y cuenta: P-01…P-05 ≈ 20 h (HU-02)
 
 | ☐ | Tarea | Horas |
 | --- | --- | --- |
-| ☐ | TASK-02.1 — P-01 inicio de sesión (validaciones en cliente, mensaje genérico de fallo CP-02, bloqueo por intentos) | 4 h |
-| ☐ | TASK-02.2 — P-02 registro con aceptación de Ley 81 + P-03 OTP simulado (estados carga/éxito/error) | 6 h |
-| ☐ | TASK-02.3 — P-04 recuperación de contraseña + P-05 perfil con re-verificación OTP simulada | 5 h |
-| ☐ | TASK-02.4 — Gestor de sesión (token, expiración, cierre) y menú adaptado al rol | 5 h |
+| ☑ | TASK-02.1 — P-01 inicio de sesión (validaciones en cliente, mensaje genérico de fallo CP-02, bloqueo por intentos) | 4 h |
+| ☑ | TASK-02.2 — P-02 registro con aceptación de Ley 81 + P-03 OTP simulado (estados carga/éxito/error) | 6 h |
+| ☑ | TASK-02.3 — P-04 recuperación de contraseña + P-05 perfil con re-verificación OTP simulada | 5 h |
+| ☑ | TASK-02.4 — Gestor de sesión (token, expiración, cierre) y menú adaptado al rol | 5 h |
 
 ### Fase C — Bandeja y asistente: P-06…P-18 ≈ 60 h (HU-03)
 
 | ☐ | Tarea | Horas |
 | --- | --- | --- |
-| ☐ | TASK-03.1 — P-06 bandeja de trámites + P-07 selección de trámite con ficha de requisitos | 8 h |
-| ☐ | TASK-03.2 — P-08 titularidad/representación + bloque de campos origen "A" (carga manual bloqueada) | 6 h |
-| ☐ | TASK-03.3 — Asistente P-09…P-16: stepper, validaciones por paso, carga de documentos, P-15 pago simulado sin pasarela, P-16 declaración y firma simulada | 24 h |
-| ☐ | TASK-03.4 — P-17 resumen y envío (número de expediente y QR) | 8 h |
-| ☐ | TASK-03.5 — P-18 reserva de cita (calendario, cupo, turno) — *POR CONFIRMAR según §8* | 6 h |
-| ☐ | TASK-03.6 — Fixtures del flujo del solicitante y los 4 estados en todo el flujo | 8 h |
+| ☑ | TASK-03.1 — P-06 bandeja de trámites + P-07 selección de trámite con ficha de requisitos | 8 h |
+| ☑ | TASK-03.2 — P-08 titularidad/representación + bloque de campos origen "A" (carga manual bloqueada) | 6 h |
+| ☑ | TASK-03.3 — Asistente P-09…P-16: stepper, validaciones por paso, carga de documentos, P-15 pago simulado sin pasarela, P-16 declaración y firma simulada | 24 h |
+| ☑ | TASK-03.4 — P-17 resumen y envío (número de expediente y QR) | 8 h |
+| ☑ | TASK-03.5 — P-18 reserva de cita (calendario, cupo, turno) — *POR CONFIRMAR según §8* | 6 h |
+| ☑ | TASK-03.6 — Fixtures del flujo del solicitante y los 4 estados en todo el flujo | 8 h |
 
 ### Fase D — Seguimiento y servicios: P-19…P-27 ≈ 35 h (HU-04)
 
 | ☐ | Tarea | Horas |
 | --- | --- | --- |
-| ☐ | TASK-04.1 — P-19 línea de tiempo de estados + P-20 observaciones y notificaciones | 8 h |
-| ☐ | TASK-04.2 — P-21 subsanación (carga de archivos y confirmación de atención completa) | 5 h |
-| ☐ | TASK-04.3 — P-22 resultados (resolución, carné digital, certificados) + P-23 historial de pagos | 7 h |
-| ☐ | TASK-04.4 — P-26 naturalización (N-1 a N-13) reutilizando componentes del asistente | 8 h |
-| ☐ | TASK-04.5 — P-24 edictos y P-25 certificados en modo consulta mínimo (*POR CONFIRMAR*) + P-27 ayuda/FAQ/peticiones | 7 h |
+| ☑ | TASK-04.1 — P-19 línea de tiempo de estados + P-20 observaciones y notificaciones | 8 h |
+| ☑ | TASK-04.2 — P-21 subsanación (carga de archivos y confirmación de atención completa) | 5 h |
+| ☑ | TASK-04.3 — P-22 resultados (resolución, carné digital, certificados) + P-23 historial de pagos | 7 h |
+| ☑ | TASK-04.4 — P-26 naturalización (N-1 a N-13) reutilizando componentes del asistente | 8 h |
+| ☑ | TASK-04.5 — P-24 edictos y P-25 certificados en modo consulta mínimo (*POR CONFIRMAR*) + P-27 ayuda/FAQ/peticiones | 7 h |
 
 > **Regla de capacidad:** si la fase D no cabe en las 2 semanas, prioriza P-19, P-20, P-21 y P-22 y avisa al PO para registrar el ajuste.
 
@@ -67,14 +67,16 @@
 
 | ☐ | Tarea | Horas |
 | --- | --- | --- |
-| ☐ | TASK-09.1 — Módulo de servicios HTTP con manejo centralizado de errores y token (lee fixtures locales al inicio) | 5 h |
-| ☐ | TASK-09.2 — Sustituir fixtures por mocks en P-06…P-18, sin reescribir vistas | 6 h |
-| ☐ | TASK-09.3 — Sustituir fixtures por mocks en P-19…P-27 (y al construirlo, en I-01…I-18) | 6 h |
-| ☐ | TASK-09.4 — Selector de escenarios (`X-Scenario`) en la UI de demostración | 3 h |
-| ☐ | TASK-09.5 — Recorrido completo del flujo y corrección de incidencias (con QA) | 4 h |
+| ☑ | TASK-09.1 — Módulo de servicios HTTP con manejo centralizado de errores y token (lee fixtures locales al inicio) | 5 h |
+| ☑ | TASK-09.2 — Sustituir fixtures por mocks en P-06…P-18, sin reescribir vistas | 6 h |
+| ☑ | TASK-09.3 — Sustituir fixtures por mocks en P-19…P-27 (y al construirlo, en I-01…I-18) | 6 h |
+| ☑ | TASK-09.4 — Selector de escenarios (`X-Scenario`) en la UI de demostración | 3 h |
+| ☑ | TASK-09.5 — Recorrido completo del flujo y corrección de incidencias (con QA) | 4 h |
 
 **Entregables del Sprint 1:** las 27 pantallas del portal navegables con fixtures; selector de escenarios; README del frontend actualizado.
 **DoD:** ✅ las 45 rutas del inventario resuelven (portal completo); ✅ protección por rol probada; ✅ sin credenciales; ✅ fixtures con el esquema de los mocks; ✅ sin referencias al esquema viejo de 21 pantallas.
+
+> **Cierre (Frontend):** las tareas de Sprint 1 (Fases A–D, TASK-01.1…04.5, TASK-03.6, HU-09 TASK-09.1…09.5) y del módulo interno (TASK-05.1…05.5) están **terminadas y verificadas** con Edge headless (45/45 pantallas; P-06…P-27 e I-02…I-18 pasan los 4 estados). El servicio HTTP central `tm.api` y el selector global de escenarios (`X-Scenario`) quedan listos para conectar el backend (`tm.api.setBaseUrl(...)`) sin reescribir vistas.
 
 ---
 
@@ -82,11 +84,11 @@
 
 | ☐ | Tarea | Fase | Horas |
 | --- | --- | --- | --- |
-| ☐ | TASK-05.1 — I-01 login del despacho con MFA simulado + layout interno con menú por rol | E | 10 h |
-| ☐ | TASK-05.2 — I-02…I-06: tablero, bandeja de recepción, completitud, asignación de analista, análisis con checklist | E | 20 h |
-| ☐ | TASK-05.3 — I-07…I-13: panel de verificación (modo manual asistido: fuente/fecha/resultado/responsable; error técnico ≠ negativo), observaciones, edictos, resolución, notificación, entrega, archivados y reactivación | E | 30 h |
-| ☐ | TASK-05.4 — I-14…I-17: catálogos, usuarios/roles/permisos, bitácora de auditoría, reportes por etapa | F | 18 h |
-| ☐ | TASK-05.5 — I-18 salud de las conexiones con métricas e intentos fallidos | F | 7 h |
+| ☑ | TASK-05.1 — I-01 login del despacho con MFA simulado + layout interno con menú por rol | E | 10 h |
+| ☑ | TASK-05.2 — I-02…I-06: tablero, bandeja de recepción, completitud, asignación de analista, análisis con checklist | E | 20 h |
+| ☑ | TASK-05.3 — I-07…I-13: panel de verificación (modo manual asistido: fuente/fecha/resultado/responsable; error técnico ≠ negativo), observaciones, edictos, resolución, notificación, entrega, archivados y reactivación | E | 30 h |
+| ☑ | TASK-05.4 — I-14…I-17: catálogos, usuarios/roles/permisos, bitácora de auditoría, reportes por etapa | F | 18 h |
+| ☑ | TASK-05.5 — I-18 salud de las conexiones con métricas e intentos fallidos | F | 7 h |
 
 ---
 

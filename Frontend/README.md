@@ -31,12 +31,12 @@ Frontend/
     │   ├── table.js
     │   └── timeline.js
     ├── fixtures/           ← fixtures locales (mismo esquema HU-08)
-    ├── services/           ← módulo de servicios HTTP (TASK-09.1)
-    ├── utils/              ← utilidades (roles, nav, router)
+    ├── services/           ← servicios: session.js y api.js (módulo único HTTP, TASK-09.1)
+    ├── utils/              ← utilidades (roles, nav, router, data, draft, wizard, fixtures)
     │   ├── nav.js
     │   ├── roles.js
     │   └── router.js
-    └── views/              ← vistas por pantalla (se construyen por fases)
+    └── views/              ← vistas por pantalla (P-01…P-27 e I-01…I-18)
 ```
 
 ## Convenciones
@@ -80,14 +80,17 @@ file:///C:/Users/Jonathan/Desktop/Repo/Tr-mites-Migratorios/Frontend/html/index.
 
 - **Fase A (HU-01):** armazón, router con guards, vistas globales, componentes base. ✔
 - **Fase B (HU-02, P-01…P-05):** acceso y cuenta (login, registro, OTP, recuperación, perfil) + gestor de sesión. ✔
-- **Fase C (actual):** P-06…P-18 (bandeja + asistente de solicitud).
-- **Fase D:** P-19…P-27 (seguimiento y servicios).
-- **Sprint 2:** módulo interno I-01…I-18 (fases E–F) + conexión backend (TASK-09, TASK-12, TASK-13).
+- **Fase C (HU-03, P-06…P-18):** bandeja + asistente de solicitud + fixtures y 4 estados. ✔
+- **Fase D (HU-04, P-19…P-27):** seguimiento y servicios. ✔
+- **Módulo interno (Fases E–F, I-01…I-18):** operación y administración del despacho. ✔
+- **HU-09 (integración fixtures → mocks):** módulo único de servicios HTTP `tm.api`, cabecera `X-Scenario` y selector global de escenarios. ✔
+- **Inventario completo:** 45/45 pantallas (P-01…P-27 + I-01…I-18), todas con vista, fixtures y ruta.
+- **Pendiente (Sprint 2+):** conectar al backend real (`tm.api.setBaseUrl(...)`), Docker y consentimiento/ARCO.
 
 ## Notas
 
 - Los fixtures de `js/fixtures/` usan un **sobre provisional** `{ meta, data, error }` mientras no se publique el esquema definitivo de HU-08. Cuando se publique, **reemplazar sin desviarlo**.
-- Las vistas del Sprint 1 (P-01…P-05) usan **datos demo en memoria** porque `fetch()` de JSON también está bloqueado sobre `file://`. Los `.json` de `js/fixtures/` quedan como referencia del esquema hasta que exista el módulo de servicios HTTP (Sprint 2).
-- Cada vista de bandeja/asistente incluye un **selector “Vista (demo)”** para alternar los 4 estados (carga, éxito, vacío, error) sin depender del backend.
-- Selector de **rol (demo)** en la cabecera: temporal para probar guards/menú mientras no exista login real.
-- HTML/CSS/JS puro. Sin build, sin frameworks. 45 pantallas a construir.
+- **Módulo único de servicios HTTP** (`js/services/api.js`, `tm.api`): ninguna vista llama a `fetch`/`XHR` por su cuenta. Sin backend, lee los fixtures locales; para conectar, `tm.api.setBaseUrl("http(s)://host/api")` **sin reescribir vistas** (`tm.fixtures.data()/message()` delegan en `tm.api`).
+- Cada vista de bandeja/asistente/operación incluye un **selector “Vista (demo)”** para alternar los 4 estados (carga, éxito, vacío, error) sin depender del backend.
+- Selector de **rol (demo)** y selector de **escenario (demo)** (`X-Scenario`) en la cabecera: temporales para probar guards/menú y los 4 estados mientras no exista backend real.
+- HTML/CSS/JS puro. Sin build, sin frameworks. 45 pantallas implementadas.

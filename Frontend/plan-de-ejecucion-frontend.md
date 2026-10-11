@@ -95,55 +95,55 @@ Toda pantalla implementa y muestra los cuatro estados, con selector de escenario
 ## §3. Tabla-resumen maestra (45 pantallas)
 
 **Fase** = fase de construcción; **todas descansan sobre la Fase A** (transversal, HU-01). Fases: A = andamiaje · B = acceso P-01…P-05 · C = bandeja/asistente P-06…P-18 · D = seguimiento/servicios P-19…P-27 · E = operación I-01…I-13 · F = administración I-14…I-18.
-**Estado:** `CONSTRUIR` · `POR CONFIRMAR` (P-15 pagos sin pasarela, P-18 cita, P-24 edictos, P-25 certificaciones — pendientes §8 de la fuente; se construyen en modo mínimo según HU-03/HU-04).
+**Estado:** `CONSTRUIDO` (Sprint 1 completo: 45/45 pantallas) · `POR CONFIRMAR` en P-15, P-18, P-24, P-25 (construidas en modo mínimo según HU-03/HU-04; pendientes §8 de la fuente, siguen marcadas POR CONFIRMAR hasta la definición del PO).
 
 | ID | Pantalla | Fase | Ruta hash propuesta | Rol dueño | Estado |
 |---|---|---|---|---|---|
-| P-01 | Inicio de sesión | B | `#/login` | SOLICITANTE (público) | CONSTRUIR |
-| P-02 | Registro de cuenta | B | `#/registro` | SOLICITANTE (público) | CONSTRUIR |
-| P-03 | Verificación de identidad (OTP) | B | `#/identidad/otp` | SOLICITANTE (público) | CONSTRUIR |
-| P-04 | Recuperación de contraseña | B | `#/recuperar-clave` | SOLICITANTE (público) | CONSTRUIR |
-| P-05 | Mi perfil / datos de contacto | B | `#/perfil` | SOLICITANTE | CONSTRUIR |
-| P-06 | Mis trámites (bandeja) | C | `#/mis-tramites` | SOLICITANTE | CONSTRUIR |
-| P-07 | Nueva solicitud — selección de trámite | C | `#/solicitud/tramite` | SOLICITANTE | CONSTRUIR |
-| P-08 | Titularidad y representación | C | `#/solicitud/titularidad` | SOLICITANTE | CONSTRUIR |
-| P-09 | Paso 1 — Datos personales | C | `#/solicitud/paso-1` | SOLICITANTE | CONSTRUIR |
-| P-10 | Paso 2 — Pasaporte e historial migratorio | C | `#/solicitud/paso-2` | SOLICITANTE | CONSTRUIR |
-| P-11 | Paso 3 — Domicilio y notificaciones | C | `#/solicitud/paso-3` | SOLICITANTE | CONSTRUIR |
-| P-12 | Paso 4 — Situación laboral, económica o de vínculos | C | `#/solicitud/paso-4` | SOLICITANTE | CONSTRUIR |
-| P-13 | Paso 5 — Dependientes | C | `#/solicitud/paso-5` | SOLICITANTE | CONSTRUIR |
-| P-14 | Paso 6 — Requisitos y carga de documentos | C | `#/solicitud/paso-6` | SOLICITANTE | CONSTRUIR |
+| P-01 | Inicio de sesión | B | `#/login` | SOLICITANTE (público) | CONSTRUIDO |
+| P-02 | Registro de cuenta | B | `#/registro` | SOLICITANTE (público) | CONSTRUIDO |
+| P-03 | Verificación de identidad (OTP) | B | `#/identidad/otp` | SOLICITANTE (público) | CONSTRUIDO |
+| P-04 | Recuperación de contraseña | B | `#/recuperar-clave` | SOLICITANTE (público) | CONSTRUIDO |
+| P-05 | Mi perfil / datos de contacto | B | `#/perfil` | SOLICITANTE | CONSTRUIDO |
+| P-06 | Mis trámites (bandeja) | C | `#/mis-tramites` | SOLICITANTE | CONSTRUIDO |
+| P-07 | Nueva solicitud — selección de trámite | C | `#/solicitud/tramite` | SOLICITANTE | CONSTRUIDO |
+| P-08 | Titularidad y representación | C | `#/solicitud/titularidad` | SOLICITANTE | CONSTRUIDO |
+| P-09 | Paso 1 — Datos personales | C | `#/solicitud/paso-1` | SOLICITANTE | CONSTRUIDO |
+| P-10 | Paso 2 — Pasaporte e historial migratorio | C | `#/solicitud/paso-2` | SOLICITANTE | CONSTRUIDO |
+| P-11 | Paso 3 — Domicilio y notificaciones | C | `#/solicitud/paso-3` | SOLICITANTE | CONSTRUIDO |
+| P-12 | Paso 4 — Situación laboral, económica o de vínculos | C | `#/solicitud/paso-4` | SOLICITANTE | CONSTRUIDO |
+| P-13 | Paso 5 — Dependientes | C | `#/solicitud/paso-5` | SOLICITANTE | CONSTRUIDO |
+| P-14 | Paso 6 — Requisitos y carga de documentos | C | `#/solicitud/paso-6` | SOLICITANTE | CONSTRUIDO |
 | P-15 | Paso 7 — Pagos y tasas | C | `#/solicitud/paso-7` | SOLICITANTE | **POR CONFIRMAR** (§8.3: ¿pago en línea o cheque?) |
-| P-16 | Paso 8 — Declaración jurada y firma | C | `#/solicitud/paso-8` | SOLICITANTE | CONSTRUIR |
-| P-17 | Resumen y envío | C | `#/solicitud/resumen` | SOLICITANTE | CONSTRUIR |
+| P-16 | Paso 8 — Declaración jurada y firma | C | `#/solicitud/paso-8` | SOLICITANTE | CONSTRUIDO |
+| P-17 | Resumen y envío | C | `#/solicitud/resumen` | SOLICITANTE | CONSTRUIDO |
 | P-18 | Reserva de cita | C | `#/solicitud/cita` | SOLICITANTE | **POR CONFIRMAR** (§8.4: cobertura de ventanilla) |
-| P-19 | Estado del trámite (línea de tiempo) | D | `#/seguimiento/estado` | SOLICITANTE | CONSTRUIR |
-| P-20 | Observaciones y notificaciones | D | `#/seguimiento/observaciones` | SOLICITANTE | CONSTRUIR |
-| P-21 | Subsanación (corrección del expediente) | D | `#/seguimiento/subsanacion` | SOLICITANTE | CONSTRUIR |
-| P-22 | Resultados: resoluciones, carné digital, certificados | D | `#/seguimiento/resultados` | SOLICITANTE | CONSTRUIR |
-| P-23 | Historial de pagos | D | `#/seguimiento/pagos` | SOLICITANTE | CONSTRUIR |
+| P-19 | Estado del trámite (línea de tiempo) | D | `#/seguimiento/estado` | SOLICITANTE | CONSTRUIDO |
+| P-20 | Observaciones y notificaciones | D | `#/seguimiento/observaciones` | SOLICITANTE | CONSTRUIDO |
+| P-21 | Subsanación (corrección del expediente) | D | `#/seguimiento/subsanacion` | SOLICITANTE | CONSTRUIDO |
+| P-22 | Resultados: resoluciones, carné digital, certificados | D | `#/seguimiento/resultados` | SOLICITANTE | CONSTRUIDO |
+| P-23 | Historial de pagos | D | `#/seguimiento/pagos` | SOLICITANTE | CONSTRUIDO |
 | P-24 | Edictos y citaciones | D | `#/seguimiento/edictos` | SOLICITANTE | **POR CONFIRMAR** (HU-04 CA-7: modo consulta mínimo) |
 | P-25 | Certificaciones en línea | D | `#/servicios/certificaciones` | SOLICITANTE | **POR CONFIRMAR** (HU-04 CA-7: modo consulta mínimo) |
-| P-26 | Naturalización — flujo específico (N-1…N-13) | D | `#/servicios/naturalizacion` | SOLICITANTE (con abogado) | CONSTRUIR |
-| P-27 | Ayuda, FAQ y peticiones | D | `#/servicios/ayuda` | SOLICITANTE | CONSTRUIR |
-| I-01 | Login institucional con MFA | E | `#/interno/login` | Todos los roles internos (público) | CONSTRUIR |
-| I-02 | Tablero de gestión | E | `#/interno/tablero` | FUNCIONARIO (SUPERVISOR/AUDITOR en lectura) | CONSTRUIR |
-| I-03 | Bandeja de recepción (citas y turnos) | E | `#/interno/recepcion` | FUNCIONARIO (recepción) | CONSTRUIR |
-| I-04 | Recepción y verificación de completitud | E | `#/interno/completitud` | FUNCIONARIO (recepción) | CONSTRUIR |
-| I-05 | Asignación de analista | E | `#/interno/asignacion` | FUNCIONARIO (recepción / supervisor de mesa) | CONSTRUIR |
-| I-06 | Análisis del expediente (checklist) | E | `#/interno/analisis` | FUNCIONARIO (abogado analista) | CONSTRUIR |
-| I-07 | Panel de verificación interoperable | E | `#/interno/verificaciones` | FUNCIONARIO con permiso `verificar` | CONSTRUIR |
-| I-08 | Emisión y atención de observaciones | E | `#/interno/observaciones` | FUNCIONARIO (recepción y analista) | CONSTRUIR |
-| I-09 | Edictos y publicaciones | E | `#/interno/edictos` | FUNCIONARIO (analista) | CONSTRUIR |
-| I-10 | Resolución (aprobar / negar) | E | `#/interno/resolucion` | FUNCIONARIO con permiso `resolver` | CONSTRUIR |
-| I-11 | Notificación | E | `#/interno/notificacion` | FUNCIONARIO (notificador) | CONSTRUIR |
-| I-12 | Entrega en ventanilla | E | `#/interno/entrega` | FUNCIONARIO (notificador / ventanilla) | CONSTRUIR |
-| I-13 | Expedientes archivados y reactivación | E | `#/interno/archivo` | FUNCIONARIO (notificador, lectura); ver detalle I-13 | CONSTRUIR |
-| I-14 | Catálogos: trámites, requisitos, tasas y vigencias | F | `#/interno/catalogos` | ADMIN | CONSTRUIR |
-| I-15 | Usuarios, roles y permisos | F | `#/interno/usuarios` | ADMIN | CONSTRUIR |
-| I-16 | Bitácora de auditoría | F | `#/interno/bitacora` | AUDITOR (solo lectura) | CONSTRUIR |
-| I-17 | Reportes y tiempos por etapa | F | `#/interno/reportes` | SUPERVISOR y AUDITOR | CONSTRUIR |
-| I-18 | Salud de las conexiones de interoperabilidad | F | `#/interno/conexiones` | ADMIN (SUPERVISOR/AUDITOR en lectura) | CONSTRUIR |
+| P-26 | Naturalización — flujo específico (N-1…N-13) | D | `#/servicios/naturalizacion` | SOLICITANTE (con abogado) | CONSTRUIDO |
+| P-27 | Ayuda, FAQ y peticiones | D | `#/servicios/ayuda` | SOLICITANTE | CONSTRUIDO |
+| I-01 | Login institucional con MFA | E | `#/interno/login` | Todos los roles internos (público) | CONSTRUIDO |
+| I-02 | Tablero de gestión | E | `#/interno/tablero` | FUNCIONARIO (SUPERVISOR/AUDITOR en lectura) | CONSTRUIDO |
+| I-03 | Bandeja de recepción (citas y turnos) | E | `#/interno/recepcion` | FUNCIONARIO (recepción) | CONSTRUIDO |
+| I-04 | Recepción y verificación de completitud | E | `#/interno/completitud` | FUNCIONARIO (recepción) | CONSTRUIDO |
+| I-05 | Asignación de analista | E | `#/interno/asignacion` | FUNCIONARIO (recepción / supervisor de mesa) | CONSTRUIDO |
+| I-06 | Análisis del expediente (checklist) | E | `#/interno/analisis` | FUNCIONARIO (abogado analista) | CONSTRUIDO |
+| I-07 | Panel de verificación interoperable | E | `#/interno/verificaciones` | FUNCIONARIO con permiso `verificar` | CONSTRUIDO |
+| I-08 | Emisión y atención de observaciones | E | `#/interno/observaciones` | FUNCIONARIO (recepción y analista) | CONSTRUIDO |
+| I-09 | Edictos y publicaciones | E | `#/interno/edictos` | FUNCIONARIO (analista) | CONSTRUIDO |
+| I-10 | Resolución (aprobar / negar) | E | `#/interno/resolucion` | FUNCIONARIO con permiso `resolver` | CONSTRUIDO |
+| I-11 | Notificación | E | `#/interno/notificacion` | FUNCIONARIO (notificador) | CONSTRUIDO |
+| I-12 | Entrega en ventanilla | E | `#/interno/entrega` | FUNCIONARIO (notificador / ventanilla) | CONSTRUIDO |
+| I-13 | Expedientes archivados y reactivación | E | `#/interno/archivo` | FUNCIONARIO (notificador, lectura); ver detalle I-13 | CONSTRUIDO |
+| I-14 | Catálogos: trámites, requisitos, tasas y vigencias | F | `#/interno/catalogos` | ADMIN | CONSTRUIDO |
+| I-15 | Usuarios, roles y permisos | F | `#/interno/usuarios` | ADMIN | CONSTRUIDO |
+| I-16 | Bitácora de auditoría | F | `#/interno/bitacora` | AUDITOR (solo lectura) | CONSTRUIDO |
+| I-17 | Reportes y tiempos por etapa | F | `#/interno/reportes` | SUPERVISOR y AUDITOR | CONSTRUIDO |
+| I-18 | Salud de las conexiones de interoperabilidad | F | `#/interno/conexiones` | ADMIN (SUPERVISOR/AUDITOR en lectura) | CONSTRUIDO |
 
 **Total: 27 + 18 = 45 pantallas.** · `POR CONFIRMAR`: 4 (P-15, P-18, P-24, P-25).
 

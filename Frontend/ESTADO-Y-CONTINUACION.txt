@@ -2,7 +2,7 @@
 ESTADO DEL PROYECTO FRONTEND - PUNTO DE CONTINUACION
 Producto: Gestion de expedientes migratorios para bufetes (Panama, Ley 81 de 2019)
 Rama: Frontend
-Ultima actualizacion de este archivo: modulo interno del despacho COMPLETO (I-01..I-18, Fases E y F) sin commitear
+Ultima actualizacion de este archivo: HU-09 (integracion fixtures -> mocks) COMPLETA, sin commitear
 ========================================================================
 
 COMO ABRIR LA APP (arranque rapido)
@@ -20,15 +20,16 @@ COMO ABRIR LA APP (arranque rapido)
 ESTADO DE LA RAMA (git)
 -----------------------
 - Rama local: Frontend
-- Remoto: origin/Frontend  (YA SINCRONIZADO; el ultimo push fue a157b78..af3a0b9)
+- Remoto: origin/Frontend  (sincronizado a 00d8798)
 - Commits (mas reciente arriba):
+    00d8798  feat(frontend): modulo interno I-01..I-18 (Fases E y F) - 45/45 pantallas
+    141ccc3  feat(frontend): Fase D (P-19..P-27) y TASK-03.6 fixtures y 4 estados (P-06..P-18)
     af3a0b9  primeras 18 pantallas del programa de tramites de inmigrantes
     29f3f3a  feat(frontend): P-07 ficha de requisitos por tramite (catalogo real + Art. 28)
     ff52d8e  feat(frontend): TASK-03.1 P-06 bandeja de tramites y P-07 seleccion de tramite
     ebdd27a  fix(frontend): migrar de ES modules a scripts clasicos para soporte file://
-    6b0ec16  feat(frontend): P-02 a P-05 (registro, OTP simulado, recuperar, perfil) y gestor de sesion
-    0b6e2cd  feat(frontend): P-01 inicio de sesion
-    95f2957  feat(frontend): fase A (HU-01) - layout, routing, componentes y README
+    6b0ec16  feat(frontend): P-02 a P-05 (registro, OTP simulado, recuperar, perfil) y gestor de sesión (TASK-02.2/02.3/02.4)
+    0b6e2cd  feat(frontend): P-01 inicio de sesión (validaciones, mensaje genérico CP-02, bloqueo por intentos)
 
 
 QUE YA ESTA HECHO
@@ -147,6 +148,45 @@ QUE YA ESTA HECHO
     <script js/fixtures/...> tras services/session.js).
     Verificado con Edge headless: 13 vistas x 3 estados de datos = 39/39 OK,
     sin errores de consola; index.html arranca en login sin romper.
+- HU-09 COMPLETA - Integracion fixtures -> mocks (TASK-09.1 a 09.5), SIN COMMITEAR:
+    TASK-09.1  js/services/api.js (nuevo) -> modulo UNICO de servicios HTTP
+               "tm.api". API: setBaseUrl/getBaseUrl/isOnline, token() (de
+               tm.session), scenario(), headers() (Content-Type + Authorization
+               Bearer <token> + X-Scenario), translateError(statusOrCode) con
+               mapa centralizado 400/401/403/404/405/409/422/429/5xx -> mensaje
+               de usuario (sin detalles tecnicos, CP-07/§2.2), envelope(),
+               get(), message(), request(method,path,{pantalla,escenario,body}),
+               clearCache(). OFFLINE (sin baseUrl) lee los fixtures locales con
+               el MISMO sobre { meta, data, error }; ONLINE usa XHR con token +
+               X-Scenario y cachea los envelopes remotos. Conexion al backend =
+               tm.api.setBaseUrl("http(s)://host/api") sin tocar vistas.
+    TASK-09.2/09.3  Sin reescribir vistas: tm.fixtures.data()/message() ahora
+               DELEGAN en tm.api (offline => tm.api.get). tm.fixtures expone
+               raw() (lectura cruda del registro) para que tm.api no entre en
+               recursion. Asi las 45 vistas siguen llamando tm.fixtures y ya
+               pasan por el modulo unico.
+    TASK-09.4  Selector de escenarios (X-Scenario) en la UI demo:
+               - Cabecera (components/layout.js renderHeaderUser): nuevo
+                 <select class="app-header__scenario-select"> con exito/carga/
+                 vacio/error, junto al selector de rol. Al cambiar, app.js hace
+                 tm.fixtures.setScenario(v) y re-renderiza el estado de la vista
+                 montada (captura de opts.onDemoState via showView).
+               - app.js: se anadio showView(renderFn, copts) que enruta TODAS las
+                 ramas y guarda el ultimo opts.onDemoState en `currentShow`,
+                 usado por el selector global. La cabecera recibe scenario y
+                 onScenarioChange.
+               - (Los demoSelector por vista de P-06..P-27 e I-02..I-18 siguen
+                 existiendo; el nuevo es global y transversal.)
+    TASK-09.5  Recorrido completo verificado con Edge headless, sin errores:
+               tm.api ok; X-Scenario y Authorization presentes en headers;
+               tm.fixtures.data delega en tm.api; translateError(409) ok;
+               cambiar el selector global a "error" re-renderiza la vista al
+               estado error; 45/45 pantallas renderizan; P-06..P-27 y I-02..I-18
+               pasan los 4 estados (P-01..P-05 e I-01 login sin selector, por
+               diseno).
+    CSS: layout.css -> .app-header__scenario-select comparte estilo con
+         .app-header__role-select.
+    index.html: registra js/services/api.js justo despues de services/session.js.
 - Infra de apoyo del asistente:
     utils/draft.js   -> borrador compartido (sessionStorage: tm.solicitud.v1)
     utils/wizard.js  -> stepper, marco (frame), pie (footer), errores, nextRoute/prevRoute
@@ -167,10 +207,12 @@ QUE FALTA (priorizado, segun tareas-frontend.md)
    estados P-06..P-18.)
 2) MODULO INTERNO I-01..I-18 COMPLETO (Fases E y F). Inventario total: 45/45
    pantallas (27 portal + 18 internas) con vista, fixtures y ruta.
-3) Integracion fixtures -> mocks (HU-09): TASK-09.1..09.5 (servicio HTTP central,
-   selector X-Scenario via tm.fixtures.scenario(), recorrido completo).
+3) HU-09 (integracion fixtures -> mocks): COMPLETA (TASK-09.1..09.5): servicio
+   HTTP central tm.api, X-Scenario via tm.fixtures.scenario() + selector global
+   en la cabecera, recorrido completo verificado. Falta commitear.
 4) Publicar el esquema oficial de envelopes (PO / HU-08) y migrar los sobres
-   provisionales sin reescribir vistas.
+   provisionales sin reescribir vistas (hoy tm.api usa el mismo sobre
+   { meta, data, error }).
 
 
 DECISIONES Y NOTAS TECNICAS IMPORTANTES
@@ -180,11 +222,12 @@ DECISIONES Y NOTAS TECNICAS IMPORTANTES
 - ORDEN DE CARGA en index.html IMPORTA (scripts sincronicos):
     utils(roles,nav,router,data,draft,fixtures) -> components(layout,button,
     field,table,stepper,timeline,modal,errors,verified-field,file-upload,
-    signature) -> utils/wizard -> services/session -> fixtures(p-06..p-18 + i-01..i-18)
-    -> views(p-01..p-27 + i-01..i-18) -> app.js
+    signature) -> utils/wizard -> services/session -> services/api ->
+    fixtures(p-06..p-18 + i-01..i-18) -> views(p-01..p-27 + i-01..i-18) -> app.js
   Al agregar vistas nuevas: anadir su <script>, su bloque de fixtures y su rama
-  en js/app.js (key === "p-XX" con wizardOpts, o key === "interno/..." con
-  internalOpts = { onNavigate: navigate }).
+  en js/app.js via showView(<render>, { ... }) (key === "p-XX" o
+  key === "interno/..." con { onNavigate: navigate }); showView captura
+  opts.onDemoState para el selector de escenarios global.
 - El router (js/utils/router.js) tiene un map ruta->clave de vista. Las rutas del
   asistente (#/solicitud/*) se validan con mapHas() aunque no esten en el menu.
 - Acceso: solo rol SOLICITANTE en el portal; resto de roles -> modulo interno.
@@ -207,6 +250,9 @@ en Frontend\html\ cargando todos los scripts y renderizando cada vista, luego:
 Ultimo resultado: 45/45 vistas renderizan sin excepciones (window.onerror = 0).
 El modulo interno I-01..I-18 (18/18) y, salvo I-01 (login, sin selector), las 17
 restantes pasan los 4 estados (exito/carga/vacio/error).
+HU-09 verificado: tm.api cargado; headers con X-Scenario + Authorization;
+tm.fixtures.data delega en tm.api; translateError(409) ok; el selector global
+de escenarios (cabecera) cambia el estado de la vista montada; 45/45 OK.
 RECORDAR: borrar los archivos _*.html temporales antes de commitear.
 
 
@@ -219,7 +265,7 @@ Frontend\
   js\utils\    roles, nav, router, data, draft, wizard, fixtures
   js\components\ layout, button, field, table, stepper, timeline, modal, errors,
                  verified-field, file-upload, signature
-  js/services\ session.js
+  js/services\ session.js, api.js (modulo unico de servicios HTTP tm.api)
   js/views\    p-01 ... p-27 (P-19 estado, P-20 obs., P-21 subsanacion, P-22 resultados,
                  P-23 historial de pagos, P-24 edictos, P-25 certificaciones,
                  P-26 naturalizacion, P-27 ayuda/FAQ)
@@ -239,13 +285,14 @@ Frontend\
 SIGUIENTE PASO SUGERIDO
 -----------------------
 El inventario oficial de 45 pantallas esta COMPLETO: portal P-01..P-27
-(Fases A-D) y modulo interno I-01..I-18 (Fases E y F). Opciones siguientes:
-  1) HU-09: integracion fixtures -> mocks (servicio HTTP central, selector
-     X-Scenario via tm.fixtures.scenario(), recorrido completo).
+(Fases A-D) y modulo interno I-01..I-18 (Fases E y F). HU-09 tambien COMPLETA
+(servicio HTTP central tm.api, X-Scenario + selector global, recorrido
+verificado) aunque AUN SIN COMMITEAR. Opciones siguientes:
+  1) Commitear HU-09 (js/services/api.js + cambios en fixtures.js, app.js,
+     layout.js, index.html, layout.css).
   2) Publicar el esquema oficial de envelopes (PO / HU-08) y migrar los sobres
      provisionales sin reescribir vistas.
-  3) Commitear el modulo interno (I-01..I-18) que hoy esta sin commitear.
-  4) Afinar POR DEFINIR (PO): I-10 (motivos y matriz de transiciones), I-13
+  3) Afinar POR DEFINIR (PO): I-10 (motivos y matriz de transiciones), I-13
      (rol de la accion), I-15 (plazo de revision de fuentes), I-17 (meta de
      reduccion de tiempos).
 ========================================================================
