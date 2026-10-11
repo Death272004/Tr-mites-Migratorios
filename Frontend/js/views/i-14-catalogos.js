@@ -12,6 +12,7 @@
   var button = global.tm.ui.button;
   var table = global.tm.ui.table;
   var confirmModal = global.tm.ui.confirmModal;
+  var perms = global.tm.perms;
 
   var FALLBACK = { version: "—", vigencia: "—", categorias: [], verificacionesDisponibles: [], tramites: [] };
 
@@ -116,7 +117,7 @@
       }
 
       var actions = layout.el("div", "toolbar__actions");
-      actions.appendChild(button({ variant: "primary", text: "Guardar cambios (nueva versión)", onClick: function () {
+      var guardarBtn = button({ variant: "primary", text: "Guardar cambios (nueva versión)", onClick: function () {
         confirmModal("Guardar catálogo", "Se creará una nueva versión del catálogo. Los expedientes presentados conservan la versión anterior. ¿Continuar?", {
           onConfirm: function () {
             var partes = String(version).split(".");
@@ -125,7 +126,8 @@
             renderContent();
           },
         });
-      } }));
+      } });
+      actions.appendChild(perms.can(perms.PERMS.ADMINISTRAR) ? guardarBtn : perms.notice(perms.PERMS.ADMINISTRAR, "Solo el rol administrador puede modificar catálogos."));
       actions.appendChild(button({ variant: "ghost", text: "Exportar CSV", onClick: function () {
         var a = layout.el("div", "app-alert app-alert--info");
         a.appendChild(layout.el("span", "app-alert__text", "Exportación simulada: catalogo-tramites.csv"));

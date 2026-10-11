@@ -312,6 +312,10 @@ HU-18c verificado: P-27 muestra la seccion ARCO (4 derechos, 4 radios),
 oculta/muestra el fundamento segun el derecho, valida descripcion/correo/
 fundamento y el envio simulado devuelve referencia + plazo; tabla "Mis
 solicitudes ARCO" con filas; i-17 muestra celdas (fix de table.js); 46/46 OK.
+TASK-13.5 verificado: tm.perms.can lee el rol desde session.datos.rol;
+FUNCIONARIO ve "Registrar resolucion" (I-10) y AUDITOR ve el aviso "Sin
+permiso «resolver»"; I-07/I-15/I-18 ocultan sus acciones para roles sin
+permiso y ADMIN ve las de administracion; 46/46 sin errores.
 RECORDAR: borrar los archivos _*.html temporales antes de commitear.
 
 
@@ -321,7 +325,7 @@ Frontend\
   html\index.html            <- entrada (varias <script src>, NO modules)
   css\variables.css base.css layout.css
   js\app.js                  -> bootstrap + ruteo + ramas p-01..p-27 e interno/*
-  js\utils\    roles, nav, router, data, draft, wizard, fixtures
+  js\utils\    roles, nav, router, data, draft, wizard, fixtures, perms (tm.perms)
   js\components\ layout, button, field, table, stepper, timeline, modal, errors,
                  verified-field, file-upload, signature
   js/services\ session.js, api.js (modulo unico de servicios HTTP tm.api)
@@ -347,11 +351,11 @@ ALCANCE ACORDADO: el Frontend se trabaja HASTA EL SPRINT 4 inclusive; los
 Sprints 5, 6 y 7 quedan FUERA DE ALCANCE.
 Sprint 1 (portal P-01..P-27 + HU-09), el modulo interno I-01..I-18, HU-18b
 (I-19 + P-05) y HU-18c (ARCO en P-27) estan COMPLETOS y COMMITEADOS
-(2c195cb, 7f2bcd2, 49d790b, 5aa7209).
+(2c195cb, 7f2bcd2, 49d790b, 5aa7209). TASK-13.5 (permisos de interfaz por rol,
+tm.perms) COMPLETA y COMMITEADA.
 Dentro del alcance (Sprints 2..4) queda, en su parte FRONTEND:
-  1) Sprint 2: TASK-13.5 mostrar/ocultar acciones por permisos del rol
-     (con permisos mock). TASK-10.4 Docker y TASK-12.5 conexion auth dependen
-     del backend (otra rama).
+  1) Sprint 2: TASK-13.5 (permisos de interfaz por rol) HECHA. TASK-10.4 Docker
+     y TASK-12.5 conexion auth dependen del backend (otra rama).
   2) Sprint 3: HU-18b (consentimiento informado, 49d790b) y HU-18c (derechos
      ARCO en P-27, 5aa7209) YA HECHAS. Las tareas TASK-15.3/16.3/17.4/18.3 son
      conexion al backend.

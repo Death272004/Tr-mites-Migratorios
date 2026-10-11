@@ -87,8 +87,9 @@ file:///C:/Users/Jonathan/Desktop/Repo/Tr-mites-Migratorios/Frontend/html/index.
 - **HU-09 (integración fixtures → mocks):** módulo único de servicios HTTP `tm.api`, cabecera `X-Scenario` y selector global de escenarios. ✔
 - **HU-18b (consentimiento informado):** pantalla interna **I-19** (`#/interno/consentimientos`, ver/revocar) y sección de consentimiento en **P-05**. ✔
 - **HU-18c (derechos ARCO):** formulario dedicado en **P-27** (acceso, rectificación, cancelación y oposición) con plazos de la Ley 81 y seguimiento de solicitudes. ✔
+- **HU-13 / TASK-13.5 (permisos de interfaz):** módulo `tm.perms` (`js/utils/perms.js`) con la matriz mock rol × permiso; las acciones internas se muestran u ocultan según el permiso del rol (con aviso "Sin permiso «…»" cuando no aplica). ✔
 - **Inventario completo:** 46/46 pantallas (P-01…P-27 + I-01…I-19), todas con vista, fixtures y ruta.
-- **Pendiente (Sprint 2+):** conectar al backend real (`tm.api.setBaseUrl(...)`), Docker y permisos reales por rol.
+- **Pendiente (Sprint 2+):** conectar al backend real (`tm.api.setBaseUrl(...)`), Docker y validación real de permisos por rol en el servidor.
 - **Alcance:** el Frontend se trabaja **hasta el Sprint 4 inclusive**; los Sprints 5–7 quedan fuera de alcance por ahora.
 
 ## Notas

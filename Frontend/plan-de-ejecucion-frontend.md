@@ -1341,7 +1341,7 @@ Una pantalla está terminada cuando:
 
 1. **Campos:** implementa exactamente los campos de `Pantallas_y_Datos_Migracion.md` de su ID — ni más (minimización, Ley 81) ni menos; lo no documentado figura como **POR DEFINIR (PO)** y no se inventa.
 2. **Estados:** implementa y muestra los **4 estados** (carga, éxito, vacío, error con reintento) — §2.2.
-3. **Permisos:** respeta el guard por rol; las acciones no permitidas no se muestran o están deshabilitadas con explicación (§2.1) — la validación real sigue siendo del backend.
+3. **Permisos:** respeta el guard por rol; las acciones no permitidas no se muestran o están deshabilitadas con explicación (§2.1) — la validación real sigue siendo del backend. Desde **TASK-13.5 (HU-13)** la UI aplica la matriz de permisos granulares con `tm.perms` (`js/utils/perms.js`): `can(perm)` decide si una acción se muestra o se sustituye por un aviso "Sin permiso «perm» para su rol" (p. ej. I-06 `observar`, I-07 `verificar`, I-10 `resolver`, I-11/I-12/I-13 `notificar`, I-13 reactivar/I-14/I-15/I-18 `administrar`).
 4. **Campos [V]:** sellados como *verificado automáticamente · fuente · fecha · estado* con estado **"pendiente de verificación automática (futuro convenio)"** y **bloqueados** para carga manual (§2.3).
 5. **Datos:** funciona con su fixture local en `js/fixtures/` con el **mismo esquema JSON que los mocks de la HU-08** (§2.5).
 6. **Responsive y calidad:** funciona en escritorio y tablet, sin errores de consola en el recorrido principal.

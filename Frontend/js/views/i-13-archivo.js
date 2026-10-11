@@ -10,6 +10,7 @@
   var layout = global.tm.layout;
   var field = global.tm.ui.field;
   var button = global.tm.ui.button;
+  var perms = global.tm.perms;
 
   var FALLBACK = { expediente: "—", tramite: "—", estadoActual: "ARCHIVADO", categoriasArchivo: ["Otro"], retencion: "—", historial: [], permiteReactivar: false, reactivarMotivo: "" };
 
@@ -84,7 +85,7 @@
         inner.appendChild(form);
 
         var actions = layout.el("div", "toolbar__actions");
-        actions.appendChild(button({
+        var archivarBtn = button({
           variant: "danger",
           text: "Archivar expediente",
           onClick: function () {
@@ -98,7 +99,8 @@
             historial.push({ fecha: "2026-10-11", titulo: "ARCHIVADO", detalle: "Motivo: " + cat.value + (obs && obs.value ? " · " + obs.value : ""), done: true });
             renderContent();
           },
-        }));
+        });
+        actions.appendChild(perms.can(perms.PERMS.NOTIFICAR) ? archivarBtn : perms.notice(perms.PERMS.NOTIFICAR, "Solo un rol con permiso «notificar» puede archivar expedientes."));
         inner.appendChild(actions);
       } else {
         var aviso = layout.el("div", "app-alert app-alert--info");
@@ -115,7 +117,7 @@
         inner.appendChild(form2);
 
         var actions2 = layout.el("div", "toolbar__actions");
-        actions2.appendChild(button({
+        var reactivarBtn = button({
           variant: "primary",
           text: "Reactivar a «EN ANÁLISIS»",
           onClick: function () {
@@ -128,7 +130,8 @@
             historial.push({ fecha: "2026-10-11", titulo: "REACTIVADO", detalle: motivo.value.trim(), active: true });
             renderContent();
           },
-        }));
+        });
+        actions2.appendChild(perms.can(perms.PERMS.ADMINISTRAR) ? reactivarBtn : perms.notice(perms.PERMS.ADMINISTRAR, "La reactivación requiere permiso elevado «administrar»."));
         inner.appendChild(actions2);
       }
 

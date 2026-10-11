@@ -12,6 +12,7 @@
   var button = global.tm.ui.button;
   var table = global.tm.ui.table;
   var confirmModal = global.tm.ui.confirmModal;
+  var perms = global.tm.perms;
 
   var FALLBACK = { roles: [], permisosDisponibles: [], institucionesDisponibles: [], usuarios: [], aviso: "" };
 
@@ -119,7 +120,7 @@
       inner.appendChild(errBox);
 
       var actions = layout.el("div", "toolbar__actions");
-      actions.appendChild(button({ variant: "primary", text: "Guardar permisos", onClick: function () {
+      var guardarPermisosBtn = button({ variant: "primary", text: "Guardar permisos", onClick: function () {
         errBox.textContent = "";
         errBox.classList.remove("is-visible");
         var rol = form.querySelector("#usrRol");
@@ -131,7 +132,8 @@
         confirmModal("Guardar permisos", "¿Aplicar los cambios de rol y permisos a " + u.nombre + "?", {
           onConfirm: function () { guardado = "Rol: " + (rol ? rol.value : u.rol) + " · Permisos: " + (u.permisos.join(", ") || "ninguno"); u.rol = rol ? rol.value : u.rol; renderContent(); },
         });
-      } }));
+      } });
+      actions.appendChild(perms.can(perms.PERMS.ADMINISTRAR) ? guardarPermisosBtn : perms.notice(perms.PERMS.ADMINISTRAR, "Solo el rol administrador puede gestionar usuarios y permisos."));
       inner.appendChild(actions);
 
       container.appendChild(inner);

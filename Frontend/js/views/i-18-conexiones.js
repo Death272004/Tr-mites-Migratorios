@@ -12,6 +12,7 @@
   var button = global.tm.ui.button;
   var table = global.tm.ui.table;
   var confirmModal = global.tm.ui.confirmModal;
+  var perms = global.tm.perms;
 
   var FALLBACK = { modoActual: "—", modos: [], catalogo: [] };
 
@@ -79,13 +80,14 @@
       }
 
       var actions = layout.el("div", "toolbar__actions");
-      actions.appendChild(button({ variant: "primary", text: "Aplicar modo", onClick: function () {
+      var aplicarBtn = button({ variant: "primary", text: "Aplicar modo", onClick: function () {
         var sel = form.querySelector("#conModo");
         var nuevo = sel ? sel.value : modo;
         confirmModal("Cambiar modo de contingencia", "¿Activar «" + nuevo + "»? Afecta el registro de verificaciones externas.", {
           onConfirm: function () { modo = nuevo; aplicado = nuevo; renderContent(); },
         });
-      } }));
+      } });
+      actions.appendChild(perms.can(perms.PERMS.ADMINISTRAR) ? aplicarBtn : perms.notice(perms.PERMS.ADMINISTRAR, "Solo el rol administrador puede cambiar el modo de contingencia."));
       inner.appendChild(actions);
 
       container.appendChild(inner);

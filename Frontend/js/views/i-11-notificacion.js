@@ -10,6 +10,7 @@
   var layout = global.tm.layout;
   var field = global.tm.ui.field;
   var button = global.tm.ui.button;
+  var perms = global.tm.perms;
 
   var FALLBACK = { expediente: "—", tramite: "—", estadoActual: "RESUELTO", medioPreferido: "Portal", medios: ["Portal"], plazoRetiro: "", textoPlantilla: "" };
 
@@ -82,7 +83,7 @@
       inner.appendChild(errBox);
 
       var actions = layout.el("div", "toolbar__actions");
-      actions.appendChild(button({
+      var notificarBtn = button({
         variant: "primary",
         text: notificado ? "Notificación registrada" : "Registrar notificación",
         disabled: !!notificado,
@@ -97,7 +98,8 @@
           notificado = { medio: medio ? medio.value : "Portal" };
           renderContent();
         },
-      }));
+      });
+      actions.appendChild(perms.can(perms.PERMS.NOTIFICAR) ? notificarBtn : perms.notice(perms.PERMS.NOTIFICAR, "Solo un rol con permiso «notificar» puede registrar notificaciones."));
       if (opts.onNavigate) actions.appendChild(button({ variant: "ghost", text: "Ir a entrega", onClick: function () { opts.onNavigate("#/interno/entrega"); } }));
       inner.appendChild(actions);
 

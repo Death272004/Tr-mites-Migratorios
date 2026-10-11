@@ -10,6 +10,7 @@
   var layout = global.tm.layout;
   var field = global.tm.ui.field;
   var button = global.tm.ui.button;
+  var perms = global.tm.perms;
 
   var FALLBACK = { expediente: "—", tramite: "—", estadoActual: "NOTIFICADO", quienRetira: {}, esApoderado: false, poderChecklist: [], documentos: [], documentosSeleccionados: [], carneDigital: {}, saldo: "—" };
 
@@ -128,7 +129,7 @@
       }
 
       var actions = layout.el("div", "toolbar__actions");
-      actions.appendChild(button({
+      var entregaBtn = button({
         variant: "primary",
         text: entregado ? "Entrega registrada" : "Registrar entrega",
         disabled: !!entregado,
@@ -142,7 +143,8 @@
           entregado = { docs: seleccion.slice(), fecha: fecha ? fecha.value : "—" };
           renderContent();
         },
-      }));
+      });
+      actions.appendChild(perms.can(perms.PERMS.NOTIFICAR) ? entregaBtn : perms.notice(perms.PERMS.NOTIFICAR, "Solo un rol con permiso «notificar» puede registrar entregas (CP-12)."));
       if (opts.onNavigate) actions.appendChild(button({ variant: "ghost", text: "Archivo y reactivación", onClick: function () { opts.onNavigate("#/interno/archivo"); } }));
       inner.appendChild(actions);
 

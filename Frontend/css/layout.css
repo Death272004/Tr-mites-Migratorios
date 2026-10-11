@@ -278,6 +278,24 @@
 .btn--danger:hover {
   filter: brightness(0.92);
 }
+.btn:disabled,
+.btn.is-disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  filter: none;
+}
+.btn:disabled:hover,
+.btn.is-disabled:hover {
+  background: var(--color-surface);
+}
+.btn--primary:disabled:hover,
+.btn--primary.is-disabled:hover {
+  background: var(--color-primary);
+}
+.btn--danger:disabled:hover,
+.btn--danger.is-disabled:hover {
+  background: var(--color-danger);
+}
 
 /* Modal */
 .modal-backdrop {

@@ -13,6 +13,7 @@
   var button = global.tm.ui.button;
   var confirmModal = global.tm.ui.confirmModal;
   var signaturePad = global.tm.ui.signaturePad;
+  var perms = global.tm.perms;
 
   var FALLBACK = { expediente: "—", tramite: "—", estadoActual: "EN RESOLUCIÓN", verificacionesConcluidas: [], inconsistenciasAbiertas: 0, motivosNegacion: ["Otro (detallar)"], transiciones: [], saldo: "—", numeroResolucion: "—", fechaResolucion: "—", vigenciaDesde: "", vigenciaHasta: "" };
 
@@ -138,7 +139,7 @@
         inner.appendChild(errBox);
 
         var actions = layout.el("div", "toolbar__actions");
-        actions.appendChild(button({
+        var resolverBtn = button({
           variant: resultado === "NEGADA" ? "danger" : "primary",
           text: "Registrar resolución " + resultado,
           onClick: function () {
@@ -162,7 +163,8 @@
               },
             });
           },
-        }));
+        });
+        actions.appendChild(perms.can(perms.PERMS.RESOLVER) ? resolverBtn : perms.notice(perms.PERMS.RESOLVER, "Solo un rol con permiso «resolver» puede decidir el expediente."));
         inner.appendChild(actions);
       } else {
         var res = layout.el("div", "app-alert app-alert--" + (resultado === "APROBADA" ? "info" : "warning"));
