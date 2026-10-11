@@ -842,6 +842,7 @@ Toda pantalla implementa y muestra los cuatro estados, con selector de escenario
 * **(e) Estados de trámite visibles:** no aplica.
 * **(f) Fixture sugerida:** `js/fixtures/p-27-ayuda.json`.
 * **(g) Nota de integración:** HU-04 / TASK-04.5; formulario de derechos ARCO y consentimiento → HU nueva del backlog (Sprint 3, endpoints HU-11). CP-14 (ARCO), CP-05.
+* **(h) Construido (HU-18c, 5aa7209):** P-27 incluye la sección «Ejercicio de derechos ARCO (Ley 81 de 2019)» con los cuatro derechos (acceso 10 días hábiles; rectificación/cancelación 5 días hábiles; oposición con fundamento), condición titular/representante, notificación, adjunto y aviso de recurso ante la ANTAI; además, tabla «Mis solicitudes ARCO». La autorización de tratamiento y el consentimiento informado se registran en P-02/P-16 y en P-05/I-19.
 
 ---
 

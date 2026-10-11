@@ -86,8 +86,9 @@ file:///C:/Users/Jonathan/Desktop/Repo/Tr-mites-Migratorios/Frontend/html/index.
 - **Módulo interno (Fases E–F, I-01…I-18):** operación y administración del despacho. ✔
 - **HU-09 (integración fixtures → mocks):** módulo único de servicios HTTP `tm.api`, cabecera `X-Scenario` y selector global de escenarios. ✔
 - **HU-18b (consentimiento informado):** pantalla interna **I-19** (`#/interno/consentimientos`, ver/revocar) y sección de consentimiento en **P-05**. ✔
+- **HU-18c (derechos ARCO):** formulario dedicado en **P-27** (acceso, rectificación, cancelación y oposición) con plazos de la Ley 81 y seguimiento de solicitudes. ✔
 - **Inventario completo:** 46/46 pantallas (P-01…P-27 + I-01…I-19), todas con vista, fixtures y ruta.
-- **Pendiente (Sprint 2+):** conectar al backend real (`tm.api.setBaseUrl(...)`), Docker y formulario de derechos **ARCO** (HU-18c).
+- **Pendiente (Sprint 2+):** conectar al backend real (`tm.api.setBaseUrl(...)`), Docker y permisos reales por rol.
 - **Alcance:** el Frontend se trabaja **hasta el Sprint 4 inclusive**; los Sprints 5–7 quedan fuera de alcance por ahora.
 
 ## Notas
