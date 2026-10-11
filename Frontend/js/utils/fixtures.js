@@ -38,16 +38,31 @@
     return byScenario[escenario || DEFAULT_SCENARIO] || null;
   }
 
+  // `raw` es la lectura directa del registro (fuente offline). Lo usa el módulo
+  // de servicios `tm.api` para no delegar de vuelta en `data`/`message`.
+  function raw(pantalla, escenario) {
+    return get(pantalla, escenario);
+  }
+
   function envelope(pantalla, escenario) {
     return get(pantalla, escenario);
   }
 
+  // `data`/`message` (que consumen las vistas) pasan por el módulo único de
+  // servicios HTTP `tm.api` (HU-09 / TASK-09.2, 09.3): así, al configurar
+  // `tm.api.setBaseUrl(...)`, las vistas leen los mocks sin reescribirse.
   function data(pantalla, escenario) {
+    if (global.tm.api && typeof global.tm.api.get === "function") {
+      return global.tm.api.get(pantalla, escenario);
+    }
     var env = get(pantalla, escenario);
     return env ? env.data : null;
   }
 
   function message(pantalla, escenario, fallback) {
+    if (global.tm.api && typeof global.tm.api.message === "function") {
+      return global.tm.api.message(pantalla, escenario, fallback);
+    }
     var env = get(pantalla, escenario);
     if (env && env.error && env.error.mensajeUsuario) {
       return env.error.mensajeUsuario;
@@ -107,6 +122,7 @@
   global.tm = global.tm || {};
   global.tm.fixtures = {
     register: register,
+    raw: raw,
     envelope: envelope,
     data: data,
     message: message,

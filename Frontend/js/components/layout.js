@@ -20,7 +20,14 @@
     while (node.firstChild) node.removeChild(node.firstChild);
   }
 
-  function renderHeaderUser(container, { user, role, onRoleChange, onLogout }) {
+  const SCENARIOS = [
+    { value: "exito", label: "Éxito" },
+    { value: "carga", label: "Cargando" },
+    { value: "vacio", label: "Sin datos" },
+    { value: "error", label: "Error" }
+  ];
+
+  function renderHeaderUser(container, { user, role, scenario, onRoleChange, onScenarioChange, onLogout }) {
     clear(container);
 
     container.appendChild(el("span", "app-header__user-name", user?.nombre ?? "No autenticado"));
@@ -39,6 +46,21 @@
     select.addEventListener("change", (event) => onRoleChange?.(event.target.value));
     roleWrap.appendChild(select);
     container.appendChild(roleWrap);
+
+    // Selector de escenarios (X-Scenario) — HU-09 / TASK-09.4.
+    const scenarioWrap = el("label", "app-header__role");
+    scenarioWrap.appendChild(el("span", null, "Escenario (demo)"));
+    const scenarioSelect = el("select", "app-header__scenario-select");
+    scenarioSelect.setAttribute("aria-label", "Selector de escenario de demostración");
+    for (const item of SCENARIOS) {
+      const option = el("option", null, item.label);
+      option.value = item.value;
+      if (item.value === scenario) option.selected = true;
+      scenarioSelect.appendChild(option);
+    }
+    scenarioSelect.addEventListener("change", (event) => onScenarioChange?.(event.target.value));
+    scenarioWrap.appendChild(scenarioSelect);
+    container.appendChild(scenarioWrap);
 
     const logout = el("button", "app-header__logout", "Salir");
     logout.type = "button";
