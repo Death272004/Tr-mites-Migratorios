@@ -1400,6 +1400,38 @@ fieldset.form-field .form-field__label {
   color: var(--color-text-muted);
 }
 
+/* Reportes: barras simples (I-17) */
+.report-bars {
+  display: grid;
+  gap: var(--space-3);
+}
+.report-bar {
+  display: grid;
+  grid-template-columns: 240px 1fr 64px;
+  align-items: center;
+  gap: var(--space-3);
+}
+.report-bar__label {
+  font-size: var(--font-size-sm);
+  color: var(--color-text);
+}
+.report-bar__track {
+  height: 10px;
+  border-radius: var(--radius-pill);
+  background: var(--color-surface-alt);
+  overflow: hidden;
+}
+.report-bar__fill {
+  height: 100%;
+  background: var(--color-primary);
+  transition: width var(--transition-base);
+}
+.report-bar__value {
+  text-align: right;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
 /* ---------- Responsive (escritorio y tablet) ---------- */
 @media (max-width: 1024px) {
   .app-nav {

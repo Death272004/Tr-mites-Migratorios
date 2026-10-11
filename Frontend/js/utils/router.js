@@ -96,7 +96,7 @@
           : LOGIN_ROUTE;
     }
 
-    const publicPortal = [LOGIN_ROUTE, "#/registro", "#/recuperar-clave", "#/identidad/otp", ERRORS.FORBIDDEN, ERRORS.NOT_FOUND, ERRORS.SERVER];
+    const publicPortal = [LOGIN_ROUTE, INTERNAL_LOGIN_ROUTE, "#/registro", "#/recuperar-clave", "#/identidad/otp", ERRORS.FORBIDDEN, ERRORS.NOT_FOUND, ERRORS.SERVER];
     const needsAuth =
       (!publicPortal.includes(route) && !isInternalRole(role)) ||
       (route.startsWith("#/interno/") && route !== INTERNAL_LOGIN_ROUTE);

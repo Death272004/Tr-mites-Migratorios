@@ -78,6 +78,17 @@
     if (key === "error/404") { errors.renderNotFound(els.content); return; }
     if (key === "error/500") { errors.renderServerError(els.content); return; }
 
+    if (key === "interno-login") {
+      global.tm.views.i01.renderI01(els.content, {
+        onInternalLoginSuccess: function (res) {
+          session.saveSession({ rol: res.rol, usuario: res.usuario }, {});
+          state.role = res.rol;
+          state.user = res.usuario;
+          navigate(INITIAL_ROUTE[state.role]);
+        },
+      });
+      return;
+    }
     if (key === "login") {
       global.tm.views.p01.renderP01(els.content, {
         onLoginSuccess: function (res) {
@@ -203,6 +214,25 @@
     if (key === "p-16") { global.tm.views.p16.renderP16(els.content, wizardOpts); return; }
     if (key === "p-17") { global.tm.views.p17.renderP17(els.content, wizardOpts); return; }
     if (key === "p-18") { global.tm.views.p18.renderP18(els.content, wizardOpts); return; }
+
+    var internalOpts = { onNavigate: navigate };
+    if (key === "interno/tablero") { global.tm.views.i02.renderI02(els.content, internalOpts); return; }
+    if (key === "interno/recepcion") { global.tm.views.i03.renderI03(els.content, internalOpts); return; }
+    if (key === "interno/completitud") { global.tm.views.i04.renderI04(els.content, internalOpts); return; }
+    if (key === "interno/asignacion") { global.tm.views.i05.renderI05(els.content, internalOpts); return; }
+    if (key === "interno/analisis") { global.tm.views.i06.renderI06(els.content, internalOpts); return; }
+    if (key === "interno/verificaciones") { global.tm.views.i07.renderI07(els.content, internalOpts); return; }
+    if (key === "interno/observaciones") { global.tm.views.i08.renderI08(els.content, internalOpts); return; }
+    if (key === "interno/edictos") { global.tm.views.i09.renderI09(els.content, internalOpts); return; }
+    if (key === "interno/resolucion") { global.tm.views.i10.renderI10(els.content, internalOpts); return; }
+    if (key === "interno/notificacion") { global.tm.views.i11.renderI11(els.content, internalOpts); return; }
+    if (key === "interno/entrega") { global.tm.views.i12.renderI12(els.content, internalOpts); return; }
+    if (key === "interno/archivo") { global.tm.views.i13.renderI13(els.content, internalOpts); return; }
+    if (key === "interno/catalogos") { global.tm.views.i14.renderI14(els.content, internalOpts); return; }
+    if (key === "interno/usuarios") { global.tm.views.i15.renderI15(els.content, internalOpts); return; }
+    if (key === "interno/bitacora") { global.tm.views.i16.renderI16(els.content, internalOpts); return; }
+    if (key === "interno/reportes") { global.tm.views.i17.renderI17(els.content, internalOpts); return; }
+    if (key === "interno/conexiones") { global.tm.views.i18.renderI18(els.content, internalOpts); return; }
 
     layout.renderView(els.content, { route: state.route, role: state.role });
   }
