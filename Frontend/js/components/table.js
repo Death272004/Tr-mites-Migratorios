@@ -35,7 +35,9 @@
       for (const row of rows) {
         const tr = el("tr");
         for (const cell of row) {
-          const td = el("td", null, cell.text ?? "");
+          const td = el("td");
+          if (cell.node) td.appendChild(cell.node);
+          else td.textContent = cell.text ?? "";
           if (cell.align) td.style.textAlign = cell.align;
           tr.appendChild(td);
         }

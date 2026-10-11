@@ -1,0 +1,200 @@
+========================================================================
+ESTADO DEL PROYECTO FRONTEND - PUNTO DE CONTINUACION
+Producto: Gestion de expedientes migratorios para bufetes (Panama, Ley 81 de 2019)
+Rama: Frontend
+Ultima actualizacion de este archivo: commit af3a0b9 + Fase D completa (P-19..P-27) + TASK-03.6 completa (fixtures y 4 estados en P-06..P-18) sin commitear
+========================================================================
+
+COMO ABRIR LA APP (arranque rapido)
+-----------------------------------
+1. Ir a: Frontend\html\index.html  y hacer DOBLE CLIC (se abre con el navegador).
+   - NO requiere servidor. Funciona con file:// porque TODO el JS son scripts
+     clasicos que exponen window.tm (NO usamos ES modules: file:// los bloquea).
+2. Login demo (rol SOLICITANTE):
+      correo:    demo@bufete.test
+      contrasena: Demo123!
+3. Flujo navegable: Login -> Mis tramites (P-06) -> Nueva solicitud (P-07) ->
+   Asistente P-08 ... P-16 -> Resumen/envio (P-17) -> Cita (P-18).
+
+
+ESTADO DE LA RAMA (git)
+-----------------------
+- Rama local: Frontend
+- Remoto: origin/Frontend  (YA SINCRONIZADO; el ultimo push fue a157b78..af3a0b9)
+- Commits (mas reciente arriba):
+    af3a0b9  primeras 18 pantallas del programa de tramites de inmigrantes
+    29f3f3a  feat(frontend): P-07 ficha de requisitos por tramite (catalogo real + Art. 28)
+    ff52d8e  feat(frontend): TASK-03.1 P-06 bandeja de tramites y P-07 seleccion de tramite
+    ebdd27a  fix(frontend): migrar de ES modules a scripts clasicos para soporte file://
+    6b0ec16  feat(frontend): P-02 a P-05 (registro, OTP simulado, recuperar, perfil) y gestor de sesion
+    0b6e2cd  feat(frontend): P-01 inicio de sesion
+    95f2957  feat(frontend): fase A (HU-01) - layout, routing, componentes y README
+
+
+QUE YA ESTA HECHO
+-----------------
+- Fase A (HU-01): layout, cabecera, menu por rol, pie, enrutado hash con guards,
+  vistas 403/404/500, modales y componentes base (button, field, table, stepper,
+  timeline, errors).
+- Fase B (HU-02): P-01 login, P-02 registro, P-03 OTP (simulado), P-04 recuperar,
+  P-05 perfil, y gestor de sesion (sessionStorage: tm.session.v1).
+- Fase C (HU-03) PARCIAL: P-06 ... P-18 (13 pantallas) implementadas y enlazadas:
+    P-06  Bandeja de tramites (tarjetas, estados/vigencia, 4 estados)
+    P-07  Seleccion de tramite + ficha de requisitos (catalogo real + Art. 28)
+    P-08  Titularidad y representacion (campos [A] sellados, carga manual bloqueada)
+    P-09  Datos personales
+    P-10  Pasaporte e historial migratorio
+    P-11  Domicilio y notificaciones
+    P-12  Situacion (bloque DINAMICO segun el tramite: laboral/economico/educativo/
+          especial/familia)
+    P-13  Dependientes (bloques repetibles)
+    P-14  Requisitos y carga de documentos (checklist + barra de progreso; [A] auto)
+    P-15  Pagos y tasas (SIMULADO: desglose, cheque/exoneracion, constancia)
+    P-16  Declaracion jurada + firma manuscrita digital (canvas, simulada)
+    P-17  Resumen y envio (genera N.o de expediente + QR simulado)
+    P-18  Reserva de cita (calendario ficticio + confirmacion con codigo/QR)
+- Fase D (HU-04) COMPLETA (TASK-04.1 a 04.5):
+    P-19  Estado del tramite (linea de tiempo con 10 etapas, etapa actual,
+          dias transcurridos, requisitos faltantes, accion pendiente y alertas
+          de vigencias 30/90)
+    P-20  Observaciones y notificaciones (emisor, fecha, plazo, items,
+          nueva vigencia, marcar como leida y atender -> P-21)
+    P-21  Subsanacion (por cada item: documento corregido + justificacion +
+          sustitucion de dato; confirmacion de atender TODO en un solo
+          reingreso -> pasa a EN ANALISIS). Valida tamano <=5 MB (CP-05).
+    P-22  Resultados (resolucion, estado del permiso, carne digital con QR [A]
+          sellado, constancia; vista negada con motivos e impugnacion; descargas
+          simuladas/auditadas CP-12). Selector: carga/aprobada/negada/sin res./error.
+    P-23  Historial de pagos (tabla fecha/concepto/monto/medio/comprobante/
+          estado/recibo; incluye garantia devuelta; recibo descargable).
+    P-26  Naturalizacion (Carta de Naturaleza): flujo N-1 a N-13 con stepper
+          propio (apoderado; poder/solicitud; datos migratorios; antecedentes;
+          vinculos; solvencia 2 de 5; dependiente; entrevista; paz y salvo DGI;
+          salud y fotos; reciprocidad; examen TE; declaracion jurada y firma).
+          Persiste avance en el borrador (clave `naturalizacion`) y cierra con
+          el resumen listo para envio. Requiere abogado apoderado.
+    P-24  Edictos y citaciones (consulta por expediente + apellidos; bloques de
+          edictos publicados, oposiciones, citas de retiro y notificaciones con
+          fecha de publicacion; solo edictos propios, sin datos de terceros).
+    P-25  Certificaciones en linea (flujo de 3 pasos: Estatus/Movimiento,
+          entidad, uso de naturalizacion [cambia el timbre a B/.8.00],
+          documentos por tipo, tipo de retiro [personal/apoderado], pago y
+          confirmacion; pasaporte y carne verificados por el SNM [V]).
+    P-27  Ayuda, FAQ y peticiones (formulario de consulta/peticion con adjunto
+          CP-05, canal de derechos ARCO CP-14 y FAQ desplegable).
+    Las vistas con selector de vista demo: carga/exito/vacio/error (P-22 tambien
+    negada).
+    CSS nuevo en layout.css: .seguimiento-* , .obs-* , .subsana-* , .resultado-* ,
+    .edicto-* y .faq-* .
+    table.js ampliado: celda admite { node } ademas de { text }.
+- TASK-03.6 COMPLETA - Fixtures del flujo del solicitante y los 4 estados en
+  TODO el flujo P-06..P-18 (13 pantallas x 4 estados = 52 envelopes):
+    utils/fixtures.js (nuevo) -> loader "tm.fixtures" compatible con file://:
+      register/envelope/data/message/has/scenario/setScenario/load.
+      Sin servidor, cada fixture es un <script src> (js/fixtures/*.js) que
+      registra el envelope { meta, data, error } (mismo que llevaran los mocks
+      HU-08). scenario() vive en sessionStorage (preparado para el X-Scenario
+      transversal de HU-09). Con servidor, load() sirve el mismo envelope .json.
+    js/fixtures/p-{06..18}-<slug>.{js,carga,vacio,error}.js (52 archivos).
+      Datos movidos VERBATIM desde las vistas (no inventados): P-06 tramites;
+      P-07 catalogo+requisitos Art.28+motivos+paises; P-08 verificaciones [A];
+      P-10 historial migratorio; P-11 notificaciones; P-12 titulos/opciones del
+      bloque; P-14 requisitos fallback; P-15 tasas por categoria; P-18 sedes/horas.
+      P-09/P-13/P-16/P-17 son formularios puros (data null en exito/vacio).
+    Vistas P-06..P-18 con el patron de 4 estados (show(state) + setScenario +
+    renderLoading/renderEmpty/renderError + demoSelector). P-07 ahora EXPORTA
+    CATALOGO/REQUISITOS_ART_28 leidos del fixture (P-14 los sigue consumiendo).
+    index.html registra los 52 fixtures ANTES de las vistas (bloque
+    <script js/fixtures/...> tras services/session.js).
+    Verificado con Edge headless: 13 vistas x 3 estados de datos = 39/39 OK,
+    sin errores de consola; index.html arranca en login sin romper.
+- Infra de apoyo del asistente:
+    utils/draft.js   -> borrador compartido (sessionStorage: tm.solicitud.v1)
+    utils/wizard.js  -> stepper, marco (frame), pie (footer), errores, nextRoute/prevRoute
+    utils/data.js    -> catalogos demo (paises, provincias, bancos)
+    components/verified-field.js -> campo [A] sellado (fuente/fecha + forzar revision)
+    components/file-upload.js     -> carga de documento simulada (solo nombre/tamano)
+    components/signature.js       -> pad de firma sobre <canvas>
+    field.js ampliado             -> fieldDate y fieldCheckbox
+- CSS: Frontend\css\layout.css (wizard, tarjetas/badges, alerts, fichas, checklist,
+  progreso, QR, detalle, firmas, citas, etc.)
+
+
+QUE FALTA (priorizado, segun tareas-frontend.md)
+-----------------------------------------------
+1) Fase D (HU-04) COMPLETA: P-19..P-27 (TASK-04.1 a 04.5). Todas las rutas del
+   portal ya tienen vista; no queda ningun placeholder "Vista en construccion"
+   en #/seguimiento/* ni en #/servicios/*. (TASK-03.6 YA HECHO: fixtures + 4
+   estados P-06..P-18.)
+2) Integracion fixtures -> mocks (HU-09): TASK-09.1..09.5 (servicio HTTP central,
+   selector X-Scenario via tm.fixtures.scenario(), recorrido completo).
+3) Modulo interno del despacho I-01..I-18 (Sprint 2, aun no iniciado).
+
+
+DECISIONES Y NOTAS TECNICAS IMPORTANTES
+---------------------------------------
+- ES MODULES PROHIBIDOS aqui: file:// los bloquea. Todo es <script src> clasico
+  con patron (function(global){ ... global.tm.X = ... })(window).
+- ORDEN DE CARGA en index.html IMPORTA (scripts sincronicos):
+    utils(roles,nav,router,data,draft,fixtures) -> components(layout,button,
+    field,table,stepper,timeline,modal,errors,verified-field,file-upload,
+    signature) -> utils/wizard -> services/session -> fixtures(p-06..p-18)
+    -> views(p-01..p-27) -> app.js
+  Al agregar vistas nuevas: anadir su <script>, su bloque de fixtures y su rama
+  en js/app.js (key === "p-XX") pasando wizardOpts = { onNavigate: navigate }.
+- El router (js/utils/router.js) tiene un map ruta->clave de vista. Las rutas del
+  asistente (#/solicitud/*) se validan con mapHas() aunque no esten en el menu.
+- Acceso: solo rol SOLICITANTE en el portal; resto de roles -> modulo interno.
+- Sin credenciales/secretos; todo dato es ficticio; OTP/MFA/firma/pago/QR simulados.
+- Campos origen "A": se muestran sellados y bloqueados (components/verified-field.js).
+- El esquema oficial de mocks HU-08 AUN NO esta publicado: se uso un sobre
+  provisional { meta, data, error } (ver Frontend/js/fixtures/README.md). Como
+  fetch()/JSON esta bloqueado en file://, el loader js/utils/fixtures.js registra
+  cada envelope desde un <script src> (js/fixtures/*.js) con la MISMA nomenclatura
+  y esquema; load() sirve el mismo envelope como .json cuando haya servidor.
+
+
+COMO PROBAR (sin navegador manual)
+----------------------------------
+Hay Java (temurin21) y Microsoft Edge. Se uso Edge headless con un HTML temporal
+en Frontend\html\ cargando todos los scripts y renderizando cada vista, luego:
+  & "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" `
+    --headless=new --disable-gpu --virtual-time-budget=4000 `
+    --dump-dom "file:///C:/.../Frontend/html/_smoke.html"
+Ultimo resultado: las 11 vistas del asistente renderizan sin excepciones
+(window.onerror = 0), P-17 genera expediente+QR y P-18 confirma cita.
+RECORDAR: borrar los archivos _*.html temporales antes de commitear.
+
+
+ESTRUCTURA RELEVANTE
+--------------------
+Frontend\
+  html\index.html            <- entrada (varias <script src>, NO modules)
+  css\variables.css base.css layout.css
+  js\app.js                  -> bootstrap + ruteo + ramas p-01..p-27
+  js\utils\    roles, nav, router, data, draft, wizard, fixtures
+  js\components\ layout, button, field, table, stepper, timeline, modal, errors,
+                 verified-field, file-upload, signature
+  js/services\ session.js
+  js/views\    p-01 ... p-27 (P-19 estado, P-20 obs., P-21 subsanacion, P-22 resultados,
+                 P-23 historial de pagos, P-24 edictos, P-25 certificaciones,
+                 P-26 naturalizacion, P-27 ayuda/FAQ)
+  js/fixtures/ p-06..p-18.*.js (52 envelopes: base/carga/vacio/error) + README.md
+                 (+ p-01-login.*.json de referencia)
+  Pantallas_y_Datos_Migracion.md   (fuente de campos por pantalla P-06..P-18)
+  tareas-frontend.md               (backlog/horas por tarea)
+  plan-de-ejecucion-frontend.md
+  README.md                        (convenciones del frontend)
+
+
+SIGUIENTE PASO SUGERIDO
+-----------------------
+TASK-03.6 (fixtures + 4 estados en P-06..P-18) esta COMPLETA y Fase D COMPLETA
+(P-19..P-27). Opciones siguientes:
+  1) HU-09: integracion fixtures -> mocks (servicio HTTP central, selector
+     X-Scenario via tm.fixtures.scenario(), recorrido completo).
+  2) Iniciar el modulo interno del despacho I-01..I-18 (Sprint 2; hoy solo hay
+     rutas y guardas de rol, sin vistas).
+  3) Publicar el esquema oficial de envelopes (PO / HU-08) y migrar los sobres
+     provisionales sin reescribir vistas.
+========================================================================

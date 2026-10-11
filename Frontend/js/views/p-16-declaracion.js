@@ -12,12 +12,13 @@
   var field = global.tm.ui.field;
   var wizard = global.tm.wizard;
   var draft = global.tm.draft;
+  var fixtures = global.tm.fixtures;
 
   var ROUTE = "#/solicitud/paso-8";
 
-  function renderP16(container, opts) {
-    opts = opts || {};
+  function renderContent(container, opts) {
     var body = wizard.frame(container, ROUTE);
+    body.appendChild(demoSelector(opts));
     var d = draft.getDraft();
     var decl = d.declaracion || {};
 
@@ -96,6 +97,95 @@
   }
 
   function byId(id) { var e = document.getElementById(id); return e ? e.value.trim() : ""; }
+
+  function demoSelector(opts) {
+    var wrap = layout.el("label", "toolbar__demo");
+    wrap.appendChild(layout.el("span", null, "Vista (demo)"));
+    var select = layout.el("select");
+    var opciones = [
+      { v: "carga", l: "Carga" },
+      { v: "exito", l: "Éxito" },
+      { v: "vacio", l: "Vacío" },
+      { v: "error", l: "Error" },
+    ];
+    for (var i = 0; i < opciones.length; i++) {
+      var o = layout.el("option", null, opciones[i].l);
+      o.value = opciones[i].v;
+      select.appendChild(o);
+    }
+    select.addEventListener("change", function () {
+      if (opts.onDemoState) opts.onDemoState(select.value);
+    });
+    wrap.appendChild(select);
+    return wrap;
+  }
+
+  function renderLoading(container) {
+    layout.clear(container);
+    var inner = layout.el("div", "app-content__inner");
+    inner.appendChild(layout.pageHeader("Declaración y firma", "Cargando declaración…"));
+    var loading = layout.el("div", "app-loading");
+    loading.appendChild(layout.el("span", "spinner"));
+    loading.appendChild(layout.el("span", null, "Cargando…"));
+    inner.appendChild(loading);
+    container.appendChild(inner);
+  }
+
+  function renderEmpty(container, opts) {
+    layout.clear(container);
+    var inner = layout.el("div", "app-content__inner");
+    inner.appendChild(layout.pageHeader("Declaración y firma", "Sin información por el momento"));
+    var empty = layout.el("div", "app-empty");
+    empty.appendChild(layout.el("p", null, "No hay información de la declaración por el momento."));
+    var retry = layout.el("div", "toolbar__actions");
+    retry.appendChild(global.tm.ui.button({ variant: "primary", text: "Reintentar", onClick: function () { if (opts.onRetry) opts.onRetry(); } }));
+    empty.appendChild(retry);
+    inner.appendChild(empty);
+    container.appendChild(inner);
+  }
+
+  function renderError(container, opts) {
+    layout.clear(container);
+    var inner = layout.el("div", "app-content__inner");
+    inner.appendChild(layout.pageHeader("Declaración y firma", "No se pudo cargar la declaración"));
+    var alert = layout.el("div", "app-alert app-alert--warning");
+    alert.appendChild(layout.el("span", "app-alert__title", "Declaración no disponible"));
+    alert.appendChild(layout.el(
+      "span",
+      "app-alert__text",
+      (opts && opts.mensaje) || "No pudimos cargar la declaración y firma. Intente nuevamente."
+    ));
+    inner.appendChild(alert);
+    var retry = layout.el("div", "toolbar__actions");
+    retry.appendChild(global.tm.ui.button({ variant: "primary", text: "Reintentar", onClick: function () { if (opts.onRetry) opts.onRetry(); } }));
+    inner.appendChild(retry);
+    container.appendChild(inner);
+  }
+
+  function renderP16(container, opts) {
+    opts = opts || {};
+
+    function show(state) {
+      if (!state) state = "carga";
+      if (fixtures) fixtures.setScenario(state);
+      if (state === "carga") {
+        renderLoading(container);
+        setTimeout(function () { renderContent(container, opts); }, 700);
+        return;
+      }
+      if (state === "error") {
+        renderError(container, {
+          onRetry: function () { show("carga"); },
+          mensaje: fixtures ? fixtures.message("P-16", "error", null) : null,
+        });
+        return;
+      }
+      renderContent(container, opts);
+    }
+
+    opts.onDemoState = show;
+    show("carga");
+  }
 
   global.tm.views = global.tm.views || {};
   global.tm.views.p16 = { renderP16: renderP16 };

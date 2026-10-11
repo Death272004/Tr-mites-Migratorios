@@ -133,6 +133,63 @@
       });
       return;
     }
+    if (key === "p-19") {
+      global.tm.views.p19.renderP19(els.content, {
+        onAtender: function () { navigate("#/seguimiento/observaciones"); },
+        onVerDocumentos: function () { navigate("#/solicitud/paso-6"); },
+        onGoMisTramites: function () { navigate("#/mis-tramites"); },
+      });
+      return;
+    }
+    if (key === "p-20") {
+      global.tm.views.p20.renderP20(els.content, {
+        onAtender: function () { navigate("#/seguimiento/subsanacion"); },
+        onGoMisTramites: function () { navigate("#/mis-tramites"); },
+      });
+      return;
+    }
+    if (key === "p-21") {
+      global.tm.views.p21.renderP21(els.content, {
+        onNavigate: navigate,
+      });
+      return;
+    }
+    if (key === "p-22") {
+      global.tm.views.p22.renderP22(els.content, {
+        onNavigate: navigate,
+      });
+      return;
+    }
+    if (key === "p-23") {
+      global.tm.views.p23.renderP23(els.content, {
+        onNavigate: navigate,
+      });
+      return;
+    }
+    if (key === "p-24") {
+      global.tm.views.p24.renderP24(els.content, {
+        onNavigate: navigate,
+      });
+      return;
+    }
+    if (key === "p-25") {
+      global.tm.views.p25.renderP25(els.content, {
+        onNavigate: navigate,
+      });
+      return;
+    }
+    if (key === "p-26") {
+      global.tm.views.p26.renderP26(els.content, {
+        onNavigate: navigate,
+      });
+      return;
+    }
+    if (key === "p-27") {
+      global.tm.views.p27.renderP27(els.content, {
+        onNavigate: navigate,
+      });
+      return;
+    }
 
     var wizardOpts = { onNavigate: navigate };
     if (key === "p-08") { global.tm.views.p08.renderP08(els.content, wizardOpts); return; }

@@ -11,6 +11,7 @@
   var button = global.tm.ui.button;
   var draft = global.tm.draft;
   var confirmModal = global.tm.ui.confirmModal;
+  var fixtures = global.tm.fixtures;
 
   var ROUTE = "#/solicitud/cita";
   var SEDES = ["Oficina Central — Ciudad de Panamá", "Sede Regional de Colón", "Sede Regional de Chiriquí", "Sede Regional de Herrera"];
@@ -33,6 +34,10 @@
     layout.clear(container);
     var inner = layout.el("div", "app-content__inner");
     inner.appendChild(layout.pageHeader("Cita confirmada", "Preséntese con su pasaporte y el comprobante de la cita"));
+
+    var toolbar = layout.el("div", "toolbar");
+    toolbar.appendChild(demoSelector(opts));
+    inner.appendChild(toolbar);
 
     var ok = layout.el("div", "app-alert app-alert--info");
     ok.appendChild(layout.el("span", "app-alert__title", "Su cita quedó reservada (simulado)"));
@@ -98,15 +103,24 @@
     }
   }
 
-  function renderP18(container, opts) {
-    opts = opts || {};
+  function renderContent(container, opts) {
     var d = draft.getDraft();
 
     if (d.cita) { renderConfirm(container, d.cita, opts); return; }
 
+    var escenarioActual = (fixtures && fixtures.scenario()) || "exito";
+    var src = (fixtures && fixtures.data("P-18", escenarioActual)) || {};
+    var sedesSrc = src.sedes || SEDES;
+    var horasSrc = src.horas || HORAS;
+
     layout.clear(container);
     var inner = layout.el("div", "app-content__inner");
     inner.appendChild(layout.pageHeader("Reservar cita", "Seleccione día, hora y sede"));
+
+    var toolbar = layout.el("div", "toolbar");
+    toolbar.appendChild(demoSelector(opts));
+    inner.appendChild(toolbar);
+
     if (!d.submitted) {
       var warn = layout.el("div", "app-alert app-alert--warning");
       warn.appendChild(layout.el("span", "app-alert__title", "Aún no ha enviado la solicitud"));
@@ -118,9 +132,9 @@
     var sedes = sedeFieldWrap();
     var selSede = layout.el("select", "form-field__select");
     selSede.id = "sede";
-    for (var s = 0; s < SEDES.length; s++) {
-      var o = layout.el("option", null, SEDES[s]);
-      o.value = SEDES[s];
+    for (var s = 0; s < sedesSrc.length; s++) {
+      var o = layout.el("option", null, sedesSrc[s]);
+      o.value = sedesSrc[s];
       selSede.appendChild(o);
     }
     sedes.appendChild(selSede);
@@ -149,15 +163,15 @@
     form.appendChild(layout.el("p", "wizard-section-title", "Hora disponible"));
     var hourRow = layout.el("div", "radio-group");
     var hourInputs = [];
-    for (var h = 0; h < HORAS.length; h++) {
+    for (var h = 0; h < horasSrc.length; h++) {
       var lh = layout.el("label", "cita-hour");
       var ih = layout.el("input");
       ih.type = "radio";
       ih.name = "hora";
-      ih.value = HORAS[h];
+      ih.value = horasSrc[h];
       if (h === 0) ih.checked = true;
       lh.appendChild(ih);
-      lh.appendChild(layout.el("span", null, HORAS[h]));
+      lh.appendChild(layout.el("span", null, horasSrc[h]));
       hourRow.appendChild(lh);
       hourInputs.push(ih);
     }
@@ -206,6 +220,96 @@
     lbl.setAttribute("for", "sede");
     wrap.appendChild(lbl);
     return wrap;
+  }
+
+  function demoSelector(opts) {
+    var wrap = layout.el("label", "toolbar__demo");
+    wrap.appendChild(layout.el("span", null, "Vista (demo)"));
+    var select = layout.el("select");
+    var opciones = [
+      { v: "carga", l: "Carga" },
+      { v: "exito", l: "Éxito" },
+      { v: "vacio", l: "Vacío" },
+      { v: "error", l: "Error" },
+    ];
+    for (var i = 0; i < opciones.length; i++) {
+      var o = layout.el("option", null, opciones[i].l);
+      o.value = opciones[i].v;
+      select.appendChild(o);
+    }
+    select.addEventListener("change", function () {
+      if (opts.onDemoState) opts.onDemoState(select.value);
+    });
+    wrap.appendChild(select);
+    return wrap;
+  }
+
+  function renderLoading(container) {
+    layout.clear(container);
+    var inner = layout.el("div", "app-content__inner");
+    inner.appendChild(layout.pageHeader("Reservar cita", "Cargando agenda…"));
+    var loading = layout.el("div", "app-loading");
+    loading.appendChild(layout.el("span", "spinner"));
+    loading.appendChild(layout.el("span", null, "Cargando…"));
+    inner.appendChild(loading);
+    container.appendChild(inner);
+  }
+
+  function renderEmpty(container, opts) {
+    layout.clear(container);
+    var inner = layout.el("div", "app-content__inner");
+    inner.appendChild(layout.pageHeader("Reservar cita", "Sin cupos disponibles"));
+    var empty = layout.el("div", "app-empty");
+    empty.appendChild(layout.el("p", null, "No hay sedes con cupo disponible para las próximas citas."));
+    var retry = layout.el("div", "toolbar__actions");
+    retry.appendChild(button({ variant: "primary", text: "Reintentar", onClick: function () { if (opts.onRetry) opts.onRetry(); } }));
+    empty.appendChild(retry);
+    inner.appendChild(empty);
+    container.appendChild(inner);
+  }
+
+  function renderError(container, opts) {
+    layout.clear(container);
+    var inner = layout.el("div", "app-content__inner");
+    inner.appendChild(layout.pageHeader("Reservar cita", "No se pudo cargar la agenda"));
+    var alert = layout.el("div", "app-alert app-alert--warning");
+    alert.appendChild(layout.el("span", "app-alert__title", "Agenda no disponible"));
+    alert.appendChild(layout.el(
+      "span",
+      "app-alert__text",
+      (opts && opts.mensaje) || "No pudimos cargar la agenda de citas. Intente nuevamente."
+    ));
+    inner.appendChild(alert);
+    var retry = layout.el("div", "toolbar__actions");
+    retry.appendChild(button({ variant: "primary", text: "Reintentar", onClick: function () { if (opts.onRetry) opts.onRetry(); } }));
+    inner.appendChild(retry);
+    container.appendChild(inner);
+  }
+
+  function renderP18(container, opts) {
+    opts = opts || {};
+
+    function show(state) {
+      if (!state) state = "carga";
+      if (fixtures) fixtures.setScenario(state);
+      if (state === "carga") {
+        renderLoading(container);
+        setTimeout(function () { renderContent(container, opts); }, 700);
+        return;
+      }
+      if (state === "error") {
+        renderError(container, {
+          onRetry: function () { show("carga"); },
+          mensaje: fixtures ? fixtures.message("P-18", "error", null) : null,
+        });
+        return;
+      }
+      if (state === "vacio") { renderEmpty(container, { onRetry: function () { show("carga"); } }); return; }
+      renderContent(container, opts);
+    }
+
+    opts.onDemoState = show;
+    show("carga");
   }
 
   global.tm.views = global.tm.views || {};

@@ -5,17 +5,40 @@ Fixtures de demostración que alimentan las pantallas **mientras no exista backe
 que el paso de *fixtures → mocks* no exija reescribir vistas
 (`Rama-01-Frontend.md:68`, `plan-de-ejecucion-frontend.md` §2.5).
 
+## Cómo se cargan (`file://`)
+
+La aplicación abre con doble clic y **no puede usar `fetch`/JSON en `file://`**,
+por lo que el loader `js/utils/fixtures.js` (expone `tm.fixtures`) registra el
+envelope desde scripts clásicos. Cada fixture es un `.js` que llama a:
+
+```js
+global.tm.fixtures.register("P-06", "exito", { meta, data, error });
+```
+
+`tm.fixtures` expone: `envelope(pantalla, escenario)`, `data(pantalla, escenario)`,
+`message(pantalla, escenario, fallback)`, `has(...)`, `register(...)`,
+`scenario()`/`setScenario(...)` (escenario actual del flujo demo, en
+sessionStorage) y `load(...)` (para cuando haya servidor: sirve el mismo envelope
+como `.json`; se registra automáticamente si responde 200).
+
+Las vistas leen con `tm.fixtures.data("P-0X", escenario)` y, ante estados de
+error, `tm.fixtures.message("P-0X", "error", fallback)`. Si una vista se abre sin
+su fixture registrado cae a un demo inline definido en la propia vista
+(retrocompatibilidad).
+
 ## Nomenclatura
 
 ```
-js/fixtures/<id-en-minúsculas>-<slug>.json          # estado base (equivalente a éxito)
-js/fixtures/<id>-<slug>.carga.json                  # estado de carga
-js/fixtures/<id>-<slug>.exito.json                  # estado de éxito
-js/fixtures/<id>-<slug>.vacio.json                  # estado vacío
-js/fixtures/<id>-<slug>.error.json                  # estado de error
+js/fixtures/<id-en-minúsculas>-<slug>.js              # estado base (equivale a éxito)
+js/fixtures/<id>-<slug>.carga.js                      # estado de carga
+js/fixtures/<id>-<slug>.exito.js                      # estado de éxito
+js/fixtures/<id>-<slug>.vacio.js                      # estado vacío
+js/fixtures/<id>-<slug>.error.js                      # estado de error
 ```
 
-Ejemplo: `p-01-login.exito.json`.
+Ejemplo: `p-06-mis-tramites.js`, `p-06-mis-tramites.error.js`.
+Los `id-slug` deben registrarse en `html/index.html` **antes** de las vistas
+(¶ `js/fixtures/...`).
 
 ## Esquema (POR DEFINIR (PO / HU-08))
 
