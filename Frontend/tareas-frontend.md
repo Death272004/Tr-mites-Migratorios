@@ -100,7 +100,7 @@
 | --- | --- | --- |
 | ☐ | TASK-10.4 — Dockerfiles del frontend y `docker-compose.yml` con healthchecks (con Backend) | 6 h |
 | ☐ | TASK-12.5 — Conectar P-01, P-02, P-04, P-05 a `/api/auth/*` (P-03 OTP sigue simulado) | 5 h |
-| ☐ | TASK-13.5 — Mostrar/ocultar acciones según permisos reales del rol | 4 h |
+| ☑ | TASK-13.5 — Mostrar/ocultar acciones según permisos reales del rol | 4 h |
 
 ## 4. Sprint 3 — expediente y consentimiento
 

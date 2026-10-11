@@ -10,6 +10,7 @@
   var layout = global.tm.layout;
   var field = global.tm.ui.field;
   var button = global.tm.ui.button;
+  var perms = global.tm.perms;
 
   var FALLBACK = { expediente: "—", titular: "—", tipos: ["Edicto de admisión"], edictos: [] };
 
@@ -57,7 +58,9 @@
       item.appendChild(hist);
 
       var actions = layout.el("div", "detail-actions");
-      if (e.estado === "Publicado") {
+      if (!perms.can(perms.PERMS.OBSERVAR)) {
+        actions.appendChild(perms.notice(perms.PERMS.OBSERVAR, "Solo un rol con permiso «observar» puede gestionar edictos."));
+      } else if (e.estado === "Publicado") {
         actions.appendChild(button({ variant: "ghost", text: "Retirar", onClick: function () {
           e.estado = "Retirado";
           e.historial.push({ fecha: "2026-10-11", accion: "Retirado (historial inmutable)" });
@@ -121,7 +124,7 @@
       inner.appendChild(errBox);
 
       var actions = layout.el("div", "toolbar__actions");
-      actions.appendChild(button({
+      var publicarBtn = button({
         variant: "primary",
         text: "Publicar edicto",
         onClick: function () {
@@ -144,7 +147,8 @@
           });
           renderContent();
         },
-      }));
+      });
+      actions.appendChild(perms.can(perms.PERMS.OBSERVAR) ? publicarBtn : perms.notice(perms.PERMS.OBSERVAR, "Solo un rol con permiso «observar» puede publicar edictos."));
       inner.appendChild(actions);
 
       inner.appendChild(layout.el("p", "seguimiento-note", "El retiro no borra: el historial es inmutable (auditoría I-16)."));

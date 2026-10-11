@@ -11,6 +11,7 @@
   var field = global.tm.ui.field;
   var button = global.tm.ui.button;
   var table = global.tm.ui.table;
+  var perms = global.tm.perms;
 
   var FALLBACK = { expediente: "—", tramite: "—", estadoActual: "EN ANÁLISIS", requisitosComunes: [], requisitosEspecificos: [], verificaciones: [], verificacionesRequeridas: [], historial: [] };
 
@@ -154,7 +155,7 @@
       }
 
       var actions = layout.el("div", "toolbar__actions");
-      actions.appendChild(button({
+      var dictamenBtn = button({
         variant: "primary",
         text: "Guardar dictamen",
         onClick: function () {
@@ -178,7 +179,8 @@
             : { estado: "CON OBSERVACIONES", detalle: "Se emitirá una observación (I-08) por los ítems marcados." };
           renderContent();
         },
-      }));
+      });
+      actions.appendChild(perms.can(perms.PERMS.OBSERVAR) ? dictamenBtn : perms.notice(perms.PERMS.OBSERVAR, "Solo un rol con permiso «observar» puede emitir el dictamen."));
       if (opts.onNavigate) {
         actions.appendChild(button({ variant: "ghost", text: "Verificaciones (I-07)", onClick: function () { opts.onNavigate("#/interno/verificaciones"); } }));
         actions.appendChild(button({ variant: "ghost", text: "Resolución (I-10)", onClick: function () { opts.onNavigate("#/interno/resolucion"); } }));

@@ -12,6 +12,7 @@
   var field = global.tm.ui.field;
   var button = global.tm.ui.button;
   var table = global.tm.ui.table;
+  var perms = global.tm.perms;
 
   var FALLBACK = { expediente: "—", modo: "manual asistido", resultados: ["OK"], instituciones: ["TE"], verificaciones: [] };
 
@@ -52,6 +53,7 @@
     }
 
     function rowActions(v) {
+      if (!perms.can(perms.PERMS.VERIFICAR)) return perms.notice(perms.PERMS.VERIFICAR, "Solo un rol con permiso «verificar» puede registrar resultados.");
       var box = layout.el("div", "detail-actions");
       box.appendChild(button({ variant: "ghost", text: "Verificado", onClick: function () {
         v.resultado = "OK";
@@ -134,7 +136,7 @@
       form.appendChild(field.fieldTextarea({ id: "vValor", label: "Valor retornado / observación (resultado mínimo)", rows: 2 }));
 
       var actions = layout.el("div", "toolbar__actions");
-      actions.appendChild(button({
+      var registrarBtn = button({
         variant: "primary",
         text: "Registrar verificación",
         onClick: function () {
@@ -157,7 +159,8 @@
           });
           renderContent();
         },
-      }));
+      });
+      actions.appendChild(perms.can(perms.PERMS.VERIFICAR) ? registrarBtn : perms.notice(perms.PERMS.VERIFICAR, "Solo un rol con permiso «verificar» puede registrar resultados."));
       form.appendChild(actions);
       inner.appendChild(form);
 
