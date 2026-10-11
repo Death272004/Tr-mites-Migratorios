@@ -9,6 +9,19 @@ Contrato: [`openapi.yaml`](openapi.yaml) — HU-07 del backlog (`Documentacion/0
 3. El archivo debe validar sin errores: `npx @redocly/cli lint Backend/docs/openapi.yaml`.
 4. Se avisa a la rama Frontend cuando el cambio afecta una ruta, un campo o un enumerado que ya consume.
 
+## 0.2.0 — 2026-10-11
+
+Cambios aditivos al implementar las historias de los Sprints 1 a 4. Ninguna ruta ni campo existente cambia.
+
+- `GET /api/catalogos/tipos-tramite` y `GET /api/catalogos/tipos-documentales` (TASK-15.2, TASK-17.1): el asistente necesita los tipos de trámite, sus requisitos y los límites de archivo.
+- Campo `numero` en `Expediente` (número legible, p. ej. `EXP-2026-000001`); es el que consulta el SNM simulado.
+- Valor `CONSENTIMIENTO_REVOCADO` en `TipoNotificacion`: aviso al despacho cuando un cliente revoca (HU-18b CA-4).
+- `Documento.estadoRevision` pasa de texto libre a los valores `PENDIENTE`, `VALIDO`, `RECHAZADO` (cierre de la TASK-17.1).
+
+### Códigos de error en uso
+
+Además de los genéricos por código HTTP (`ENTRADA_INVALIDA`, `NO_AUTENTICADO`, `SIN_PERMISO`, `NO_ENCONTRADO`, `CONFLICTO`, `ERROR_INTERNO`), el campo `codigo` puede traer: `CREDENCIALES_INVALIDAS` (401), `SIN_REPRESENTACION`, `CONSENTIMIENTO_REQUERIDO` y `CONSENTIMIENTO_EXPRESO_REQUERIDO` (403), `TRANSICION_NO_PERMITIDA`, `REQUISITOS_INCOMPLETOS`, `VERSION_DESACTUALIZADA`, `EXPEDIENTE_CERRADO` y `CONSENTIMIENTO_YA_REVOCADO` (409), y en las fuentes simuladas `SIN_RESULTADO` (404), `LIMITE_EXCEDIDO` (429), `ERROR_TECNICO` (500) y `TIEMPO_AGOTADO` (504).
+
 ## 0.1.0 — 2026-10-10
 
 Primera versión del contrato.

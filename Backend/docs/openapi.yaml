@@ -2,7 +2,7 @@ openapi: 3.0.3
 
 info:
   title: Sistema Interoperable para la Gestión de Trámites Migratorios en Panamá
-  version: 0.1.0
+  version: 0.2.0
   description: |
     Contrato de la API REST del producto (HU-07).
 
@@ -40,6 +40,8 @@ tags:
     description: Avisos del expediente (HU-18).
   - name: Auditoría
     description: Bitácora de operaciones, solo lectura para el auditor (HU-22).
+  - name: Catálogos
+    description: Tipos de trámite, requisitos y tipos documentales (TASK-15.2, TASK-17.1).
   - name: Fuentes simuladas
     description: Fuentes de verificación simuladas de TE, CSS, Registro Público y SNM (HU-08).
 
@@ -856,6 +858,49 @@ paths:
         "500":
           $ref: "#/components/responses/ErrorInterno"
 
+  # ---------- Catálogos (TASK-15.2, TASK-17.1) ----------
+  /api/catalogos/tipos-tramite:
+    get:
+      tags: [Catálogos]
+      operationId: listarTiposTramite
+      summary: Consultar los tipos de trámite con sus requisitos
+      description: Tipos de trámite activos y los documentos que cada uno exige o admite.
+      x-roles: [SOLICITANTE, FUNCIONARIO, SUPERVISOR, AUDITOR, ADMIN]
+      responses:
+        "200":
+          description: Tipos de trámite activos.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TipoTramite"
+        "401":
+          $ref: "#/components/responses/NoAutenticado"
+        "500":
+          $ref: "#/components/responses/ErrorInterno"
+
+  /api/catalogos/tipos-documentales:
+    get:
+      tags: [Catálogos]
+      operationId: listarTiposDocumentales
+      summary: Consultar los tipos documentales y los límites de los archivos
+      description: Incluye los tipos MIME permitidos y el tamaño máximo, para validar en el cliente antes de enviar.
+      x-roles: [SOLICITANTE, FUNCIONARIO, SUPERVISOR, AUDITOR, ADMIN]
+      responses:
+        "200":
+          description: Tipos documentales.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TipoDocumental"
+        "401":
+          $ref: "#/components/responses/NoAutenticado"
+        "500":
+          $ref: "#/components/responses/ErrorInterno"
+
   # ---------- Fuentes de verificación simuladas (HU-08) ----------
   /api/mock/te/personas/{tipoDoc}/{numero}:
     get:
@@ -1205,6 +1250,7 @@ components:
         - RESULTADO_VERIFICACION
         - DECISION_FINAL
         - SOLICITUD_ARCO
+        - CONSENTIMIENTO_REVOCADO
 
     EscenarioMock:
       type: string
@@ -1287,6 +1333,10 @@ components:
         id:
           type: string
           format: uuid
+        numero:
+          type: string
+          description: Número legible del expediente, único.
+          example: EXP-2026-000001
         solicitanteId:
           type: string
           format: uuid
@@ -1331,7 +1381,7 @@ components:
           format: date-time
         estadoRevision:
           type: string
-          description: Estado de revisión del documento; sus valores se cierran en la TASK-17.1.
+          enum: [PENDIENTE, VALIDO, RECHAZADO]
         avisoDuplicado:
           type: boolean
           description: Verdadero si ya existía un documento válido del mismo tipo documental (HU-17).
@@ -1697,6 +1747,52 @@ components:
             $ref: "#/components/schemas/EventoAuditoria"
         paginacion:
           $ref: "#/components/schemas/Paginacion"
+
+    # ---------- Catálogos ----------
+    TipoTramite:
+      type: object
+      required: [codigo, nombre, requisitos]
+      properties:
+        codigo:
+          type: string
+        nombre:
+          type: string
+        requisitos:
+          type: array
+          items:
+            $ref: "#/components/schemas/RequisitoTramite"
+
+    RequisitoTramite:
+      type: object
+      required: [tipoDocumental, nombre, obligatorio, sensible]
+      properties:
+        tipoDocumental:
+          type: string
+          description: Código del tipo documental.
+        nombre:
+          type: string
+        obligatorio:
+          type: boolean
+        sensible:
+          type: boolean
+          description: Dato sensible; adjuntarlo exige consentimiento expreso vigente (HU-18b).
+
+    TipoDocumental:
+      type: object
+      required: [codigo, nombre, sensible, tiposMimePermitidos, tamanoMaximoBytes]
+      properties:
+        codigo:
+          type: string
+        nombre:
+          type: string
+        sensible:
+          type: boolean
+        tiposMimePermitidos:
+          type: array
+          items:
+            type: string
+        tamanoMaximoBytes:
+          type: integer
 
     # ---------- Fuentes simuladas (datos ficticios) ----------
     MockTePersona:
