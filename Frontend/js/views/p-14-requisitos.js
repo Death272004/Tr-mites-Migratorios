@@ -3,18 +3,28 @@
  * Checklist generado desde la ficha de P-07 (sección 4). Los requisitos con
  * interoperabilidad [A] se muestran bloqueados y sellados; el ciudadano carga
  * los demás. Incluye barra de progreso y exige checklist completo para avanzar.
+ * 4 estados: carga, éxito, vacío, error.
  * Script clásico: expone `tm.views.p14.renderP14`.
  */
 (function (global) {
   "use strict";
 
   var layout = global.tm.layout;
+  var button = global.tm.ui.button;
   var wizard = global.tm.wizard;
   var draft = global.tm.draft;
+  var fixtures = global.tm.fixtures;
 
   var ROUTE = "#/solicitud/paso-6";
 
-  function buildRequisitos(d) {
+  // Respaldo inline; la fuente por defecto es el fixture P-14 (§2.5).
+  var REQUISITOS_FALLBACK = ["Documento de identidad", "Comprobante de domicilio", "Documento de respaldo del trámite"];
+
+  function estadoActual() {
+    return (fixtures && fixtures.scenario && fixtures.scenario()) || "exito";
+  }
+
+  function buildRequisitos(d, fallback) {
     var out = [];
     var cat = null;
     var catalogo = (global.tm.views.p07 && global.tm.views.p07.CATALOGO) || [];
@@ -34,16 +44,19 @@
         for (var a = 0; a < art.length; a++) out.push(art[a]);
       }
     }
-    if (out.length === 0) out = ["Documento de identidad", "Comprobante de domicilio", "Documento de respaldo del trámite"];
+    if (out.length === 0) out = fallback || REQUISITOS_FALLBACK;
     return out;
   }
 
-  function renderP14(container, opts) {
-    opts = opts || {};
+  function renderContent(container, opts) {
     var body = wizard.frame(container, ROUTE);
+    body.appendChild(demoSelector(opts));
     var d = draft.getDraft();
 
-    var requisitos = buildRequisitos(d);
+    var fuente = (fixtures && fixtures.data("P-14", estadoActual())) || {};
+    var fallback = fuente.requisitosFallback || REQUISITOS_FALLBACK;
+
+    var requisitos = buildRequisitos(d, fallback);
     var arr = [];
     for (var i = 0; i < requisitos.length; i++) {
       arr.push({ texto: requisitos[i].replace(/\s*\(A\)/, ""), auto: /\(A\)/.test(requisitos[i]) });
@@ -119,6 +132,96 @@
     }));
 
     updateProgress();
+  }
+
+  function demoSelector(opts) {
+    var wrap = layout.el("label", "toolbar__demo");
+    wrap.appendChild(layout.el("span", null, "Vista (demo)"));
+    var select = layout.el("select");
+    var opciones = [
+      { v: "carga", l: "Carga" },
+      { v: "exito", l: "Éxito" },
+      { v: "vacio", l: "Vacío" },
+      { v: "error", l: "Error" },
+    ];
+    for (var i = 0; i < opciones.length; i++) {
+      var o = layout.el("option", null, opciones[i].l);
+      o.value = opciones[i].v;
+      select.appendChild(o);
+    }
+    select.addEventListener("change", function () {
+      if (opts.onDemoState) opts.onDemoState(select.value);
+    });
+    wrap.appendChild(select);
+    return wrap;
+  }
+
+  function renderLoading(container) {
+    layout.clear(container);
+    var inner = layout.el("div", "app-content__inner");
+    inner.appendChild(layout.pageHeader("Nueva solicitud", "Cargando requisitos…"));
+    var loading = layout.el("div", "app-loading");
+    loading.appendChild(layout.el("span", "spinner"));
+    loading.appendChild(layout.el("span", null, "Cargando la lista de requisitos…"));
+    inner.appendChild(loading);
+    container.appendChild(inner);
+  }
+
+  function renderEmpty(container, opts) {
+    layout.clear(container);
+    var inner = layout.el("div", "app-content__inner");
+    inner.appendChild(layout.pageHeader("Nueva solicitud", "Sin requisitos configurados"));
+    var empty = layout.el("div", "app-empty");
+    empty.appendChild(layout.el("p", null, "No hay requisitos configurados para este trámite. Contacte al despacho."));
+    var retry = layout.el("div", "toolbar__actions");
+    retry.appendChild(button({ variant: "primary", text: "Reintentar", onClick: function () { if (opts.onRetry) opts.onRetry(); } }));
+    empty.appendChild(retry);
+    inner.appendChild(empty);
+    container.appendChild(inner);
+  }
+
+  function renderError(container, opts) {
+    layout.clear(container);
+    var inner = layout.el("div", "app-content__inner");
+    inner.appendChild(layout.pageHeader("Nueva solicitud", "No se pudo cargar la lista"));
+    var alert = layout.el("div", "app-alert app-alert--warning");
+    alert.appendChild(layout.el("span", "app-alert__title", "No pudimos cargar la lista de requisitos"));
+    alert.appendChild(layout.el(
+      "span",
+      "app-alert__text",
+      (opts && opts.mensaje) || "No pudimos cargar la lista de requisitos. Intente nuevamente."
+    ));
+    inner.appendChild(alert);
+    var retry = layout.el("div", "toolbar__actions");
+    retry.appendChild(button({ variant: "primary", text: "Reintentar", onClick: function () { if (opts.onRetry) opts.onRetry(); } }));
+    inner.appendChild(retry);
+    container.appendChild(inner);
+  }
+
+  function renderP14(container, opts) {
+    opts = opts || {};
+
+    function show(state) {
+      if (!state) state = "carga";
+      if (fixtures) fixtures.setScenario(state);
+      if (state === "carga") {
+        renderLoading(container);
+        setTimeout(function () { renderContent(container, opts); }, 700);
+        return;
+      }
+      if (state === "error") {
+        renderError(container, {
+          onRetry: function () { show("carga"); },
+          mensaje: fixtures ? fixtures.message("P-14", "error", null) : null,
+        });
+        return;
+      }
+      if (state === "vacio") { renderEmpty(container, { onRetry: function () { show("carga"); } }); return; }
+      renderContent(container, opts);
+    }
+
+    opts.onDemoState = show;
+    show("carga");
   }
 
   function verifiedBadge() {

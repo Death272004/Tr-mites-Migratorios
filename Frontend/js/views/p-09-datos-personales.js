@@ -1,5 +1,6 @@
 /**
  * P-09 Paso 1 — Datos personales.
+ * 4 estados: carga, éxito, vacío, error.
  * Script clásico: expone `tm.views.p09.renderP09`.
  */
 (function (global) {
@@ -10,12 +11,65 @@
   var wizard = global.tm.wizard;
   var draft = global.tm.draft;
   var data = global.tm.data;
+  var fixtures = global.tm.fixtures;
 
   var ROUTE = "#/solicitud/paso-1";
 
-  function renderP09(container, opts) {
+  function demoSelector(opts) {
+    var wrap = layout.el("label", "toolbar__demo");
+    wrap.appendChild(layout.el("span", null, "Vista (demo)"));
+    var select = layout.el("select");
+    var opciones = [
+      { v: "carga", l: "Carga" },
+      { v: "exito", l: "Éxito" },
+      { v: "vacio", l: "Vacío" },
+      { v: "error", l: "Error" },
+    ];
+    for (var i = 0; i < opciones.length; i++) {
+      var o = layout.el("option", null, opciones[i].l);
+      o.value = opciones[i].v;
+      select.appendChild(o);
+    }
+    select.addEventListener("change", function () {
+      if (opts.onDemoState) opts.onDemoState(select.value);
+    });
+    wrap.appendChild(select);
+    return wrap;
+  }
+
+  function renderLoading(container) {
+    layout.clear(container);
+    var inner = layout.el("div", "app-content__inner");
+    inner.appendChild(layout.pageHeader("Datos personales", "Cargando…"));
+    var loading = layout.el("div", "app-loading");
+    loading.appendChild(layout.el("span", "spinner"));
+    loading.appendChild(layout.el("span", null, "Cargando…"));
+    inner.appendChild(loading);
+    container.appendChild(inner);
+  }
+
+  function renderError(container, opts) {
+    layout.clear(container);
+    var inner = layout.el("div", "app-content__inner");
+    inner.appendChild(layout.pageHeader("Datos personales", "No se pudo cargar la información"));
+    var alert = layout.el("div", "app-alert app-alert--warning");
+    alert.appendChild(layout.el("span", "app-alert__title", "No pudimos cargar sus datos personales"));
+    alert.appendChild(layout.el(
+      "span",
+      "app-alert__text",
+      (opts && opts.mensaje) || "Ocurrió un problema temporal. Intente nuevamente."
+    ));
+    inner.appendChild(alert);
+    var retry = layout.el("div", "toolbar__actions");
+    retry.appendChild(button({ variant: "primary", text: "Reintentar", onClick: function () { if (opts.onRetry) opts.onRetry(); } }));
+    inner.appendChild(retry);
+    container.appendChild(inner);
+  }
+
+  function renderContent(container, opts) {
     opts = opts || {};
     var body = wizard.frame(container, ROUTE);
+    body.appendChild(demoSelector(opts));
     var d = draft.getDraft().datosPersonales || {};
 
     var grid = layout.el("div", "wizard-grid");
@@ -109,6 +163,36 @@
     return e ? e.value.trim() : "";
   }
 
+  function renderP09(container, opts) {
+    opts = opts || {};
+
+    function show(state) {
+      if (!state) state = "carga";
+      if (fixtures) fixtures.setScenario(state);
+      if (state === "carga") {
+        renderLoading(container);
+        setTimeout(function () { renderContent(container, opts); }, 700);
+        return;
+      }
+      if (state === "error") {
+        renderError(container, {
+          onRetry: function () { show("carga"); },
+          mensaje: fixtures ? fixtures.message("P-09", "error", null) : null,
+        });
+        return;
+      }
+      if (state === "vacio") {
+        renderContent(container, opts);
+        return;
+      }
+      renderContent(container, opts);
+    }
+
+    opts.onDemoState = show;
+    show("carga");
+  }
+
+  var button = global.tm.ui.button;
   global.tm.views = global.tm.views || {};
   global.tm.views.p09 = { renderP09: renderP09 };
 })(window);

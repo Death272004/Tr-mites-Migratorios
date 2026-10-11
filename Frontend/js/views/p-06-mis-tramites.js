@@ -12,8 +12,10 @@
 
   var layout = global.tm.layout;
   var button = global.tm.ui.button;
+  var fixtures = global.tm.fixtures;
 
-  // Datos demo (ficticios). Se reemplazan por fixtures/HTTP en Sprint 2.
+  // Datos ficticios de respaldo. La fuente por defecto es el fixture P-06 (§2.5);
+  // sin backend (file://) el envelope lo registran los `.js` de js/fixtures/.
   var DEMO_TRAMITES = [
     {
       expediente: "EXP-2026-000184",
@@ -67,6 +69,18 @@
 
   function toneForState(state, tono) {
     return tono || "muted";
+  }
+
+  function tramitesDe(escenario) {
+    if (!fixtures) return DEMO_TRAMITES;
+    var env = fixtures.envelope("P-06", escenario || "exito");
+    if (!env || !env.data) return escenario === "vacio" ? [] : DEMO_TRAMITES;
+    return env.data.tramites || [];
+  }
+
+  function errorText(escenario, fallback) {
+    if (!fixtures) return fallback;
+    return fixtures.message("P-06", escenario, fallback);
   }
 
   function badge(text, tone) {
@@ -251,7 +265,11 @@
     inner.appendChild(layout.pageHeader("Mis trámites", "No se pudo cargar la bandeja"));
     var alert = layout.el("div", "app-alert app-alert--warning");
     alert.appendChild(layout.el("span", "app-alert__title", "No pudimos cargar sus trámites"));
-    alert.appendChild(layout.el("span", "app-alert__text", "Ocurrió un problema temporal. Intente nuevamente."));
+    alert.appendChild(layout.el(
+      "span",
+      "app-alert__text",
+      (opts && opts.mensaje) || "Ocurrió un problema temporal. Intente nuevamente."
+    ));
     inner.appendChild(alert);
     var retry = layout.el("div", "toolbar__actions");
     retry.appendChild(button({ variant: "primary", text: "Reintentar", onClick: function () { if (opts.onRetry) opts.onRetry(); } }));
@@ -263,14 +281,22 @@
     opts = opts || {};
 
     function show(state) {
+      if (!state) state = "carga";
+      if (fixtures) fixtures.setScenario(state);
       if (state === "carga") {
         renderLoading(container);
-        setTimeout(function () { renderContent(container, opts, DEMO_TRAMITES); }, 700);
+        setTimeout(function () { renderContent(container, opts, tramitesDe("exito")); }, 700);
         return;
       }
-      if (state === "error") { renderError(container, { onRetry: function () { show("carga"); } }); return; }
-      if (state === "vacio") { renderContent(container, opts, []); return; }
-      renderContent(container, opts, DEMO_TRAMITES);
+      if (state === "error") {
+        renderError(container, {
+          onRetry: function () { show("carga"); },
+          mensaje: errorText("error", null),
+        });
+        return;
+      }
+      if (state === "vacio") { renderContent(container, opts, tramitesDe("vacio")); return; }
+      renderContent(container, opts, tramitesDe("exito"));
     }
 
     opts.onDemoState = show;

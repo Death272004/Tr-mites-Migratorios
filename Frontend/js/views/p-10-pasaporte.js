@@ -2,6 +2,7 @@
  * P-10 Paso 2 — Pasaporte e historial migratorio.
  * El sello de ingreso y el RUEX se cotejan con servicios del SNM ([A]/[S]);
  * el historial de entradas/salidas es solo lectura (no lo digita el ciudadano).
+ * 4 estados: carga, éxito, vacío, error.
  * Script clásico: expone `tm.views.p10.renderP10`.
  */
 (function (global) {
@@ -12,15 +13,78 @@
   var wizard = global.tm.wizard;
   var draft = global.tm.draft;
   var data = global.tm.data;
+  var fixtures = global.tm.fixtures;
 
   var ROUTE = "#/solicitud/paso-2";
 
   function byId(id) { var e = document.getElementById(id); return e ? e.value.trim() : ""; }
 
-  function renderP10(container, opts) {
+  var HIST_DEFAULT = [
+    { fecha: "2026-08-30", movimiento: "Entrada", puesto: "Tocumen" },
+    { fecha: "2026-06-14", movimiento: "Salida", puesto: "Paso Canoas" },
+    { fecha: "2026-05-02", movimiento: "Entrada", puesto: "Tocumen" },
+  ];
+
+  function demoSelector(opts) {
+    var wrap = layout.el("label", "toolbar__demo");
+    wrap.appendChild(layout.el("span", null, "Vista (demo)"));
+    var select = layout.el("select");
+    var opciones = [
+      { v: "carga", l: "Carga" },
+      { v: "exito", l: "Éxito" },
+      { v: "vacio", l: "Vacío" },
+      { v: "error", l: "Error" },
+    ];
+    for (var i = 0; i < opciones.length; i++) {
+      var o = layout.el("option", null, opciones[i].l);
+      o.value = opciones[i].v;
+      select.appendChild(o);
+    }
+    select.addEventListener("change", function () {
+      if (opts.onDemoState) opts.onDemoState(select.value);
+    });
+    wrap.appendChild(select);
+    return wrap;
+  }
+
+  function renderLoading(container) {
+    layout.clear(container);
+    var inner = layout.el("div", "app-content__inner");
+    inner.appendChild(layout.pageHeader("Pasaporte e historial migratorio", "Cargando…"));
+    var loading = layout.el("div", "app-loading");
+    loading.appendChild(layout.el("span", "spinner"));
+    loading.appendChild(layout.el("span", null, "Cargando…"));
+    inner.appendChild(loading);
+    container.appendChild(inner);
+  }
+
+  function renderError(container, opts) {
+    layout.clear(container);
+    var inner = layout.el("div", "app-content__inner");
+    inner.appendChild(layout.pageHeader("Pasaporte e historial migratorio", "No se pudo cargar la información"));
+    var alert = layout.el("div", "app-alert app-alert--warning");
+    alert.appendChild(layout.el("span", "app-alert__title", "No pudimos cargar su historial migratorio"));
+    alert.appendChild(layout.el(
+      "span",
+      "app-alert__text",
+      (opts && opts.mensaje) || "Ocurrió un problema temporal. Intente nuevamente."
+    ));
+    inner.appendChild(alert);
+    var retry = layout.el("div", "toolbar__actions");
+    retry.appendChild(button({ variant: "primary", text: "Reintentar", onClick: function () { if (opts.onRetry) opts.onRetry(); } }));
+    inner.appendChild(retry);
+    container.appendChild(inner);
+  }
+
+  function renderContent(container, opts, escenario) {
     opts = opts || {};
     var body = wizard.frame(container, ROUTE);
+    body.appendChild(demoSelector(opts));
     var d = draft.getDraft().pasaporte || {};
+
+    var fuente = (fixtures && fixtures.data("P-10", escenario)) || {};
+    var historial = fuente.historial;
+    if (!historial) historial = HIST_DEFAULT;
 
     var grid = layout.el("div", "wizard-grid");
     grid.appendChild(field.fieldText({ id: "numPasaporte", label: "Número de pasaporte vigente", value: d.numPasaporte, required: true }));
@@ -71,18 +135,27 @@
     radioField.appendChild(layout.el("span", "form-field__help", "Relevante en naturalización (numerales 2 y 3 del Art. 10)."));
     body.appendChild(radioField);
 
-    var hist = layout.el("fieldset", "wizard-section");
-    hist.appendChild(layout.el("legend", "wizard-section-title", "Historial de entradas y salidas [A]"));
-    hist.appendChild(global.tm.ui.table({
-      headers: [{ label: "Fecha" }, { label: "Movimiento" }, { label: "Puesto" }],
-      rows: [
-        [{ text: "2026-08-30" }, { text: "Entrada" }, { text: "Tocumen" }],
-        [{ text: "2026-06-14" }, { text: "Salida" }, { text: "Paso Canoas" }],
-        [{ text: "2026-05-02" }, { text: "Entrada" }, { text: "Tocumen" }],
-      ],
-    }));
-    hist.appendChild(layout.el("span", "form-field__help", "Cargado desde el SNM; el ciudadano no lo digita."));
-    body.appendChild(hist);
+    if (historial && historial.length > 0) {
+      var hist = layout.el("fieldset", "wizard-section");
+      hist.appendChild(layout.el("legend", "wizard-section-title", "Historial de entradas y salidas [A]"));
+      var rows = historial.map(function (h) {
+        return [
+          { text: h.fecha },
+          { text: h.movimiento },
+          { text: h.puesto },
+        ];
+      });
+      hist.appendChild(global.tm.ui.table({
+        headers: [{ label: "Fecha" }, { label: "Movimiento" }, { label: "Puesto" }],
+        rows: rows,
+      }));
+      hist.appendChild(layout.el("span", "form-field__help", "Cargado desde el SNM; el ciudadano no lo digita."));
+      body.appendChild(hist);
+    } else {
+      var emptyHist = layout.el("div", "app-empty");
+      emptyHist.appendChild(layout.el("p", null, "Sin movimientos migratorios registrados."));
+      body.appendChild(emptyHist);
+    }
 
     var err = wizard.errorBox();
     body.appendChild(err);
@@ -122,6 +195,34 @@
     }));
   }
 
+  function renderP10(container, opts) {
+    opts = opts || {};
+
+    function show(state) {
+      if (!state) state = "carga";
+      if (fixtures) fixtures.setScenario(state);
+      if (state === "carga") {
+        renderLoading(container);
+        setTimeout(function () { renderContent(container, opts, "exito"); }, 700);
+        return;
+      }
+      if (state === "error") {
+        renderError(container, {
+          onRetry: function () { show("carga"); },
+          mensaje: fixtures ? fixtures.message("P-10", "error", null) : null,
+        });
+        return;
+      }
+      if (state === "vacio") { renderContent(container, opts, "vacio"); return; }
+      renderContent(container, opts, "exito");
+    }
+
+    opts.onDemoState = show;
+    show("carga");
+  }
+
+  var button = global.tm.ui.button;
+  var rg;
   global.tm.views = global.tm.views || {};
   global.tm.views.p10 = { renderP10: renderP10 };
 })(window);

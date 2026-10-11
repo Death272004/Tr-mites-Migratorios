@@ -2,6 +2,7 @@
  * P-15 Paso 7 — Pagos y tasas (simulado, sin pasarela real).
  * Desglose de tasas desde el catálogo, modalidad de pago, verificación de
  * cheque (si aplica) y constancia de pago generada localmente.
+ * 4 estados: carga, éxito, vacío, error.
  * Script clásico: expone `tm.views.p15.renderP15`.
  */
 (function (global) {
@@ -9,16 +10,26 @@
 
   var layout = global.tm.layout;
   var field = global.tm.ui.field;
+  var button = global.tm.ui.button;
   var wizard = global.tm.wizard;
   var draft = global.tm.draft;
   var data = global.tm.data;
+  var fixtures = global.tm.fixtures;
 
   var ROUTE = "#/solicitud/paso-7";
 
   function byId(id) { var e = document.getElementById(id); return e ? e.value.trim() : ""; }
 
+  function estadoActual() {
+    return (fixtures && fixtures.scenario && fixtures.scenario()) || "exito";
+  }
+
   function tasasDe(d) {
     var cat = d.categoria || "";
+    var fuente = (fixtures && fixtures.data("P-15", estadoActual())) || {};
+    if (fuente.tasas) {
+      return fuente.tasas[cat] || fuente.tasas["default"] || [];
+    }
     if (cat === "RESIDENTE_TEMPORAL" || cat === "RESIDENTE_PERMANENTE") {
       return [{ concepto: "Tesoro Nacional", monto: 250 }, { concepto: "Servicio Nacional de Migración (SNM)", monto: 800 }];
     }
@@ -33,9 +44,9 @@
 
   function money(n) { return "B/." + Number(n).toFixed(2); }
 
-  function renderP15(container, opts) {
-    opts = opts || {};
+  function renderContent(container, opts) {
     var body = wizard.frame(container, ROUTE);
+    body.appendChild(demoSelector(opts));
     var d = draft.getDraft();
     var pagos = d.pagos || {};
 
@@ -156,6 +167,96 @@
       });
       if (opts.onNavigate) opts.onNavigate(wizard.nextRoute(ROUTE));
     });
+  }
+
+  function demoSelector(opts) {
+    var wrap = layout.el("label", "toolbar__demo");
+    wrap.appendChild(layout.el("span", null, "Vista (demo)"));
+    var select = layout.el("select");
+    var opciones = [
+      { v: "carga", l: "Carga" },
+      { v: "exito", l: "Éxito" },
+      { v: "vacio", l: "Vacío" },
+      { v: "error", l: "Error" },
+    ];
+    for (var i = 0; i < opciones.length; i++) {
+      var o = layout.el("option", null, opciones[i].l);
+      o.value = opciones[i].v;
+      select.appendChild(o);
+    }
+    select.addEventListener("change", function () {
+      if (opts.onDemoState) opts.onDemoState(select.value);
+    });
+    wrap.appendChild(select);
+    return wrap;
+  }
+
+  function renderLoading(container) {
+    layout.clear(container);
+    var inner = layout.el("div", "app-content__inner");
+    inner.appendChild(layout.pageHeader("Nueva solicitud", "Cargando tasas y medios de pago…"));
+    var loading = layout.el("div", "app-loading");
+    loading.appendChild(layout.el("span", "spinner"));
+    loading.appendChild(layout.el("span", null, "Cargando tasas…"));
+    inner.appendChild(loading);
+    container.appendChild(inner);
+  }
+
+  function renderEmpty(container, opts) {
+    layout.clear(container);
+    var inner = layout.el("div", "app-content__inner");
+    inner.appendChild(layout.pageHeader("Nueva solicitud", "Sin tasas disponibles"));
+    var empty = layout.el("div", "app-empty");
+    empty.appendChild(layout.el("p", null, "No hay tasas disponibles para este trámite."));
+    var retry = layout.el("div", "toolbar__actions");
+    retry.appendChild(button({ variant: "primary", text: "Reintentar", onClick: function () { if (opts.onRetry) opts.onRetry(); } }));
+    empty.appendChild(retry);
+    inner.appendChild(empty);
+    container.appendChild(inner);
+  }
+
+  function renderError(container, opts) {
+    layout.clear(container);
+    var inner = layout.el("div", "app-content__inner");
+    inner.appendChild(layout.pageHeader("Nueva solicitud", "No se pudieron cargar las tasas"));
+    var alert = layout.el("div", "app-alert app-alert--warning");
+    alert.appendChild(layout.el("span", "app-alert__title", "No pudimos cargar las tasas y medios de pago"));
+    alert.appendChild(layout.el(
+      "span",
+      "app-alert__text",
+      (opts && opts.mensaje) || "No pudimos cargar las tasas y medios de pago. Intente nuevamente."
+    ));
+    inner.appendChild(alert);
+    var retry = layout.el("div", "toolbar__actions");
+    retry.appendChild(button({ variant: "primary", text: "Reintentar", onClick: function () { if (opts.onRetry) opts.onRetry(); } }));
+    inner.appendChild(retry);
+    container.appendChild(inner);
+  }
+
+  function renderP15(container, opts) {
+    opts = opts || {};
+
+    function show(state) {
+      if (!state) state = "carga";
+      if (fixtures) fixtures.setScenario(state);
+      if (state === "carga") {
+        renderLoading(container);
+        setTimeout(function () { renderContent(container, opts); }, 700);
+        return;
+      }
+      if (state === "error") {
+        renderError(container, {
+          onRetry: function () { show("carga"); },
+          mensaje: fixtures ? fixtures.message("P-15", "error", null) : null,
+        });
+        return;
+      }
+      if (state === "vacio") { renderEmpty(container, { onRetry: function () { show("carga"); } }); return; }
+      renderContent(container, opts);
+    }
+
+    opts.onDemoState = show;
+    show("carga");
   }
 
   global.tm.views = global.tm.views || {};

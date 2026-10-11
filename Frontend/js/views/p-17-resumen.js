@@ -12,6 +12,7 @@
   var button = global.tm.ui.button;
   var draft = global.tm.draft;
   var confirmModal = global.tm.ui.confirmModal;
+  var fixtures = global.tm.fixtures;
 
   var ROUTE = "#/solicitud/resumen";
 
@@ -63,6 +64,10 @@
     var inner = layout.el("div", "app-content__inner");
     inner.appendChild(layout.pageHeader("Solicitud enviada", "Estado inicial: RECIBIDO – EN PREPARACIÓN"));
 
+    var toolbar = layout.el("div", "toolbar");
+    toolbar.appendChild(demoSelector(opts));
+    inner.appendChild(toolbar);
+
     var success = layout.el("div", "app-alert app-alert--info");
     success.appendChild(layout.el("span", "app-alert__title", "Su solicitud fue registrada (simulado)"));
     success.appendChild(layout.el("span", "app-alert__text", "Conserve el número de expediente y el código QR para el seguimiento."));
@@ -104,8 +109,7 @@
     container.appendChild(inner);
   }
 
-  function renderP17(container, opts) {
-    opts = opts || {};
+  function renderContent(container, opts) {
     var d = draft.getDraft();
 
     if (d.submitted) { renderResult(container, d.submitted, opts); return; }
@@ -113,6 +117,10 @@
     layout.clear(container);
     var inner = layout.el("div", "app-content__inner");
     inner.appendChild(layout.pageHeader("Resumen y envío", "Revise la información antes de enviar"));
+
+    var toolbar = layout.el("div", "toolbar");
+    toolbar.appendChild(demoSelector(opts));
+    inner.appendChild(toolbar);
 
     var dp = d.datosPersonales || {};
     var tit = d.titularidad || {};
@@ -158,6 +166,95 @@
     inner.appendChild(actions);
 
     container.appendChild(inner);
+  }
+
+  function demoSelector(opts) {
+    var wrap = layout.el("label", "toolbar__demo");
+    wrap.appendChild(layout.el("span", null, "Vista (demo)"));
+    var select = layout.el("select");
+    var opciones = [
+      { v: "carga", l: "Carga" },
+      { v: "exito", l: "Éxito" },
+      { v: "vacio", l: "Vacío" },
+      { v: "error", l: "Error" },
+    ];
+    for (var i = 0; i < opciones.length; i++) {
+      var o = layout.el("option", null, opciones[i].l);
+      o.value = opciones[i].v;
+      select.appendChild(o);
+    }
+    select.addEventListener("change", function () {
+      if (opts.onDemoState) opts.onDemoState(select.value);
+    });
+    wrap.appendChild(select);
+    return wrap;
+  }
+
+  function renderLoading(container) {
+    layout.clear(container);
+    var inner = layout.el("div", "app-content__inner");
+    inner.appendChild(layout.pageHeader("Resumen y envío", "Cargando resumen…"));
+    var loading = layout.el("div", "app-loading");
+    loading.appendChild(layout.el("span", "spinner"));
+    loading.appendChild(layout.el("span", null, "Cargando…"));
+    inner.appendChild(loading);
+    container.appendChild(inner);
+  }
+
+  function renderEmpty(container, opts) {
+    layout.clear(container);
+    var inner = layout.el("div", "app-content__inner");
+    inner.appendChild(layout.pageHeader("Resumen y envío", "Sin información por el momento"));
+    var empty = layout.el("div", "app-empty");
+    empty.appendChild(layout.el("p", null, "No hay información de su solicitud por el momento."));
+    var retry = layout.el("div", "toolbar__actions");
+    retry.appendChild(button({ variant: "primary", text: "Reintentar", onClick: function () { if (opts.onRetry) opts.onRetry(); } }));
+    empty.appendChild(retry);
+    inner.appendChild(empty);
+    container.appendChild(inner);
+  }
+
+  function renderError(container, opts) {
+    layout.clear(container);
+    var inner = layout.el("div", "app-content__inner");
+    inner.appendChild(layout.pageHeader("Resumen y envío", "No se pudo cargar el resumen"));
+    var alert = layout.el("div", "app-alert app-alert--warning");
+    alert.appendChild(layout.el("span", "app-alert__title", "Resumen no disponible"));
+    alert.appendChild(layout.el(
+      "span",
+      "app-alert__text",
+      (opts && opts.mensaje) || "No pudimos cargar el resumen de su solicitud. Intente nuevamente."
+    ));
+    inner.appendChild(alert);
+    var retry = layout.el("div", "toolbar__actions");
+    retry.appendChild(button({ variant: "primary", text: "Reintentar", onClick: function () { if (opts.onRetry) opts.onRetry(); } }));
+    inner.appendChild(retry);
+    container.appendChild(inner);
+  }
+
+  function renderP17(container, opts) {
+    opts = opts || {};
+
+    function show(state) {
+      if (!state) state = "carga";
+      if (fixtures) fixtures.setScenario(state);
+      if (state === "carga") {
+        renderLoading(container);
+        setTimeout(function () { renderContent(container, opts); }, 700);
+        return;
+      }
+      if (state === "error") {
+        renderError(container, {
+          onRetry: function () { show("carga"); },
+          mensaje: fixtures ? fixtures.message("P-17", "error", null) : null,
+        });
+        return;
+      }
+      renderContent(container, opts);
+    }
+
+    opts.onDemoState = show;
+    show("carga");
   }
 
   global.tm.views = global.tm.views || {};

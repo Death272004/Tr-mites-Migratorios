@@ -1103,6 +1103,303 @@ fieldset.form-field .form-field__label {
   margin: var(--space-3) 0 var(--space-2);
 }
 
+/* ---------- Seguimiento: P-19 estado del trámite ---------- */
+.seguimiento-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: var(--space-3) var(--space-4);
+  max-width: 860px;
+  margin-bottom: var(--space-5);
+  padding: var(--space-4) var(--space-5);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+.seguimiento-summary__item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+.seguimiento-summary__label {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.seguimiento-summary__value {
+  font-weight: var(--font-weight-medium);
+}
+.seguimiento-block {
+  max-width: 860px;
+  margin-bottom: var(--space-5);
+}
+.seguimiento-block__title {
+  margin: 0 0 var(--space-3);
+  font-size: var(--font-size-md);
+}
+.seguimiento-action {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  max-width: 860px;
+  margin-bottom: var(--space-5);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-info-bg);
+  border: 1px solid var(--color-border);
+  border-left: 4px solid var(--color-primary);
+  border-radius: var(--radius-sm);
+}
+.seguimiento-action__text {
+  font-size: var(--font-size-sm);
+}
+.seguimiento-note {
+  max-width: 860px;
+  margin: var(--space-4) 0 0;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+.seguimiento-block .timeline {
+  max-width: 860px;
+}
+.ficha__marker--pending {
+  color: var(--color-warning);
+  background: var(--color-warning-bg);
+  border-color: var(--color-warning);
+}
+
+/* ---------- Seguimiento: P-20 observaciones y notificaciones ---------- */
+.obs-list {
+  display: grid;
+  gap: var(--space-4);
+  max-width: 900px;
+}
+.obs-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+.obs-card.is-unread {
+  border-left: 4px solid var(--color-primary);
+}
+.obs-card__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-5);
+  background: var(--color-surface-alt);
+  border-bottom: 1px solid var(--color-border);
+}
+.obs-card__emisor {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  font-weight: var(--font-weight-semibold);
+}
+.obs-card__fechas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+.obs-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+}
+.obs-card__subject {
+  margin: 0;
+  font-weight: var(--font-weight-medium);
+}
+.obs-card__body .app-alert {
+  margin: 0;
+}
+.obs-items {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+.obs-item {
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-surface-alt);
+  border-radius: var(--radius-sm);
+}
+.obs-item__marker {
+  flex: 0 0 22px;
+  height: 22px;
+  line-height: 22px;
+  text-align: center;
+  border-radius: var(--radius-sm);
+  background: var(--color-warning-bg);
+  color: var(--color-warning);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+}
+.obs-item__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.obs-item__title {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+}
+.obs-item__detail {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+.obs-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  padding: 0 var(--space-5) var(--space-4);
+}
+.obs-plazo.is-critical {
+  color: var(--color-danger);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* ---------- Seguimiento: P-21 subsanación ---------- */
+.subsana-form {
+  display: grid;
+  gap: var(--space-4);
+  max-width: 900px;
+  margin-bottom: var(--space-4);
+}
+.subsana-item {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-5);
+  display: grid;
+  gap: var(--space-3);
+}
+.subsana-item__title {
+  margin: 0;
+  font-size: var(--font-size-md);
+}
+.subsana-item__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+.subsana-item__detail {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+/* ---------- Seguimiento: P-22 resultados ---------- */
+.resultado-doc {
+  display: grid;
+  gap: var(--space-3);
+  max-width: 860px;
+  padding: var(--space-5);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+.resultado-doc__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+.resultado-doc__title {
+  margin: 0;
+  font-size: var(--font-size-md);
+}
+.resultado-doc__meta {
+  margin: 0;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+.resultado-doc__text {
+  margin: 0;
+  font-size: var(--font-size-sm);
+}
+.resultado-doc__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-2);
+}
+.resultado-doc .detail-card {
+  max-width: none;
+  box-shadow: none;
+}
+.resultado-doc .app-alert {
+  margin: 0;
+}
+
+/* ---------- Seguimiento: P-24 edictos y citaciones ---------- */
+.edicto-list {
+  display: grid;
+  gap: var(--space-2);
+}
+.edicto-item {
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+.edicto-item__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+.edicto-item__title {
+  font-weight: var(--font-weight-semibold);
+}
+.edicto-item__date {
+  margin-left: auto;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+.edicto-item__text {
+  margin: var(--space-2) 0 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+/* ---------- Servicios: P-27 ayuda y FAQ ---------- */
+.faq-item {
+  padding: var(--space-3) var(--space-4);
+  margin-bottom: var(--space-2);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+.faq-item__q {
+  cursor: pointer;
+  font-weight: var(--font-weight-medium);
+}
+.faq-item__a {
+  margin: var(--space-2) 0 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
 /* ---------- Responsive (escritorio y tablet) ---------- */
 @media (max-width: 1024px) {
   .app-nav {
