@@ -1,19 +1,25 @@
 package pa.tramitesmigratorios.expediente;
 
-/** Estados del expediente (HU-19 CA-6), incluidos los complementarios. */
+/**
+ * Estados del expediente (HU-19 CA-6), con la cadena de Pantallas_y_Datos_Migracion.md que ya
+ * usa el Frontend: EN PREPARACIÓN → RECIBIDO → [CON OBSERVACIONES] → EN ANÁLISIS → ADMITIDO →
+ * EN RESOLUCIÓN → RESUELTO (APROBADA | NEGADA) → NOTIFICADO → ENTREGADO → ARCHIVADO.
+ */
 public enum EstadoExpediente {
 
-	BORRADOR, PRESENTADO, EN_REVISION, PENDIENTE_DOCUMENTOS, EN_VALIDACION, LISTO_DECISION, APROBADO, DENEGADO,
-	OBSERVADO, CANCELADO, CERRADO;
+	EN_PREPARACION, RECIBIDO, CON_OBSERVACIONES, EN_ANALISIS, ADMITIDO, EN_RESOLUCION, RESUELTO, NOTIFICADO,
+	ENTREGADO, ARCHIVADO;
 
-	/** Decisión final sobre el fondo del trámite. */
-	public boolean esDecision() {
-		return this == APROBADO || this == DENEGADO;
+	/** Resultado de la resolución; solo existe desde que el expediente llega a RESUELTO. */
+	public enum Resultado {
+
+		APROBADA, NEGADA
+
 	}
 
-	/** El expediente ya no admite documentos ni más trámite. */
+	/** El expediente ya tiene resolución o está archivado: no admite más documentos. */
 	public boolean esTerminal() {
-		return esDecision() || this == CANCELADO || this == CERRADO;
+		return this == RESUELTO || this == NOTIFICADO || this == ENTREGADO || this == ARCHIVADO;
 	}
 
 }

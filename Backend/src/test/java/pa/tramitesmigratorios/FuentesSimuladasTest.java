@@ -126,16 +126,16 @@ class FuentesSimuladasTest extends PruebaApi {
 	@Test
 	void elSnmSimuladoEsCoherenteConLosExpedientesDeLaPlataforma() throws Exception {
 		String cliente = tokenDe(Rol.SOLICITANTE);
-		String despacho = tokenDe(Rol.FUNCIONARIO, Permiso.CONSULTAR, Permiso.RESOLVER);
+		String despacho = tokenDe(Rol.FUNCIONARIO, Permiso.CONSULTAR, Permiso.OBSERVAR);
 		MvcResult creado = enviar(cliente, "/api/expedientes", "{\"tipoTramite\":\"%s\"}".formatted(TRAMITE_SIMPLE)).andReturn();
 		String id = leer(creado, "$.id");
 		String numero = leer(creado, "$.numero");
 
 		obtener(despacho, "/api/mock/snm/expedientes/{numero}", numero).andExpect(status().isOk())
-			.andExpect(jsonPath("$.estado").value("PRESENTADO"))
+			.andExpect(jsonPath("$.estado").value("RECIBIDO"))
 			.andExpect(jsonPath("$.desfase").doesNotExist());
-		cambiarEstado(despacho, despacho, id, "EN_REVISION", "Inicio").andExpect(status().isOk());
-		obtener(despacho, "/api/mock/snm/expedientes/{numero}", numero).andExpect(jsonPath("$.estado").value("EN_REVISION"));
+		cambiarEstado(despacho, despacho, id, "EN_ANALISIS", "Inicio").andExpect(status().isOk());
+		obtener(despacho, "/api/mock/snm/expedientes/{numero}", numero).andExpect(jsonPath("$.estado").value("EN_ANALISIS"));
 		// Un expediente que solo existe en el sistema oficial simulado explica el desfase.
 		obtener(despacho, "/api/mock/snm/expedientes/SNM-2026-000002").andExpect(status().isOk())
 			.andExpect(jsonPath("$.estado").value("RESUELTO"))

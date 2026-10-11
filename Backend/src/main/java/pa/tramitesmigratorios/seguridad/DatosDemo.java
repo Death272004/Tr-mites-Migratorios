@@ -54,7 +54,7 @@ class DatosDemo implements ApplicationRunner {
 		crear("Andrés Analista (ficticio)", "analista@demo.pa", Rol.FUNCIONARIO,
 				EnumSet.of(Permiso.CONSULTAR, Permiso.VERIFICAR, Permiso.OBSERVAR));
 		crear("Rosa Resolutora (ficticia)", "resolutor@demo.pa", Rol.FUNCIONARIO,
-				EnumSet.of(Permiso.CONSULTAR, Permiso.RESOLVER));
+				EnumSet.of(Permiso.CONSULTAR, Permiso.VERIFICAR, Permiso.RESOLVER, Permiso.NOTIFICAR));
 		crear("Sara Supervisora (ficticia)", "supervisor@demo.pa", Rol.SUPERVISOR, Set.of());
 		crear("Aurelio Auditor (ficticio)", "auditor@demo.pa", Rol.AUDITOR, Set.of());
 		crear("Alma Administradora (ficticia)", "admin@demo.pa", Rol.ADMIN, Set.of());

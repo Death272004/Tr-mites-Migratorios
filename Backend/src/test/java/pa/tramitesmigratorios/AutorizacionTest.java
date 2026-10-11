@@ -66,7 +66,7 @@ class AutorizacionTest extends PruebaApi {
 		obtener(admin, "/api/expedientes").andExpect(status().isForbidden());
 		obtener(admin, "/api/expedientes/{id}", id).andExpect(status().isForbidden());
 		obtener(admin, "/api/expedientes/{id}/documentos", id).andExpect(status().isForbidden());
-		modificar(admin, "/api/expedientes/{id}/estado", "{\"estadoNuevo\":\"EN_REVISION\",\"motivo\":\"x\",\"version\":0}", id)
+		modificar(admin, "/api/expedientes/{id}/estado", "{\"estadoNuevo\":\"EN_ANALISIS\",\"motivo\":\"x\",\"version\":0}", id)
 			.andExpect(status().isForbidden());
 	}
 
@@ -99,7 +99,7 @@ class AutorizacionTest extends PruebaApi {
 		obtener(soloConsulta, "/api/expedientes/{id}", id).andExpect(status().isOk());
 		enviar(soloConsulta, "/api/expedientes/{id}/observaciones", "{\"texto\":\"Falta la foto\"}", id)
 			.andExpect(status().isForbidden());
-		cambiarEstado(soloConsulta, soloConsulta, id, "EN_REVISION", "Inicio de revisión").andExpect(status().isForbidden());
+		cambiarEstado(soloConsulta, soloConsulta, id, "EN_ANALISIS", "Inicio de revisión").andExpect(status().isForbidden());
 		obtener(sinPermisos, "/api/expedientes/{id}", id).andExpect(status().isForbidden());
 		obtener(sinPermisos, "/api/expedientes").andExpect(status().isForbidden());
 	}

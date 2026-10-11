@@ -55,7 +55,7 @@ public class ExpedienteServicio {
 	/**
 	 * Crea el expediente a nombre del usuario autenticado. Solo puede indicarse otro titular si
 	 * existe una representación acreditada vigente (P-08); de lo contrario se rechaza (CP-03).
-	 * La solicitud se envía al final del asistente (P-17), así que nace en PRESENTADO.
+	 * La solicitud se envía al final del asistente (P-17), así que nace en RECIBIDO.
 	 */
 	@Transactional
 	public Expediente crear(String tipoTramite, UUID titularId, UsuarioActual usuario) {
@@ -71,8 +71,8 @@ public class ExpedienteServicio {
 		}
 		String numero = "EXP-%d-%06d".formatted(Year.now().getValue(), expedientes.siguienteNumero());
 		Expediente expediente = expedientes
-			.save(new Expediente(numero, titular, usuario.id(), tipo, EstadoExpediente.PRESENTADO));
-		historial.save(new HistorialEstado(expediente.getId(), null, EstadoExpediente.PRESENTADO, usuario.id(),
+			.save(new Expediente(numero, titular, usuario.id(), tipo, EstadoExpediente.RECIBIDO));
+		historial.save(new HistorialEstado(expediente.getId(), null, EstadoExpediente.RECIBIDO, usuario.id(),
 				"Presentación de la solicitud"));
 		auditoria.exito(usuario.id(), "CREAR_EXPEDIENTE", "expediente/" + expediente.getId(), "tipoTramite=" + tipo);
 		return expediente;

@@ -35,11 +35,11 @@ class Notificador {
 	@EventListener
 	void alCambiarEstado(EstadoCambiado evento) {
 		switch (evento.estadoNuevo()) {
-			case "PENDIENTE_DOCUMENTOS" -> avisar(evento.titularId(), evento.expedienteId(), Tipo.PENDIENTE_DOCUMENTOS,
-					"El expediente %s tiene documentos pendientes. Revise los requisitos en el portal."
+			case "CON_OBSERVACIONES" -> avisar(evento.titularId(), evento.expedienteId(), Tipo.PENDIENTE_DOCUMENTOS,
+					"El expediente %s tiene observaciones por atender. Revise los requisitos en el portal."
 						.formatted(evento.numero()));
-			case "APROBADO", "DENEGADO" -> avisar(evento.titularId(), evento.expedienteId(), Tipo.DECISION_FINAL,
-					"El expediente %s ya tiene una decisión. Consulte el resultado en el portal."
+			case "RESUELTO" -> avisar(evento.titularId(), evento.expedienteId(), Tipo.DECISION_FINAL,
+					"El expediente %s ya tiene una resolución. Consulte el resultado en el portal."
 						.formatted(evento.numero()));
 			default -> {
 				// Los demás cambios se ven en la línea de tiempo; no generan aviso.

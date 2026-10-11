@@ -60,7 +60,7 @@ class ErroresYModeloTest extends PruebaApi {
 	@Test
 	void lasMigracionesDejanLosDatosSemillaYLosIndicesDeListado() {
 		assertThat(jdbc.queryForObject("SELECT count(*) FROM rol", Long.class)).isEqualTo(5);
-		assertThat(jdbc.queryForObject("SELECT count(*) FROM permiso", Long.class)).isEqualTo(5);
+		assertThat(jdbc.queryForObject("SELECT count(*) FROM permiso", Long.class)).isEqualTo(9);
 		assertThat(jdbc.queryForObject("SELECT count(*) FROM tipo_tramite WHERE activo", Long.class)).isEqualTo(4);
 		assertThat(jdbc.queryForObject("SELECT count(*) FROM tipo_documental", Long.class)).isEqualTo(8);
 		assertThat(jdbc.queryForObject(
@@ -93,14 +93,14 @@ class ErroresYModeloTest extends PruebaApi {
 				UUID.randomUUID() + "@prueba.pa"))
 			.isInstanceOf(DataIntegrityViolationException.class);
 		String expediente = "INSERT INTO expediente (id, numero, solicitante_id, creado_por_id, tipo_tramite, estado) VALUES (gen_random_uuid(), ?, ?, ?, ?, ?)";
-		assertThatThrownBy(() -> jdbc.update(expediente, "X-" + UUID.randomUUID().toString().substring(0, 8), id, id, "NO_EXISTE", "PRESENTADO"))
+		assertThatThrownBy(() -> jdbc.update(expediente, "X-" + UUID.randomUUID().toString().substring(0, 8), id, id, "NO_EXISTE", "RECIBIDO"))
 			.isInstanceOf(DataIntegrityViolationException.class);
 		assertThatThrownBy(() -> jdbc.update(expediente, "X-" + UUID.randomUUID().toString().substring(0, 8), id, id, "NATURALIZACION", "VOLANDO"))
 			.isInstanceOf(DataIntegrityViolationException.class);
-		assertThatThrownBy(() -> jdbc.update(expediente, "X-" + UUID.randomUUID().toString().substring(0, 8), UUID.randomUUID(), id, "NATURALIZACION", "PRESENTADO"))
+		assertThatThrownBy(() -> jdbc.update(expediente, "X-" + UUID.randomUUID().toString().substring(0, 8), UUID.randomUUID(), id, "NATURALIZACION", "RECIBIDO"))
 			.isInstanceOf(DataIntegrityViolationException.class);
 		// Un usuario con expedientes no se puede borrar (eliminación restringida).
-		jdbc.update(expediente, "X-" + UUID.randomUUID().toString().substring(0, 8), id, id, "NATURALIZACION", "PRESENTADO");
+		jdbc.update(expediente, "X-" + UUID.randomUUID().toString().substring(0, 8), id, id, "NATURALIZACION", "RECIBIDO");
 		assertThatThrownBy(() -> jdbc.update("DELETE FROM usuario WHERE id = ?", id))
 			.isInstanceOf(DataIntegrityViolationException.class);
 		// Un rechazo ARCO exige motivo y una revocación exige fecha.

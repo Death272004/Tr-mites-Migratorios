@@ -34,7 +34,7 @@ class ExpedienteTest extends PruebaApi {
 			.andExpect(jsonPath("$.numero", matchesPattern("EXP-\\d{4}-\\d{6}")))
 			.andExpect(jsonPath("$.solicitanteId").value(cliente.getId().toString()))
 			.andExpect(jsonPath("$.tipoTramite").value("RESIDENCIA_TEMPORAL"))
-			.andExpect(jsonPath("$.estado").value("PRESENTADO"))
+			.andExpect(jsonPath("$.estado").value("RECIBIDO"))
 			.andExpect(jsonPath("$.fechaCreacion").isNotEmpty())
 			.andExpect(jsonPath("$.version").value(0))
 			.andReturn();
@@ -43,7 +43,7 @@ class ExpedienteTest extends PruebaApi {
 		obtener(token, "/api/expedientes/{id}", id).andExpect(status().isOk()).andExpect(jsonPath("$.id").value(id));
 		obtener(token, "/api/expedientes/{id}/historial", id).andExpect(status().isOk())
 			.andExpect(jsonPath("$", hasSize(1)))
-			.andExpect(jsonPath("$[0].estadoNuevo").value("PRESENTADO"))
+			.andExpect(jsonPath("$[0].estadoNuevo").value("RECIBIDO"))
 			.andExpect(jsonPath("$[0].usuarioId").value(cliente.getId().toString()));
 		assertThat(eventos("CREAR_EXPEDIENTE", "expediente/" + id)).isEqualTo(1);
 	}
@@ -119,7 +119,7 @@ class ExpedienteTest extends PruebaApi {
 			// Más reciente primero.
 			.andExpect(jsonPath("$.contenido[0].id").value(naturalizacion));
 		obtener(cliente, "/api/expedientes?tipoTramite=NATURALIZACION").andExpect(jsonPath("$.contenido", hasSize(1)));
-		obtener(cliente, "/api/expedientes?estado=APROBADO").andExpect(jsonPath("$.contenido", hasSize(0)));
+		obtener(cliente, "/api/expedientes?estado=RESUELTO").andExpect(jsonPath("$.contenido", hasSize(0)));
 		obtener(cliente, "/api/expedientes?fechaDesde=2999-01-01").andExpect(jsonPath("$.contenido", hasSize(0)));
 		obtener(cliente, "/api/expedientes?pagina=1&tamano=3").andExpect(jsonPath("$.contenido", hasSize(1)))
 			.andExpect(jsonPath("$.paginacion.pagina").value(1))
@@ -154,7 +154,7 @@ class ExpedienteTest extends PruebaApi {
 		Usuario cliente = usuario(Rol.SOLICITANTE);
 		jdbc.update("""
 				INSERT INTO expediente (id, numero, solicitante_id, creado_por_id, tipo_tramite, estado)
-				SELECT gen_random_uuid(), 'CARGA-' || left(?::text, 8) || '-' || n, ?, ?, 'PRORROGA_ESTADIA', 'PRESENTADO'
+				SELECT gen_random_uuid(), 'CARGA-' || left(?::text, 8) || '-' || n, ?, ?, 'PRORROGA_ESTADIA', 'RECIBIDO'
 				FROM generate_series(1, 1000) n
 				""", cliente.getId(), cliente.getId(), cliente.getId());
 		String token = token(cliente);

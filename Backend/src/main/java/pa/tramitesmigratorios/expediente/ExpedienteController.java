@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import pa.tramitesmigratorios.comun.Pagina;
+import pa.tramitesmigratorios.expediente.EstadoExpediente.Resultado;
 import pa.tramitesmigratorios.expediente.ExpedienteServicio.Filtro;
 import pa.tramitesmigratorios.seguridad.Rol;
 import pa.tramitesmigratorios.seguridad.UsuarioActual;
@@ -36,11 +37,11 @@ class ExpedienteController {
 
 	/** Proyección mínima: identificadores, tipo, estado y fechas; ningún dato personal. */
 	record ExpedienteDto(UUID id, String numero, UUID solicitanteId, String tipoTramite, EstadoExpediente estado,
-			Instant fechaCreacion, Instant fechaActualizacion, long version) {
+			Resultado resultado, Instant fechaCreacion, Instant fechaActualizacion, long version) {
 
 		static ExpedienteDto de(Expediente e) {
 			return new ExpedienteDto(e.getId(), e.getNumero(), e.getSolicitanteId(), e.getTipoTramite(), e.getEstado(),
-					e.getFechaCreacion(), e.getFechaActualizacion(), e.getVersion());
+					e.getResultado(), e.getFechaCreacion(), e.getFechaActualizacion(), e.getVersion());
 		}
 
 	}
@@ -52,7 +53,7 @@ class ExpedienteController {
 	record CambioEstadoSolicitud(@NotNull(message = "El estado nuevo es obligatorio.") EstadoExpediente estadoNuevo,
 			@NotBlank(message = "El motivo es obligatorio.") @Size(max = 500,
 					message = "Máximo 500 caracteres.") String motivo,
-			@NotNull(message = "La versión es obligatoria.") Long version) {
+			@NotNull(message = "La versión es obligatoria.") Long version, Resultado resultado) {
 	}
 
 	record HistorialDto(EstadoExpediente estadoAnterior, EstadoExpediente estadoNuevo, UUID usuarioId, Instant fecha,
@@ -73,8 +74,8 @@ class ExpedienteController {
 
 	/** Cambios cuyo motivo va dirigido al cliente; el resto son notas internas del despacho. */
 	private static final Set<EstadoExpediente> MOTIVO_VISIBLE_AL_CLIENTE = EnumSet.of(
-			EstadoExpediente.PRESENTADO, EstadoExpediente.PENDIENTE_DOCUMENTOS, EstadoExpediente.OBSERVADO,
-			EstadoExpediente.APROBADO, EstadoExpediente.DENEGADO, EstadoExpediente.CANCELADO);
+			EstadoExpediente.RECIBIDO, EstadoExpediente.CON_OBSERVACIONES, EstadoExpediente.RESUELTO,
+			EstadoExpediente.NOTIFICADO, EstadoExpediente.ENTREGADO, EstadoExpediente.ARCHIVADO);
 
 	private final ExpedienteServicio servicio;
 	private final Transiciones transiciones;
@@ -110,7 +111,8 @@ class ExpedienteController {
 	ExpedienteDto cambiarEstado(@AuthenticationPrincipal UsuarioActual usuario, @PathVariable UUID id,
 			@Valid @RequestBody CambioEstadoSolicitud cambio) {
 		return ExpedienteDto
-			.de(transiciones.cambiar(id, cambio.estadoNuevo(), cambio.motivo(), cambio.version(), usuario));
+			.de(transiciones.cambiar(id, cambio.estadoNuevo(), cambio.resultado(), cambio.motivo(), cambio.version(),
+					usuario));
 	}
 
 	/**

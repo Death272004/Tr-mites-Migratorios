@@ -120,11 +120,11 @@ class DocumentoTest extends PruebaApi {
 	}
 
 	@Test
-	void unExpedienteConDecisionYaNoAdmiteDocumentos() throws Exception {
+	void unExpedienteArchivadoYaNoAdmiteDocumentos() throws Exception {
 		String cliente = tokenDe(Rol.SOLICITANTE);
-		String despacho = tokenDe(Rol.FUNCIONARIO, Permiso.CONSULTAR, Permiso.RESOLVER);
+		String despacho = tokenDe(Rol.FUNCIONARIO, Permiso.CONSULTAR, Permiso.NOTIFICAR);
 		String id = expediente(cliente, TRAMITE_SIMPLE);
-		cambiarEstado(despacho, despacho, id, "CANCELADO", "El cliente desiste").andExpect(status().isOk());
+		cambiarEstado(despacho, despacho, id, "ARCHIVADO", "El cliente desiste").andExpect(status().isOk());
 
 		adjuntar(cliente, id, "PASAPORTE", "tarde.pdf", "application/pdf", PDF).andExpect(status().isConflict())
 			.andExpect(jsonPath("$.codigo").value("EXPEDIENTE_CERRADO"));

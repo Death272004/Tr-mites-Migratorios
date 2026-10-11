@@ -65,7 +65,7 @@ abstract class PruebaApi {
 	}
 
 	Usuario funcionarioCompleto() {
-		return usuario(Rol.FUNCIONARIO, Permiso.values());
+		return usuario(Rol.FUNCIONARIO, Rol.FUNCIONARIO.permisosBase().toArray(Permiso[]::new));
 	}
 
 	String token(Usuario usuario) {
@@ -125,6 +125,16 @@ abstract class PruebaApi {
 		Integer version = leer(obtener(tokenLectura, "/api/expedientes/{id}", expedienteId).andReturn(), "$.version");
 		return modificar(tokenFuncionario, "/api/expedientes/{id}/estado",
 				"{\"estadoNuevo\":\"%s\",\"motivo\":\"%s\",\"version\":%d}".formatted(estado, motivo, version),
+				expedienteId);
+	}
+
+	/** Pasa el expediente a RESUELTO con el resultado indicado (APROBADA o NEGADA). */
+	ResultActions resolver(String tokenFuncionario, String expedienteId, String resultado, String motivo)
+			throws Exception {
+		Integer version = leer(obtener(tokenFuncionario, "/api/expedientes/{id}", expedienteId).andReturn(), "$.version");
+		return modificar(tokenFuncionario, "/api/expedientes/{id}/estado",
+				"{\"estadoNuevo\":\"RESUELTO\",\"resultado\":\"%s\",\"motivo\":\"%s\",\"version\":%d}"
+					.formatted(resultado, motivo, version),
 				expedienteId);
 	}
 
