@@ -5,3 +5,10 @@ spring:
     url: jdbc:postgresql://localhost:5432/prueba
     username: prueba
     password: prueba
+
+app:
+  seguridad:
+    bcrypt-coste: 4
+    intentos-maximos: 3
+  documentos:
+    directorio: target/almacenamiento-pruebas
