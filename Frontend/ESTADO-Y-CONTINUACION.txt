@@ -2,7 +2,7 @@
 ESTADO DEL PROYECTO FRONTEND - PUNTO DE CONTINUACION
 Producto: Gestion de expedientes migratorios para bufetes (Panama, Ley 81 de 2019)
 Rama: Frontend
-Ultima actualizacion de este archivo: HU-18b (consentimiento informado); alcance fijado hasta Sprint 4
+Ultima actualizacion de este archivo: HU-18c (derechos ARCO en P-27) y fix de tablas; alcance hasta Sprint 4
 ALCANCE: el Frontend se trabaja HASTA el Sprint 4 inclusive. Sprints 5, 6 y 7 FUERA DE ALCANCE.
 ========================================================================
 
@@ -21,8 +21,10 @@ COMO ABRIR LA APP (arranque rapido)
 ESTADO DE LA RAMA (git)
 -----------------------
 - Rama local: Frontend
-- Remoto: origin/Frontend  (sincronizado a 530474a)
+- Remoto: origin/Frontend  (sincronizado a 6610872)
 - Commits (mas reciente arriba):
+    5aa7209  feat(frontend): HU-18c formulario de derechos ARCO en P-27 + fix de celdas de tabla
+    6610872  docs(frontend): HU-18b consentimiento informado (I-19 + P-05) y estado
     49d790b  feat(frontend): HU-18b consentimiento informado (I-19 despacho + P-05 cliente)
     530474a  docs(frontend): fijar alcance de trabajo hasta el Sprint 4
     7f2bcd2  docs(frontend): cierre Sprint 1 (backlog, plan, README y estado)
@@ -216,6 +218,23 @@ QUE YA ESTA HECHO
     - Verificado con Edge headless: nav/ruta resuelven para ADMIN; la vista
       renderiza, muestra tabla y detalle, el boton de revocar abre el modal;
       I-19 pasa los 4 estados; P-05 renderiza; 45->46/46 sin errores.
+- HU-18c COMPLETA - Formulario de derechos ARCO en el portal (P-27), COMMITEADA (5aa7209):
+    - Seccion dedicada "Ejercicio de derechos ARCO (Ley 81 de 2019)" en P-27
+      (#/servicios/ayuda): radio del derecho (Acceso / Rectificacion /
+      Cancelacion-supresion / Oposicion) con detalle y plazo; condicion
+      (titular o representante acreditado); expediente opcional; correo de
+      notificacion; descripcion; fundamento obligatorio solo para Oposicion;
+      acreditacion adjunta (CP-05). Aviso de plazos (acceso 10 dias habiles;
+      rectificacion/cancelacion 5 dias habiles), excepcion (no procede si
+      entorpece un tramite o por seguridad del Estado) y recurso a la ANTAI.
+      Envio simulado con referencia (ARCO-2026-0031) + plazo, y tabla
+      "Mis solicitudes ARCO" (referencia/derecho/apertura/cierre/responsable/
+      estado). Validaciones de descripcion, correo y fundamento.
+    - Fix de componente: js/components/table.js ahora acepta celdas string/
+      number/nodo ademas de {text}/{node}. Esto corrige tablas con celdas
+      vacias (por el antiguo `cell.text ?? ""`) en i-03, i-07, i-14, i-15,
+      i-16, i-17, i-18, p-10 y p-23; i-19 (consentimientos) tambien usa {text}.
+      Verificado: i-17 muestra "12 d/30 d/92%/88%/48 h"; 46/46 sin errores.
 - Infra de apoyo del asistente:
     utils/draft.js   -> borrador compartido (sessionStorage: tm.solicitud.v1)
     utils/wizard.js  -> stepper, marco (frame), pie (footer), errores, nextRoute/prevRoute
@@ -239,9 +258,12 @@ QUE FALTA (priorizado, segun tareas-frontend.md)
 3) HU-09 (integracion fixtures -> mocks): COMPLETA (TASK-09.1..09.5): servicio
    HTTP central tm.api, X-Scenario via tm.fixtures.scenario() + selector global
    en la cabecera, recorrido completo verificado. COMMITEADA (2c195cb/7f2bcd2).
-4) HU-18b (consentimiento informado): COMPLETA y COMMITEADA (49d790b): pantalla
-   I-19 y seccion en P-05 (ver/revocar), 4 estados. HU-18c (ARCO en P-27) pendiente.
-5) Publicar el esquema oficial de envelopes (PO / HU-08) y migrar los sobres
+4) HU-18b (consentimiento informado): COMPLETA y COMMITEADA (49d790b/6610872):
+   pantalla I-19 y seccion en P-05 (ver/revocar), 4 estados.
+5) HU-18c (derechos ARCO): COMPLETA y COMMITEADA (5aa7209): formulario dedicado
+   en P-27 (acceso/rectificacion/cancelacion/oposicion) con plazos de la Ley 81
+   y seguimiento; incluye fix de celdas de tabla (table.js).
+6) Publicar el esquema oficial de envelopes (PO / HU-08) y migrar los sobres
    provisionales sin reescribir vistas (hoy tm.api usa el mismo sobre
    { meta, data, error }).
 
@@ -286,6 +308,10 @@ tm.fixtures.data delega en tm.api; translateError(409) ok; el selector global
 de escenarios (cabecera) cambia el estado de la vista montada; 45/45 OK.
 HU-18b verificado: nav/ruta de #/interno/consentimientos resuelven para ADMIN;
 I-19 renderiza tabla + detalle y el boton de revocar abre el modal; 46/46 OK.
+HU-18c verificado: P-27 muestra la seccion ARCO (4 derechos, 4 radios),
+oculta/muestra el fundamento segun el derecho, valida descripcion/correo/
+fundamento y el envio simulado devuelve referencia + plazo; tabla "Mis
+solicitudes ARCO" con filas; i-17 muestra celdas (fix de table.js); 46/46 OK.
 RECORDAR: borrar los archivos _*.html temporales antes de commitear.
 
 
@@ -319,16 +345,16 @@ SIGUIENTE PASO SUGERIDO
 -----------------------
 ALCANCE ACORDADO: el Frontend se trabaja HASTA EL SPRINT 4 inclusive; los
 Sprints 5, 6 y 7 quedan FUERA DE ALCANCE.
-Sprint 1 (portal P-01..P-27 + HU-09), el modulo interno I-01..I-18 y HU-18b
-(I-19 + P-05) estan COMPLETOS y COMMITEADOS (2c195cb, 7f2bcd2, 49d790b;
-sincronizado en origin/Frontend hasta 530474a).
+Sprint 1 (portal P-01..P-27 + HU-09), el modulo interno I-01..I-18, HU-18b
+(I-19 + P-05) y HU-18c (ARCO en P-27) estan COMPLETOS y COMMITEADOS
+(2c195cb, 7f2bcd2, 49d790b, 5aa7209).
 Dentro del alcance (Sprints 2..4) queda, en su parte FRONTEND:
   1) Sprint 2: TASK-13.5 mostrar/ocultar acciones por permisos del rol
      (con permisos mock). TASK-10.4 Docker y TASK-12.5 conexion auth dependen
      del backend (otra rama).
-  2) Sprint 3: HU-18b (consentimiento informado) YA HECHA (49d790b); queda el
-     formulario de derechos ARCO (HU-18c en P-27), con fixtures y 4 estados.
-     Las tareas TASK-15.3/16.3/17.4/18.3 son conexion al backend.
+  2) Sprint 3: HU-18b (consentimiento informado, 49d790b) y HU-18c (derechos
+     ARCO en P-27, 5aa7209) YA HECHAS. Las tareas TASK-15.3/16.3/17.4/18.3 son
+     conexion al backend.
   3) Sprint 4: TASK-21.2 componente de linea de tiempo (ya usado por P-19/I-06);
      TASK-19.4/20.2/22.4 son conexion al backend.
 Pendiente del PO (no bloquea frontend con fixtures): publicar el esquema oficial
