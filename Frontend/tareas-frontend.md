@@ -110,7 +110,7 @@
 | ☐ | TASK-16.3 — Conectar P-06, P-19 e I-03/I-06 a los endpoints de listado, detalle e historial | 6 h |
 | ☐ | TASK-17.4 — Conectar P-14 (carga de documentos) con progreso y manejo de errores | 6 h |
 | ☐ | TASK-18.3 — Conectar P-20 (observaciones y notificaciones) con marcado de leídas | 4 h |
-| ☐ | Pantallas de **consentimiento informado** (ver/revocar en P-05, panel del despacho) — HU-18b | Estimar con PO |
+| ☑ | Pantallas de **consentimiento informado** (ver/revocar en P-05, panel del despacho I-19) — HU-18b | Estimar con PO |
 | ☐ | Formulario de **derechos ARCO** en el portal (HU-18c) | Estimar con PO |
 
 ## 5. Sprint 4 — máquina de estados y auditoría
