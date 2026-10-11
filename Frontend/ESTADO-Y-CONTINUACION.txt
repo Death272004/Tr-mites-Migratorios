@@ -2,7 +2,7 @@
 ESTADO DEL PROYECTO FRONTEND - PUNTO DE CONTINUACION
 Producto: Gestion de expedientes migratorios para bufetes (Panama, Ley 81 de 2019)
 Rama: Frontend
-Ultima actualizacion de este archivo: commit af3a0b9 + Fase D completa (P-19..P-27) + TASK-03.6 completa (fixtures y 4 estados en P-06..P-18) sin commitear
+Ultima actualizacion de este archivo: modulo interno del despacho COMPLETO (I-01..I-18, Fases E y F) sin commitear
 ========================================================================
 
 COMO ABRIR LA APP (arranque rapido)
@@ -87,6 +87,45 @@ QUE YA ESTA HECHO
     CSS nuevo en layout.css: .seguimiento-* , .obs-* , .subsana-* , .resultado-* ,
     .edicto-* y .faq-* .
     table.js ampliado: celda admite { node } ademas de { text }.
+- MODULO INTERNO DEL DESPACHO COMPLETO (Fases E y F, I-01..I-18 = 18 pantallas):
+    Acceso: el guard redirige al rol SOLICITANTE fuera de #/interno/*; para ver
+    el modulo, cambiar el selector de rol del encabezado a un rol interno
+    (entonces navega a INITIAL_ROUTE[rol], que apunta al login interno I-01).
+    Login institucional demo (I-01): analista/supervisor/auditor/admin,
+    clave "Interno123!", MFA cualquier codigo de 6 digitos (demo 123456).
+    Fase E (operacion):
+      I-01  Login institucional con MFA
+      I-02  Tablero (indicadores y colas)
+      I-03  Recepcion de expedientes
+      I-04  Verificacion de completitud
+      I-05  Asignacion de analista
+      I-06  Analisis del expediente
+      I-07  Verificaciones externas (TE/SNM/CSS/Registro Publico, error tecnico != negativo CP-07)
+      I-08  Emision y atencion de observaciones (reingreso unico)
+      I-09  Edictos
+      I-10  Resolucion (aprobar / negar; motivo obligatorio, firma digital simulada)
+      I-11  Notificacion (medio, plazo, constancia)
+      I-12  Entrega en ventanilla (identidad [S], apoderado, carne [V], saldo)
+      I-13  Archivo y reactivacion (historial inmutable, retencion)
+    Fase F (administracion):
+      I-14  Catalogos: tramites, requisitos, tasas y vigencias (versionado)
+      I-15  Usuarios, roles y permisos (granular; separacion tecnico-funcional)
+      I-16  Bitacora de auditoria (solo lectura, filtros, export CSV)
+      I-17  Reportes y tiempos por etapa (linea base 3-8 meses, export CSV/PDF)
+      I-18  Salud de conexiones (semaforo, modo de contingencia)
+    Cada pantalla I-02..I-18 usa el mismo patron de 4 estados (fixtures base +
+    carga/vacio/error) con demoSelector; I-01 es login (solo base).
+    Rutas: #/interno/{login,tablero,recepcion,completitud,asignacion,analisis,
+    verificaciones,observaciones,edictos,resolucion,notificacion,entrega,archivo,
+    catalogos,usuarios,bitacora,reportes,conexiones}.
+    Fixtures: js/fixtures/i-{01..18}-<slug>.{js,carga,vacio,error}.js.
+    Vistas: js/views/i-{01..18}-<slug>.js. Ramas en app.js (key === "interno/...")
+    con internalOpts = { onNavigate: navigate }.
+    Fix router: #/interno/login se anadio a publicPortal en resolveRoute (antes
+    resolvia a #/error/404 y el login interno nunca era alcanzable).
+    CSS nuevo en layout.css: .report-bars/.report-bar* (I-17).
+    Verificado con Edge headless: 18/18 vistas renderizan sin excepciones y,
+    salvo I-01 (login, sin selector), las 17 restantes pasan los 4 estados.
 - TASK-03.6 COMPLETA - Fixtures del flujo del solicitante y los 4 estados en
   TODO el flujo P-06..P-18 (13 pantallas x 4 estados = 52 envelopes):
     utils/fixtures.js (nuevo) -> loader "tm.fixtures" compatible con file://:
@@ -126,9 +165,12 @@ QUE FALTA (priorizado, segun tareas-frontend.md)
    portal ya tienen vista; no queda ningun placeholder "Vista en construccion"
    en #/seguimiento/* ni en #/servicios/*. (TASK-03.6 YA HECHO: fixtures + 4
    estados P-06..P-18.)
-2) Integracion fixtures -> mocks (HU-09): TASK-09.1..09.5 (servicio HTTP central,
+2) MODULO INTERNO I-01..I-18 COMPLETO (Fases E y F). Inventario total: 45/45
+   pantallas (27 portal + 18 internas) con vista, fixtures y ruta.
+3) Integracion fixtures -> mocks (HU-09): TASK-09.1..09.5 (servicio HTTP central,
    selector X-Scenario via tm.fixtures.scenario(), recorrido completo).
-3) Modulo interno del despacho I-01..I-18 (Sprint 2, aun no iniciado).
+4) Publicar el esquema oficial de envelopes (PO / HU-08) y migrar los sobres
+   provisionales sin reescribir vistas.
 
 
 DECISIONES Y NOTAS TECNICAS IMPORTANTES
@@ -138,10 +180,11 @@ DECISIONES Y NOTAS TECNICAS IMPORTANTES
 - ORDEN DE CARGA en index.html IMPORTA (scripts sincronicos):
     utils(roles,nav,router,data,draft,fixtures) -> components(layout,button,
     field,table,stepper,timeline,modal,errors,verified-field,file-upload,
-    signature) -> utils/wizard -> services/session -> fixtures(p-06..p-18)
-    -> views(p-01..p-27) -> app.js
+    signature) -> utils/wizard -> services/session -> fixtures(p-06..p-18 + i-01..i-18)
+    -> views(p-01..p-27 + i-01..i-18) -> app.js
   Al agregar vistas nuevas: anadir su <script>, su bloque de fixtures y su rama
-  en js/app.js (key === "p-XX") pasando wizardOpts = { onNavigate: navigate }.
+  en js/app.js (key === "p-XX" con wizardOpts, o key === "interno/..." con
+  internalOpts = { onNavigate: navigate }).
 - El router (js/utils/router.js) tiene un map ruta->clave de vista. Las rutas del
   asistente (#/solicitud/*) se validan con mapHas() aunque no esten en el menu.
 - Acceso: solo rol SOLICITANTE en el portal; resto de roles -> modulo interno.
@@ -161,8 +204,9 @@ en Frontend\html\ cargando todos los scripts y renderizando cada vista, luego:
   & "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" `
     --headless=new --disable-gpu --virtual-time-budget=4000 `
     --dump-dom "file:///C:/.../Frontend/html/_smoke.html"
-Ultimo resultado: las 11 vistas del asistente renderizan sin excepciones
-(window.onerror = 0), P-17 genera expediente+QR y P-18 confirma cita.
+Ultimo resultado: 45/45 vistas renderizan sin excepciones (window.onerror = 0).
+El modulo interno I-01..I-18 (18/18) y, salvo I-01 (login, sin selector), las 17
+restantes pasan los 4 estados (exito/carga/vacio/error).
 RECORDAR: borrar los archivos _*.html temporales antes de commitear.
 
 
@@ -171,7 +215,7 @@ ESTRUCTURA RELEVANTE
 Frontend\
   html\index.html            <- entrada (varias <script src>, NO modules)
   css\variables.css base.css layout.css
-  js\app.js                  -> bootstrap + ruteo + ramas p-01..p-27
+  js\app.js                  -> bootstrap + ruteo + ramas p-01..p-27 e interno/*
   js\utils\    roles, nav, router, data, draft, wizard, fixtures
   js\components\ layout, button, field, table, stepper, timeline, modal, errors,
                  verified-field, file-upload, signature
@@ -179,7 +223,12 @@ Frontend\
   js/views\    p-01 ... p-27 (P-19 estado, P-20 obs., P-21 subsanacion, P-22 resultados,
                  P-23 historial de pagos, P-24 edictos, P-25 certificaciones,
                  P-26 naturalizacion, P-27 ayuda/FAQ)
-  js/fixtures/ p-06..p-18.*.js (52 envelopes: base/carga/vacio/error) + README.md
+                 i-01 ... i-18 (modulo interno: login, tablero, recepcion,
+                 completitud, asignacion, analisis, verificaciones, observaciones,
+                 edictos, resolucion, notificacion, entrega, archivo, catalogos,
+                 usuarios, bitacora, reportes, conexiones)
+  js/fixtures/ p-06..p-18.*.js (52 envelopes: base/carga/vacio/error)
+                 i-01..i-18.*.js (71 envelopes) + README.md
                  (+ p-01-login.*.json de referencia)
   Pantallas_y_Datos_Migracion.md   (fuente de campos por pantalla P-06..P-18)
   tareas-frontend.md               (backlog/horas por tarea)
@@ -189,12 +238,14 @@ Frontend\
 
 SIGUIENTE PASO SUGERIDO
 -----------------------
-TASK-03.6 (fixtures + 4 estados en P-06..P-18) esta COMPLETA y Fase D COMPLETA
-(P-19..P-27). Opciones siguientes:
+El inventario oficial de 45 pantallas esta COMPLETO: portal P-01..P-27
+(Fases A-D) y modulo interno I-01..I-18 (Fases E y F). Opciones siguientes:
   1) HU-09: integracion fixtures -> mocks (servicio HTTP central, selector
      X-Scenario via tm.fixtures.scenario(), recorrido completo).
-  2) Iniciar el modulo interno del despacho I-01..I-18 (Sprint 2; hoy solo hay
-     rutas y guardas de rol, sin vistas).
-  3) Publicar el esquema oficial de envelopes (PO / HU-08) y migrar los sobres
+  2) Publicar el esquema oficial de envelopes (PO / HU-08) y migrar los sobres
      provisionales sin reescribir vistas.
+  3) Commitear el modulo interno (I-01..I-18) que hoy esta sin commitear.
+  4) Afinar POR DEFINIR (PO): I-10 (motivos y matriz de transiciones), I-13
+     (rol de la accion), I-15 (plazo de revision de fuentes), I-17 (meta de
+     reduccion de tiempos).
 ========================================================================
