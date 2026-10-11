@@ -2,7 +2,7 @@
 ESTADO DEL PROYECTO FRONTEND - PUNTO DE CONTINUACION
 Producto: Gestion de expedientes migratorios para bufetes (Panama, Ley 81 de 2019)
 Rama: Frontend
-Ultima actualizacion de este archivo: HU-18c (derechos ARCO en P-27) y fix de tablas; alcance hasta Sprint 4
+Ultima actualizacion de este archivo: TASK-13.5 (permisos de interfaz por rol, tm.perms); alcance hasta Sprint 4
 ALCANCE: el Frontend se trabaja HASTA el Sprint 4 inclusive. Sprints 5, 6 y 7 FUERA DE ALCANCE.
 ========================================================================
 
@@ -21,8 +21,10 @@ COMO ABRIR LA APP (arranque rapido)
 ESTADO DE LA RAMA (git)
 -----------------------
 - Rama local: Frontend
-- Remoto: origin/Frontend  (sincronizado a 6610872)
+- Remoto: origin/Frontend  (sincronizado a 71fde93)
 - Commits (mas reciente arriba):
+    71fde93  feat(frontend): TASK-13.5 permisos de interfaz por rol (tm.perms)
+    8a970fa  docs(frontend): HU-18c derechos ARCO (P-27) y fix de tablas
     5aa7209  feat(frontend): HU-18c formulario de derechos ARCO en P-27 + fix de celdas de tabla
     6610872  docs(frontend): HU-18b consentimiento informado (I-19 + P-05) y estado
     49d790b  feat(frontend): HU-18b consentimiento informado (I-19 despacho + P-05 cliente)
@@ -235,6 +237,25 @@ QUE YA ESTA HECHO
       vacias (por el antiguo `cell.text ?? ""`) en i-03, i-07, i-14, i-15,
       i-16, i-17, i-18, p-10 y p-23; i-19 (consentimientos) tambien usa {text}.
       Verificado: i-17 muestra "12 d/30 d/92%/88%/48 h"; 46/46 sin errores.
+- TASK-13.5 COMPLETA - Permisos de interfaz por rol (HU-13), COMMITEADA (71fde93):
+    - Modulo js/utils/perms.js (tm.perms) con la matriz MOCK rol x permiso
+      derivada de 06-roles-y-accesos.md 6.3-6.4: SOLICITANTE=portal;
+      FUNCIONARIO=consultar/verificar/observar/resolver/notificar (operador
+      completo, demo); SUPERVISOR=consultar/reportar; AUDITOR=consultar/auditar/
+      reportar; ADMIN=consultar/administrar. API: can(perm) lee el rol desde
+      tm.session.getSession().datos.rol; notice(perm, msg) devuelve un badge
+      "Sin permiso «perm»..." y guard(node, perm) deshabilita el control.
+    - Guardas aplicadas en las acciones internas: I-06 observar (dictamen),
+      I-07 verificar (registrar/Verificado/Inconsistencia/Repetir), I-08 observar,
+      I-09 observar (publicar/retirar/republicar), I-10 resolver, I-11 e I-12
+      notificar, I-13 archivar (notificar) y reactivar (administrar), I-14/I-15/
+      I-18 administrar. Si el rol no tiene el permiso, la accion no se muestra y
+      se explica con un aviso; la validacion real sigue siendo del backend.
+    - js/utils/perms.js se registra en index.html tras services/api.js.
+    - CSS: .btn:disabled / .btn.is-disabled en layout.css.
+    - Verificado (Edge headless): FUNCIONARIO ve "Registrar resolucion" en I-10;
+      AUDITOR ve el aviso "Sin permiso «resolver»"; I-07/I-15/I-18 se ocultan para
+      roles sin permiso; ADMIN ve las acciones de administracion; 46/46 sin errores.
 - Infra de apoyo del asistente:
     utils/draft.js   -> borrador compartido (sessionStorage: tm.solicitud.v1)
     utils/wizard.js  -> stepper, marco (frame), pie (footer), errores, nextRoute/prevRoute
@@ -263,9 +284,16 @@ QUE FALTA (priorizado, segun tareas-frontend.md)
 5) HU-18c (derechos ARCO): COMPLETA y COMMITEADA (5aa7209): formulario dedicado
    en P-27 (acceso/rectificacion/cancelacion/oposicion) con plazos de la Ley 81
    y seguimiento; incluye fix de celdas de tabla (table.js).
-6) Publicar el esquema oficial de envelopes (PO / HU-08) y migrar los sobres
+6) TASK-13.5 (permisos de interfaz por rol): COMPLETA y COMMITEADA (71fde93):
+   modulo tm.perms + guardas en las acciones internas (aviso cuando no aplica).
+7) Publicar el esquema oficial de envelopes (PO / HU-08) y migrar los sobres
    provisionales sin reescribir vistas (hoy tm.api usa el mismo sobre
    { meta, data, error }).
+
+SIGUIENTE TAREA EN EL ALCANCE (Sprint 4): TASK-21.2 - componente de linea de
+tiempo reutilizable (hoy ya usado por P-19/I-06; formalizar el componente).
+TASK-10.4 (Docker), TASK-12.5 y las de conexion al backend (15.3/16.3/17.4/
+18.3/19.4/20.2/22.4) quedan FUERA porque dependen de la rama Backend.
 
 
 DECISIONES Y NOTAS TECNICAS IMPORTANTES
@@ -276,7 +304,8 @@ DECISIONES Y NOTAS TECNICAS IMPORTANTES
     utils(roles,nav,router,data,draft,fixtures) -> components(layout,button,
     field,table,stepper,timeline,modal,errors,verified-field,file-upload,
     signature) -> utils/wizard -> services/session -> services/api ->
-    fixtures(p-06..p-18 + i-01..i-18) -> views(p-01..p-27 + i-01..i-18) -> app.js
+    utils/perms -> fixtures(p-06..p-18 + i-01..i-19) -> views(p-01..p-27 +
+    i-01..i-19) -> app.js
   Al agregar vistas nuevas: anadir su <script>, su bloque de fixtures y su rama
   en js/app.js via showView(<render>, { ... }) (key === "p-XX" o
   key === "interno/..." con { onNavigate: navigate }); showView captura
