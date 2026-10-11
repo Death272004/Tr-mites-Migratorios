@@ -2,7 +2,7 @@
 
 **Proyecto:** Producto comercial de gestión de expedientes migratorios para **bufetes de abogados** (Panamá, Ley 81 de 2019)
 **Rama:** Frontend (HTML / CSS / JavaScript puro)
-**Inventario oficial:** 45 pantallas — portal del cliente del bufete **P-01…P-27** + módulo interno del despacho **I-01…I-18**
+**Inventario oficial:** 45 pantallas — portal del cliente del bufete **P-01…P-27** + módulo interno del despacho **I-01…I-18** (+ **I-19**, añadida por HU-18b = 46 pantallas)
 **Sprint 1:** portal en 4 fases (A–D, ≈ 130 h, sin backend: fixtures locales) · **Sprint 2:** módulo interno en fases E y F
 **Documentos fuente:** `Pantallas_y_Datos_Migracion.md` (campos), `Rama-01-Frontend.md` (fases, convenciones, DoD), `Documentacion/06-roles-y-accesos.md` (roles y acceso)
 
@@ -10,12 +10,12 @@
 
 ## §1. Propósito
 
-Este documento es un **checklist ejecutable por pantalla**: cada una de las 45 pantallas del inventario tiene una subsección con objetivo, rol dueño, campos exactos clasificados, reglas aplicables, estados visibles, fixture y nota de integración. Un programador debe poder construir la pantalla directamente a partir de aquí, sin inventar campos ni decisiones.
+Este documento es un **checklist ejecutable por pantalla**: cada una de las 45 pantallas del inventario (más **I-19**, añadida por HU-18b) tiene una subsección con objetivo, rol dueño, campos exactos clasificados, reglas aplicables, estados visibles, fixture y nota de integración. Un programador debe poder construir la pantalla directamente a partir de aquí, sin inventar campos ni decisiones.
 
 Reglas de lectura:
 
 1. **Fuente de verdad de los campos:** `Pantallas_y_Datos_Migracion.md`. Si un dato no aparece allí, este plan escribe **POR DEFINIR (PO)** en lugar de inventarlo. Nunca se agregan campos que la fuente no pide (minimización, Ley 81).
-2. **Numeración exacta:** se conserva `P-01…P-27` e `I-01…I-18` tal como los fija el inventario adoptado (45 pantallas).
+2. **Numeración exacta:** se conserva `P-01…P-27` e `I-01…I-18` tal como los fija el inventario adoptado (45 pantallas); **I-19** (consentimientos) se añade en HU-18b.
 3. **Vocabulario del bufete** (el documento fuente usa vocabulario de la administración pública; aquí se traduce sin alterar los campos):
 
 | Vocabulario de la fuente | Vocabulario del producto (bufete) |
@@ -92,10 +92,10 @@ Toda pantalla implementa y muestra los cuatro estados, con selector de escenario
 
 ---
 
-## §3. Tabla-resumen maestra (45 pantallas)
+## §3. Tabla-resumen maestra (46 pantallas)
 
 **Fase** = fase de construcción; **todas descansan sobre la Fase A** (transversal, HU-01). Fases: A = andamiaje · B = acceso P-01…P-05 · C = bandeja/asistente P-06…P-18 · D = seguimiento/servicios P-19…P-27 · E = operación I-01…I-13 · F = administración I-14…I-18.
-**Estado:** `CONSTRUIDO` (Sprint 1 completo: 45/45 pantallas) · `POR CONFIRMAR` en P-15, P-18, P-24, P-25 (construidas en modo mínimo según HU-03/HU-04; pendientes §8 de la fuente, siguen marcadas POR CONFIRMAR hasta la definición del PO).
+**Estado:** `CONSTRUIDO` (Sprint 1 completo: 45/45 pantallas; + I-19 en HU-18b = 46/46) · `POR CONFIRMAR` en P-15, P-18, P-24, P-25 (construidas en modo mínimo según HU-03/HU-04; pendientes §8 de la fuente, siguen marcadas POR CONFIRMAR hasta la definición del PO).
 
 | ID | Pantalla | Fase | Ruta hash propuesta | Rol dueño | Estado |
 |---|---|---|---|---|---|
@@ -144,8 +144,9 @@ Toda pantalla implementa y muestra los cuatro estados, con selector de escenario
 | I-16 | Bitácora de auditoría | F | `#/interno/bitacora` | AUDITOR (solo lectura) | CONSTRUIDO |
 | I-17 | Reportes y tiempos por etapa | F | `#/interno/reportes` | SUPERVISOR y AUDITOR | CONSTRUIDO |
 | I-18 | Salud de las conexiones de interoperabilidad | F | `#/interno/conexiones` | ADMIN (SUPERVISOR/AUDITOR en lectura) | CONSTRUIDO |
+| I-19 | Consentimientos del titular (ver/revocar) | F | `#/interno/consentimientos` | FUNCIONARIO/ADMIN; AUDITOR (lectura) | CONSTRUIDO (HU-18b) |
 
-**Total: 27 + 18 = 45 pantallas.** · `POR CONFIRMAR`: 4 (P-15, P-18, P-24, P-25).
+**Total: 27 + 19 = 46 pantallas.** · `POR CONFIRMAR`: 4 (P-15, P-18, P-24, P-25).
 
 ---
 
@@ -847,6 +848,8 @@ Toda pantalla implementa y muestra los cuatro estados, con selector de escenario
 ## §5. Módulo interno del despacho (I-01 … I-18) — Fases E y F (inicio del Sprint 2)
 
 > **Planificado en el Sprint 1, construido al inicio del Sprint 2** (HU-05, fases E ≈ 60 h y F ≈ 25 h). Mismo formato que §4. Acceso por rol según `06-roles-y-accesos.md` §6.4; la UI solo oculta lo que el backend rechaza. Los campos de origen `A`/`S` que en el portal aparecen sellados aquí se **registran** en modo manual asistido.
+
+> **Nota (HU-18b):** se añade la pantalla **I-19 Consentimientos del titular** (`#/interno/consentimientos`, Fase F) con el registro, la vigencia y la revocación de los consentimientos (informado y expreso para datos sensibles); el detalle del portal correspondiente está en **P-05** (§4).
 
 ### I-01 Login institucional con MFA — Fase E · `#/interno/login`
 

@@ -2,7 +2,7 @@
 ESTADO DEL PROYECTO FRONTEND - PUNTO DE CONTINUACION
 Producto: Gestion de expedientes migratorios para bufetes (Panama, Ley 81 de 2019)
 Rama: Frontend
-Ultima actualizacion de este archivo: HU-09 y cierre de Sprint 1; alcance fijado hasta Sprint 4
+Ultima actualizacion de este archivo: HU-18b (consentimiento informado); alcance fijado hasta Sprint 4
 ALCANCE: el Frontend se trabaja HASTA el Sprint 4 inclusive. Sprints 5, 6 y 7 FUERA DE ALCANCE.
 ========================================================================
 
@@ -21,8 +21,10 @@ COMO ABRIR LA APP (arranque rapido)
 ESTADO DE LA RAMA (git)
 -----------------------
 - Rama local: Frontend
-- Remoto: origin/Frontend  (sincronizado a 7f2bcd2)
+- Remoto: origin/Frontend  (sincronizado a 530474a)
 - Commits (mas reciente arriba):
+    49d790b  feat(frontend): HU-18b consentimiento informado (I-19 despacho + P-05 cliente)
+    530474a  docs(frontend): fijar alcance de trabajo hasta el Sprint 4
     7f2bcd2  docs(frontend): cierre Sprint 1 (backlog, plan, README y estado)
     2c195cb  feat(frontend): HU-09 modulo unico de servicios HTTP y selector X-Scenario (TASK-09.1..09.5)
     00d8798  feat(frontend): modulo interno I-01..I-18 (Fases E y F) - 45/45 pantallas
@@ -190,6 +192,30 @@ QUE YA ESTA HECHO
     CSS: layout.css -> .app-header__scenario-select comparte estilo con
          .app-header__role-select.
     index.html: registra js/services/api.js justo despues de services/session.js.
+- HU-18b COMPLETA - Consentimiento informado (Ley 81 de 2019 / DE 285 de 2021),
+  COMMITEADA (49d790b):
+    - Pantalla interna NUEVA I-19 - Consentimientos del titular (panel del
+      despacho), ruta #/interno/consentimientos, en el menu de FUNCIONARIO
+      (Operacion), ADMIN (Administracion) y AUDITOR (lectura, Auditoria).
+      Tabla (titular/documento/expediente/tipo/otorgado/vigencia/responsable/
+      estado) + filtro por estado + resumen (vigentes/por vencer/revocados) +
+      detalle con finalidad y responsable + accion "Revocar consentimiento"
+      (confirmModal; cambia estado a revocado y avisa que la traza va a la
+      bitacora I-16). 4 estados (exito/carga/vacio/error) con demoSelector
+      (patron de i-15-usuarios). Inventario: 45 -> 46 pantallas.
+    - Seccion de consentimiento en P-05 (portal): estado (badge), tipo
+      (informado / expreso para datos sensibles), finalidad, otorgado, vigencia
+      y responsable; boton Revocar/Otorgar (confirmModal, estado local) + aviso
+      de que la revocacion no tiene efecto retroactivo y nota de que los
+      derechos ARCO se canalizan por P-27.
+    - CSS: layout.css -> .btn--danger / .btn--danger:hover (el componente
+      button.js ya referenciaba la variante "danger" sin estilo previo).
+    - Fixtures: js/fixtures/i-19-consentimientos.{js,carga,vacio,error}.js.
+      Registrada en index.html (4 fixtures + vista) y rama en js/app.js
+      (key === "interno/consentimientos").
+    - Verificado con Edge headless: nav/ruta resuelven para ADMIN; la vista
+      renderiza, muestra tabla y detalle, el boton de revocar abre el modal;
+      I-19 pasa los 4 estados; P-05 renderiza; 45->46/46 sin errores.
 - Infra de apoyo del asistente:
     utils/draft.js   -> borrador compartido (sessionStorage: tm.solicitud.v1)
     utils/wizard.js  -> stepper, marco (frame), pie (footer), errores, nextRoute/prevRoute
@@ -208,12 +234,14 @@ QUE FALTA (priorizado, segun tareas-frontend.md)
    portal ya tienen vista; no queda ningun placeholder "Vista en construccion"
    en #/seguimiento/* ni en #/servicios/*. (TASK-03.6 YA HECHO: fixtures + 4
    estados P-06..P-18.)
-2) MODULO INTERNO I-01..I-18 COMPLETO (Fases E y F). Inventario total: 45/45
-   pantallas (27 portal + 18 internas) con vista, fixtures y ruta.
+2) MODULO INTERNO I-01..I-19 COMPLETO (Fases E y F + HU-18b). Inventario total:
+   46/46 pantallas (27 portal + 19 internas) con vista, fixtures y ruta.
 3) HU-09 (integracion fixtures -> mocks): COMPLETA (TASK-09.1..09.5): servicio
    HTTP central tm.api, X-Scenario via tm.fixtures.scenario() + selector global
-   en la cabecera, recorrido completo verificado. Falta commitear.
-4) Publicar el esquema oficial de envelopes (PO / HU-08) y migrar los sobres
+   en la cabecera, recorrido completo verificado. COMMITEADA (2c195cb/7f2bcd2).
+4) HU-18b (consentimiento informado): COMPLETA y COMMITEADA (49d790b): pantalla
+   I-19 y seccion en P-05 (ver/revocar), 4 estados. HU-18c (ARCO en P-27) pendiente.
+5) Publicar el esquema oficial de envelopes (PO / HU-08) y migrar los sobres
    provisionales sin reescribir vistas (hoy tm.api usa el mismo sobre
    { meta, data, error }).
 
@@ -251,11 +279,13 @@ en Frontend\html\ cargando todos los scripts y renderizando cada vista, luego:
     --headless=new --disable-gpu --virtual-time-budget=4000 `
     --dump-dom "file:///C:/.../Frontend/html/_smoke.html"
 Ultimo resultado: 45/45 vistas renderizan sin excepciones (window.onerror = 0).
-El modulo interno I-01..I-18 (18/18) y, salvo I-01 (login, sin selector), las 17
+El modulo interno I-01..I-19 (19/19) y, salvo I-01 (login, sin selector), las 18
 restantes pasan los 4 estados (exito/carga/vacio/error).
 HU-09 verificado: tm.api cargado; headers con X-Scenario + Authorization;
 tm.fixtures.data delega en tm.api; translateError(409) ok; el selector global
 de escenarios (cabecera) cambia el estado de la vista montada; 45/45 OK.
+HU-18b verificado: nav/ruta de #/interno/consentimientos resuelven para ADMIN;
+I-19 renderiza tabla + detalle y el boton de revocar abre el modal; 46/46 OK.
 RECORDAR: borrar los archivos _*.html temporales antes de commitear.
 
 
@@ -272,12 +302,12 @@ Frontend\
   js/views\    p-01 ... p-27 (P-19 estado, P-20 obs., P-21 subsanacion, P-22 resultados,
                  P-23 historial de pagos, P-24 edictos, P-25 certificaciones,
                  P-26 naturalizacion, P-27 ayuda/FAQ)
-                 i-01 ... i-18 (modulo interno: login, tablero, recepcion,
+                 i-01 ... i-19 (modulo interno: login, tablero, recepcion,
                  completitud, asignacion, analisis, verificaciones, observaciones,
                  edictos, resolucion, notificacion, entrega, archivo, catalogos,
-                 usuarios, bitacora, reportes, conexiones)
+                 usuarios, bitacora, reportes, conexiones, consentimientos)
   js/fixtures/ p-06..p-18.*.js (52 envelopes: base/carga/vacio/error)
-                 i-01..i-18.*.js (71 envelopes) + README.md
+                 i-01..i-19.*.js (75 envelopes) + README.md
                  (+ p-01-login.*.json de referencia)
   Pantallas_y_Datos_Migracion.md   (fuente de campos por pantalla P-06..P-18)
   tareas-frontend.md               (backlog/horas por tarea)
@@ -289,16 +319,16 @@ SIGUIENTE PASO SUGERIDO
 -----------------------
 ALCANCE ACORDADO: el Frontend se trabaja HASTA EL SPRINT 4 inclusive; los
 Sprints 5, 6 y 7 quedan FUERA DE ALCANCE.
-Sprint 1 (portal P-01..P-27 + HU-09) y el modulo interno I-01..I-18 estan
-COMPLETOS y COMMITEADOS (2c195cb, 7f2bcd2; sincronizado en origin/Frontend).
+Sprint 1 (portal P-01..P-27 + HU-09), el modulo interno I-01..I-18 y HU-18b
+(I-19 + P-05) estan COMPLETOS y COMMITEADOS (2c195cb, 7f2bcd2, 49d790b;
+sincronizado en origin/Frontend hasta 530474a).
 Dentro del alcance (Sprints 2..4) queda, en su parte FRONTEND:
   1) Sprint 2: TASK-13.5 mostrar/ocultar acciones por permisos del rol
      (con permisos mock). TASK-10.4 Docker y TASK-12.5 conexion auth dependen
      del backend (otra rama).
-  2) Sprint 3: pantallas nuevas de consentimiento informado (HU-18b: ver/revocar
-     en P-05 y panel del despacho) y formulario de derechos ARCO (HU-18c en P-27),
-     con fixtures y 4 estados. Las tareas TASK-15.3/16.3/17.4/18.3 son conexion
-     al backend.
+  2) Sprint 3: HU-18b (consentimiento informado) YA HECHA (49d790b); queda el
+     formulario de derechos ARCO (HU-18c en P-27), con fixtures y 4 estados.
+     Las tareas TASK-15.3/16.3/17.4/18.3 son conexion al backend.
   3) Sprint 4: TASK-21.2 componente de linea de tiempo (ya usado por P-19/I-06);
      TASK-19.4/20.2/22.4 son conexion al backend.
 Pendiente del PO (no bloquea frontend con fixtures): publicar el esquema oficial

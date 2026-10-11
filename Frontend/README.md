@@ -4,7 +4,7 @@
 
 ## Alcance
 
-Este frontend construye el **portal del cliente del bufete (P-01…P-27)** y el **módulo interno del despacho (I-01…I-18)** — total 45 pantallas. Implementación con HTML, CSS y JavaScript puro, sin frameworks.
+Este frontend construye el **portal del cliente del bufete (P-01…P-27)** y el **módulo interno del despacho (I-01…I-18, más I-19 añadida por HU-18b)** — total 46 pantallas. Implementación con HTML, CSS y JavaScript puro, sin frameworks.
 
 - **Sprint 1:** portal completo funcionando con **fixtures locales** del mismo esquema JSON que los mocks (HU-08).
 - **Sprint 2+:** conexión al backend real (Java) vía módulo único de servicios HTTP.
@@ -36,7 +36,7 @@ Frontend/
     │   ├── nav.js
     │   ├── roles.js
     │   └── router.js
-    └── views/              ← vistas por pantalla (P-01…P-27 e I-01…I-18)
+    └── views/              ← vistas por pantalla (P-01…P-27 e I-01…I-19)
 ```
 
 ## Convenciones
@@ -74,6 +74,7 @@ file:///C:/Users/Jonathan/Desktop/Repo/Tr-mites-Migratorios/Frontend/html/index.
 | `#/perfil` | Perfil (P-05) |
 | `#/interno/login` | Login del despacho (I-01) |
 | `#/interno/tablero` | Tablero interno (I-02) |
+| `#/interno/consentimientos` | Consentimientos del titular (I-19) |
 | `#/error/403`, `#/error/404`, `#/error/500` | Vistas globales |
 
 ## Estado del avance (rama `Frontend`)
@@ -84,8 +85,9 @@ file:///C:/Users/Jonathan/Desktop/Repo/Tr-mites-Migratorios/Frontend/html/index.
 - **Fase D (HU-04, P-19…P-27):** seguimiento y servicios. ✔
 - **Módulo interno (Fases E–F, I-01…I-18):** operación y administración del despacho. ✔
 - **HU-09 (integración fixtures → mocks):** módulo único de servicios HTTP `tm.api`, cabecera `X-Scenario` y selector global de escenarios. ✔
-- **Inventario completo:** 45/45 pantallas (P-01…P-27 + I-01…I-18), todas con vista, fixtures y ruta.
-- **Pendiente (Sprint 2+):** conectar al backend real (`tm.api.setBaseUrl(...)`), Docker y consentimiento/ARCO.
+- **HU-18b (consentimiento informado):** pantalla interna **I-19** (`#/interno/consentimientos`, ver/revocar) y sección de consentimiento en **P-05**. ✔
+- **Inventario completo:** 46/46 pantallas (P-01…P-27 + I-01…I-19), todas con vista, fixtures y ruta.
+- **Pendiente (Sprint 2+):** conectar al backend real (`tm.api.setBaseUrl(...)`), Docker y formulario de derechos **ARCO** (HU-18c).
 - **Alcance:** el Frontend se trabaja **hasta el Sprint 4 inclusive**; los Sprints 5–7 quedan fuera de alcance por ahora.
 
 ## Notas
@@ -94,4 +96,4 @@ file:///C:/Users/Jonathan/Desktop/Repo/Tr-mites-Migratorios/Frontend/html/index.
 - **Módulo único de servicios HTTP** (`js/services/api.js`, `tm.api`): ninguna vista llama a `fetch`/`XHR` por su cuenta. Sin backend, lee los fixtures locales; para conectar, `tm.api.setBaseUrl("http(s)://host/api")` **sin reescribir vistas** (`tm.fixtures.data()/message()` delegan en `tm.api`).
 - Cada vista de bandeja/asistente/operación incluye un **selector “Vista (demo)”** para alternar los 4 estados (carga, éxito, vacío, error) sin depender del backend.
 - Selector de **rol (demo)** y selector de **escenario (demo)** (`X-Scenario`) en la cabecera: temporales para probar guards/menú y los 4 estados mientras no exista backend real.
-- HTML/CSS/JS puro. Sin build, sin frameworks. 45 pantallas implementadas.
+- HTML/CSS/JS puro. Sin build, sin frameworks. 46 pantallas implementadas.
