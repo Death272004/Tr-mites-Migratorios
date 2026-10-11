@@ -23,6 +23,8 @@ La primera vez tarda varios minutos porque descarga las dependencias. Cuando ter
 | Frontend | http://localhost:8081 | Abre el portal |
 | PostgreSQL | `localhost:5433` | Usuario y base `tramites` |
 
+Para entrar hay un usuario ficticio por rol (`cliente@demo.pa`, `resolutor@demo.pa`, `auditor@demo.pa`…); la lista y un ejemplo de uso de la API están en [`Backend/README.md`](Backend/README.md). Desde el frontend, la API responde en la misma dirección bajo `/api/`.
+
 La base de datos se crea sola: las migraciones de `Backend/src/main/resources/db/migration` se aplican al arrancar el backend.
 
 Para detener: `docker compose down`. Para borrar también los datos: `docker compose down -v`.
@@ -39,6 +41,8 @@ Funciona sin configurar nada, con valores por defecto pensados solo para desarro
 | `DB_PORT` | `5433` | Puerto de PostgreSQL en tu máquina |
 | `BACKEND_PORT` | `8080` | Puerto del backend en tu máquina |
 | `FRONTEND_PORT` | `8081` | Puerto del frontend en tu máquina |
+| `DEMO_USUARIOS` | `true` | Crea un usuario ficticio por rol al arrancar |
+| `DEMO_CONTRASENA` | `Demo-Tramites-2026` | Contraseña de esos usuarios de demostración |
 
 Si un puerto ya está ocupado en tu máquina, cámbialo en `.env`.
 

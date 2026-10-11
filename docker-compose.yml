@@ -26,8 +26,14 @@ services:
       DB_URL: jdbc:postgresql://db:5432/${DB_NAME:-tramites}
       DB_USER: ${DB_USER:-tramites}
       DB_PASSWORD: ${DB_PASSWORD:-tramites_local}
+      DOCUMENTOS_DIR: /app/almacenamiento
+      # Usuarios ficticios de demostración, uno por rol (solo desarrollo local).
+      DEMO_USUARIOS: ${DEMO_USUARIOS:-true}
+      DEMO_CONTRASENA: ${DEMO_CONTRASENA:-Demo-Tramites-2026}
     ports:
       - "${BACKEND_PORT:-8080}:8080"
+    volumes:
+      - documentos:/app/almacenamiento
     depends_on:
       db:
         condition: service_healthy
@@ -56,3 +62,4 @@ services:
 
 volumes:
   db_datos:
+  documentos:
