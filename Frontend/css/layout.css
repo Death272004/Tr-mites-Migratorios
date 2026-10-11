@@ -87,14 +87,16 @@
   font-size: var(--font-size-xs);
   opacity: 0.9;
 }
-.app-header__role-select {
+.app-header__role-select,
+.app-header__scenario-select {
   padding: var(--space-1) var(--space-2);
   border: 1px solid rgba(255, 255, 255, 0.35);
   border-radius: var(--radius-sm);
   background: rgba(255, 255, 255, 0.12);
   color: var(--color-text-inverse);
 }
-.app-header__role-select option {
+.app-header__role-select option,
+.app-header__scenario-select option {
   color: var(--color-text);
 }
 
