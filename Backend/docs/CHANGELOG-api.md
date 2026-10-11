@@ -9,6 +9,28 @@ Contrato: [`openapi.yaml`](openapi.yaml) — HU-07 del backlog (`Documentacion/0
 3. El archivo debe validar sin errores: `npx @redocly/cli lint Backend/docs/openapi.yaml`.
 4. Se avisa a la rama Frontend cuando el cambio afecta una ruta, un campo o un enumerado que ya consume.
 
+## 0.3.0 — 2026-10-11
+
+Estados y permisos alineados con los que ya usa el Frontend. **Cambia un enumerado existente**: quien consuma `EstadoExpediente` debe actualizar los valores.
+
+- `EstadoExpediente` pasa a la cadena de `Pantallas_y_Datos_Migracion.md`: `EN_PREPARACION`, `RECIBIDO`, `CON_OBSERVACIONES`, `EN_ANALISIS`, `ADMITIDO`, `EN_RESOLUCION`, `RESUELTO`, `NOTIFICADO`, `ENTREGADO`, `ARCHIVADO`. El Frontend los muestra con espacios y tildes; la API usa el código.
+
+  | Antes | Ahora |
+  | --- | --- |
+  | `BORRADOR` | `EN_PREPARACION` |
+  | `PRESENTADO` | `RECIBIDO` |
+  | `PENDIENTE_DOCUMENTOS`, `OBSERVADO` | `CON_OBSERVACIONES` |
+  | `EN_REVISION` | `EN_ANALISIS` |
+  | `EN_VALIDACION` | `ADMITIDO` |
+  | `LISTO_DECISION` | `EN_RESOLUCION` |
+  | `APROBADO`, `DENEGADO` | `RESUELTO` con `resultado` `APROBADA` o `NEGADA` |
+  | `CERRADO` | `NOTIFICADO` y luego `ENTREGADO` |
+  | `CANCELADO` | `ARCHIVADO` |
+
+- Campo `resultado` (`APROBADA`, `NEGADA`) en `Expediente` y en `CambioEstadoSolicitud`; es obligatorio al pasar a `RESUELTO`.
+- `PATCH /api/expedientes/{id}/estado` ya no exige siempre `RESOLVER`: el permiso depende del estado de destino (`OBSERVAR`, `RESOLVER` o `NOTIFICAR`), igual que en las pantallas I-04 a I-13.
+- Enumerado `Permiso` con los nueve del Frontend (se agregan `PORTAL`, `REPORTAR`, `AUDITAR` y `ADMINISTRAR`) y campo `permisos` en `Usuario`, que llega en la respuesta del inicio de sesión.
+
 ## 0.2.0 — 2026-10-11
 
 Cambios aditivos al implementar las historias de los Sprints 1 a 4. Ninguna ruta ni campo existente cambia.

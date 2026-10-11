@@ -65,7 +65,8 @@ public class Usuario {
 		this.rol = rol;
 		this.estadoCuenta = EstadoCuenta.ACTIVA;
 		this.fechaCreacion = Instant.now();
-		this.permisos.addAll(permisos);
+		// Solo el FUNCIONARIO recibe permisos a medida; los demás roles llevan los fijos de su rol.
+		this.permisos.addAll(rol == Rol.FUNCIONARIO ? permisos : rol.permisosBase());
 	}
 
 	public static String normalizar(String correo) {

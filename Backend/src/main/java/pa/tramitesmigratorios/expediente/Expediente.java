@@ -10,6 +10,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 
+import pa.tramitesmigratorios.expediente.EstadoExpediente.Resultado;
+
 @Entity
 @Table(name = "expediente")
 public class Expediente {
@@ -29,6 +31,10 @@ public class Expediente {
 
 	@Enumerated(EnumType.STRING)
 	private EstadoExpediente estado;
+
+	/** APROBADA o NEGADA; vacío mientras no haya resolución. */
+	@Enumerated(EnumType.STRING)
+	private Resultado resultado;
 
 	private Instant fechaCreacion;
 
@@ -52,8 +58,11 @@ public class Expediente {
 		this.fechaActualizacion = this.fechaCreacion;
 	}
 
-	void cambiarEstado(EstadoExpediente nuevo) {
+	void cambiarEstado(EstadoExpediente nuevo, Resultado resultado) {
 		this.estado = nuevo;
+		if (nuevo == EstadoExpediente.RESUELTO) {
+			this.resultado = resultado;
+		}
 		this.fechaActualizacion = Instant.now();
 	}
 
@@ -83,6 +92,10 @@ public class Expediente {
 
 	public EstadoExpediente getEstado() {
 		return estado;
+	}
+
+	public Resultado getResultado() {
+		return resultado;
 	}
 
 	public Instant getFechaCreacion() {

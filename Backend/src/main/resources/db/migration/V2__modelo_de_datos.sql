@@ -16,18 +16,23 @@ CREATE TABLE usuario (
     CONSTRAINT usuario_estado_cuenta CHECK (estado_cuenta IN ('ACTIVA', 'BLOQUEADA', 'DESHABILITADA'))
 );
 
--- Permisos granulares del personal del bufete: 06-roles-y-accesos.md §6.4.
+-- Permisos del sistema, los mismos del Frontend (js/utils/perms.js); los cinco del personal
+-- del bufete vienen de 06-roles-y-accesos.md §6.4.
 CREATE TABLE permiso (
     codigo      VARCHAR(20)  PRIMARY KEY,
     descripcion VARCHAR(120) NOT NULL
 );
 
 INSERT INTO permiso (codigo, descripcion) VALUES
-    ('CONSULTAR', 'Consultar expedientes del ámbito'),
-    ('VERIFICAR', 'Registrar verificaciones documentales'),
-    ('OBSERVAR',  'Registrar observaciones'),
-    ('RESOLVER',  'Cambiar el estado y decidir expedientes'),
-    ('NOTIFICAR', 'Notificar resultados');
+    ('PORTAL',      'Portal del cliente'),
+    ('CONSULTAR',   'Consultar expedientes del ámbito'),
+    ('VERIFICAR',   'Verificar fuentes externas'),
+    ('OBSERVAR',    'Emitir y atender observaciones'),
+    ('RESOLVER',    'Resolver (aprobar o negar)'),
+    ('NOTIFICAR',   'Notificar, entregar y archivar'),
+    ('REPORTAR',    'Ver reportes y tiempos'),
+    ('AUDITAR',     'Consultar la bitácora (solo lectura)'),
+    ('ADMINISTRAR', 'Administrar catálogos y usuarios');
 
 CREATE TABLE usuario_permiso (
     usuario_id UUID        NOT NULL REFERENCES usuario (id) ON DELETE CASCADE,
@@ -89,12 +94,14 @@ CREATE TABLE expediente (
     creado_por_id       UUID        NOT NULL REFERENCES usuario (id),
     tipo_tramite        VARCHAR(40) NOT NULL REFERENCES tipo_tramite (codigo),
     estado              VARCHAR(30) NOT NULL,
+    resultado           VARCHAR(10),
     fecha_creacion      TIMESTAMPTZ NOT NULL DEFAULT now(),
     fecha_actualizacion TIMESTAMPTZ NOT NULL DEFAULT now(),
     version             BIGINT      NOT NULL DEFAULT 0,
     CONSTRAINT expediente_estado CHECK (estado IN (
-        'BORRADOR', 'PRESENTADO', 'EN_REVISION', 'PENDIENTE_DOCUMENTOS', 'EN_VALIDACION',
-        'LISTO_DECISION', 'APROBADO', 'DENEGADO', 'OBSERVADO', 'CANCELADO', 'CERRADO'))
+        'EN_PREPARACION', 'RECIBIDO', 'CON_OBSERVACIONES', 'EN_ANALISIS', 'ADMITIDO',
+        'EN_RESOLUCION', 'RESUELTO', 'NOTIFICADO', 'ENTREGADO', 'ARCHIVADO')),
+    CONSTRAINT expediente_resultado CHECK (resultado IN ('APROBADA', 'NEGADA'))
 );
 -- Listados por titularidad y estado, y bandeja del despacho por estado y fecha (HU-11 CA-5).
 CREATE INDEX expediente_solicitante_estado ON expediente (solicitante_id, estado, fecha_creacion DESC);

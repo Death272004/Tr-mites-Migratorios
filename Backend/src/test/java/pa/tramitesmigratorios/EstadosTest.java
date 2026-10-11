@@ -41,29 +41,31 @@ class EstadosTest extends PruebaApi {
 	void elRecorridoCompletoHastaLaDecisionDejaHistorialYAvisos() throws Exception {
 		Usuario titular = usuario(Rol.SOLICITANTE);
 		String cliente = token(titular);
-		Usuario resolutor = usuario(Rol.FUNCIONARIO, Permiso.CONSULTAR, Permiso.RESOLVER);
+		Usuario resolutor = funcionarioCompleto();
 		String despacho = token(resolutor);
 		String id = expediente(cliente, TRAMITE_SIMPLE);
 
-		cambiarEstado(despacho, despacho, id, "EN_REVISION", "Nota interna de reparto").andExpect(status().isOk())
-			.andExpect(jsonPath("$.estado").value("EN_REVISION"))
+		cambiarEstado(despacho, despacho, id, "EN_ANALISIS", "Nota interna de reparto").andExpect(status().isOk())
+			.andExpect(jsonPath("$.estado").value("EN_ANALISIS"))
+			.andExpect(jsonPath("$.resultado").doesNotExist())
 			.andExpect(jsonPath("$.version").value(1));
-		cambiarEstado(despacho, despacho, id, "PENDIENTE_DOCUMENTOS", "Falta el comprobante de pago").andExpect(status().isOk());
+		cambiarEstado(despacho, despacho, id, "CON_OBSERVACIONES", "Falta el comprobante de pago").andExpect(status().isOk());
 		completarDocumentos(cliente, id);
-		cambiarEstado(despacho, despacho, id, "EN_REVISION", "Documentos recibidos").andExpect(status().isOk());
-		cambiarEstado(despacho, despacho, id, "EN_VALIDACION", "Pasa a validación").andExpect(status().isOk());
-		cambiarEstado(despacho, despacho, id, "LISTO_DECISION", "Requisitos completos").andExpect(status().isOk());
-		cambiarEstado(despacho, despacho, id, "APROBADO", "Cumple los requisitos del trámite").andExpect(status().isOk())
-			.andExpect(jsonPath("$.estado").value("APROBADO"));
+		cambiarEstado(despacho, despacho, id, "EN_ANALISIS", "Documentos recibidos").andExpect(status().isOk());
+		cambiarEstado(despacho, despacho, id, "ADMITIDO", "Solicitud conforme").andExpect(status().isOk());
+		cambiarEstado(despacho, despacho, id, "EN_RESOLUCION", "Requisitos completos").andExpect(status().isOk());
+		resolver(despacho, id, "APROBADA", "Cumple los requisitos del trámite").andExpect(status().isOk())
+			.andExpect(jsonPath("$.estado").value("RESUELTO"))
+			.andExpect(jsonPath("$.resultado").value("APROBADA"));
 
 		// Historial en orden, con autor, estados y motivo.
 		obtener(despacho, "/api/expedientes/{id}/historial", id).andExpect(status().isOk())
 			.andExpect(jsonPath("$", hasSize(7)))
-			.andExpect(jsonPath("$[1].estadoAnterior").value("PRESENTADO"))
-			.andExpect(jsonPath("$[1].estadoNuevo").value("EN_REVISION"))
+			.andExpect(jsonPath("$[1].estadoAnterior").value("RECIBIDO"))
+			.andExpect(jsonPath("$[1].estadoNuevo").value("EN_ANALISIS"))
 			.andExpect(jsonPath("$[1].usuarioId").value(resolutor.getId().toString()))
 			.andExpect(jsonPath("$[1].motivo").value("Nota interna de reparto"))
-			.andExpect(jsonPath("$[6].estadoNuevo").value("APROBADO"));
+			.andExpect(jsonPath("$[6].estadoNuevo").value("RESUELTO"));
 		// El cliente ve los mismos cambios, pero no las notas internas del despacho.
 		obtener(cliente, "/api/expedientes/{id}/historial", id).andExpect(status().isOk())
 			.andExpect(jsonPath("$", hasSize(7)))
@@ -71,7 +73,7 @@ class EstadosTest extends PruebaApi {
 			.andExpect(jsonPath("$[2].motivo").value("Falta el comprobante de pago"))
 			.andExpect(jsonPath("$[6].motivo").value("Cumple los requisitos del trámite"));
 
-		// Avisos al titular: documentos pendientes y decisión final, sin datos del caso.
+		// Avisos al titular: observaciones por atender y resolución, sin datos del caso.
 		obtener(cliente, "/api/notificaciones").andExpect(status().isOk())
 			.andExpect(jsonPath("$.contenido", hasSize(2)))
 			.andExpect(jsonPath("$.contenido[0].tipo").value("DECISION_FINAL"))
@@ -80,7 +82,7 @@ class EstadosTest extends PruebaApi {
 			.andExpect(jsonPath("$.contenido[1].tipo").value("PENDIENTE_DOCUMENTOS"));
 		assertThat(cuerpo(obtener(cliente, "/api/notificaciones").andReturn()))
 			.doesNotContain("Cumple los requisitos")
-			.doesNotContain("APROBADO")
+			.doesNotContain("APROBADA")
 			.doesNotContain(titular.getCorreo());
 		assertThat(eventos("CAMBIAR_ESTADO", "expediente/" + id)).isEqualTo(6);
 	}
@@ -88,56 +90,65 @@ class EstadosTest extends PruebaApi {
 	@Test
 	void unaTransicionNoPermitidaRespondeConflictoYConservaElEstado() throws Exception {
 		String cliente = tokenDe(Rol.SOLICITANTE);
-		String despacho = tokenDe(Rol.FUNCIONARIO, Permiso.CONSULTAR, Permiso.RESOLVER);
+		String despacho = token(funcionarioCompleto());
 		String id = expediente(cliente, TRAMITE_SIMPLE);
 
-		cambiarEstado(despacho, despacho, id, "APROBADO", "Intento de saltarse el proceso").andExpect(status().isConflict())
+		resolver(despacho, id, "APROBADA", "Intento de saltarse el proceso").andExpect(status().isConflict())
 			.andExpect(jsonPath("$.codigo").value("TRANSICION_NO_PERMITIDA"));
-		cambiarEstado(despacho, despacho, id, "PRESENTADO", "Mismo estado").andExpect(status().isConflict());
+		cambiarEstado(despacho, despacho, id, "RECIBIDO", "Mismo estado").andExpect(status().isConflict());
 
-		assertThat(estado(cliente, id)).isEqualTo("PRESENTADO");
+		assertThat(estado(cliente, id)).isEqualTo("RECIBIDO");
 		obtener(cliente, "/api/expedientes/{id}/historial", id).andExpect(jsonPath("$", hasSize(1)));
 	}
 
 	@Test
-	void elMotivoLaVersionYElEstadoSonObligatorios() throws Exception {
-		String despacho = tokenDe(Rol.FUNCIONARIO, Permiso.CONSULTAR, Permiso.RESOLVER);
+	void elMotivoLaVersionElEstadoYElResultadoSonObligatorios() throws Exception {
+		String despacho = token(funcionarioCompleto());
 		String id = expediente(tokenDe(Rol.SOLICITANTE), TRAMITE_SIMPLE);
 
-		modificar(despacho, "/api/expedientes/{id}/estado", "{\"estadoNuevo\":\"EN_REVISION\",\"motivo\":\"  \",\"version\":0}", id)
+		modificar(despacho, "/api/expedientes/{id}/estado", "{\"estadoNuevo\":\"EN_ANALISIS\",\"motivo\":\"  \",\"version\":0}", id)
 			.andExpect(status().isBadRequest())
 			.andExpect(jsonPath("$.errores[0].campo").value("motivo"));
-		modificar(despacho, "/api/expedientes/{id}/estado", "{\"estadoNuevo\":\"EN_REVISION\",\"motivo\":\"Inicio\"}", id)
+		modificar(despacho, "/api/expedientes/{id}/estado", "{\"estadoNuevo\":\"EN_ANALISIS\",\"motivo\":\"Inicio\"}", id)
 			.andExpect(status().isBadRequest())
 			.andExpect(jsonPath("$.errores[0].campo").value("version"));
 		modificar(despacho, "/api/expedientes/{id}/estado", "{\"estadoNuevo\":\"VOLANDO\",\"motivo\":\"Inicio\",\"version\":0}", id)
 			.andExpect(status().isBadRequest());
+		// RESUELTO siempre lleva su resultado: APROBADA o NEGADA.
+		cambiarEstado(despacho, despacho, id, "RESUELTO", "Sin resultado").andExpect(status().isBadRequest())
+			.andExpect(jsonPath("$.errores[0].campo").value("resultado"));
 	}
 
 	@Test
-	void soloElFuncionarioConPermisoResolverCambiaElEstado() throws Exception {
+	void cadaEtapaExigeAlFuncionarioElPermisoQueLeCorresponde() throws Exception {
 		String cliente = tokenDe(Rol.SOLICITANTE);
 		String id = expediente(cliente, TRAMITE_SIMPLE);
-		String cambio = "{\"estadoNuevo\":\"EN_REVISION\",\"motivo\":\"Inicio\",\"version\":0}";
+		String cambio = "{\"estadoNuevo\":\"EN_ANALISIS\",\"motivo\":\"Inicio\",\"version\":0}";
 
 		modificar(cliente, "/api/expedientes/{id}/estado", cambio, id).andExpect(status().isForbidden());
 		modificar(tokenDe(Rol.SUPERVISOR), "/api/expedientes/{id}/estado", cambio, id).andExpect(status().isForbidden());
-		modificar(tokenDe(Rol.FUNCIONARIO, Permiso.CONSULTAR, Permiso.OBSERVAR), "/api/expedientes/{id}/estado", cambio, id)
-			.andExpect(status().isForbidden());
+		// El análisis es de quien observa: el resolutor no lo inicia y el analista no resuelve ni archiva.
+		String resolutor = tokenDe(Rol.FUNCIONARIO, Permiso.CONSULTAR, Permiso.RESOLVER, Permiso.NOTIFICAR);
+		String analista = tokenDe(Rol.FUNCIONARIO, Permiso.CONSULTAR, Permiso.OBSERVAR);
+		modificar(resolutor, "/api/expedientes/{id}/estado", cambio, id).andExpect(status().isForbidden());
+		assertThat(estado(cliente, id)).isEqualTo("RECIBIDO");
+		modificar(analista, "/api/expedientes/{id}/estado", cambio, id).andExpect(status().isOk());
+		cambiarEstado(analista, analista, id, "EN_RESOLUCION", "Sin permiso").andExpect(status().isForbidden());
+		cambiarEstado(analista, analista, id, "ARCHIVADO", "Sin permiso").andExpect(status().isForbidden());
 
-		assertThat(estado(cliente, id)).isEqualTo("PRESENTADO");
+		assertThat(estado(cliente, id)).isEqualTo("EN_ANALISIS");
 	}
 
 	@Test
 	void noSeLlegaALaDecisionSinRequisitosCompletosNiVerificacionesResueltas() throws Exception {
 		String cliente = tokenDe(Rol.SOLICITANTE);
-		String despacho = tokenDe(Rol.FUNCIONARIO, Permiso.CONSULTAR, Permiso.RESOLVER);
+		String despacho = token(funcionarioCompleto());
 		String id = expediente(cliente, TRAMITE_SIMPLE);
-		cambiarEstado(despacho, despacho, id, "EN_REVISION", "Inicio").andExpect(status().isOk());
-		cambiarEstado(despacho, despacho, id, "EN_VALIDACION", "Validación").andExpect(status().isOk());
+		cambiarEstado(despacho, despacho, id, "EN_ANALISIS", "Inicio").andExpect(status().isOk());
+		cambiarEstado(despacho, despacho, id, "ADMITIDO", "Conforme").andExpect(status().isOk());
 
 		// Faltan los documentos obligatorios.
-		cambiarEstado(despacho, despacho, id, "LISTO_DECISION", "Listo").andExpect(status().isConflict())
+		cambiarEstado(despacho, despacho, id, "EN_RESOLUCION", "Listo").andExpect(status().isConflict())
 			.andExpect(jsonPath("$.codigo").value("REQUISITOS_INCOMPLETOS"))
 			.andExpect(jsonPath("$.mensaje", containsString("COMPROBANTE_PAGO, PASAPORTE")));
 
@@ -145,46 +156,47 @@ class EstadosTest extends PruebaApi {
 		completarDocumentos(cliente, id);
 		Verificacion pendiente = verificaciones.save(Verificacion.simulada(UUID.fromString(id),
 				Verificacion.Fuente.TE, "IDENTIDAD", "Verificar identidad del titular"));
-		cambiarEstado(despacho, despacho, id, "LISTO_DECISION", "Listo").andExpect(status().isConflict())
+		cambiarEstado(despacho, despacho, id, "EN_RESOLUCION", "Listo").andExpect(status().isConflict())
 			.andExpect(jsonPath("$.mensaje", containsString("1 verificación(es) sin respuesta")));
 		// Un error técnico no cuenta como resultado.
 		pendiente.marcar(Verificacion.Estado.ERROR_TECNICO);
 		verificaciones.save(pendiente);
-		cambiarEstado(despacho, despacho, id, "LISTO_DECISION", "Listo").andExpect(status().isConflict());
-		assertThat(estado(cliente, id)).isEqualTo("EN_VALIDACION");
+		cambiarEstado(despacho, despacho, id, "EN_RESOLUCION", "Listo").andExpect(status().isConflict());
+		assertThat(estado(cliente, id)).isEqualTo("ADMITIDO");
 
 		pendiente.responder("coincide", "SIM-TE-0001");
 		verificaciones.save(pendiente);
-		cambiarEstado(despacho, despacho, id, "LISTO_DECISION", "Listo").andExpect(status().isOk());
-		cambiarEstado(despacho, despacho, id, "DENEGADO", "No cumple el requisito de estadía").andExpect(status().isOk());
-		cambiarEstado(despacho, despacho, id, "EN_REVISION", "Reabrir").andExpect(status().isConflict());
+		cambiarEstado(despacho, despacho, id, "EN_RESOLUCION", "Listo").andExpect(status().isOk());
+		resolver(despacho, id, "NEGADA", "No cumple el requisito de estadía").andExpect(status().isOk())
+			.andExpect(jsonPath("$.resultado").value("NEGADA"));
+		cambiarEstado(despacho, despacho, id, "EN_ANALISIS", "Reabrir").andExpect(status().isConflict());
 	}
 
 	@Test
 	void unaVersionDesactualizadaRespondeConflicto() throws Exception {
-		String despacho = tokenDe(Rol.FUNCIONARIO, Permiso.CONSULTAR, Permiso.RESOLVER);
+		String despacho = token(funcionarioCompleto());
 		String id = expediente(tokenDe(Rol.SOLICITANTE), TRAMITE_SIMPLE);
-		cambiarEstado(despacho, despacho, id, "EN_REVISION", "Inicio").andExpect(status().isOk());
+		cambiarEstado(despacho, despacho, id, "EN_ANALISIS", "Inicio").andExpect(status().isOk());
 
 		// Otra persona tenía cargada la versión 0.
-		modificar(despacho, "/api/expedientes/{id}/estado", "{\"estadoNuevo\":\"CANCELADO\",\"motivo\":\"Desiste\",\"version\":0}", id)
+		modificar(despacho, "/api/expedientes/{id}/estado", "{\"estadoNuevo\":\"ARCHIVADO\",\"motivo\":\"Desiste\",\"version\":0}", id)
 			.andExpect(status().isConflict())
 			.andExpect(jsonPath("$.codigo").value("VERSION_DESACTUALIZADA"));
 
-		assertThat(estado(despacho, id)).isEqualTo("EN_REVISION");
+		assertThat(estado(despacho, id)).isEqualTo("EN_ANALISIS");
 	}
 
 	@Test
 	void dosCambiosSimultaneosNoSePisan() throws Exception {
-		String despacho = tokenDe(Rol.FUNCIONARIO, Permiso.CONSULTAR, Permiso.RESOLVER);
+		String despacho = token(funcionarioCompleto());
 		String id = expediente(tokenDe(Rol.SOLICITANTE), TRAMITE_SIMPLE);
 		Callable<Integer> aRevision = () -> modificar(despacho, "/api/expedientes/{id}/estado",
-				"{\"estadoNuevo\":\"EN_REVISION\",\"motivo\":\"Inicio\",\"version\":0}", id)
+				"{\"estadoNuevo\":\"EN_ANALISIS\",\"motivo\":\"Inicio\",\"version\":0}", id)
 			.andReturn()
 			.getResponse()
 			.getStatus();
 		Callable<Integer> aCancelado = () -> modificar(despacho, "/api/expedientes/{id}/estado",
-				"{\"estadoNuevo\":\"CANCELADO\",\"motivo\":\"Desiste\",\"version\":0}", id)
+				"{\"estadoNuevo\":\"ARCHIVADO\",\"motivo\":\"Desiste\",\"version\":0}", id)
 			.andReturn()
 			.getResponse()
 			.getStatus();
@@ -226,7 +238,7 @@ class EstadosTest extends PruebaApi {
 			.andExpect(jsonPath("$", hasSize(2)))
 			.andExpect(jsonPath("$[0].texto").value("La foto del pasaporte está borrosa."))
 			.andExpect(jsonPath("$[1].autorId").value(titular.getId().toString()));
-		assertThat(estado(cliente, id)).isEqualTo("PRESENTADO");
+		assertThat(estado(cliente, id)).isEqualTo("RECIBIDO");
 		assertThat(eventos("REGISTRAR_OBSERVACION", "expediente/" + id)).isEqualTo(2);
 		// Solo la observación del despacho avisa al cliente, y el aviso no copia el texto.
 		obtener(cliente, "/api/notificaciones").andExpect(jsonPath("$.contenido", hasSize(1)))

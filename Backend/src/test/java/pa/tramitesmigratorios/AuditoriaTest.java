@@ -32,7 +32,7 @@ class AuditoriaTest extends PruebaApi {
 		String id = expediente(cliente, TRAMITE_SIMPLE);
 		String documentoId = leer(adjuntar(cliente, id, "PASAPORTE", "p.pdf", "application/pdf", PDF).andReturn(), "$.id");
 		obtener(despacho, "/api/expedientes/{id}/documentos/{d}/contenido", id, documentoId).andExpect(status().isOk());
-		cambiarEstado(despacho, despacho, id, "EN_REVISION", "Inicio").andExpect(status().isOk());
+		cambiarEstado(despacho, despacho, id, "EN_ANALISIS", "Inicio").andExpect(status().isOk());
 		enviar(despacho, "/api/expedientes/{id}/observaciones", "{\"texto\":\"Revise la foto\"}", id).andExpect(status().isCreated());
 		enviar(cliente, "/api/solicitudes-arco", "{\"tipo\":\"ACCESO\",\"descripcion\":\"Quiero ver mis datos\"}").andExpect(status().isCreated());
 		enviar(cliente, "/api/auth/logout", "").andExpect(status().isNoContent());

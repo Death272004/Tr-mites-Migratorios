@@ -2,7 +2,7 @@ openapi: 3.0.3
 
 info:
   title: Sistema Interoperable para la Gestión de Trámites Migratorios en Panamá
-  version: 0.2.0
+  version: 0.3.0
   description: |
     Contrato de la API REST del producto (HU-07).
 
@@ -172,7 +172,7 @@ paths:
       summary: Crear un expediente
       description: |
         Crea el expediente con identificador único, solicitante autenticado, tipo de trámite,
-        fecha de creación y estado inicial (`BORRADOR` o `PRESENTADO`). Los campos se validan en
+        fecha de creación y estado inicial (`RECIBIDO`). Los campos se validan en
         el servidor. Un usuario no puede crear expedientes a nombre de otro (CP-03), salvo el
         `SOLICITANTE` con representación acreditada (P-08). Genera evento de auditoría.
       x-roles: [SOLICITANTE]
@@ -335,8 +335,11 @@ paths:
       description: |
         Aplica la matriz de transiciones permitidas por tipo de trámite. Una transición no
         permitida responde 409 o 403 y conserva el estado original (CP-04). No se llega a
-        `APROBADO` o `DENEGADO` sin verificaciones respondidas y requisitos completos. Registra
-        estado anterior, nuevo, autor, fecha y motivo. Requiere el permiso `resolver`.
+        `EN_RESOLUCION` ni a `RESUELTO` sin verificaciones respondidas y requisitos completos.
+        `RESUELTO` exige el campo `resultado`. Registra estado anterior, nuevo, autor, fecha y
+        motivo. El permiso depende del estado de destino: `OBSERVAR` para `RECIBIDO`,
+        `CON_OBSERVACIONES`, `EN_ANALISIS` y `ADMITIDO`; `RESOLVER` para `EN_RESOLUCION` y
+        `RESUELTO`; `NOTIFICAR` para `NOTIFICADO`, `ENTREGADO` y `ARCHIVADO`.
       x-roles: [FUNCIONARIO]
       parameters:
         - $ref: "#/components/parameters/ExpedienteId"
@@ -1186,23 +1189,37 @@ components:
       type: string
       enum: [ACTIVA, BLOQUEADA, DESHABILITADA]
 
+    Permiso:
+      type: string
+      description: |
+        Permisos del sistema, los mismos del Frontend (`js/utils/perms.js`). `SOLICITANTE` tiene
+        `PORTAL`; `SUPERVISOR`, `CONSULTAR` y `REPORTAR`; `AUDITOR`, `CONSULTAR`, `AUDITAR` y
+        `REPORTAR`; `ADMIN`, `CONSULTAR` y `ADMINISTRAR`. Al `FUNCIONARIO` se le asignan por
+        función entre `CONSULTAR`, `VERIFICAR`, `OBSERVAR`, `RESOLVER` y `NOTIFICAR`.
+      enum: [PORTAL, CONSULTAR, VERIFICAR, OBSERVAR, RESOLVER, NOTIFICAR, REPORTAR, AUDITAR, ADMINISTRAR]
+
     EstadoExpediente:
       type: string
       description: |
-        Estados mínimos de la HU-19. `OBSERVADO`, `CANCELADO` y `CERRADO` son complementarios
-        y solo se usan si el PO los habilita.
+        Cadena de `Pantallas_y_Datos_Migracion.md`, la que muestra el Frontend: EN PREPARACIÓN →
+        RECIBIDO → [CON OBSERVACIONES] → EN ANÁLISIS → ADMITIDO → EN RESOLUCIÓN → RESUELTO →
+        NOTIFICADO → ENTREGADO → ARCHIVADO. El resultado de `RESUELTO` va en `resultado`.
       enum:
-        - BORRADOR
-        - PRESENTADO
-        - EN_REVISION
-        - PENDIENTE_DOCUMENTOS
-        - EN_VALIDACION
-        - LISTO_DECISION
-        - APROBADO
-        - DENEGADO
-        - OBSERVADO
-        - CANCELADO
-        - CERRADO
+        - EN_PREPARACION
+        - RECIBIDO
+        - CON_OBSERVACIONES
+        - EN_ANALISIS
+        - ADMITIDO
+        - EN_RESOLUCION
+        - RESUELTO
+        - NOTIFICADO
+        - ENTREGADO
+        - ARCHIVADO
+
+    ResultadoExpediente:
+      type: string
+      description: Resultado de la resolución del expediente.
+      enum: [APROBADA, NEGADA]
 
     FuenteVerificacion:
       type: string
@@ -1323,6 +1340,10 @@ components:
           format: email
         rol:
           $ref: "#/components/schemas/Rol"
+        permisos:
+          type: array
+          items:
+            $ref: "#/components/schemas/Permiso"
         estadoCuenta:
           $ref: "#/components/schemas/EstadoCuenta"
 
@@ -1346,6 +1367,10 @@ components:
           description: Código del tipo de trámite, tomado del catálogo.
         estado:
           $ref: "#/components/schemas/EstadoExpediente"
+        resultado:
+          allOf:
+            - $ref: "#/components/schemas/ResultadoExpediente"
+          description: Solo tiene valor desde que el expediente llega a `RESUELTO`.
         fechaCreacion:
           type: string
           format: date-time
@@ -1648,6 +1673,10 @@ components:
       properties:
         estadoNuevo:
           $ref: "#/components/schemas/EstadoExpediente"
+        resultado:
+          allOf:
+            - $ref: "#/components/schemas/ResultadoExpediente"
+          description: Obligatorio cuando `estadoNuevo` es `RESUELTO`; se ignora en los demás.
         motivo:
           type: string
         version:

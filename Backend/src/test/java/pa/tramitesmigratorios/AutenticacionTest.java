@@ -1,6 +1,7 @@
 package pa.tramitesmigratorios;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -26,6 +27,7 @@ class AutenticacionTest extends PruebaApi {
 			.andExpect(jsonPath("$.token").isNotEmpty())
 			.andExpect(jsonPath("$.expiraEn").value(3600))
 			.andExpect(jsonPath("$.rol").value("SOLICITANTE"))
+			.andExpect(jsonPath("$.usuario.permisos", contains("PORTAL")))
 			.andExpect(jsonPath("$.usuario.correo").value(cliente.getCorreo()))
 			.andExpect(jsonPath("$.usuario.estadoCuenta").value("ACTIVA"))
 			.andReturn();

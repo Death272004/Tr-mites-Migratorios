@@ -25,13 +25,25 @@ Con `docker compose up` se crea un usuario ficticio por rol. Todos usan la contr
 
 | Correo | Rol | Permisos |
 | --- | --- | --- |
-| `cliente@demo.pa`, `cliente2@demo.pa` | SOLICITANTE | — |
-| `abogado@demo.pa` | SOLICITANTE | Representación acreditada de `cliente@demo.pa` |
+| `cliente@demo.pa`, `cliente2@demo.pa` | SOLICITANTE | PORTAL |
+| `abogado@demo.pa` | SOLICITANTE | PORTAL, con representación acreditada de `cliente@demo.pa` |
 | `recepcion@demo.pa`, `analista@demo.pa` | FUNCIONARIO | CONSULTAR, VERIFICAR, OBSERVAR |
-| `resolutor@demo.pa` | FUNCIONARIO | CONSULTAR, RESOLVER |
-| `supervisor@demo.pa` | SUPERVISOR | — |
-| `auditor@demo.pa` | AUDITOR | — |
-| `admin@demo.pa` | ADMIN | — |
+| `resolutor@demo.pa` | FUNCIONARIO | CONSULTAR, VERIFICAR, RESOLVER, NOTIFICAR |
+| `supervisor@demo.pa` | SUPERVISOR | CONSULTAR, REPORTAR |
+| `auditor@demo.pa` | AUDITOR | CONSULTAR, AUDITAR, REPORTAR |
+| `admin@demo.pa` | ADMIN | CONSULTAR, ADMINISTRAR |
+
+Los permisos son los mismos nueve del frontend (`js/utils/perms.js`) y llegan en `usuario.permisos` al iniciar sesión. Los del FUNCIONARIO se asignan por cuenta; los demás roles llevan siempre los de su rol.
+
+## Estados del expediente
+
+La cadena es la de `Pantallas_y_Datos_Migracion.md`, la misma que muestra el frontend. Cada cambio exige el permiso de su etapa:
+
+| Estado de destino | Permiso | Pantalla |
+| --- | --- | --- |
+| `CON_OBSERVACIONES`, `EN_ANALISIS`, `ADMITIDO` | OBSERVAR | I-04, I-06, I-08 |
+| `EN_RESOLUCION`, `RESUELTO` (con `resultado` `APROBADA` o `NEGADA`) | RESOLVER | I-10 |
+| `NOTIFICADO`, `ENTREGADO`, `ARCHIVADO` | NOTIFICAR | I-11, I-12, I-13 |
 
 ```bash
 curl -s http://localhost:8080/api/auth/login -H "Content-Type: application/json" \
@@ -61,10 +73,12 @@ El encabezado `X-Scenario` (o `?scenario=`) fuerza el comportamiento:
 
 ## Decisiones tomadas que el PO debe confirmar
 
-- **Estado inicial:** el expediente nace en `PRESENTADO`, porque la solicitud se envía al final del asistente (P-17). `BORRADOR` existe pero no se usa.
+- **Estado inicial:** el expediente nace en `RECIBIDO`, porque la solicitud se envía al final del asistente (P-17). `EN_PREPARACION` existe pero no se usa: el borrador vive en el navegador.
 - **Matriz de transiciones:** hay una sola matriz para todos los trámites (`expediente/Transiciones.java`). La definitiva por tipo de trámite es la TASK-19.1.
 - **Ámbito del personal:** FUNCIONARIO (con permiso CONSULTAR) y SUPERVISOR ven todos los expedientes del despacho.
-- **Decisión:** para pasar a `LISTO_DECISION`, `APROBADO` o `DENEGADO` deben estar los documentos obligatorios y no puede haber verificaciones sin respuesta. No se exige una cantidad mínima de verificaciones hasta que exista su registro (HU-24).
+- **Resolución:** para pasar a `EN_RESOLUCION` o `RESUELTO` deben estar los documentos obligatorios y no puede haber verificaciones sin respuesta. No se exige una cantidad mínima de verificaciones hasta que exista su registro (HU-24).
+- **Archivo:** `ARCHIVADO` es definitivo; la reactivación que muestra I-13 no está implementada.
+- **ADMIN:** tiene el permiso CONSULTAR como en el frontend, pero sigue sin leer ni decidir expedientes (la matriz por rol lo impide).
 - **Catálogos:** los cuatro trámites y ocho tipos documentales son de ejemplo (PEN-11).
 - **Plazo ARCO:** 10 días calendario (`ARCO_PLAZO_DIAS`).
 - **Consentimiento:** hoy bloquea adjuntar documentos sensibles sin consentimiento expreso vigente. La regla general de consentimiento vigente queda lista para aplicarse al registrar verificaciones (HU-24).

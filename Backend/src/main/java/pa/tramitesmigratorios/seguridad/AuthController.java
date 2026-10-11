@@ -1,5 +1,6 @@
 package pa.tramitesmigratorios.seguridad;
 
+import java.util.Set;
 import java.util.UUID;
 
 import jakarta.validation.Valid;
@@ -28,7 +29,8 @@ class AuthController {
 					message = "La contraseña es demasiado larga.") String contrasena) {
 	}
 
-	record UsuarioDto(UUID id, String nombre, String correo, Rol rol, Usuario.EstadoCuenta estadoCuenta) {
+	record UsuarioDto(UUID id, String nombre, String correo, Rol rol, Set<Permiso> permisos,
+			Usuario.EstadoCuenta estadoCuenta) {
 	}
 
 	record LoginRespuesta(String token, long expiraEn, Rol rol, UsuarioDto usuario) {
@@ -49,7 +51,8 @@ class AuthController {
 		SesionIniciada sesion = servicio.iniciarSesion(solicitud.correo(), solicitud.contrasena());
 		Usuario u = sesion.usuario();
 		return new LoginRespuesta(sesion.token(), sesion.expiraEn(), u.getRol(),
-				new UsuarioDto(u.getId(), u.getNombre(), u.getCorreo(), u.getRol(), u.getEstadoCuenta()));
+				new UsuarioDto(u.getId(), u.getNombre(), u.getCorreo(), u.getRol(), u.getPermisos(),
+						u.getEstadoCuenta()));
 	}
 
 	@PostMapping("/logout")
