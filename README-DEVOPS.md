@@ -1,17 +1,33 @@
-# Revisión DevOps — Sprint 1
+# Seguimiento DevOps — Sprints del proyecto
 
-Este documento resume el trabajo realizado en la rama DevOps durante el Sprint 1
-para que el equipo lo revise antes de darlo por cerrado.
+Este es el documento único para que el equipo revise el trabajo de DevOps. Aquí
+se irá agregando el avance de cada sprint, junto con sus commits, pruebas,
+evidencias y pendientes.
 
-## Información del cambio
+## Información general
 
 - **Rama publicada:** `DevOps`
 - **Responsable:** Kenneth Carter
 - **Base temporal de integración:** `feature/hu-08-22-backend-sprints-1-4`
-- **Commit:** `019c1d4`
-- **Nombre del commit:** `docs(devops): completar controles del sprint 1`
+- **Datos utilizados:** únicamente datos ficticios.
 
-## Objetivo del Sprint 1
+## Estado de los sprints
+
+| Sprint | Tema | Estado |
+| --- | --- | --- |
+| 1 | Estructura, convenciones y ambientes | Publicado para revisión |
+| 2 | Docker, healthchecks y arranque reproducible | Pendiente |
+| 3 | Almacenamiento documental y pruebas aisladas | Pendiente |
+| 4 | Auditoría y logs técnicos | Pendiente |
+| 5 | Configuración de mocks y escenarios | Pendiente |
+| 6 | CI, cobertura, ZAP y JMeter | Pendiente |
+| 7 | Instalación limpia, empaquetado y demostración | Pendiente |
+
+---
+
+## Sprint 1 — Estructura, convenciones y ambientes
+
+### Objetivo
 
 Preparar la organización y las reglas básicas del repositorio para que el equipo
 pueda trabajar e integrar cambios sin subir secretos, archivos temporales ni datos
@@ -19,9 +35,16 @@ personales.
 
 Este sprint no incluye nuevas pantallas, endpoints, Docker completo ni CI/CD.
 
-## Qué se realizó
+### Información del cambio
 
-### 1. Protección del repositorio
+- **Commit de implementación:** `019c1d4`
+- **Nombre:** `docs(devops): completar controles del sprint 1`
+- **Commit del resumen inicial:** `144cad1`
+- **Nombre:** `docs(devops): documentar revision del sprint 1`
+
+### Qué se realizó
+
+#### 1. Protección del repositorio
 
 Se agregó `.gitignore` para evitar que se suban:
 
@@ -35,7 +58,7 @@ Se agregó `.gitignore` para evitar que se suban:
 También se agregó `.env.example` como plantilla de configuración. Esta plantilla
 se puede versionar porque contiene valores de ejemplo y no secretos reales.
 
-### 2. Organización del trabajo
+#### 2. Organización del trabajo
 
 Se documentaron las reglas para:
 
@@ -47,7 +70,7 @@ Se documentaron las reglas para:
 
 La documentación está en [`docs/CONVENCIONES-GIT.md`](docs/CONVENCIONES-GIT.md).
 
-### 3. Ambientes y secretos
+#### 3. Ambientes y secretos
 
 Se definieron tres ambientes:
 
@@ -59,13 +82,13 @@ También se documentó que los archivos `.env` y las credenciales reales nunca d
 subirse al repositorio. La estrategia completa está en
 [`docs/ENTORNOS-Y-SECRETOS.md`](docs/ENTORNOS-Y-SECRETOS.md).
 
-### 4. Evidencias
+#### 4. Evidencias
 
 Se creó `docs/evidencias/` para guardar capturas, informes y resultados de pruebas
 sin secretos ni datos personales. Las reglas están en
 [`docs/evidencias/README.md`](docs/evidencias/README.md).
 
-### 5. Verificación
+#### 5. Verificación
 
 Se verificó lo siguiente:
 
@@ -76,10 +99,10 @@ Se verificó lo siguiente:
 - Frontend y Backend pueden coexistir en una copia de integración sin conflictos;
 - la copia integrada levantó frontend, backend y base de datos correctamente.
 
-El detalle de la verificación está en
+El detalle está en
 [`docs/evidencias/sprint-1-verificacion-2026-10-12.md`](docs/evidencias/sprint-1-verificacion-2026-10-12.md).
 
-## Archivos principales agregados
+### Archivos principales agregados
 
 ```text
 .env.example
@@ -92,7 +115,7 @@ docs/evidencias/sprint-1-verificacion-2026-10-12.md
 scripts/README.md
 ```
 
-## Revisión solicitada al equipo
+### Revisión solicitada al equipo
 
 Por favor confirmar:
 
@@ -103,5 +126,36 @@ Por favor confirmar:
 4. Si la carpeta `docs/evidencias/` será la ubicación oficial para las evidencias.
 
 Con la aprobación del líder técnico y la revisión de otro integrante, el Sprint 1
-puede considerarse listo para integración. El siguiente trabajo de DevOps será el
-Sprint 2: Docker, healthchecks y arranque reproducible.
+puede considerarse listo para integración.
+
+---
+
+## Sprint 2 — Docker y entorno reproducible
+
+Se documentará aquí el trabajo de Docker, PostgreSQL, healthchecks, migraciones y
+arranque limpio cuando se comience este sprint.
+
+## Sprint 3 — Almacenamiento documental y pruebas aisladas
+
+Se documentará aquí la protección del almacenamiento documental y la separación
+del ambiente de pruebas cuando se comience este sprint.
+
+## Sprint 4 — Auditoría y logs técnicos
+
+Se documentará aquí la persistencia de auditoría, rotación de logs y revisión de
+información sensible cuando se comience este sprint.
+
+## Sprint 5 — Mocks y escenarios de interoperabilidad
+
+Se documentará aquí la configuración de escenarios, latencias y errores simulados
+por variables de entorno cuando se comience este sprint.
+
+## Sprint 6 — CI, cobertura, ZAP y JMeter
+
+Se documentará aquí la integración continua, cobertura, análisis OWASP ZAP y
+pruebas de carga con Apache JMeter cuando se comience este sprint.
+
+## Sprint 7 — Instalación, empaquetado y demostración
+
+Se documentará aquí la instalación limpia, etiquetado de versión y preparación del
+entorno de demostración cuando se comience este sprint.
