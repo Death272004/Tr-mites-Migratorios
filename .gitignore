@@ -1,0 +1,40 @@
+# Configuración y secretos locales
+.env
+*.env.local
+*.secret
+.secrets/
+
+# Java / Maven
+target/
+*.class
+*.log
+.mvn/wrapper/maven-wrapper.jar
+
+# Node y artefactos del frontend
+node_modules/
+dist/
+build/
+coverage/
+
+# Datos y almacenamiento local de Docker
+/datos/
+/almacenamiento/
+Backend/almacenamiento/
+
+# Informes temporales; las evidencias aprobadas viven en docs/evidencias/
+reports/
+tmp/
+*.tmp
+
+# Editores e IDE
+.idea/
+*.iml
+.vscode/
+.classpath
+.project
+.settings/
+.factorypath
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
