@@ -49,6 +49,7 @@ Nunca sustituyas esos valores por credenciales reales dentro del repositorio.
 
 ## Documentación DevOps
 
+- [Seguimiento de los Sprints DevOps](README-DEVOPS.md)
 - [Convenciones de Git](docs/CONVENCIONES-GIT.md)
 - [Estrategia de ambientes y secretos](docs/ENTORNOS-Y-SECRETOS.md)
 - [Política de evidencias](docs/evidencias/README.md)
