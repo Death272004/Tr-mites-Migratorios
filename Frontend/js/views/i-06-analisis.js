@@ -12,6 +12,7 @@
   var button = global.tm.ui.button;
   var table = global.tm.ui.table;
   var perms = global.tm.perms;
+  var timeline = global.tm.ui.timeline;
 
   var FALLBACK = { expediente: "—", tramite: "—", estadoActual: "EN ANÁLISIS", requisitosComunes: [], requisitosEspecificos: [], verificaciones: [], verificacionesRequeridas: [], historial: [] };
 
@@ -43,6 +44,18 @@
     var conforme = "SI";
     var requeridas = (d.verificacionesRequeridas || []).slice();
     var resultado = null;
+    var historial = (d.historial || []).map(function (h) { return { fecha: h.fecha, evento: h.evento }; });
+
+    function historialItems() {
+      return historial.map(function (h, i) {
+        return {
+          fecha: h.fecha,
+          titulo: h.evento,
+          done: i < historial.length - 1,
+          active: i === historial.length - 1,
+        };
+      });
+    }
 
     function demoSelector() {
       var wrap = layout.el("label", "toolbar__demo");
@@ -154,6 +167,11 @@
         inner.appendChild(res);
       }
 
+      var histBlock = layout.el("div", "seguimiento-block");
+      histBlock.appendChild(layout.el("h2", "seguimiento-block__title", "Historial del expediente"));
+      histBlock.appendChild(timeline({ items: historialItems(), emptyText: "Sin eventos registrados." }));
+      inner.appendChild(histBlock);
+
       var actions = layout.el("div", "toolbar__actions");
       var dictamenBtn = button({
         variant: "primary",
@@ -177,6 +195,7 @@
           resultado = conforme === "SI"
             ? { estado: "ADMITIDO", detalle: "Solicitud conforme. Verificaciones requeridas: " + (requeridas.join(", ") || "ninguna") + "." }
             : { estado: "CON OBSERVACIONES", detalle: "Se emitirá una observación (I-08) por los ítems marcados." };
+          historial.push({ fecha: "2026-10-11", evento: "DICTAMEN — " + resultado.estado });
           renderContent();
         },
       });
