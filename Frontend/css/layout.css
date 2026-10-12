@@ -112,6 +112,20 @@
   background: rgba(255, 255, 255, 0.14);
 }
 
+/* Botón de autorrellenado (solo demo) */
+.app-header__autofill {
+  padding: var(--space-1) var(--space-3);
+  border: 1px dashed rgba(255, 255, 255, 0.55);
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--color-text-inverse);
+  font-size: var(--font-size-sm);
+  white-space: nowrap;
+}
+.app-header__autofill:hover {
+  background: rgba(255, 255, 255, 0.24);
+}
+
 .app-header__toggle {
   display: none;
   border: 0;
