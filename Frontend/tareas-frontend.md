@@ -119,7 +119,7 @@
 | --- | --- | --- |
 | ☐ | TASK-19.4 — Conectar I-10 (resolución) con transiciones dinámicas y motivo obligatorio | 5 h |
 | ☐ | TASK-20.2 — Conectar I-08 y el bloque de observaciones de P-19 | 5 h |
-| ☐ | TASK-21.2 — Componente de línea de tiempo conectado a P-19 e I-06 | 5 h |
+| ☑ | TASK-21.2 — Componente de línea de tiempo conectado a P-19 e I-06 | 5 h |
 | ☐ | TASK-22.4 — Conectar I-16 (bitácora) y verificar exportación CSV | 4 h |
 
 ## 6. Sprint 5 — panel de verificaciones conectado **(FUERA DE ALCANCE)**

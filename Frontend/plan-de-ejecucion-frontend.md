@@ -963,7 +963,7 @@ Toda pantalla implementa y muestra los cuatro estados, con selector de escenario
 ### I-06 Análisis del expediente (checklist) — Fase E · `#/interno/analisis`
 
 * **(a) Objetivo:** revisar requisitos y vigencias, pedir verificaciones externas y decidir la conformidad del expediente.
-* **(b) Rol dueño y acceso:** `FUNCIONARIO` abogado analista (`consultar`, `verificar`, `observar`, proponer resolución); también accede el resolutor; vista ampliada con documentos, historial y requisitos del catálogo I-14 (HU-05 CA-3); línea de tiempo del expediente (HU-21).
+* **(b) Rol dueño y acceso:** `FUNCIONARIO` abogado analista (`consultar`, `verificar`, `observar`, proponer resolución); también accede el resolutor; vista ampliada con documentos, historial y requisitos del catálogo I-14 (HU-05 CA-3); línea de tiempo del expediente (**implementada, TASK-21.2**: bloque "Historial del expediente" que se actualiza al guardar dictamen).
 * **(c) Checklist de campos:**
 
 | Campo (fuente) | Tipo | Obl. | Etiqueta | Nota de la fuente |
@@ -1275,7 +1275,7 @@ Pantallas compartidas que no llevan identificador `P-`/`I-` pero que se construy
 | **Cabecera por rol** | Logo/producto, menú según rol (§2.1), identificador del usuario activo, botón cerrar sesión (limpia estado local → `#/login`) | Todas las pantallas autenticadas |
 | **Notificaciones / avisos** | Bloques de éxito, aviso e información (no confidenciales), tipo "toast" o banda | Confirmaciones de guardado, alertas de vigencias, resultados de verificación |
 | Stepper del asistente | 8 pasos (P-09…P-16) con validación por paso y borrador; se reutiliza en P-26 (N-1…N-13) | Fase C y P-26 |
-| Línea de tiempo | Etapas con autor, fecha, cambio y motivo; nivel de detalle por rol | P-19, I-06 (HU-21) |
+| Línea de tiempo | Etapas con autor, fecha, cambio y motivo; nivel de detalle por rol | P-19, I-06 (HU-21). `js/components/timeline.js` (TASK-21.2) acepta `{fecha, titulo|evento, detalle, autor, done, active, estado}` y un `emptyText`. |
 | Selector de escenarios locales | Cambia el fixture entre carga, éxito, vacío y error | Demostración Sprint 1 (Fase A) |
 
 ---
