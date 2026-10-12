@@ -80,6 +80,10 @@
         if (typeof currentShow === "function") currentShow(scenario);
         else render();
       },
+      onAutofill: function () {
+        if (global.tm.autofill) return global.tm.autofill.fill(els.content);
+        return null;
+      },
       onLogout: function () {
         session.clearSession();
         navigate(loginRoute(state.role));

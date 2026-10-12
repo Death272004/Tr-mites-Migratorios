@@ -27,7 +27,7 @@
     { value: "error", label: "Error" }
   ];
 
-  function renderHeaderUser(container, { user, role, scenario, onRoleChange, onScenarioChange, onLogout }) {
+  function renderHeaderUser(container, { user, role, scenario, onRoleChange, onScenarioChange, onLogout, onAutofill }) {
     clear(container);
 
     container.appendChild(el("span", "app-header__user-name", user?.nombre ?? "No autenticado"));
@@ -61,6 +61,21 @@
     scenarioSelect.addEventListener("change", (event) => onScenarioChange?.(event.target.value));
     scenarioWrap.appendChild(scenarioSelect);
     container.appendChild(scenarioWrap);
+
+    // Botón de autorrellenado (solo demo): completa los campos de la pantalla
+    // actual para agilizar las pruebas. No envía ni persiste datos.
+    if (onAutofill) {
+      const autofill = el("button", "app-header__autofill", "Autorrellenar");
+      autofill.type = "button";
+      autofill.title = "Completa los campos de esta pantalla con datos de prueba";
+      autofill.addEventListener("click", () => {
+        const res = onAutofill();
+        const n = res && res.count ? res.count : 0;
+        autofill.textContent = n ? `Rellenado (${n})` : "Sin campos";
+        setTimeout(() => { autofill.textContent = "Autorrellenar"; }, 1400);
+      });
+      container.appendChild(autofill);
+    }
 
     const logout = el("button", "app-header__logout", "Salir");
     logout.type = "button";
