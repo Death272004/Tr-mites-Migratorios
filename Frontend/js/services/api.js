@@ -78,6 +78,40 @@
     return fallback || "Ocurrió un problema temporal. Intenta nuevamente.";
   }
 
+  // El backend responde JSON plano (DTOs) y errores { codigo, mensaje, correlacionId,
+  // errores[] }; los fixtures usan el sobre { meta, data, error }. Se distingue por `meta`.
+  function isEnvelope(body) {
+    return !!body && typeof body === "object" && !Array.isArray(body) &&
+      Object.prototype.hasOwnProperty.call(body, "meta") &&
+      (Object.prototype.hasOwnProperty.call(body, "data") || Object.prototype.hasOwnProperty.call(body, "error"));
+  }
+
+  function toEnvelope(body, status) {
+    if (isEnvelope(body)) return body;
+    return { meta: { esquema: "backend/v1", status: status }, data: body === undefined ? null : body, error: null };
+  }
+
+  function toError(body, status) {
+    if (body && typeof body === "object") {
+      if (body.error && body.error.mensajeUsuario) {
+        return { codigo: body.error.codigo || ("HTTP-" + status), status: status,
+          mensajeUsuario: body.error.mensajeUsuario, detalles: body.error.errores || null };
+      }
+      return {
+        codigo: body.codigo || ("HTTP-" + status),
+        status: status,
+        mensajeUsuario: body.mensaje || translateError(status),
+        correlacionId: body.correlacionId || null,
+        detalles: body.errores || null
+      };
+    }
+    return { codigo: "HTTP-" + status, status: status, mensajeUsuario: translateError(status) };
+  }
+
+  function isCacheable(method) {
+    return String(method || "").toUpperCase() === "GET";
+  }
+
   // Fuente local (offline). Se lee el registro crudo de tm.fixtures para no
   // crear recursión con `fixtures.data`/`fixtures.message` (que delegan aquí).
   function localEnvelope(pantalla, escenario) {
@@ -109,8 +143,9 @@
 
   /**
    * Petición central. Offline resuelve desde el fixture local de `pantalla`.
-   * Online usa XHR con token + X-Scenario y traduce errores.
-   * callback(error, data, envelope): error = { codigo, status, mensajeUsuario } | null.
+   * Online usa XHR con token + X-Scenario, normaliza el JSON plano del backend al
+   * sobre interno y traduce los errores a un mensaje de usuario.
+   * callback(error, data, envelope): error = { codigo, status, mensajeUsuario, detalles? } | null.
    */
   function request(method, path, options, callback) {
     options = options || {};
@@ -140,22 +175,18 @@
 
     xhr.onreadystatechange = function () {
       if (xhr.readyState !== 4) return;
-      var env = null;
-      if (xhr.responseText) { try { env = JSON.parse(xhr.responseText); } catch (e) { env = null; } }
+      var body = null;
+      if (xhr.responseText) { try { body = JSON.parse(xhr.responseText); } catch (e) { body = null; } }
       if (xhr.status >= 200 && xhr.status < 300) {
-        if (env && pantalla) {
+        var env = toEnvelope(body, xhr.status);
+        if (pantalla && isCacheable(method)) {
           cache[normalize(pantalla)] = cache[normalize(pantalla)] || {};
           cache[normalize(pantalla)][esc] = env;
         }
-        cb(null, env ? env.data : null, env);
+        cb(null, env.data, env);
         return;
       }
-      var usuario = (env && env.error && env.error.mensajeUsuario) || translateError(xhr.status);
-      cb({
-        codigo: (env && env.error && env.error.codigo) || ("HTTP-" + xhr.status),
-        status: xhr.status,
-        mensajeUsuario: usuario
-      });
+      cb(toError(body, xhr.status));
     };
     xhr.onerror = function () { cb({ codigo: "SVC-0000", status: 0, mensajeUsuario: translateError(502) }); };
     xhr.ontimeout = function () { cb({ codigo: "SVC-0000", status: 0, mensajeUsuario: translateError(504) }); };

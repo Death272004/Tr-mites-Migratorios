@@ -16,9 +16,16 @@
   // Valores demo por id exacto (clave en minúsculas).
   var EXACT = {
     // P-01 / P-02 / I-01 (autenticación)
-    correo: "demo@bufete.test",
-    clave: "Demo123!",
-    clave2: "Demo123!",
+    correo: "cliente@demo.pa",
+    correoregistro: "nuevo.cliente@demo.pa",
+    clave: "Demo-Tramites-2026",
+    clave2: "Demo-Tramites-2026",
+    contrasenaactual: "Demo-Tramites-2026",
+    contrasenanueva: "Nueva-Clave-2026",
+    contrasenanueva2: "Nueva-Clave-2026",
+    clavenueva: "Nueva-Clave-2026",
+    clavenueva2: "Nueva-Clave-2026",
+    tokenrecuperacion: "token-de-prueba",
     telefono: "+507 6000-0000",
     numdoc: "8-712-3456",
     usuario: "analista",
@@ -61,7 +68,7 @@
     titularrecibo: "Juan Carlos Pérez Gómez",
     numerorecibo: "L-2026-778899",
     direccionnotificacion: "Calle 50, Torre Global, Apto. 12B",
-    correonotificacion: "cliente.demo@bufete.test",
+    correonotificacion: "cliente@demo.pa",
     telefonenotificacion: "+507 6000-0000",
 
     // P-12 situación
@@ -113,8 +120,8 @@
 
   // Reglas por patrón de id/nombre (después del mapa exacto).
   var RULES = [
-    { re: /(^|_)correo|email/, value: "demo@bufete.test" },
-    { re: /(^|_)clave|password|contrasena/, value: "Demo123!" },
+    { re: /(^|_)correo|email/, value: "cliente@demo.pa" },
+    { re: /(^|_)clave|password|contrasena/, value: "Demo-Tramites-2026" },
     { re: /(^|_)telefono|(^|_)tel$|celular|movil/, value: "+507 6000-0000" },
     { re: /(^|_)ruc/, value: "1556789-1-2020 DV 12" },
     { re: /cedula|documento|numdoc|(^|_)doc$/, value: "8-712-3456" },
@@ -144,8 +151,8 @@
     var t = String(el.type || "text").toLowerCase();
     if (t === "date") return TODAY;
     if (t === "datetime-local") return TODAY + "T10:00";
-    if (t === "email") return "demo@bufete.test";
-    if (t === "password") return "Demo123!";
+    if (t === "email") return "cliente@demo.pa";
+    if (t === "password") return "Demo-Tramites-2026";
     if (t === "number" || t === "range") return "100";
     if (t === "tel") return "+507 6000-0000";
     if (t === "url") return "https://ejemplo.test";

@@ -30,9 +30,14 @@
 
   function saveSession(datos, opts) {
     var config = opts || {};
-    var ttl = typeof config.ttlSegundos === "number" ? config.ttlSegundos : 30 * 60;
+    // TTL del backend llega como duración en segundos (`expiraEn` de LoginRespuesta).
+    var ttl = typeof config.ttlSegundos === "number" ? config.ttlSegundos
+      : typeof config.expiraEn === "number" ? config.expiraEn
+      : 30 * 60;
+    var correo = (datos && (datos.email || (datos.usuario && datos.usuario.correo))) || "anon";
     var session = {
-      token: "demo." + String(now()) + "." + (datos.email || "anon").replace(/\s+/g, "_").toLowerCase(),
+      // Con backend se guarda el token real; sin él (demo interno) se conserva uno ficticio.
+      token: config.token || ("demo." + String(now()) + "." + correo.replace(/\s+/g, "_").toLowerCase()),
       datos: datos,
       expiraEn: now() + ttl,
       creada: new Date().toISOString(),
