@@ -305,9 +305,12 @@ QUE FALTA (priorizado, segun tareas-frontend.md)
    { meta, data, error }).
 
 SPRINT 4 (parte FRONTEND): COMPLETO. Unica tarea frontend-only (TASK-21.2) HECHA.
-Lo que resta de Sprint 4 (TASK-19.4, 20.2, 22.4) y de Sprint 2/3 (TASK-10.4,
-12.5, 15.3, 16.3, 17.4, 18.3) es CONEXION AL BACKEND y depende de la rama
-Backend (fuera de esta rama). No queda trabajo frontend-only dentro del alcance.
+SPRINT 2: COMPLETO. TASK-12.5 (conexion auth, cherry-pick bb5ebb1) HECHA en esta
+rama; TASK-10.4 (Dockerfile del frontend + compose build) HECHA en la rama
+integracion/frontend-backend.
+Lo que resta de Sprint 4 (TASK-19.4, 20.2, 22.4) y de Sprint 3 (TASK-15.3, 16.3,
+17.4, 18.3) es CONEXION AL BACKEND y depende de la rama Backend (fuera de esta
+rama). No queda trabajo frontend-only dentro del alcance.
 
 
 DECISIONES Y NOTAS TECNICAS IMPORTANTES
@@ -401,8 +404,8 @@ Sprint 1 (portal P-01..P-27 + HU-09), el modulo interno I-01..I-18, HU-18b
 tm.perms) COMPLETA y COMMITEADA. TASK-21.2 (linea de tiempo P-19/I-06) COMPLETA
 y COMMITEADA (2bfd558).
 Dentro del alcance (Sprints 2..4), la parte FRONTEND esta COMPLETA:
-  1) Sprint 2: TASK-13.5 HECHA. TASK-10.4 Docker y TASK-12.5 conexion auth
-     dependen del backend (otra rama).
+  1) Sprint 2: TASK-13.5 HECHA. TASK-12.5 (conexion auth) HECHA (cherry-pick
+     bb5ebb1 en esta rama). TASK-10.4 (Docker) HECHA en integracion/frontend-backend.
   2) Sprint 3: HU-18b (consentimiento informado, 49d790b) y HU-18c (derechos
      ARCO en P-27, 5aa7209) HECHAS. TASK-15.3/16.3/17.4/18.3 son backend.
   3) Sprint 4: TASK-21.2 HECHA. TASK-19.4/20.2/22.4 son conexion al backend.
