@@ -29,7 +29,7 @@
   var sess = session.getSession();
 
   var state = {
-    user: (sess && sess.datos && sess.datos.usuario) || { nombre: "María Demo", correo: "cliente.demo@bufete.test" },
+    user: (sess && sess.datos && sess.datos.usuario) || { nombre: "María Demo", correo: "cliente@demo.pa" },
     role: (sess && sess.datos && sess.datos.rol) || DEFAULT_ROLE,
     route: window.location.hash || INITIAL_ROUTE[(sess && sess.datos && sess.datos.rol) || DEFAULT_ROLE],
   };
@@ -85,8 +85,16 @@
         return null;
       },
       onLogout: function () {
-        session.clearSession();
-        navigate(loginRoute(state.role));
+        var role = state.role;
+        function fin() {
+          session.clearSession();
+          navigate(loginRoute(role));
+        }
+        if (global.tm.api.isOnline() && session.getToken()) {
+          global.tm.api.request("POST", "/auth/logout", { pantalla: "P-01" }, function () { fin(); });
+        } else {
+          fin();
+        }
       },
     });
 
@@ -114,7 +122,7 @@
     if (key === "login") {
       showView(global.tm.views.p01.renderP01, {
         onLoginSuccess: function (res) {
-          session.saveSession({ rol: res.rol, usuario: res.usuario }, {});
+          session.saveSession({ rol: res.rol, usuario: res.usuario }, { token: res.token, expiraEn: res.expiraEn });
           state.role = res.rol;
           state.user = res.usuario;
           navigate(INITIAL_ROUTE[state.role]);
@@ -126,7 +134,8 @@
     }
     if (key === "registro") {
       showView(global.tm.views.p02.renderP02, {
-        onRegistered: function () { navigate("#/identidad/otp"); },
+        // La cuenta queda ACTIVA en el backend: se ofrece iniciar sesión.
+        onRegistered: function () { navigate("#/login"); },
         onGoToLogin: function () { navigate("#/login"); },
       });
       return;
@@ -145,9 +154,7 @@
       return;
     }
     if (key === "p-05") {
-      showView(global.tm.views.p05.renderP05, {
-        onRequestChangeEmail: function () { navigate("#/identidad/otp"); },
-      });
+      showView(global.tm.views.p05.renderP05, { onNavigate: navigate });
       return;
     }
     if (key === "p-06") {
