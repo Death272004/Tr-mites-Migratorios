@@ -42,6 +42,10 @@ app:
     intentos-maximos: ${LOGIN_INTENTOS_MAXIMOS:5}
     bloqueo-minutos: ${LOGIN_BLOQUEO_MINUTOS:15}
     bcrypt-coste: 10
+    recuperacion-minutos: ${RECUPERACION_MINUTOS:60}
+  correo:
+    # No hay proveedor de correo: con true el enlace de recuperación se escribe en el registro (solo desarrollo local).
+    simulado: ${CORREO_SIMULADO:false}
   documentos:
     directorio: ${DOCUMENTOS_DIR:almacenamiento}
     tamano-maximo-bytes: 10485760

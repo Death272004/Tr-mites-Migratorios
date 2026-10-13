@@ -55,7 +55,9 @@ class ConfigSeguridad {
 			.addFilterBefore(new FiltroToken(auth), UsernamePasswordAuthenticationFilter.class)
 			.authorizeHttpRequests(reglas -> {
 				reglas.requestMatchers(HttpMethod.GET, "/actuator/health").permitAll();
-				reglas.requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll();
+				reglas.requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/auth/registro",
+						"/api/auth/recuperacion", "/api/auth/recuperacion/confirmacion")
+					.permitAll();
 				for (Regla regla : MatrizAutorizacion.REGLAS) {
 					reglas.requestMatchers(regla.metodo(), regla.ruta())
 						.hasAnyRole(regla.roles().stream().map(Rol::name).toArray(String[]::new));

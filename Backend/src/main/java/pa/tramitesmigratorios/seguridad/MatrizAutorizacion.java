@@ -34,6 +34,8 @@ public final class MatrizAutorizacion {
 	public static final List<Regla> REGLAS = List.of(
 			new Regla(POST, "/api/auth/logout", TODOS),
 			new Regla(PUT, "/api/auth/contrasena", TODOS),
+			new Regla(GET, "/api/perfil", TODOS),
+			new Regla(PATCH, "/api/perfil", TODOS),
 			new Regla(GET, "/api/catalogos/tipos-tramite", TODOS),
 			new Regla(GET, "/api/catalogos/tipos-documentales", TODOS),
 			new Regla(GET, "/api/expedientes", LECTURA_EXPEDIENTE),

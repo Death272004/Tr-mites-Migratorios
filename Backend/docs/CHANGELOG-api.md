@@ -9,6 +9,18 @@ Contrato: [`openapi.yaml`](openapi.yaml) — HU-07 del backlog (`Documentacion/0
 3. El archivo debe validar sin errores: `npx @redocly/cli lint Backend/docs/openapi.yaml`.
 4. Se avisa a la rama Frontend cuando el cambio afecta una ruta, un campo o un enumerado que ya consume.
 
+## 0.4.0 — 2026-10-13
+
+Servicios de cuenta para que el Frontend conecte P-02, P-04 y P-05 (TASK-12.5). Cambios aditivos: ninguna ruta ni campo existente cambia.
+
+- `POST /api/auth/registro` (público): crea una cuenta `SOLICITANTE` activa. Exige `aceptaTratamientoDatos` en `true` y responde 409 con `CORREO_YA_REGISTRADO` o `DOCUMENTO_YA_REGISTRADO`.
+- `POST /api/auth/recuperacion` (público): responde siempre 202 sin cuerpo, exista o no la cuenta (CP-02).
+- `POST /api/auth/recuperacion/confirmacion` (público): cambia la contraseña con el token del enlace, que dura una hora y sirve una vez. Responde 400 con `ENLACE_INVALIDO` si el enlace no existe, venció o ya se usó.
+- `GET` y `PATCH /api/perfil`: perfil del usuario de la sesión. Solo se editan `telefono`, `idiomaNotificacion` y `medioNotificacion`.
+- Esquemas nuevos: `RegistroSolicitud`, `RecuperacionSolicitud`, `RecuperacionConfirmacion`, `Perfil`, `PerfilCambio`, `TipoDocumento`, `IdiomaNotificacion` y `MedioNotificacion`.
+
+Sigue pendiente: el código de verificación (P-03), el cambio de correo desde el perfil y la dirección de notificación.
+
 ## 0.3.0 — 2026-10-11
 
 Estados y permisos alineados con los que ya usa el Frontend. **Cambia un enumerado existente**: quien consuma `EstadoExpediente` debe actualizar los valores.
@@ -85,4 +97,4 @@ Primera versión del contrato.
 ### Pendiente para versiones posteriores
 
 - Reintento de verificaciones con clave de idempotencia (HU-24, Sprint 5).
-- Registro de cuenta, código de verificación y recuperación de contraseña (pantallas P-02, P-03 y P-04; no forman parte de la HU-12).
+- Registro de cuenta, código de verificación y recuperación de contraseña (pantallas P-02, P-03 y P-04; no forman parte de la HU-12). El registro y la recuperación llegaron en la 0.4.0.

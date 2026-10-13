@@ -38,7 +38,7 @@ import pa.tramitesmigratorios.seguridad.Usuario;
  * (Testcontainers) y peticiones HTTP con sesiones reales. Cada prueba crea sus propios
  * usuarios, con datos ficticios, para no depender del orden de ejecución.
  */
-@Import(TestcontainersConfiguration.class)
+@Import({ TestcontainersConfiguration.class, BuzonPrueba.class })
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
@@ -57,6 +57,9 @@ abstract class PruebaApi {
 
 	@Autowired
 	JdbcTemplate jdbc;
+
+	@Autowired
+	BuzonPrueba.Buzon buzon;
 
 	Usuario usuario(Rol rol, Permiso... permisos) {
 		Set<Permiso> conjunto = permisos.length == 0 ? Set.of() : EnumSet.copyOf(Set.of(permisos));

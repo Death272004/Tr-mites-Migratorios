@@ -43,6 +43,7 @@ Funciona sin configurar nada, con valores por defecto pensados solo para desarro
 | `FRONTEND_PORT` | `8081` | Puerto del frontend en tu máquina |
 | `DEMO_USUARIOS` | `true` | Crea un usuario ficticio por rol al arrancar |
 | `DEMO_CONTRASENA` | `Demo-Tramites-2026` | Contraseña de esos usuarios de demostración |
+| `CORREO_SIMULADO` | `true` | Escribe el enlace de recuperación de contraseña en el registro del backend, en vez de enviarlo |
 
 Si un puerto ya está ocupado en tu máquina, cámbialo en `.env`.
 

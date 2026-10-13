@@ -27,6 +27,24 @@ public class Usuario {
 
 	}
 
+	public enum TipoDocumento {
+
+		PASAPORTE, CEDULA_E, CARNE
+
+	}
+
+	public enum Idioma {
+
+		ES, EN
+
+	}
+
+	public enum MedioNotificacion {
+
+		CORREO, SMS, PUSH
+
+	}
+
 	@Id
 	private UUID id;
 
@@ -48,6 +66,27 @@ public class Usuario {
 
 	private Instant fechaCreacion;
 
+	@Enumerated(EnumType.STRING)
+	private TipoDocumento tipoDocumento;
+
+	private String numeroDocumento;
+
+	private String nacionalidad;
+
+	private String paisResidencia;
+
+	private String telefono;
+
+	@Enumerated(EnumType.STRING)
+	private Idioma idiomaNotificacion;
+
+	@Enumerated(EnumType.STRING)
+	private MedioNotificacion medioNotificacion;
+
+	private Instant terminosAceptados;
+
+	private String terminosIp;
+
 	@ElementCollection(fetch = FetchType.EAGER)
 	@CollectionTable(name = "usuario_permiso", joinColumns = @JoinColumn(name = "usuario_id"))
 	@Column(name = "permiso")
@@ -65,6 +104,8 @@ public class Usuario {
 		this.rol = rol;
 		this.estadoCuenta = EstadoCuenta.ACTIVA;
 		this.fechaCreacion = Instant.now();
+		this.idiomaNotificacion = Idioma.ES;
+		this.medioNotificacion = MedioNotificacion.CORREO;
 		// Solo el FUNCIONARIO recibe permisos a medida; los demás roles llevan los fijos de su rol.
 		this.permisos.addAll(rol == Rol.FUNCIONARIO ? permisos : rol.permisosBase());
 	}
@@ -101,6 +142,35 @@ public class Usuario {
 		this.estadoCuenta = EstadoCuenta.DESHABILITADA;
 	}
 
+	public static String normalizarDocumento(String numero) {
+		return numero == null ? "" : numero.trim().toUpperCase(Locale.ROOT);
+	}
+
+	/** Datos que el cliente declara al registrarse en el portal (P-02), con la aceptación de términos. */
+	void completarRegistro(TipoDocumento tipoDocumento, String numeroDocumento, String nacionalidad,
+			String paisResidencia, String telefono, String ipAceptacion) {
+		this.tipoDocumento = tipoDocumento;
+		this.numeroDocumento = normalizarDocumento(numeroDocumento);
+		this.nacionalidad = nacionalidad;
+		this.paisResidencia = paisResidencia;
+		this.telefono = telefono.trim();
+		this.terminosAceptados = Instant.now();
+		this.terminosIp = ipAceptacion;
+	}
+
+	/** Datos de contacto editables desde el perfil (P-05); lo que llega nulo se conserva. */
+	void actualizarContacto(String telefono, Idioma idiomaNotificacion, MedioNotificacion medioNotificacion) {
+		if (telefono != null) {
+			this.telefono = telefono.trim();
+		}
+		if (idiomaNotificacion != null) {
+			this.idiomaNotificacion = idiomaNotificacion;
+		}
+		if (medioNotificacion != null) {
+			this.medioNotificacion = medioNotificacion;
+		}
+	}
+
 	public UUID getId() {
 		return id;
 	}
@@ -127,6 +197,34 @@ public class Usuario {
 
 	public Set<Permiso> getPermisos() {
 		return permisos;
+	}
+
+	public TipoDocumento getTipoDocumento() {
+		return tipoDocumento;
+	}
+
+	public String getNumeroDocumento() {
+		return numeroDocumento;
+	}
+
+	public String getNacionalidad() {
+		return nacionalidad;
+	}
+
+	public String getPaisResidencia() {
+		return paisResidencia;
+	}
+
+	public String getTelefono() {
+		return telefono;
+	}
+
+	public Idioma getIdiomaNotificacion() {
+		return idiomaNotificacion;
+	}
+
+	public MedioNotificacion getMedioNotificacion() {
+		return medioNotificacion;
 	}
 
 }
