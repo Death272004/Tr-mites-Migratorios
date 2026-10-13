@@ -47,9 +47,10 @@ services:
       start_period: 30s
 
   frontend:
-    image: nginx:1.27-alpine
+    # Imagen autocontenida construida desde Frontend/Dockerfile (TASK-10.4).
+    # El estático va dentro de la imagen; solo se monta la config de nginx (proxy /api -> backend).
+    build: ./Frontend
     volumes:
-      - ./Frontend:/usr/share/nginx/html:ro
       - ./docker/nginx.conf:/etc/nginx/conf.d/default.conf:ro
     ports:
       - "${FRONTEND_PORT:-8081}:80"

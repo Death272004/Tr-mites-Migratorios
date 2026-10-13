@@ -71,7 +71,7 @@ En Windows usa `mvnw.cmd` en lugar de `./mvnw`.
 | Carpeta | Contenido |
 | --- | --- |
 | `Backend/` | Servidor Java (Spring Boot), contrato de la API en `Backend/docs/openapi.yaml` |
-| `Frontend/` | Portal y módulo interno (HTML, CSS y JavaScript) |
+| `Frontend/` | Portal y módulo interno (HTML, CSS y JavaScript); la imagen se construye desde `Frontend/Dockerfile` |
 | `Documentacion/` | Arquitectura, planes, backlog, roles y marco legal |
 | `QA/`, `DevOps/`, `DB/` | Documentos de trabajo de cada rama |
 | `docker/` | Configuración de los contenedores |
