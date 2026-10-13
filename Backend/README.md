@@ -7,7 +7,7 @@ Servidor Java 17 con Spring Boot y PostgreSQL. El contrato de la API está en [`
 | Paquete | Contenido | Historias |
 | --- | --- | --- |
 | `comun` | Cuerpo de error uniforme, correlación por petición, paginación, eventos de dominio | HU-14 |
-| `seguridad` | Usuarios, sesiones por token, bloqueo por intentos, roles, permisos y matriz de autorización | HU-12, HU-13 |
+| `seguridad` | Usuarios, sesiones por token, bloqueo por intentos, registro, recuperación de contraseña, perfil, roles, permisos y matriz de autorización | HU-12, HU-13 |
 | `catalogo` | Tipos de trámite, tipos documentales y requisitos | HU-11, HU-15, HU-17 |
 | `expediente` | Registro, consulta, historial, observaciones y máquina de estados | HU-15, HU-16, HU-19, HU-20, HU-21 |
 | `documento` | Carga validada, almacén protegido y descarga con permiso | HU-17 |
@@ -34,6 +34,30 @@ Con `docker compose up` se crea un usuario ficticio por rol. Todos usan la contr
 | `admin@demo.pa` | ADMIN | CONSULTAR, ADMINISTRAR |
 
 Los permisos son los mismos nueve del frontend (`js/utils/perms.js`) y llegan en `usuario.permisos` al iniciar sesión. Los del FUNCIONARIO se asignan por cuenta; los demás roles llevan siempre los de su rol.
+
+## Cuenta del portal
+
+Servicios para las pantallas de acceso y cuenta (TASK-12.5). Los tres primeros son públicos; el perfil es siempre el del usuario de la sesión.
+
+| Pantalla | Servicio | Respuesta |
+| --- | --- | --- |
+| P-02 Registro | `POST /api/auth/registro` | 201 con la cuenta `SOLICITANTE`; 409 `CORREO_YA_REGISTRADO` o `DOCUMENTO_YA_REGISTRADO` |
+| P-04 Recuperación | `POST /api/auth/recuperacion` con `correo` | 202 sin cuerpo, exista o no la cuenta |
+| P-04 Recuperación | `POST /api/auth/recuperacion/confirmacion` con `token` y `contrasenaNueva` | 204; 400 `ENLACE_INVALIDO` si el enlace no existe, venció o ya se usó |
+| P-05 Perfil | `GET /api/perfil` | 200 con los datos de la cuenta |
+| P-05 Perfil | `PATCH /api/perfil` con `telefono`, `idiomaNotificacion`, `medioNotificacion` | 200 con el perfil actualizado |
+| P-05 Perfil | `PUT /api/auth/contrasena` | 204 (ya existía) |
+
+```bash
+curl -s http://localhost:8080/api/auth/registro -H "Content-Type: application/json" -d '{
+  "tipoDocumento":"PASAPORTE","numeroDocumento":"PA1234567","nombre":"Persona Ficticia",
+  "nacionalidad":"CO","correo":"persona@ejemplo.test","telefono":"+507 6000-0000","paisResidencia":"PA",
+  "contrasena":"Clave-Segura-2026","aceptaTratamientoDatos":true}'
+```
+
+La contraseña sigue la política del backend: 10 a 72 caracteres, con mayúscula, minúscula, número y símbolo, y sin el correo. El formulario de P-02 hoy acepta 8.
+
+No hay proveedor de correo. Con `CORREO_SIMULADO=true` (valor de `docker compose`) el token del enlace sale en el registro del backend: `docker compose logs backend | grep "CORREO SIMULADO"`. El enlace dura `RECUPERACION_MINUTOS` (60), sirve una vez, y al usarlo se cierran todas las sesiones de la cuenta.
 
 ## Estados del expediente
 
@@ -73,6 +97,9 @@ El encabezado `X-Scenario` (o `?scenario=`) fuerza el comportamiento:
 
 ## Decisiones tomadas que el PO debe confirmar
 
+- **Registro sin verificación de correo:** la cuenta nace `ACTIVA`, porque el código de P-03 sigue simulado en el frontend. Por eso el registro sí informa cuando el correo o el documento ya existen.
+- **Perfil:** nombre, documento y correo son de solo lectura. Faltan el cambio de correo con código, la dirección de notificación y la regla de no repetir las últimas tres contraseñas (P-04).
+- **Aceptación de la Ley 81 en el registro:** se guarda la fecha y la IP en la cuenta; no crea un consentimiento informado (HU-18b).
 - **Estado inicial:** el expediente nace en `RECIBIDO`, porque la solicitud se envía al final del asistente (P-17). `EN_PREPARACION` existe pero no se usa: el borrador vive en el navegador.
 - **Matriz de transiciones:** hay una sola matriz para todos los trámites (`expediente/Transiciones.java`). La definitiva por tipo de trámite es la TASK-19.1.
 - **Ámbito del personal:** FUNCIONARIO (con permiso CONSULTAR) y SUPERVISOR ven todos los expedientes del despacho.

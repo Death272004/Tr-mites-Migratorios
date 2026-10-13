@@ -15,4 +15,8 @@ interface SesionRepo extends JpaRepository<Sesion, UUID> {
 	@Query("update Sesion s set s.revocada = true where s.usuarioId = :usuarioId and s.id <> :conservar and s.revocada = false")
 	int revocarOtras(UUID usuarioId, UUID conservar);
 
+	@Modifying
+	@Query("update Sesion s set s.revocada = true where s.usuarioId = :usuarioId and s.revocada = false")
+	int revocarTodas(UUID usuarioId);
+
 }

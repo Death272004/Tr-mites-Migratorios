@@ -2,7 +2,7 @@ openapi: 3.0.3
 
 info:
   title: Sistema Interoperable para la Gestión de Trámites Migratorios en Panamá
-  version: 0.3.0
+  version: 0.4.0
   description: |
     Contrato de la API REST del producto (HU-07).
 
@@ -21,7 +21,9 @@ servers:
 
 tags:
   - name: Autenticación
-    description: Inicio y cierre de sesión, y cambio de contraseña (HU-12).
+    description: Inicio y cierre de sesión, cambio y recuperación de contraseña, y registro de cuenta (HU-12).
+  - name: Perfil
+    description: Datos de la cuenta del usuario de la sesión (P-05).
   - name: Expedientes
     description: Registro, consulta y seguimiento de expedientes (HU-15, HU-16).
   - name: Documentos
@@ -112,6 +114,129 @@ paths:
       responses:
         "204":
           description: Contraseña actualizada.
+        "400":
+          $ref: "#/components/responses/EntradaInvalida"
+        "401":
+          $ref: "#/components/responses/NoAutenticado"
+        "500":
+          $ref: "#/components/responses/ErrorInterno"
+
+  /api/auth/registro:
+    post:
+      tags: [Autenticación]
+      operationId: registrarCuenta
+      summary: Registrar una cuenta del portal (P-02)
+      description: |
+        Crea una cuenta `SOLICITANTE` activa. El rol no se elige: el registro público nunca crea
+        cuentas del personal. Exige aceptar los términos y la autorización de tratamiento de datos
+        (Ley 81), y guarda la fecha y la IP de esa aceptación. El conflicto trae el código
+        `CORREO_YA_REGISTRADO` o `DOCUMENTO_YA_REGISTRADO`.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegistroSolicitud"
+      responses:
+        "201":
+          description: Cuenta creada.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Usuario"
+        "400":
+          $ref: "#/components/responses/EntradaInvalida"
+        "409":
+          $ref: "#/components/responses/Conflicto"
+        "500":
+          $ref: "#/components/responses/ErrorInterno"
+
+  /api/auth/recuperacion:
+    post:
+      tags: [Autenticación]
+      operationId: solicitarRecuperacion
+      summary: Solicitar el enlace de recuperación de contraseña (P-04)
+      description: |
+        Responde siempre lo mismo, exista o no la cuenta (CP-02). Si existe y está activa, genera
+        un enlace temporal de una hora y anula los anteriores. El MVP no tiene proveedor de correo:
+        con `CORREO_SIMULADO=true` el token queda en el registro del servidor.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RecuperacionSolicitud"
+      responses:
+        "202":
+          description: Solicitud recibida. No indica si la cuenta existe.
+        "400":
+          $ref: "#/components/responses/EntradaInvalida"
+        "500":
+          $ref: "#/components/responses/ErrorInterno"
+
+  /api/auth/recuperacion/confirmacion:
+    post:
+      tags: [Autenticación]
+      operationId: confirmarRecuperacion
+      summary: Cambiar la contraseña con el enlace de recuperación (P-04)
+      description: |
+        El token sirve una sola vez. Al cambiar la contraseña se cierran todas las sesiones de la
+        cuenta y se levanta el bloqueo por intentos. Si el enlace no existe, venció o ya se usó,
+        responde 400 con el código `ENLACE_INVALIDO`.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RecuperacionConfirmacion"
+      responses:
+        "204":
+          description: Contraseña actualizada.
+        "400":
+          $ref: "#/components/responses/EntradaInvalida"
+        "500":
+          $ref: "#/components/responses/ErrorInterno"
+
+  # ---------- Perfil (P-05) ----------
+  /api/perfil:
+    get:
+      tags: [Perfil]
+      operationId: consultarPerfil
+      summary: Consultar el perfil propio
+      x-roles: [SOLICITANTE, FUNCIONARIO, SUPERVISOR, AUDITOR, ADMIN]
+      responses:
+        "200":
+          description: Perfil del usuario de la sesión.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Perfil"
+        "401":
+          $ref: "#/components/responses/NoAutenticado"
+        "500":
+          $ref: "#/components/responses/ErrorInterno"
+    patch:
+      tags: [Perfil]
+      operationId: actualizarPerfil
+      summary: Actualizar los datos de contacto del perfil propio
+      description: Solo cambia los campos enviados. Nombre, documento y correo no se editan aquí.
+      x-roles: [SOLICITANTE, FUNCIONARIO, SUPERVISOR, AUDITOR, ADMIN]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PerfilCambio"
+      responses:
+        "200":
+          description: Perfil actualizado.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Perfil"
         "400":
           $ref: "#/components/responses/EntradaInvalida"
         "401":
@@ -1189,6 +1314,19 @@ components:
       type: string
       enum: [ACTIVA, BLOQUEADA, DESHABILITADA]
 
+    TipoDocumento:
+      type: string
+      description: Documento de identidad del cliente (P-02).
+      enum: [PASAPORTE, CEDULA_E, CARNE]
+
+    IdiomaNotificacion:
+      type: string
+      enum: [ES, EN]
+
+    MedioNotificacion:
+      type: string
+      enum: [CORREO, SMS, PUSH]
+
     Permiso:
       type: string
       description: |
@@ -1641,6 +1779,120 @@ components:
           type: string
           format: password
           description: Debe cumplir la política de complejidad.
+
+    RegistroSolicitud:
+      type: object
+      required:
+        - tipoDocumento
+        - numeroDocumento
+        - nombre
+        - nacionalidad
+        - correo
+        - telefono
+        - paisResidencia
+        - contrasena
+        - aceptaTratamientoDatos
+      properties:
+        tipoDocumento:
+          $ref: "#/components/schemas/TipoDocumento"
+        numeroDocumento:
+          type: string
+          pattern: "^[A-Za-z0-9-]{4,40}$"
+          description: Único junto con el tipo; se guarda en mayúsculas.
+        nombre:
+          type: string
+          maxLength: 120
+          description: Nombres y apellidos, como en el documento.
+        nacionalidad:
+          type: string
+          pattern: "^[A-Z]{2}$"
+          description: Código de país de dos letras.
+          example: CO
+        correo:
+          type: string
+          format: email
+          maxLength: 160
+          description: Único; es el usuario de la cuenta.
+        telefono:
+          type: string
+          pattern: "^\\+?[0-9][0-9 ()-]{6,28}$"
+          example: "+507 6000-0000"
+        paisResidencia:
+          type: string
+          pattern: "^[A-Z]{2}$"
+          example: PA
+        contrasena:
+          type: string
+          format: password
+          description: |
+            Política de complejidad: de 10 a 72 caracteres, con mayúscula, minúscula, número y
+            símbolo, y sin la parte local del correo.
+        aceptaTratamientoDatos:
+          type: boolean
+          description: Debe ser `true` (términos y autorización de tratamiento de datos, Ley 81).
+
+    RecuperacionSolicitud:
+      type: object
+      required: [correo]
+      properties:
+        correo:
+          type: string
+          format: email
+
+    RecuperacionConfirmacion:
+      type: object
+      required: [token, contrasenaNueva]
+      properties:
+        token:
+          type: string
+          description: Token del enlace de recuperación.
+        contrasenaNueva:
+          type: string
+          format: password
+          description: Debe cumplir la política de complejidad y ser distinta de la actual.
+
+    Perfil:
+      type: object
+      required: [id, nombre, correo, rol, idiomaNotificacion, medioNotificacion]
+      description: |
+        Los datos del documento, la nacionalidad, la residencia y el teléfono solo vienen en las
+        cuentas creadas por el registro del portal.
+      properties:
+        id:
+          type: string
+          format: uuid
+        nombre:
+          type: string
+        correo:
+          type: string
+          format: email
+        rol:
+          $ref: "#/components/schemas/Rol"
+        tipoDocumento:
+          $ref: "#/components/schemas/TipoDocumento"
+        numeroDocumento:
+          type: string
+        nacionalidad:
+          type: string
+        paisResidencia:
+          type: string
+        telefono:
+          type: string
+        idiomaNotificacion:
+          $ref: "#/components/schemas/IdiomaNotificacion"
+        medioNotificacion:
+          $ref: "#/components/schemas/MedioNotificacion"
+
+    PerfilCambio:
+      type: object
+      properties:
+        telefono:
+          type: string
+          pattern: "^\\+?[0-9][0-9 ()-]{6,28}$"
+        idiomaNotificacion:
+          $ref: "#/components/schemas/IdiomaNotificacion"
+        medioNotificacion:
+          $ref: "#/components/schemas/MedioNotificacion"
 
     ExpedienteNuevo:
       type: object

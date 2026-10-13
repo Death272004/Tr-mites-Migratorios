@@ -30,6 +30,8 @@ services:
       # Usuarios ficticios de demostración, uno por rol (solo desarrollo local).
       DEMO_USUARIOS: ${DEMO_USUARIOS:-true}
       DEMO_CONTRASENA: ${DEMO_CONTRASENA:-Demo-Tramites-2026}
+      # Sin proveedor de correo: el enlace de recuperación se escribe en el registro (solo desarrollo local).
+      CORREO_SIMULADO: ${CORREO_SIMULADO:-true}
     ports:
       - "${BACKEND_PORT:-8080}:8080"
     volumes:
