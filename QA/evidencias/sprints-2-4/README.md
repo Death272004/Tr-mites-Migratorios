@@ -49,3 +49,12 @@ Arranque limpio: clonar el repositorio en una carpeta vacía y ejecutar `docker 
 * `listado-1000.txt` — métricas de rendimiento del listado (TASK-16.4).
 * `arranque-*.txt`, `backend-arranque.txt` — evidencia del arranque limpio (TASK-10.6).
 * `TASK-*.docx` — documento de evidencia por tarea (caso, fecha, entorno, datos, resultado esperado y obtenido, capturas).
+
+## Flujos disponibles (recorrido manual contra el sistema en Docker)
+
+`flujos/Flujos-disponibles-tramites-migratorios.xlsx` documenta los **41 flujos** que el sistema ofrece hoy, con hojas Resumen, Flujos, Pasos (cada petición HTTP con su código y correlación) y Capturas (imagen incrustada de cada flujo):
+
+* **35 flujos de la API** (F-01 a F-35), ejecutados con los usuarios ficticios de demostración contra `http://localhost:8080`: 35/35 correctos, 131/131 peticiones con el código esperado.
+* **6 flujos del portal** (U-01 a U-06) en `http://localhost:8081`: login, perfil, registro y recuperación funcionan contra el backend; "Mis trámites" pasa con observación (TASK-16.3) y el acceso institucional (I-01) todavía usa datos ficticios del frontend (no conectado).
+
+Las capturas están en `flujos/capturas/`, el detalle de cada petición en `flujos/flujos.json` (tokens y contraseñas enmascarados) y el script que recorre los flujos en `flujos/recorrer-flujos.mjs` (`node recorrer-flujos.mjs` con el sistema levantado).
