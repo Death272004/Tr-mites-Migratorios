@@ -29,6 +29,9 @@ La base de datos se crea sola: las migraciones de `Backend/src/main/resources/db
 
 La matriz de autorización del Sprint 2 está en [`Backend/docs/matriz-autorizacion.md`](Backend/docs/matriz-autorizacion.md) y el estándar de errores en [`Backend/docs/estandar-errores.md`](Backend/docs/estandar-errores.md).
 
+La validación técnica del Sprint 3 está en
+[`docs/evidencias/sprint-3-cierre-2026-10-19.md`](docs/evidencias/sprint-3-cierre-2026-10-19.md).
+
 Para detener: `docker compose down`. Para borrar también los datos: `docker compose down -v`.
 
 ## Configuración

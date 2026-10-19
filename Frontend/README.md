@@ -32,7 +32,7 @@ Frontend/
     │   └── timeline.js
     ├── fixtures/           ← fixtures locales (mismo esquema HU-08)
     ├── services/           ← servicios: session.js y api.js (módulo único HTTP, TASK-09.1)
-    ├── utils/              ← utilidades (roles, nav, router, data, draft, wizard, fixtures)
+    ├── utils/              ← utilidades (roles, nav, router, data, draft, wizard, fixtures, expediente)
     │   ├── nav.js
     │   ├── roles.js
     │   └── router.js
@@ -90,7 +90,8 @@ file:///C:/Users/Jonathan/Desktop/Repo/Tr-mites-Migratorios/Frontend/html/index.
 - **HU-13 / TASK-13.5 (permisos de interfaz):** módulo `tm.perms` (`js/utils/perms.js`) con la matriz mock rol × permiso; las acciones internas se muestran u ocultan según el permiso del rol (con aviso "Sin permiso «…»" cuando no aplica). ✔
 - **TASK-21.2 (línea de tiempo):** componente reutilizable `js/components/timeline.js` usado por **P-19** (etapas del trámite) e **I-06** (historial del expediente, se actualiza al guardar dictamen); acepta `done`/`active`/`estado`. ✔
 - **Inventario completo:** 46/46 pantallas (P-01…P-27 + I-01…I-19), todas con vista, fixtures y ruta.
-- **Pendiente (Sprint 2+):** conectar al backend real (`tm.api.setBaseUrl(...)`), Docker y validación real de permisos por rol en el servidor.
+- **Sprint 3:** P-06, P-07, P-14, P-17, P-19 y P-20 consumen el backend real cuando la aplicación se sirve por HTTP; se conserva el modo offline con fixtures para pruebas locales.
+- **Pendiente:** completar las vistas internas que aún no tienen un endpoint backend equivalente y cerrar la validación funcional de extremo a extremo.
 - **Alcance:** el Frontend se trabaja **hasta el Sprint 4 inclusive**; los Sprints 5–7 quedan fuera de alcance por ahora.
 
 ## Notas
