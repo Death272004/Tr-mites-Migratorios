@@ -1423,6 +1423,7 @@ components:
     Error:
       type: object
       description: Cuerpo de error uniforme (HU-14). Nunca incluye datos personales ni trazas.
+      additionalProperties: false
       required: [codigo, mensaje, correlacionId]
       properties:
         codigo:
@@ -1432,9 +1433,12 @@ components:
         mensaje:
           type: string
           description: Mensaje seguro para mostrar al usuario.
+          example: Revise los datos enviados.
         correlacionId:
           type: string
+          format: uuid
           description: Identificador que aparece también en los registros del servidor.
+          example: 7a6f5b4c-3210-4f1e-8b0d-123456789abc
         errores:
           type: array
           description: Detalle por campo cuando el código HTTP es 400.

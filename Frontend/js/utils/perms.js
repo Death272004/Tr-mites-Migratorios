@@ -1,8 +1,8 @@
 /**
  * perms.js — permisos granulares del rol activo (TASK-13.5).
- * Mientras no exista backend, la matriz rol × permiso es un mock derivado del
- * modelo de `06-roles-y-accesos.md` §6.3–6.4; el backend seguirá siendo la
- * validación real (la UI solo oculta/deshabilita lo que el servidor rechazará).
+ * La matriz incluida sirve como respaldo para el modo offline. Cuando existe
+ * una sesión del backend, los permisos recibidos en `usuario.permisos` son la
+ * fuente que usa la interfaz; el backend sigue siendo la autoridad final.
  * Script clásico: expone `window.tm.perms`.
  */
 (function (global) {
@@ -49,9 +49,25 @@
     return rol || (global.tm.roles && global.tm.roles.DEFAULT_ROLE) || "SOLICITANTE";
   }
 
+  function currentSessionPermissions(role) {
+    var ses = global.tm.session && typeof global.tm.session.getSession === "function"
+      ? global.tm.session.getSession() : null;
+    var actual = currentRole();
+    if (!ses || !ses.datos || !ses.datos.usuario || (role && role !== actual)) return null;
+    if (ses.datos.usuario.rol && String(ses.datos.usuario.rol).toUpperCase() !== String(actual).toUpperCase()) return null;
+    var raw = ses.datos.usuario.permisos;
+    if (!Array.isArray(raw) || !raw.length) return null;
+    var permisos = [];
+    for (var i = 0; i < raw.length; i++) {
+      var valor = raw[i] && typeof raw[i] === "object" ? raw[i].name : raw[i];
+      var clave = String(valor || "").toUpperCase();
+      if (PERMS[clave] && permisos.indexOf(PERMS[clave]) === -1) permisos.push(PERMS[clave]);
+    }
+    return permisos;
+  }
+
   function has(role, perm) {
-    var list = MATRIX[role] || [];
-    return list.indexOf(perm) >= 0;
+    return list(role).indexOf(perm) >= 0;
   }
 
   function can(perm, role) {
@@ -59,7 +75,9 @@
   }
 
   function list(role) {
-    return (MATRIX[role || currentRole()] || []).slice();
+    var actual = role || currentRole();
+    var reales = currentSessionPermissions(actual);
+    return reales || (MATRIX[actual] || []).slice();
   }
 
   function label(perm) {
