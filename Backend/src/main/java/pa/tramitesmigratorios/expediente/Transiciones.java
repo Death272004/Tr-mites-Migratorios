@@ -41,10 +41,7 @@ import pa.tramitesmigratorios.verificacion.VerificacionRepo;
 @Service
 public class Transiciones {
 
-	/**
-	 * Matriz por defecto. La matriz definitiva por tipo de trámite la define el PO (TASK-19.1);
-	 * cuando exista, se agrega una entrada por código de trámite en {@link #POR_TRAMITE}.
-	 */
+	/** Flujo aprobado para los cuatro tipos de trámite incluidos en el MVP del Sprint 4. */
 	static final Map<EstadoExpediente, Set<EstadoExpediente>> MATRIZ = Map.of(
 			EN_PREPARACION, EnumSet.of(RECIBIDO, ARCHIVADO),
 			RECIBIDO, EnumSet.of(CON_OBSERVACIONES, EN_ANALISIS, ARCHIVADO),
@@ -56,7 +53,16 @@ public class Transiciones {
 			NOTIFICADO, EnumSet.of(ENTREGADO),
 			ENTREGADO, EnumSet.of(ARCHIVADO));
 
-	static final Map<String, Map<EstadoExpediente, Set<EstadoExpediente>>> POR_TRAMITE = Map.of();
+	/**
+	 * La matriz se mantiene por tipo para que una decisión del PO pueda restringir un trámite sin
+	 * modificar la lógica de concurrencia, permisos o prerrequisitos. Mientras el catálogo del MVP
+	 * comparte el mismo flujo, cada código apunta explícitamente a la matriz aprobada.
+	 */
+	static final Map<String, Map<EstadoExpediente, Set<EstadoExpediente>>> POR_TRAMITE = Map.of(
+			"RESIDENCIA_TEMPORAL", MATRIZ,
+			"RESIDENCIA_PERMANENTE", MATRIZ,
+			"PRORROGA_ESTADIA", MATRIZ,
+			"NATURALIZACION", MATRIZ);
 
 	private final ExpedienteRepo expedientes;
 	private final HistorialEstadoRepo historial;

@@ -101,7 +101,7 @@ El encabezado `X-Scenario` (o `?scenario=`) fuerza el comportamiento:
 - **Perfil:** nombre, documento y correo son de solo lectura. Faltan el cambio de correo con código, la dirección de notificación y la regla de no repetir las últimas tres contraseñas (P-04).
 - **Aceptación de la Ley 81 en el registro:** se guarda la fecha y la IP en la cuenta; no crea un consentimiento informado (HU-18b).
 - **Estado inicial:** el expediente nace en `RECIBIDO`, porque la solicitud se envía al final del asistente (P-17). `EN_PREPARACION` existe pero no se usa: el borrador vive en el navegador.
-- **Matriz de transiciones:** hay una sola matriz para todos los trámites (`expediente/Transiciones.java`). La definitiva por tipo de trámite es la TASK-19.1.
+- **Matriz de transiciones:** el MVP registra explícitamente la matriz común por cada tipo de trámite activo en `expediente/Transiciones.java`; sus reglas y restricciones están documentadas en [`Documentacion/matriz-transiciones-sprint4.md`](../Documentacion/matriz-transiciones-sprint4.md).
 - **Ámbito del personal:** FUNCIONARIO (con permiso CONSULTAR) y SUPERVISOR ven todos los expedientes del despacho.
 - **Resolución:** para pasar a `EN_RESOLUCION` o `RESUELTO` deben estar los documentos obligatorios y no puede haber verificaciones sin respuesta. No se exige una cantidad mínima de verificaciones hasta que exista su registro (HU-24).
 - **Archivo:** `ARCHIVADO` es definitivo; la reactivación que muestra I-13 no está implementada.

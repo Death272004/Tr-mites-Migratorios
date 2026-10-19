@@ -14,6 +14,7 @@
   var confirmModal = global.tm.ui.confirmModal;
   var signaturePad = global.tm.ui.signaturePad;
   var perms = global.tm.perms;
+  var api = global.tm.api;
 
   var FALLBACK = { expediente: "—", tramite: "—", estadoActual: "EN RESOLUCIÓN", verificacionesConcluidas: [], inconsistenciasAbiertas: 0, motivosNegacion: ["Otro (detallar)"], transiciones: [], saldo: "—", numeroResolucion: "—", fechaResolucion: "—", vigenciaDesde: "", vigenciaHasta: "" };
 
@@ -30,6 +31,33 @@
     var d = datos();
     var resultado = "APROBADA";
     var resuelto = null;
+
+    function cargarReal(callback) {
+      if (!api || !api.isOnline()) { callback(null); return; }
+      var seleccionado = global.tm.expediente && global.tm.expediente.getSelected ? global.tm.expediente.getSelected() : null;
+      function cargar(id) {
+        api.request("GET", "/expedientes/" + encodeURIComponent(id), { pantalla: "I-10" }, function (err, expediente) {
+          if (err) { callback(err); return; }
+          d.id = expediente.id;
+          d.expediente = expediente.numero || expediente.id;
+          d.tramite = expediente.tipoTramite || "—";
+          d.estadoActual = expediente.estado || "—";
+          d.version = expediente.version;
+          d.verificacionesConcluidas = [];
+          d.inconsistenciasAbiertas = 0;
+          d.numeroResolucion = "—";
+          d.fechaResolucion = "—";
+          d.transiciones = [{ accion: "RESUELTO", disponible: d.estadoActual === "EN_RESOLUCION", motivo: d.estadoActual === "EN_RESOLUCION" ? "" : "El expediente debe estar EN_RESOLUCION." }];
+          callback(null);
+        });
+      }
+      if (seleccionado && seleccionado.id) { cargar(seleccionado.id); return; }
+      api.request("GET", "/expedientes?estado=EN_RESOLUCION&pagina=0&tamano=20", { pantalla: "I-10" }, function (err, page) {
+        var lista = page && page.contenido ? page.contenido : [];
+        if (err || !lista.length) { callback(err || { mensajeUsuario: "No hay expedientes en resolución." }); return; }
+        cargar(lista[0].id);
+      });
+    }
 
     function demoSelector() {
       var wrap = layout.el("label", "toolbar__demo");
@@ -158,6 +186,24 @@
             }
             confirmModal("Confirmar resolución", "¿Registrar el expediente como " + resultado + "?", {
               onConfirm: function () {
+                var detalleTexto = detalle ? detalle.value.trim() : "";
+                if (api && api.isOnline() && d.id) {
+                  api.request("PATCH", "/expedientes/" + encodeURIComponent(d.id) + "/estado", {
+                    pantalla: "I-10",
+                    body: { estadoNuevo: "RESUELTO", motivo: detalleTexto || "Resolución registrada desde I-10.", version: d.version, resultado: resultado },
+                  }, function (err, actualizado) {
+                    if (err) {
+                      errBox.textContent = err.mensajeUsuario || "No se pudo registrar la resolución.";
+                      errBox.classList.add("is-visible");
+                      return;
+                    }
+                    d.version = actualizado && actualizado.version != null ? actualizado.version : d.version;
+                    d.estadoActual = actualizado && actualizado.estado ? actualizado.estado : "RESUELTO";
+                    resuelto = { estado: "RESUELTO (" + resultado + ")", vigencia: (d.vigenciaDesde || "—") + " → " + (d.vigenciaHasta || "—") };
+                    renderContent();
+                  });
+                  return;
+                }
                 resuelto = { estado: "RESUELTO (" + resultado + ")", vigencia: (d.vigenciaDesde || "—") + " → " + (d.vigenciaHasta || "—") };
                 renderContent();
               },
@@ -216,7 +262,13 @@
 
     function show(state) {
       global.tm.fixtures.setScenario(state);
-      if (state === "carga") { renderLoading(); setTimeout(renderContent, 700); return; }
+      if (state === "carga") {
+        renderLoading();
+        setTimeout(function () {
+          cargarReal(function (err) { if (err) { renderError(); return; } renderContent(); });
+        }, 700);
+        return;
+      }
       if (state === "error") { renderError(); return; }
       if (state === "vacio") { renderStatic("Resolución (aprobar / negar)", "Sin expedientes", ["No hay expedientes en resolución."]); return; }
       renderContent();
