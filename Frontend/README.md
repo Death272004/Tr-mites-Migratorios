@@ -90,8 +90,8 @@ file:///C:/Users/Jonathan/Desktop/Repo/Tr-mites-Migratorios/Frontend/html/index.
 - **HU-13 / TASK-13.5 (permisos de interfaz):** módulo `tm.perms` (`js/utils/perms.js`) con la matriz mock rol × permiso; las acciones internas se muestran u ocultan según el permiso del rol (con aviso "Sin permiso «…»" cuando no aplica). ✔
 - **TASK-21.2 (línea de tiempo):** componente reutilizable `js/components/timeline.js` usado por **P-19** (etapas del trámite) e **I-06** (historial del expediente, se actualiza al guardar dictamen); acepta `done`/`active`/`estado`. ✔
 - **Inventario completo:** 46/46 pantallas (P-01…P-27 + I-01…I-19), todas con vista, fixtures y ruta.
-- **Sprint 3:** P-06, P-07, P-14, P-17, P-19 y P-20 consumen el backend real cuando la aplicación se sirve por HTTP; se conserva el modo offline con fixtures para pruebas locales.
-- **Pendiente:** completar las vistas internas que aún no tienen un endpoint backend equivalente y cerrar la validación funcional de extremo a extremo.
+- **Sprint 3:** P-05, P-06, P-07, P-14, P-17, P-19, P-20, P-27 e I-02/I-03/I-06/I-19 consumen los contratos reales del backend cuando la aplicación se sirve por HTTP; se conserva el modo offline con fixtures para pruebas locales.
+- **Validación de integración:** expedientes, documentos, historial, notificaciones, consentimiento y solicitudes ARCO se prueban mediante el cliente `tm.api`, sin llamadas HTTP directas desde las vistas.
 - **Alcance:** el Frontend se trabaja **hasta el Sprint 4 inclusive**; los Sprints 5–7 quedan fuera de alcance por ahora.
 
 ## Notas
