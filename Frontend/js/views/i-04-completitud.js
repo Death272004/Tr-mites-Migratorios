@@ -11,6 +11,7 @@
   var field = global.tm.ui.field;
   var button = global.tm.ui.button;
   var table = global.tm.ui.table;
+  var api = global.tm.api;
 
   var FALLBACK = { expediente: "—", tramite: "—", presentante: {}, sellado: {}, pagos: [], requisitos: [], recibidoAutomatico: "—" };
 
@@ -39,6 +40,41 @@
     var d = datos();
     var req = d.requisitos.map(function (r) { return { nombre: r.nombre, casilla: r.casilla, estado: r.estado, motivo: r.motivo }; });
     var recibo = null;
+
+    function cargarReal(callback) {
+      if (!api || !api.isOnline()) { callback(null); return; }
+      var seleccionado = global.tm.expediente && global.tm.expediente.getSelected ? global.tm.expediente.getSelected() : null;
+      function cargar(id) {
+        api.request("GET", "/expedientes/" + encodeURIComponent(id), { pantalla: "I-04" }, function (err, expediente) {
+          if (err) { callback(err); return; }
+          d.id = expediente.id;
+          d.expediente = expediente.numero || expediente.id;
+          d.tramite = expediente.tipoTramite || "—";
+          d.estado = expediente.estado || "—";
+          d.version = expediente.version;
+          d.presentante = { nombre: "—", documento: "—", condicion: "—" };
+          d.sellado = { identidad: "Consulta disponible en el backend", selloIngreso: "Consulta disponible en el backend", ruex: "Consulta disponible en el backend" };
+          d.pagos = [];
+          d.recibidoAutomatico = expediente.fechaActualizacion || "—";
+          d.requisitos = [];
+          api.request("GET", "/expedientes/" + encodeURIComponent(id) + "/documentos", { pantalla: "I-04" }, function (docErr, documentos) {
+            if (docErr) { callback(docErr); return; }
+            var docs = documentos || [];
+            for (var i = 0; i < docs.length; i++) {
+              d.requisitos.push({ nombre: docs[i].tipoDocumental || docs[i].nombreArchivo || "Documento", casilla: docs[i].nombreArchivo || "Cargado", estado: docs[i].estadoRevision === "APROBADO" ? "Completo" : "Incompleto", motivo: docs[i].estadoRevision || "" });
+            }
+            req = d.requisitos.map(function (r) { return { nombre: r.nombre, casilla: r.casilla, estado: r.estado, motivo: r.motivo }; });
+            callback(null);
+          });
+        });
+      }
+      if (seleccionado && seleccionado.id) { cargar(seleccionado.id); return; }
+      api.request("GET", "/expedientes?estado=RECIBIDO&pagina=0&tamano=20", { pantalla: "I-04" }, function (err, page) {
+        var lista = page && page.contenido ? page.contenido : [];
+        if (err || !lista.length) { callback(err || { mensajeUsuario: "No hay expedientes recibidos para verificar." }); return; }
+        cargar(lista[0].id);
+      });
+    }
 
     function demoSelector() {
       var wrap = layout.el("label", "toolbar__demo");
@@ -159,15 +195,33 @@
             errBox.classList.add("is-visible");
             return;
           }
-          var n = "2026-" + String(Math.floor(1000 + Math.random() * 9000));
-          recibo = {
-            estado: incompletos.length ? "CON OBSERVACIONES" : "RECIBIDO",
-            registro: n,
-            tramite: "TRM-" + n,
-            expediente: d.expediente,
-            observaciones: texto,
-          };
-          renderContent();
+          function guardarLocal() {
+            var n = "2026-" + String(Math.floor(1000 + Math.random() * 9000));
+            recibo = { estado: incompletos.length ? "CON OBSERVACIONES" : "RECIBIDO", registro: n, tramite: "TRM-" + n, expediente: d.expediente, observaciones: texto };
+            renderContent();
+          }
+          if (!(api && api.isOnline() && d.id)) { guardarLocal(); return; }
+          function cambiarEstado() {
+            var nuevo = incompletos.length ? "CON_OBSERVACIONES" : "EN_ANALISIS";
+            api.request("PATCH", "/expedientes/" + encodeURIComponent(d.id) + "/estado", {
+              pantalla: "I-04",
+              body: { estadoNuevo: nuevo, motivo: texto || "Verificación de completitud realizada desde I-04.", version: d.version },
+            }, function (stateErr, actualizado) {
+              if (stateErr) { errBox.textContent = stateErr.mensajeUsuario || "No se pudo actualizar el estado del expediente."; errBox.classList.add("is-visible"); return; }
+              d.version = actualizado && actualizado.version != null ? actualizado.version : d.version;
+              d.estado = actualizado && actualizado.estado ? actualizado.estado : nuevo;
+              recibo = { estado: incompletos.length ? "CON OBSERVACIONES" : "RECIBIDO", registro: d.expediente, tramite: d.tramite, expediente: d.expediente, observaciones: texto };
+              renderContent();
+            });
+          }
+          if (incompletos.length) {
+            api.request("POST", "/expedientes/" + encodeURIComponent(d.id) + "/observaciones", { pantalla: "I-04", body: { texto: texto } }, function (obsErr) {
+              if (obsErr) { errBox.textContent = obsErr.mensajeUsuario || "No se pudo registrar la observación."; errBox.classList.add("is-visible"); return; }
+              cambiarEstado();
+            });
+          } else {
+            cambiarEstado();
+          }
         },
       }));
       if (opts.onNavigate) actions.appendChild(button({ variant: "ghost", text: "Pasar a asignación", onClick: function () { opts.onNavigate("#/interno/asignacion"); } }));
@@ -214,7 +268,11 @@
 
     function show(state) {
       global.tm.fixtures.setScenario(state);
-      if (state === "carga") { renderLoading(); setTimeout(renderContent, 700); return; }
+      if (state === "carga") {
+        renderLoading();
+        setTimeout(function () { cargarReal(function (err) { if (err) { renderError(); return; } renderContent(); }); }, 700);
+        return;
+      }
       if (state === "error") { renderError(); return; }
       if (state === "vacio") { renderEmpty(); return; }
       renderContent();

@@ -246,7 +246,7 @@
       api.request("GET", "/notificaciones?pagina=0&tamano=50", { pantalla: "P-20" }, function (err, data) {
         if (err) { renderError(container, { mensaje: err.mensajeUsuario, onRetry: function () { renderP20(container, opts); } }); return; }
         var contenido = data && data.contenido ? data.contenido : [];
-        var observaciones = contenido.map(function (n) {
+        var notificaciones = contenido.map(function (n) {
           return {
             id: n.id,
             emisor: "Despacho",
@@ -259,11 +259,34 @@
             expedienteId: n.expedienteId,
           };
         });
-        function rerenderRemote() {
-          layout.clear(container);
-          renderContent(container, opts, observaciones, rerenderRemote);
+        var seleccionado = global.tm.expediente && global.tm.expediente.getSelected ? global.tm.expediente.getSelected() : null;
+        var expedienteId = seleccionado && seleccionado.id ? seleccionado.id : (notificaciones.length ? notificaciones[0].expedienteId : null);
+        function mostrar(observaciones) {
+          var todas = notificaciones.concat(observaciones || []);
+          function rerenderRemote() {
+            layout.clear(container);
+            renderContent(container, opts, todas, rerenderRemote);
+          }
+          renderContent(container, opts, todas, rerenderRemote);
         }
-        renderContent(container, opts, observaciones, rerenderRemote);
+        if (!expedienteId) { mostrar([]); return; }
+        api.request("GET", "/expedientes/" + encodeURIComponent(expedienteId) + "/observaciones", { pantalla: "P-20" }, function (obsErr, datosObs) {
+          if (obsErr) { renderError(container, { mensaje: obsErr.mensajeUsuario, onRetry: function () { renderP20(container, opts); } }); return; }
+          var observaciones = (datosObs || []).map(function (o) {
+            return {
+              id: "obs-" + o.id,
+              emisor: "Despacho",
+              emisorTipo: "despacho",
+              fecha: o.fecha ? o.fecha.slice(0, 10) : "",
+              plazo: null,
+              asunto: o.texto || "Observación registrada sobre el expediente.",
+              leida: true,
+              items: [],
+              expedienteId: o.expedienteId,
+            };
+          });
+          mostrar(observaciones);
+        });
       });
       return;
     }
