@@ -60,8 +60,10 @@
   }
 
   // Cabeceras centralizadas: token + X-Scenario (HU-09) + JSON.
-  function headers(extra) {
-    var h = { "Content-Type": "application/json" };
+  // Para multipart no se fija Content-Type: el navegador debe agregar el
+  // boundary correcto del FormData.
+  function headers(extra, omitJsonContentType) {
+    var h = omitJsonContentType ? {} : { "Content-Type": "application/json" };
     var t = token();
     if (t) h.Authorization = "Bearer " + t;
     h["X-Scenario"] = scenario();
@@ -169,7 +171,8 @@
 
     var xhr = new XMLHttpRequest();
     xhr.open(method, config.baseUrl + path, true);
-    var h = headers(options.headers);
+    var esFormData = typeof global.FormData !== "undefined" && options.body instanceof global.FormData;
+    var h = headers(options.headers, esFormData);
     for (var k in h) { if (Object.prototype.hasOwnProperty.call(h, k)) xhr.setRequestHeader(k, h[k]); }
     xhr.timeout = options.timeoutMs || config.timeoutMs;
 
@@ -190,7 +193,7 @@
     };
     xhr.onerror = function () { cb({ codigo: "SVC-0000", status: 0, mensajeUsuario: translateError(502) }); };
     xhr.ontimeout = function () { cb({ codigo: "SVC-0000", status: 0, mensajeUsuario: translateError(504) }); };
-    xhr.send(options.body ? JSON.stringify(options.body) : null);
+    xhr.send(options.body ? (esFormData ? options.body : JSON.stringify(options.body)) : null);
   }
 
   function clearCache() { cache = {}; }
