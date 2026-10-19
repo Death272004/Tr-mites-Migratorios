@@ -174,9 +174,27 @@
       container.appendChild(inner);
     }
 
+    function cargarReal(callback) {
+      if (!global.tm.api.isOnline()) { callback(); return; }
+      global.tm.api.request("GET", "/expedientes?tamano=100", { pantalla: "I-03" }, function (err, data) {
+        if (!err && data) {
+          var expedientes = data.contenido || [];
+          d.citas = expedientes.map(function (e, index) {
+            return { turno: "EXP-" + String(index + 1).padStart(3, "0"), fechaHora: e.fechaCreacion || "—", titular: e.solicitanteId || "Titular", tramite: e.tipoTramite || "—", expediente: e.numero || e.id, qr: e.id, llegada: "En espera", responsable: "Sin asignar", id: e.id };
+          });
+          d.filtros = {
+            estados: ["Todos", "En espera", "Atendido", "No asistió"],
+            tramites: ["Todos"].concat(d.citas.map(function (c) { return c.tramite; }).filter(function (v, i, a) { return a.indexOf(v) === i; })),
+            responsables: ["Todos", "Sin asignar"]
+          };
+        }
+        callback(err);
+      });
+    }
+
     function show(state) {
       global.tm.fixtures.setScenario(state);
-      if (state === "carga") { renderLoading(); setTimeout(renderContent, 700); return; }
+      if (state === "carga") { renderLoading(); setTimeout(function () { cargarReal(function (err) { if (err) { renderError(); return; } renderContent(); }); }, 700); return; }
       if (state === "error") { renderError(); return; }
       if (state === "vacio") { renderEmpty(); return; }
       renderContent();

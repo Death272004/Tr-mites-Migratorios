@@ -150,9 +150,31 @@
       container.appendChild(inner);
     }
 
+    function cargarReal(callback) {
+      if (!global.tm.api.isOnline()) { callback(); return; }
+      global.tm.api.request("GET", "/expedientes?tamano=100", { pantalla: "I-02" }, function (err, data) {
+        if (!err && data) {
+          var expedientes = data.contenido || [];
+          var porEstado = {};
+          expedientes.forEach(function (e) { porEstado[e.estado] = (porEstado[e.estado] || 0) + 1; });
+          d.indicadores = [
+            { label: "Expedientes visibles", valor: expedientes.length, tono: "info" },
+            { label: "En análisis", valor: porEstado.EN_ANALISIS || 0, tono: "warning" },
+            { label: "Con observaciones", valor: porEstado.CON_OBSERVACIONES || 0, tono: "danger" },
+            { label: "Resueltos", valor: porEstado.RESUELTO || 0, tono: "success" }
+          ];
+          d.contadores = Object.keys(porEstado).map(function (estado) { return { estado: estado, total: porEstado[estado] }; });
+          d.tiempos = [];
+          d.alertas = expedientes.filter(function (e) { return e.estado === "CON_OBSERVACIONES"; }).map(function (e) { return { tono: "warning", texto: "Expediente " + e.numero + " tiene observaciones pendientes." }; });
+          d.nota = "Indicadores calculados desde GET /api/expedientes; no se usan datos de demostración.";
+        }
+        callback(err);
+      });
+    }
+
     function show(state) {
       global.tm.fixtures.setScenario(state);
-      if (state === "carga") { renderLoading(); setTimeout(renderContent, 700); return; }
+      if (state === "carga") { renderLoading(); setTimeout(function () { cargarReal(function (err) { if (err) { renderError(); return; } renderContent(); }); }, 700); return; }
       if (state === "error") { renderError(); return; }
       if (state === "vacio") { renderEmpty(); return; }
       renderContent();

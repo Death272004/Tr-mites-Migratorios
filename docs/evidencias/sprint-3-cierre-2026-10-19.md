@@ -1,8 +1,8 @@
 # Evidencia de validación técnica del Sprint 3
 
 **Fecha:** 2026-10-19  
-**Rama de trabajo:** `sprint-3-cierre`  
-**Base:** `main` (`675767f`)  
+**Rama de trabajo:** `sprint-3-completo`
+**Base:** `origin/main` (`a95899f`)
 **Datos:** únicamente usuarios, documentos y expedientes ficticios de desarrollo.
 
 ## Trabajo realizado
@@ -20,6 +20,16 @@
   `GET /api/expedientes/{id}` y `GET /api/expedientes/{id}/historial`.
 - P-20 consulta notificaciones reales y marca cada una como leída mediante
   `PUT /api/notificaciones/{id}/leida`.
+- P-05 consulta, registra y revoca consentimientos mediante
+  `/api/consentimientos`, con confirmación antes de revocar.
+- P-27 registra y consulta solicitudes ARCO mediante
+  `/api/solicitudes-arco`, conservando la referencia devuelta por el backend.
+- I-19 consulta y revoca consentimientos reales del despacho mediante
+  `/api/consentimientos`.
+- I-03 y I-02 calculan la bandeja y los indicadores desde
+  `GET /api/expedientes`, sin depender de datos ficticios cuando hay sesión.
+- I-06 carga el expediente seleccionado, su historial y sus documentos desde
+  los endpoints reales disponibles.
 - `tm.api` ahora soporta JSON y `FormData` sin romper el modo offline.
 - El expediente seleccionado se guarda solo en `sessionStorage`; no se ponen
   identificadores en la URL ni se guardan archivos en almacenamiento web.
@@ -39,15 +49,15 @@
 | Login de usuario ficticio | PASS — HTTP 200 |
 | Catálogo, creación de expediente y listado | PASS |
 | Historial del expediente recién creado | PASS — 1 evento |
+| Consentimientos y solicitudes ARCO (tests de backend) | PASS — `./mvnw test -q` |
+| Smoke aislado con Docker (`db`, `backend`, `frontend`) | PASS — healthchecks UP/ok |
+| Flujo autenticado de Sprint 3 | PASS — login, expediente, consentimiento y ARCO |
 
-## Alcance pendiente
+## Criterio de cierre técnico
 
-El backend ya contiene las entidades y endpoints de expedientes, documentos,
-notificaciones, consentimiento y ARCO. Sin embargo, las pantallas internas
-I-02, I-03 e I-06 todavía no tienen endpoints equivalentes para sustituir sus
-fixtures. Por eso no se declaran cerradas esas tareas únicamente con esta
-validación: necesitan un contrato backend acordado o una evidencia funcional
-del equipo que las implementó.
-
-Esta evidencia documenta el avance técnico local; no implica por sí sola cierre
-administrativo en TeamTrack ni integración a `main`.
+Las tareas de integración frontend del Sprint 3 quedan validadas contra los
+contratos que ya existen en Backend. Las vistas conservan fixtures únicamente
+como respaldo de demostración offline; al configurar `tm.api` con la URL del
+backend, la fuente de datos es la API real. El cierre administrativo requiere
+integrar esta rama a `integracion/frontend-backend`, luego a `main`, y marcar las
+tareas correspondientes en TeamTrack con el commit y la evidencia de pruebas.
