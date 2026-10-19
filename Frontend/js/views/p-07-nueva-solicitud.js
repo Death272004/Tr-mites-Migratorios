@@ -19,6 +19,7 @@
   var DRAFT_KEY = "tm.solicitud.v1";
 
   var fixtures = global.tm.fixtures;
+  var api = global.tm.api;
 
   // Fuentes desde el fixture P-07 (§2.5): con `file://` el envelope lo registran
   // los `.js` de js/fixtures/; al publicar el backend se sirve el mismo JSON de
@@ -37,6 +38,20 @@
     { value: "PA", label: "En Panamá" },
     { value: "EX", label: "En consulado en el exterior" },
   ];
+
+  function catalogoDesdeApi(items) {
+    return (items || []).map(function (item) {
+      return {
+        value: item.codigo,
+        label: item.nombre,
+        residencia: String(item.codigo || "").indexOf("RESIDENCIA_") === 0,
+        tramites: [{
+          nombre: item.nombre,
+          req: (item.requisitos || []).map(function (r) { return r.nombre + (r.obligatorio ? "" : " (opcional)"); }),
+        }],
+      };
+    });
+  }
 
   function categorias() {
     return CATALOGO.map(function (c) { return { value: c.value, label: c.label }; });
@@ -104,7 +119,7 @@
     var inner = layout.el("div", "app-content__inner");
     inner.appendChild(layout.pageHeader("Nueva solicitud", "Paso 1 de 11 · Seleccione el trámite a realizar"));
 
-    if (opts.onDemoState) inner.appendChild(demoSelector(opts.onDemoState));
+    if (opts.onDemoState && (!api || !api.isOnline())) inner.appendChild(demoSelector(opts.onDemoState));
 
     var form = layout.el("form", "card");
     form.noValidate = true;
@@ -304,6 +319,18 @@
 
   function renderP07(container, opts) {
     opts = opts || {};
+
+    if (api && api.isOnline()) {
+      renderLoading(container);
+      api.request("GET", "/catalogos/tipos-tramite", { pantalla: "P-07" }, function (err, items) {
+        if (err) { renderError(container, { mensaje: err.mensajeUsuario, onRetry: function () { renderP07(container, opts); } }); return; }
+        CATALOGO = catalogoDesdeApi(items);
+        if (global.tm.views.p07) global.tm.views.p07.CATALOGO = CATALOGO;
+        if (!CATALOGO.length) { renderEmpty(container, { onRetry: function () { renderP07(container, opts); } }); return; }
+        renderForm(container, opts);
+      });
+      return;
+    }
 
     function show(state) {
       if (!state) state = "carga";

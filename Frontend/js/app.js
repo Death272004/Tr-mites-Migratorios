@@ -162,6 +162,7 @@
         onNueva: function () { navigate("#/solicitud/tramite"); },
         onContinue: function () { navigate("#/solicitud/tramite"); },
         onVerObservacion: function () { navigate("#/seguimiento/observaciones"); },
+        onVerEstado: function () { navigate("#/seguimiento/estado"); },
         onDescargar: function () { navigate("#/seguimiento/resultados"); },
       });
       return;

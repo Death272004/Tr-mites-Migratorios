@@ -13,6 +13,7 @@
   var draft = global.tm.draft;
   var confirmModal = global.tm.ui.confirmModal;
   var fixtures = global.tm.fixtures;
+  var api = global.tm.api;
 
   var ROUTE = "#/solicitud/resumen";
 
@@ -65,13 +66,20 @@
     inner.appendChild(layout.pageHeader("Solicitud enviada", "Estado inicial: RECIBIDO – EN PREPARACIÓN"));
 
     var toolbar = layout.el("div", "toolbar");
-    toolbar.appendChild(demoSelector(opts));
+    if (!api || !api.isOnline()) toolbar.appendChild(demoSelector(opts));
     inner.appendChild(toolbar);
 
     var success = layout.el("div", "app-alert app-alert--info");
-    success.appendChild(layout.el("span", "app-alert__title", "Su solicitud fue registrada (simulado)"));
+    success.appendChild(layout.el("span", "app-alert__title", submitted.simulado ? "Su solicitud fue registrada (simulado)" : "Su solicitud fue registrada"));
     success.appendChild(layout.el("span", "app-alert__text", "Conserve el número de expediente y el código QR para el seguimiento."));
     inner.appendChild(success);
+
+    if (submitted.documentosPendientes) {
+      var uploadAlert = layout.el("div", "app-alert app-alert--warning");
+      uploadAlert.appendChild(layout.el("span", "app-alert__title", "Solicitud registrada con documentos pendientes"));
+      uploadAlert.appendChild(layout.el("span", "app-alert__text", "El expediente se creó, pero " + submitted.documentosPendientes + " documento(s) no pudieron cargarse. Puede reintentarlo desde el paso de requisitos."));
+      inner.appendChild(uploadAlert);
+    }
 
     var grid = layout.el("div", "wizard-grid");
     grid.appendChild(resumenCard("Identificación", [
@@ -148,17 +156,62 @@
       onClick: function () {
         confirmModal("Enviar solicitud", "¿Confirma el envío de su solicitud? Se generará el número de expediente.", {
           onConfirm: function () {
-            var expediente = "EXP-2026-" + String(Math.floor(100000 + Math.random() * 899999));
-            var registro = "REG-" + String(Math.floor(1000 + Math.random() * 8999));
-            draft.mergeDraft({
-              submitted: {
-                expediente: expediente,
-                registro: registro,
+            function guardarResultado(resultado) {
+              draft.mergeDraft({ submitted: resultado });
+              if (global.tm.expediente) global.tm.expediente.setSelected(resultado);
+              if (opts.onNavigate) opts.onNavigate(ROUTE);
+            }
+
+            function cargarDocumentos(id, documentos, index, pendientes) {
+              if (!documentos || index >= documentos.length) {
+                guardarResultado(resultadoBase(pendientes.length ? pendientes.length : null));
+                return;
+              }
+              var documento = documentos[index];
+              if (!documento || !documento.file) {
+                cargarDocumentos(id, documentos, index + 1, pendientes);
+                return;
+              }
+              var formData = new FormData();
+              formData.append("archivo", documento.file, documento.file.name);
+              formData.append("tipoDocumental", documento.tipoDocumental || "Documento de trámite");
+              api.request("POST", "/expedientes/" + encodeURIComponent(id) + "/documentos", { body: formData }, function (uploadErr) {
+                if (uploadErr) pendientes.push(documento);
+                cargarDocumentos(id, documentos, index + 1, pendientes);
+              });
+            }
+
+            function resultadoBase(documentosPendientes) {
+              return {
+                id: d._expedienteId || null,
+                expediente: d._expedienteNumero || "—",
+                registro: d._registro || "—",
                 tramite: d.tramite || "—",
                 total: pagos.total != null ? ("B/." + Number(pagos.total).toFixed(2)) : "B/.0.00",
-              },
+                documentosPendientes: documentosPendientes,
+              };
+            }
+
+            function crearLocal() {
+              var expediente = "EXP-2026-" + String(Math.floor(100000 + Math.random() * 899999));
+              var registro = "REG-" + String(Math.floor(1000 + Math.random() * 8999));
+              guardarResultado({ expediente: expediente, registro: registro, tramite: d.tramite || "—", total: pagos.total != null ? ("B/." + Number(pagos.total).toFixed(2)) : "B/.0.00", simulado: true });
+            }
+
+            if (!api || !api.isOnline()) { crearLocal(); return; }
+
+            api.request("POST", "/expedientes", { body: { tipoTramite: d.categoria || d.tramite || "" } }, function (createErr, dto) {
+              if (createErr || !dto || !dto.id) {
+                renderError(container, { mensaje: createErr ? createErr.mensajeUsuario : "El backend no devolvió el expediente creado." });
+                return;
+              }
+              var documentos = global.tm.pendingDocuments || [];
+              d._expedienteId = dto.id;
+              d._expedienteNumero = dto.numero || dto.id;
+              d._registro = dto.id;
+              global.tm.pendingDocuments = [];
+              cargarDocumentos(dto.id, documentos, 0, []);
             });
-            if (opts.onNavigate) opts.onNavigate(ROUTE);
           },
         });
       },
