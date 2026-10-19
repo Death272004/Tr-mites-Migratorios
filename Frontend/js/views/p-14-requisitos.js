@@ -24,6 +24,19 @@
     return (fixtures && fixtures.scenario && fixtures.scenario()) || "exito";
   }
 
+  function tipoDocumentalCode(texto) {
+    var textoNormalizado = String(texto || "").toLowerCase();
+    if (/pasaporte/.test(textoNormalizado)) return "PASAPORTE";
+    if (/foto|fotograf/.test(textoNormalizado)) return "FOTO_CARNE";
+    if (/poder/.test(textoNormalizado)) return "PODER_NOTARIADO";
+    if (/declaraci[oó]n/.test(textoNormalizado)) return "DECLARACION_JURADA";
+    if (/pago|cheque|tasa|b\/\./.test(textoNormalizado)) return "COMPROBANTE_PAGO";
+    if (/css|caja de seguro/.test(textoNormalizado)) return "FICHA_CSS";
+    if (/salud/.test(textoNormalizado)) return "CERTIFICADO_SALUD";
+    if (/antecedente/.test(textoNormalizado)) return "ANTECEDENTES_PENALES";
+    return null;
+  }
+
   function buildRequisitos(d, fallback) {
     var out = [];
     var cat = null;
@@ -50,7 +63,7 @@
 
   function renderContent(container, opts) {
     var body = wizard.frame(container, ROUTE);
-    body.appendChild(demoSelector(opts));
+    if (!global.tm.api || !global.tm.api.isOnline()) body.appendChild(demoSelector(opts));
     var d = draft.getDraft();
 
     var fuente = (fixtures && fixtures.data("P-14", estadoActual())) || {};
@@ -74,6 +87,7 @@
 
     var list = layout.el("ul", "checklist");
     var checks = [];
+    var archivos = [];
 
     function updateProgress() {
       var done = 0;
@@ -100,8 +114,14 @@
         row.appendChild(chk);
         row.appendChild(layout.el("span", "auth-check__label", "Cumplido / cargado"));
         main.appendChild(row);
-        var upload = global.tm.ui.fileUpload({ label: "Archivo", accept: ".pdf,.jpg,.jpeg,.png", onChange: function (f) { if (f) { this; } } });
-        main.appendChild(upload);
+        (function (indice) {
+          var upload = global.tm.ui.fileUpload({
+            label: "Archivo",
+            accept: ".pdf,.jpg,.jpeg,.png",
+            onChange: function (f) { archivos[indice] = f && f.file ? f.file : null; },
+          });
+          main.appendChild(upload);
+        })(j);
         checks[j] = chk;
         item.appendChild(main);
       }
@@ -127,6 +147,11 @@
         var autoCount = 0;
         for (var a = 0; a < arr.length; a++) if (arr[a].auto) autoCount++;
         draft.mergeDraft({ requisitos: { total: arr.length, automaticos: autoCount, cumplidos: arr.length - autoCount } });
+        global.tm.pendingDocuments = [];
+        for (var f = 0; f < archivos.length; f++) {
+          var codigo = tipoDocumentalCode(arr[f].texto);
+          if (archivos[f] && codigo) global.tm.pendingDocuments.push({ file: archivos[f], tipoDocumental: codigo });
+        }
         if (opts.onNavigate) opts.onNavigate(wizard.nextRoute(ROUTE));
       },
     }));

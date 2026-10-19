@@ -14,6 +14,7 @@
   var layout = global.tm.layout;
   var button = global.tm.ui.button;
   var timeline = global.tm.ui.timeline;
+  var api = global.tm.api;
 
   // Etapas visibles para el titular (cadena exacta de la fuente).
   var ESTADOS_VISIBLES = [
@@ -29,7 +30,7 @@
     "ENTREGADO",
   ];
 
-  // Datos demo (ficticios). Se reemplazan por fixtures/HTTP en Sprint 2.
+  // Datos demo (ficticios) usados únicamente cuando la aplicación está offline.
   var DEMO_ESTADO = {
     expediente: "EXP-2026-000184",
     tramite: "Residente temporal",
@@ -125,6 +126,51 @@
     });
   }
 
+  function etiquetaEstado(estado) {
+    var labels = {
+      EN_PREPARACION: "EN PREPARACIÓN",
+      RECIBIDO: "RECIBIDO",
+      CON_OBSERVACIONES: "CON OBSERVACIONES (ciudadano)",
+      EN_ANALISIS: "EN ANÁLISIS",
+      ADMITIDO: "ADMITIDO",
+      EN_RESOLUCION: "EN RESOLUCIÓN",
+      RESUELTO: "RESUELTO",
+      NOTIFICADO: "NOTIFICADO",
+      ENTREGADO: "ENTREGADO",
+      ARCHIVADO: "ARCHIVADO",
+    };
+    return labels[estado] || estado || "SIN ESTADO";
+  }
+
+  function estadoDesdeApi(dto, historial) {
+    var etapas = [];
+    var vistos = {};
+    function agregar(nombre, fecha, detalle, estado) {
+      if (!nombre || vistos[nombre]) return;
+      vistos[nombre] = true;
+      etapas.push({ titulo: nombre, fecha: fecha ? fecha.slice(0, 10) : null, detalle: detalle, estado: estado || "done" });
+    }
+    agregar("EN PREPARACIÓN", dto.fechaCreacion, null, "done");
+    for (var i = 0; i < (historial || []).length; i++) {
+      var h = historial[i];
+      agregar(etiquetaEstado(h.estadoNuevo), h.fecha, h.motivo, "done");
+    }
+    var actual = etiquetaEstado(dto.estado);
+    if (!vistos[actual]) agregar(actual, dto.fechaActualizacion || dto.fechaCreacion, null, "active");
+    else if (etapas.length) etapas[etapas.length - 1].estado = "active";
+    return {
+      expediente: dto.numero || dto.id,
+      tramite: dto.tipoTramite || "Trámite migratorio",
+      fechaEnvio: (dto.fechaCreacion || "").slice(0, 10),
+      etapaActual: actual,
+      etapaActualTono: dto.estado === "CON_OBSERVACIONES" ? "warning" : "info",
+      etapas: etapas,
+      requisitosFaltantes: dto.estado === "CON_OBSERVACIONES" ? ["Atienda las observaciones notificadas en P-20"] : [],
+      accionPendiente: dto.estado === "CON_OBSERVACIONES" ? { texto: "Atender las observaciones del expediente", tipo: "atender" } : null,
+      vigencias: [],
+    };
+  }
+
   function renderContent(container, opts, estado) {
     layout.clear(container);
     var inner = layout.el("div", "app-content__inner");
@@ -136,7 +182,7 @@
 
     var toolbar = layout.el("div", "toolbar");
     toolbar.appendChild(layout.el("span", null, ""));
-    toolbar.appendChild(demoSelector(opts));
+    if (!api || !api.isOnline()) toolbar.appendChild(demoSelector(opts));
     inner.appendChild(toolbar);
 
     var alert = vigenciaAlert(estado.vigencias || []);
@@ -255,6 +301,20 @@
 
   function renderP19(container, opts) {
     opts = opts || {};
+
+    if (api && api.isOnline()) {
+      var seleccionado = global.tm.expediente && global.tm.expediente.getSelected ? global.tm.expediente.getSelected() : null;
+      if (!seleccionado || !seleccionado.id) { renderEmpty(container, opts); return; }
+      renderLoading(container);
+      api.request("GET", "/expedientes/" + encodeURIComponent(seleccionado.id), { pantalla: "P-19" }, function (err, dto) {
+        if (err) { renderError(container, { mensaje: err.mensajeUsuario, onRetry: function () { renderP19(container, opts); } }); return; }
+        api.request("GET", "/expedientes/" + encodeURIComponent(seleccionado.id) + "/historial", { pantalla: "P-19" }, function (historyErr, historial) {
+          if (historyErr) { renderError(container, { mensaje: historyErr.mensajeUsuario, onRetry: function () { renderP19(container, opts); } }); return; }
+          renderContent(container, opts, estadoDesdeApi(dto, historial));
+        });
+      });
+      return;
+    }
 
     function show(state) {
       if (state === "carga") {

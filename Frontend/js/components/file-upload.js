@@ -1,7 +1,7 @@
 /**
  * file-upload.js — control de carga de documento simulado.
- * No sube nada: registra el nombre, tamaño y tipo; en Sprint 2 lo reemplaza
- * el módulo de servicios. Emite la fecha de emisión y dispara onChange.
+ * Registra el nombre, tamaño y tipo; en modo online entrega el File al módulo
+ * de servicios para su carga multipart. Emite la fecha de emisión y dispara onChange.
  * Script clásico: expone `tm.ui.fileUpload`.
  */
 (function (global) {
@@ -39,7 +39,10 @@
       }
       state.textContent = f.name + " (" + Math.round(f.size / 1024) + " KB)";
       state.classList.add("is-loaded");
-      if (opts.onChange) opts.onChange({ name: f.name, size: f.size, type: f.type });
+      // Conservamos los metadatos para la vista y la referencia al File para
+      // que el flujo online pueda enviarlo como multipart después de crear el
+      // expediente. El File nunca se guarda en sessionStorage.
+      if (opts.onChange) opts.onChange({ file: f, name: f.name, size: f.size, type: f.type });
     });
 
     return wrapper;
