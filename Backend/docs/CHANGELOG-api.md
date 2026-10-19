@@ -2,6 +2,14 @@
 
 Contrato: [`openapi.yaml`](openapi.yaml) — HU-07 del backlog (`Documentacion/05-backlog-siete-sprints.md`).
 
+## Sprint 2
+
+- Se documentó la matriz rol × endpoint × operación en `matriz-autorizacion.md`.
+- Se documentó el cuerpo uniforme de errores, sus códigos HTTP y reglas de no
+  exposición en `estandar-errores.md`.
+- El esquema `Error` del contrato ahora prohíbe propiedades no documentadas e
+  incluye ejemplos y formato UUID para `correlacionId`.
+
 ## Procedimiento de cambios
 
 1. Toda modificación al contrato se anota aquí **antes** de implementarse (HU-07, criterio 6).
