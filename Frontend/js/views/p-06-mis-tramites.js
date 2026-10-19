@@ -229,6 +229,8 @@
   }
 
   function renderContent(container, opts, tramites) {
+    // Sustituir el estado de carga antes de pintar el contenido recibido.
+    layout.clear(container);
     var inner = layout.el("div", "app-content__inner");
 
     var header = layout.pageHeader("Mis trámites", "Expedientes y solicitudes registradas a su nombre");
