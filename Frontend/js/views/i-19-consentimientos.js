@@ -153,11 +153,18 @@
                 "Revocar consentimiento",
                 "¿Revocar el consentimiento " + c.id + " de " + c.titular + "? La revocación no tiene efecto retroactivo y quedará registrada en la bitácora.",
                 { onConfirm: function () {
-                  c.estado = "revocado";
-                  d.resumen.vigentes = Math.max(0, d.resumen.vigentes - 1);
-                  d.resumen.revocados += 1;
-                  aviso = "Consentimiento " + c.id + " revocado. Traza enviada a la bitácora (I-16).";
-                  renderContent();
+                  function actualizar(data) {
+                    c.estado = data && data.estado ? String(data.estado).toLowerCase() : "revocado";
+                    d.resumen.vigentes = Math.max(0, d.resumen.vigentes - 1);
+                    d.resumen.revocados += 1;
+                    aviso = "Consentimiento " + c.id + " revocado. Traza enviada a la bitácora (I-16).";
+                    renderContent();
+                  }
+                  if (!global.tm.api.isOnline()) { actualizar(); return; }
+                  global.tm.api.request("PATCH", "/consentimientos/" + encodeURIComponent(c.id), { pantalla: "I-19", body: {} }, function (err, data) {
+                    if (err) { aviso = err.mensajeUsuario; renderContent(); return; }
+                    actualizar(data);
+                  });
                 } }
               );
             }
@@ -200,9 +207,22 @@
       renderSimple("Consentimientos del titular", "No se pudo cargar", global.tm.fixtures.message("I-19", "error", "No pudimos cargar los consentimientos."), true);
     }
 
+    function cargarReal(callback) {
+      if (!global.tm.api.isOnline()) { callback(); return; }
+      global.tm.api.request("GET", "/consentimientos", { pantalla: "I-19" }, function (err, data) {
+        if (!err && Array.isArray(data)) {
+          d.consentimientos = data.map(function (c) {
+            return { id: c.id, titular: c.titularId || "Titular", documento: "—", expediente: "—", tipo: c.expreso ? "Expreso" : "Informado", fecha: c.fecha, vigencia: c.vigenciaHasta || "Sin vencimiento", responsable: c.responsable || "—", estado: String(c.estado || "").toLowerCase(), finalidad: c.finalidad, alcance: c.alcance, nota: c.baseLegal };
+          });
+          d.resumen = { vigentes: d.consentimientos.filter(function (c) { return c.estado === "vigente"; }).length, revocados: d.consentimientos.filter(function (c) { return c.estado === "revocado"; }).length, porVencer: 0 };
+        }
+        callback(err);
+      });
+    }
+
     function show(state) {
       global.tm.fixtures.setScenario(state);
-      if (state === "carga") { renderLoading(); setTimeout(renderContent, 700); return; }
+      if (state === "carga") { renderLoading(); setTimeout(function () { cargarReal(function (err) { if (err) { renderSimple("Consentimientos del titular", "No se pudo cargar", err.mensajeUsuario || "No pudimos cargar los consentimientos.", true); return; } renderContent(); }); }, 700); return; }
       if (state === "error") { renderError(); return; }
       if (state === "vacio") { renderSimple("Consentimientos del titular", "Sin consentimientos", "No hay consentimientos registrados."); return; }
       renderContent();

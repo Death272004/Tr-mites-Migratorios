@@ -56,6 +56,8 @@
 
   function renderP27(container, opts) {
     opts = opts || {};
+    var arcoSolicitudes = ARCO_SOLICITUDES.slice();
+    var arcoLast = null;
 
     function demoSelector() {
       var wrap = layout.el("label", "toolbar__demo");
@@ -148,11 +150,12 @@
     function arcoSolicitudesBlock() {
       var block = layout.el("div", "seguimiento-block");
       block.appendChild(layout.el("h3", "seguimiento-block__title", "Mis solicitudes ARCO"));
-      var rows = ARCO_SOLICITUDES.map(function (s) {
-        var variante = s.estado === "Atendida" ? "success" : "warning";
+      var rows = arcoSolicitudes.map(function (s) {
+        var estado = s.estado || "RECIBIDA";
+        var variante = estado === "ATENDIDA" || estado === "Atendida" ? "success" : estado === "RECHAZADA" ? "danger" : "warning";
         return [
-          { text: s.ref }, { text: s.derecho }, { text: s.apertura }, { text: s.cierre }, { text: s.responsable },
-          { node: layout.el("span", "badge badge--" + variante, s.estado) },
+          { text: s.id || s.ref }, { text: s.tipo || s.derecho || "—" }, { text: s.fechaCreacion || s.apertura || "—" }, { text: s.plazoAtencion || s.cierre || "—" }, { text: s.responsable || "Pendiente de asignación" },
+          { node: layout.el("span", "badge badge--" + variante, estado) },
         ];
       });
       block.appendChild(table({
@@ -242,8 +245,17 @@
           if (!desc) { errBox.textContent = "Describa su solicitud."; errBox.classList.add("is-visible"); return; }
           if (!correo || correo.indexOf("@") < 0) { errBox.textContent = "Ingrese un correo de notificación válido."; errBox.classList.add("is-visible"); return; }
           if (derecho === "OPOSICION" && !fundamentoVal) { errBox.textContent = "La oposición exige motivos fundados y legítimos (fundamento)."; errBox.classList.add("is-visible"); return; }
-          draft.mergeDraft({ arco: { derecho: derecho, condicion: byId("arcoCondicion"), expediente: byId("arcoExpediente"), correo: correo } });
-          renderContent(container, opts, false, true);
+          draft.mergeDraft({ arco: { derecho: derecho, condicion: byId("arcoCondicion"), expediente: byId("arcoExpediente"), correo: correo, descripcion: desc, fundamento: fundamentoVal } });
+          if (!global.tm.api.isOnline()) { renderContent(container, opts, false, true); return; }
+          global.tm.api.request("POST", "/solicitudes-arco", {
+            pantalla: "P-27",
+            body: { tipo: derecho, descripcion: desc + (fundamentoVal ? "\nFundamento: " + fundamentoVal : "") }
+          }, function (err, data) {
+            if (err) { errBox.textContent = err.mensajeUsuario; errBox.classList.add("is-visible"); return; }
+            arcoLast = data;
+            arcoSolicitudes.unshift(data);
+            renderContent(container, opts, false, true);
+          });
         },
       }));
       form.appendChild(actions);
@@ -265,8 +277,8 @@
       var derecho = draft.getDraft().arco ? draft.getDraft().arco.derecho : "ACCESO";
       var info = derechoInfo(derecho) || DERECHOS[0];
       var panel = layout.el("div", "app-alert app-alert--info");
-      panel.appendChild(layout.el("span", "app-alert__title", "Solicitud ARCO registrada (simulada)"));
-      panel.appendChild(layout.el("span", "app-alert__text", "Referencia: ARCO-2026-0031. Derecho: " + info.label + ". Plazo de respuesta: " + info.plazo + ". La solicitud quedó trazada y será atendida por el responsable del tratamiento."));
+      panel.appendChild(layout.el("span", "app-alert__title", arcoLast ? "Solicitud ARCO registrada" : "Solicitud ARCO registrada (simulada)"));
+      panel.appendChild(layout.el("span", "app-alert__text", "Referencia: " + (arcoLast ? arcoLast.id : "ARCO-2026-0031") + ". Derecho: " + info.label + ". Plazo de respuesta: " + info.plazo + ". La solicitud quedó trazada y será atendida por el responsable del tratamiento."));
       var actions = layout.el("div", "toolbar__actions");
       actions.appendChild(button({ variant: "primary", text: "Registrar otra solicitud ARCO", onClick: function () { renderContent(container, opts, false, false); } }));
       panel.appendChild(actions);
@@ -357,6 +369,11 @@
     }
 
     opts.onDemoState = show;
+    if (global.tm.api.isOnline()) {
+      global.tm.api.request("GET", "/solicitudes-arco", { pantalla: "P-27" }, function (err, data) {
+        if (!err && Array.isArray(data)) arcoSolicitudes = data;
+      });
+    }
     show("carga");
   }
 
