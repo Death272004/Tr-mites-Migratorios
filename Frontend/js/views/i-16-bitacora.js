@@ -11,6 +11,7 @@
   var field = global.tm.ui.field;
   var button = global.tm.ui.button;
   var table = global.tm.ui.table;
+  var api = global.tm.api;
 
   var FALLBACK = { tipos: [], usuarios: [], instituciones: [], eventos: [] };
 
@@ -25,7 +26,7 @@
   function renderI16(container, opts) {
     opts = opts || {};
     var d = datos();
-    var filtro = { usuario: "", tipo: "", expediente: "" };
+    var filtro = { usuario: "", tipo: "", expediente: "", desde: "", hasta: "" };
 
     function demoSelector() {
       var wrap = layout.el("label", "toolbar__demo");
@@ -43,6 +44,8 @@
         if (filtro.usuario && e.usuario !== filtro.usuario) return false;
         if (filtro.tipo && e.tipo !== filtro.tipo) return false;
         if (filtro.expediente && e.expediente.indexOf(filtro.expediente) < 0) return false;
+        if (filtro.desde && e.fecha.slice(0, 10) < filtro.desde) return false;
+        if (filtro.hasta && e.fecha.slice(0, 10) > filtro.hasta) return false;
         return true;
       });
     }
@@ -71,8 +74,8 @@
       grid.appendChild(fUsuario);
       grid.appendChild(fTipo);
       grid.appendChild(fExp);
-      grid.appendChild(field.fieldDate({ id: "bitDesde", label: "Desde", value: "" }));
-      grid.appendChild(field.fieldDate({ id: "bitHasta", label: "Hasta", value: "" }));
+      grid.appendChild(field.fieldDate({ id: "bitDesde", label: "Desde", value: filtro.desde }));
+      grid.appendChild(field.fieldDate({ id: "bitHasta", label: "Hasta", value: filtro.hasta }));
       grid.appendChild(field.fieldSelect({ id: "bitInstitucion", label: "Institución", options: [{ label: "Todas", value: "" }].concat(optionsTo(d.instituciones)) }));
       filters.appendChild(grid);
       var fActions = layout.el("div", "toolbar__actions");
@@ -83,6 +86,15 @@
         filtro.usuario = u ? u.value : "";
         filtro.tipo = t ? t.value : "";
         filtro.expediente = e ? e.value.trim() : "";
+        var desde = filters.querySelector("#bitDesde");
+        var hasta = filters.querySelector("#bitHasta");
+        filtro.desde = desde ? desde.value : "";
+        filtro.hasta = hasta ? hasta.value : "";
+        if (api && api.isOnline()) {
+          renderLoading();
+          cargarReal(function (err) { if (err) { renderError(); return; } renderContent(); });
+          return;
+        }
         renderContent();
       } }));
       filters.appendChild(fActions);
@@ -98,9 +110,30 @@
 
       var actions = layout.el("div", "toolbar__actions");
       actions.appendChild(button({ variant: "ghost", text: "Exportar CSV", onClick: function () {
-        var a = layout.el("div", "app-alert app-alert--info");
-        a.appendChild(layout.el("span", "app-alert__text", "Exportación auditada (evento registrado): bitacora.csv"));
-        inner.appendChild(a);
+        if (!api || !api.isOnline()) {
+          var local = layout.el("div", "app-alert app-alert--info");
+          local.appendChild(layout.el("span", "app-alert__text", "La exportación real requiere conexión con el backend."));
+          inner.appendChild(local);
+          return;
+        }
+        var query = [];
+        if (filtro.usuario) query.push("actorId=" + encodeURIComponent(filtro.usuario));
+        if (filtro.tipo) query.push("operacion=" + encodeURIComponent(filtro.tipo));
+        if (filtro.expediente) query.push("recurso=" + encodeURIComponent(filtro.expediente));
+        if (filtro.desde) query.push("fechaDesde=" + encodeURIComponent(filtro.desde));
+        if (filtro.hasta) query.push("fechaHasta=" + encodeURIComponent(filtro.hasta));
+        api.download("/auditoria/eventos/exportacion" + (query.length ? "?" + query.join("&") : ""), {}, function (err, blob) {
+          var a = layout.el("div", "app-alert app-alert--" + (err ? "warning" : "info"));
+          a.appendChild(layout.el("span", "app-alert__text", err ? err.mensajeUsuario : "Exportación auditada completada: auditoria.csv"));
+          inner.appendChild(a);
+          if (!err && blob && global.URL && global.URL.createObjectURL) {
+            var url = global.URL.createObjectURL(blob);
+            var link = layout.el("a");
+            link.href = url; link.download = "auditoria.csv"; link.textContent = "Descargar auditoria.csv";
+            link.className = "btn btn--ghost";
+            inner.appendChild(link);
+          }
+        });
       } }));
       inner.appendChild(actions);
 
@@ -137,9 +170,30 @@
       renderSimple("Bitácora de auditoría", "No se pudo consultar", global.tm.fixtures.message("I-16", "error", "No pudimos consultar la bitácora."), true);
     }
 
+    function cargarReal(callback) {
+      if (!api || !api.isOnline()) { callback(); return; }
+      var query = ["pagina=0", "tamano=100"];
+      if (filtro.usuario) query.push("actorId=" + encodeURIComponent(filtro.usuario));
+      if (filtro.tipo) query.push("operacion=" + encodeURIComponent(filtro.tipo));
+      if (filtro.expediente) query.push("recurso=" + encodeURIComponent(filtro.expediente));
+      if (filtro.desde) query.push("fechaDesde=" + encodeURIComponent(filtro.desde));
+      if (filtro.hasta) query.push("fechaHasta=" + encodeURIComponent(filtro.hasta));
+      api.request("GET", "/auditoria/eventos?" + query.join("&"), { pantalla: "I-16" }, function (err, data) {
+        if (!err && data) {
+          var eventos = data.contenido || [];
+          d.eventos = eventos.map(function (e) {
+            return { fecha: e.fecha || "—", usuario: e.actorId || "—", ip: "—", pantalla: e.recurso || "—", accion: e.operacion || "—", expediente: e.recurso || "—", detalle: e.correlacionId || "—", tipo: e.resultado || "—" };
+          });
+          d.tipos = d.eventos.map(function (e) { return e.accion; }).filter(function (v, i, a) { return a.indexOf(v) === i; });
+          d.usuarios = d.eventos.map(function (e) { return e.usuario; }).filter(function (v, i, a) { return a.indexOf(v) === i; });
+        }
+        callback(err);
+      });
+    }
+
     function show(state) {
       global.tm.fixtures.setScenario(state);
-      if (state === "carga") { renderLoading(); setTimeout(renderContent, 700); return; }
+      if (state === "carga") { renderLoading(); setTimeout(function () { cargarReal(function (err) { if (err) { renderError(); return; } renderContent(); }); }, 700); return; }
       if (state === "error") { renderError(); return; }
       if (state === "vacio") { renderSimple("Bitácora de auditoría", "Sin eventos", "No hay eventos para los filtros seleccionados."); return; }
       renderContent();

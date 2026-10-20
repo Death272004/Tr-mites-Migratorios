@@ -53,7 +53,7 @@
     var passWrap = layout.el("div");
     inner.appendChild(passWrap);
 
-    var consentWrap = renderConsentimiento();
+    var consentWrap = renderConsentimiento(function () { return perfilActual; });
     inner.appendChild(consentWrap);
 
     container.appendChild(inner);
@@ -276,16 +276,10 @@
   }
 
   // ----- Consentimiento informado (HU-18b) -----
-  function renderConsentimiento() {
-    var consentimiento = {
-      estado: "vigente",
-      tipo: "Informado",
-      finalidad: "Trámite de residencia permanente",
-      fecha: "2026-03-12",
-      vigencia: "2027-03-12",
-      responsable: "Lic. Pedro Ruiz",
-      sensible: true,
-    };
+  function renderConsentimiento(getPerfil) {
+    var consentimiento = null;
+    var cargando = true;
+    var error = null;
 
     var consentWrap = layout.el("div", "detail-card");
 
@@ -293,7 +287,31 @@
       layout.clear(consentWrap);
       consentWrap.appendChild(layout.el("h3", "wizard-section-title", "Consentimiento informado (Ley 81 de 2019)"));
 
-      var vigente = consentimiento.estado === "vigente";
+      if (cargando) {
+        consentWrap.appendChild(layout.el("p", "form-field__help", "Consultando el estado real del consentimiento…"));
+        return;
+      }
+      if (error) {
+        consentWrap.appendChild(layout.el("p", "form-field__help", error));
+        return;
+      }
+      if (!consentimiento) {
+        consentWrap.appendChild(layout.el("p", "form-field__help", "No hay un consentimiento registrado todavía."));
+        consentWrap.appendChild(button({
+          variant: "primary", text: "Otorgar consentimiento", type: "button",
+          onClick: function () {
+            var perfil = getPerfil ? getPerfil() : null;
+            if (!perfil || !perfil.id) { error = "No pudimos identificar al titular de la cuenta."; render(); return; }
+            global.tm.api.request("POST", "/consentimientos", {
+              pantalla: "P-05",
+              body: { titularId: perfil.id, finalidad: "Gestión del trámite migratorio", alcance: "Datos personales necesarios para la gestión y verificación del expediente", baseLegal: "Consentimiento informado del titular", expreso: true }
+            }, function (err, data) { if (err) { error = err.mensajeUsuario; render(); return; } consentimiento = data; render(); });
+          }
+        }));
+        return;
+      }
+
+      var vigente = consentimiento.estado === "VIGENTE" || consentimiento.estado === "vigente";
       var estRow = layout.el("div", "detail-row");
       estRow.appendChild(layout.el("span", "detail-row__label", "Estado"));
       var estVal = layout.el("span", "detail-row__value");
@@ -302,10 +320,10 @@
       consentWrap.appendChild(estRow);
 
       var campos = [
-        { label: "Tipo", value: consentimiento.tipo + (consentimiento.sensible ? " · incluye datos sensibles (consentimiento expreso)" : "") },
+        { label: "Tipo", value: (consentimiento.expreso ? "Expreso" : "Informado") + " · " + consentimiento.alcance },
         { label: "Finalidad", value: consentimiento.finalidad },
-        { label: "Otorgado el", value: consentimiento.fecha },
-        { label: "Vigencia", value: consentimiento.vigencia },
+        { label: "Otorgado el", value: consentimiento.fecha ? new Date(consentimiento.fecha).toLocaleDateString() : "—" },
+        { label: "Vigencia", value: consentimiento.vigenciaHasta || "Sin fecha de vencimiento" },
         { label: "Responsable del tratamiento", value: consentimiento.responsable },
       ];
       for (var k = 0; k < campos.length; k++) {
@@ -333,7 +351,15 @@
             confirmModal(
               "Revocar consentimiento informado",
               "¿Revocar su consentimiento informado? No tendrá efecto retroactivo y quedará registrado. Para volver a operar necesitará otorgar uno nuevo.",
-              { onConfirm: function () { consentimiento.estado = "revocado"; render(); } }
+                { onConfirm: function () {
+                  if (!global.tm.api.isOnline()) { consentimiento.estado = "revocado"; render(); return; }
+                  global.tm.api.request("PATCH", "/consentimientos/" + encodeURIComponent(consentimiento.id),
+                    { pantalla: "P-05", body: {} }, function (err, data) {
+                      if (err) { error = err.mensajeUsuario; render(); return; }
+                      consentimiento = data;
+                      render();
+                    });
+                } }
             );
           }
         }));
@@ -344,7 +370,18 @@
             confirmModal(
               "Otorgar consentimiento informado",
               "¿Otorgar un nuevo consentimiento informado para el tratamiento de sus datos (Ley 81 de 2019 / DE 285 de 2021)?",
-              { onConfirm: function () { consentimiento.estado = "vigente"; consentimiento.fecha = "2026-10-11"; render(); } }
+              { onConfirm: function () {
+                  var perfil = getPerfil ? getPerfil() : null;
+                  if (!perfil || !perfil.id) { error = "No pudimos identificar al titular de la cuenta."; render(); return; }
+                  global.tm.api.request("POST", "/consentimientos", {
+                    pantalla: "P-05",
+                    body: { titularId: perfil.id, finalidad: "Gestión del trámite migratorio", alcance: "Datos personales necesarios para la gestión y verificación del expediente", baseLegal: "Consentimiento informado del titular", expreso: true }
+                  }, function (err, data) {
+                    if (err) { error = err.mensajeUsuario; render(); return; }
+                    consentimiento = data;
+                    render();
+                  });
+                } }
             );
           }
         }));
@@ -353,6 +390,18 @@
     }
 
     render();
+    if (global.tm.api.isOnline()) {
+      global.tm.api.request("GET", "/consentimientos", { pantalla: "P-05" }, function (err, data) {
+        cargando = false;
+        if (err) { error = err.mensajeUsuario; render(); return; }
+        consentimiento = data && data.length ? data[0] : null;
+        render();
+      });
+    } else {
+      cargando = false;
+      consentimiento = { id: null, estado: "vigente", alcance: "Trámite de residencia permanente", finalidad: "Gestión del trámite migratorio", fecha: "2026-03-12", vigenciaHasta: "2027-03-12", responsable: "Lic. Pedro Ruiz", expreso: true };
+      render();
+    }
     return consentWrap;
   }
 
