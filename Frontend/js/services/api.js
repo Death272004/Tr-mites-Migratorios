@@ -60,8 +60,10 @@
   }
 
   // Cabeceras centralizadas: token + X-Scenario (HU-09) + JSON.
-  function headers(extra) {
-    var h = { "Content-Type": "application/json" };
+  // Para multipart no se fija Content-Type: el navegador debe agregar el
+  // boundary correcto del FormData.
+  function headers(extra, omitJsonContentType) {
+    var h = omitJsonContentType ? {} : { "Content-Type": "application/json" };
     var t = token();
     if (t) h.Authorization = "Bearer " + t;
     h["X-Scenario"] = scenario();
@@ -169,7 +171,8 @@
 
     var xhr = new XMLHttpRequest();
     xhr.open(method, config.baseUrl + path, true);
-    var h = headers(options.headers);
+    var esFormData = typeof global.FormData !== "undefined" && options.body instanceof global.FormData;
+    var h = headers(options.headers, esFormData);
     for (var k in h) { if (Object.prototype.hasOwnProperty.call(h, k)) xhr.setRequestHeader(k, h[k]); }
     xhr.timeout = options.timeoutMs || config.timeoutMs;
 
@@ -190,10 +193,32 @@
     };
     xhr.onerror = function () { cb({ codigo: "SVC-0000", status: 0, mensajeUsuario: translateError(502) }); };
     xhr.ontimeout = function () { cb({ codigo: "SVC-0000", status: 0, mensajeUsuario: translateError(504) }); };
-    xhr.send(options.body ? JSON.stringify(options.body) : null);
+    xhr.send(options.body ? (esFormData ? options.body : JSON.stringify(options.body)) : null);
   }
 
   function clearCache() { cache = {}; }
+
+  // Descargas binarias/CSV centralizadas. Mantiene las mismas cabeceras y
+  // traducción de errores que request(), sin que las vistas usen XHR directo.
+  function download(path, options, callback) {
+    options = options || {};
+    var cb = typeof callback === "function" ? callback : function () {};
+    if (!isOnline()) { cb({ codigo: "SVC-OFFLINE", status: 0, mensajeUsuario: "La descarga requiere conexión con el backend." }); return; }
+    var xhr = new XMLHttpRequest();
+    xhr.open(options.method || "GET", config.baseUrl + path, true);
+    var h = headers(options.headers, true);
+    for (var k in h) { if (Object.prototype.hasOwnProperty.call(h, k)) xhr.setRequestHeader(k, h[k]); }
+    xhr.timeout = options.timeoutMs || config.timeoutMs;
+    xhr.responseType = "blob";
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState !== 4) return;
+      if (xhr.status >= 200 && xhr.status < 300) { cb(null, xhr.response, xhr); return; }
+      cb(toError(null, xhr.status));
+    };
+    xhr.onerror = function () { cb({ codigo: "SVC-0000", status: 0, mensajeUsuario: translateError(502) }); };
+    xhr.ontimeout = function () { cb({ codigo: "SVC-0000", status: 0, mensajeUsuario: translateError(504) }); };
+    xhr.send(null);
+  }
 
   global.tm = global.tm || {};
   global.tm.api = {
@@ -208,6 +233,7 @@
     get: get,
     message: message,
     request: request,
+    download: download,
     clearCache: clearCache
   };
 })(window);

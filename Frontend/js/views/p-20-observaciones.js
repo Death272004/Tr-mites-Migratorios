@@ -12,8 +12,9 @@
 
   var layout = global.tm.layout;
   var button = global.tm.ui.button;
+  var api = global.tm.api;
 
-  // Datos demo (ficticios). Se reemplazan por fixtures/HTTP en Sprint 2.
+  // Datos demo (ficticios) usados únicamente cuando la aplicación está offline.
   var DEMO_OBSERVACIONES = [
     {
       id: "OBS-2026-0021",
@@ -58,6 +59,7 @@
   }
 
   function plazoText(obs) {
+    if (!obs.plazo) return "Sin plazo indicado";
     var dias = diasHasta(obs.plazo);
     if (dias == null) return "Plazo: " + fmtFecha(obs.plazo);
     if (dias < 0) return "Plazo vencido (" + fmtFecha(obs.plazo) + ")";
@@ -116,7 +118,16 @@
     if (!obs.leida) {
       actions.appendChild(button({
         text: "Marcar como leída",
-        onClick: function () { obs.leida = true; rerender(); },
+        onClick: function () {
+          if (api && api.isOnline() && obs.id) {
+            api.request("PUT", "/notificaciones/" + encodeURIComponent(obs.id) + "/leida", {}, function (err) {
+              if (!err) { obs.leida = true; rerender(); }
+            });
+            return;
+          }
+          obs.leida = true;
+          rerender();
+        },
       }));
     }
     actions.appendChild(button({
@@ -140,7 +151,7 @@
     var toolbar = layout.el("div", "toolbar");
     var info = layout.el("span", null, observacionesPendientesText(observaciones));
     toolbar.appendChild(info);
-    toolbar.appendChild(demoSelector(opts));
+    if (!api || !api.isOnline()) toolbar.appendChild(demoSelector(opts));
     inner.appendChild(toolbar);
 
     if (observaciones.length === 0) {
@@ -229,6 +240,56 @@
 
   function renderP20(container, opts) {
     opts = opts || {};
+
+    if (api && api.isOnline()) {
+      renderLoading(container);
+      api.request("GET", "/notificaciones?pagina=0&tamano=50", { pantalla: "P-20" }, function (err, data) {
+        if (err) { renderError(container, { mensaje: err.mensajeUsuario, onRetry: function () { renderP20(container, opts); } }); return; }
+        var contenido = data && data.contenido ? data.contenido : [];
+        var notificaciones = contenido.map(function (n) {
+          return {
+            id: n.id,
+            emisor: "Despacho",
+            emisorTipo: "sistema",
+            fecha: n.fecha ? n.fecha.slice(0, 10) : "",
+            plazo: null,
+            asunto: n.mensaje || "Tiene una nueva notificación sobre su expediente.",
+            leida: !!n.leida,
+            items: [],
+            expedienteId: n.expedienteId,
+          };
+        });
+        var seleccionado = global.tm.expediente && global.tm.expediente.getSelected ? global.tm.expediente.getSelected() : null;
+        var expedienteId = seleccionado && seleccionado.id ? seleccionado.id : (notificaciones.length ? notificaciones[0].expedienteId : null);
+        function mostrar(observaciones) {
+          var todas = notificaciones.concat(observaciones || []);
+          function rerenderRemote() {
+            layout.clear(container);
+            renderContent(container, opts, todas, rerenderRemote);
+          }
+          renderContent(container, opts, todas, rerenderRemote);
+        }
+        if (!expedienteId) { mostrar([]); return; }
+        api.request("GET", "/expedientes/" + encodeURIComponent(expedienteId) + "/observaciones", { pantalla: "P-20" }, function (obsErr, datosObs) {
+          if (obsErr) { renderError(container, { mensaje: obsErr.mensajeUsuario, onRetry: function () { renderP20(container, opts); } }); return; }
+          var observaciones = (datosObs || []).map(function (o) {
+            return {
+              id: "obs-" + o.id,
+              emisor: "Despacho",
+              emisorTipo: "despacho",
+              fecha: o.fecha ? o.fecha.slice(0, 10) : "",
+              plazo: null,
+              asunto: o.texto || "Observación registrada sobre el expediente.",
+              leida: true,
+              items: [],
+              expedienteId: o.expedienteId,
+            };
+          });
+          mostrar(observaciones);
+        });
+      });
+      return;
+    }
 
     var observaciones = DEMO_OBSERVACIONES.map(function (o) {
       var copia = {};

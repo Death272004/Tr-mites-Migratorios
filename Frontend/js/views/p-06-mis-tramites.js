@@ -13,6 +13,7 @@
   var layout = global.tm.layout;
   var button = global.tm.ui.button;
   var fixtures = global.tm.fixtures;
+  var api = global.tm.api;
 
   // Datos ficticios de respaldo. La fuente por defecto es el fixture P-06 (§2.5);
   // sin backend (file://) el envelope lo registran los `.js` de js/fixtures/.
@@ -69,6 +70,40 @@
 
   function toneForState(state, tono) {
     return tono || "muted";
+  }
+
+  function estadoTexto(estado) {
+    var labels = {
+      EN_PREPARACION: "En preparación",
+      RECIBIDO: "Recibido",
+      CON_OBSERVACIONES: "Con observaciones",
+      EN_ANALISIS: "En análisis",
+      ADMITIDO: "Admitido",
+      EN_RESOLUCION: "En resolución",
+      RESUELTO: "Resuelto",
+      NOTIFICADO: "Notificado",
+      ENTREGADO: "Entregado",
+      ARCHIVADO: "Archivado",
+    };
+    return labels[estado] || estado || "Sin estado";
+  }
+
+  function apiTramite(dto) {
+    var iso = dto.fechaCreacion || dto.fechaActualizacion || "";
+    return {
+      id: dto.id,
+      expediente: dto.numero || dto.id,
+      tipo: dto.tipoTramite || "Trámite migratorio",
+      fechaEnvio: iso ? iso.slice(0, 10) : "",
+      estado: estadoTexto(dto.estado),
+      estadoTono: dto.estado === "RESUELTO" || dto.estado === "ENTREGADO" ? "success" :
+        dto.estado === "CON_OBSERVACIONES" ? "warning" : "info",
+      vencimiento: null,
+      diasParaVencer: null,
+      pendiente: dto.estado === "CON_OBSERVACIONES" ? "Tiene una observación pendiente de atención" : null,
+      borrador: false,
+      puedeDescargar: false,
+    };
   }
 
   function tramitesDe(escenario) {
@@ -152,6 +187,15 @@
         onClick: function () { if (opts.onDescargar) opts.onDescargar(t); },
       }));
     }
+    if (!t.borrador && t.id) {
+      actions.appendChild(button({
+        text: "Ver estado",
+        onClick: function () {
+          if (global.tm.expediente) global.tm.expediente.setSelected(t);
+          if (opts.onVerEstado) opts.onVerEstado(t);
+        },
+      }));
+    }
     card.appendChild(actions);
 
     return card;
@@ -185,6 +229,8 @@
   }
 
   function renderContent(container, opts, tramites) {
+    // Sustituir el estado de carga antes de pintar el contenido recibido.
+    layout.clear(container);
     var inner = layout.el("div", "app-content__inner");
 
     var header = layout.pageHeader("Mis trámites", "Expedientes y solicitudes registradas a su nombre");
@@ -198,7 +244,7 @@
       onClick: function () { if (opts.onNueva) opts.onNueva(); },
     }));
     toolbar.appendChild(actions);
-    toolbar.appendChild(demoSelector(opts));
+    if (!api || !api.isOnline()) toolbar.appendChild(demoSelector(opts));
     inner.appendChild(toolbar);
 
     if (tramites.length === 0) {
@@ -279,6 +325,19 @@
 
   function renderP06(container, opts) {
     opts = opts || {};
+
+    if (api && api.isOnline()) {
+      renderLoading(container);
+      api.request("GET", "/expedientes?pagina=0&tamano=50", { pantalla: "P-06" }, function (err, data) {
+        if (err) {
+          renderError(container, { mensaje: err.mensajeUsuario, onRetry: function () { renderP06(container, opts); } });
+          return;
+        }
+        var contenido = data && data.contenido ? data.contenido : [];
+        renderContent(container, opts, contenido.map(apiTramite));
+      });
+      return;
+    }
 
     function show(state) {
       if (!state) state = "carga";

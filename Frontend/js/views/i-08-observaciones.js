@@ -11,6 +11,7 @@
   var field = global.tm.ui.field;
   var button = global.tm.ui.button;
   var perms = global.tm.perms;
+  var api = global.tm.api;
 
   var FALLBACK = { expediente: "—", estadoActual: "CON OBSERVACIONES", tipos: ["Recepción"], medios: ["Portal"], items: [], historial: [], plazo: "" };
 
@@ -28,6 +29,34 @@
     var items = d.items.map(function (i) { return Object.assign({}, i); });
     var historial = d.historial.slice();
     var emitido = false;
+
+    function cargarReal(callback) {
+      if (!api || !api.isOnline()) { callback(null); return; }
+      var seleccionado = global.tm.expediente && global.tm.expediente.getSelected ? global.tm.expediente.getSelected() : null;
+      function cargar(id) {
+        api.request("GET", "/expedientes/" + encodeURIComponent(id), { pantalla: "I-08" }, function (err, expediente) {
+          if (err) { callback(err); return; }
+          d.id = expediente.id;
+          d.expediente = expediente.numero || expediente.id;
+          d.estadoActual = expediente.estado || "—";
+          d.version = expediente.version;
+          items = [];
+          api.request("GET", "/expedientes/" + encodeURIComponent(id) + "/observaciones", { pantalla: "I-08" }, function (obsErr, observaciones) {
+            if (obsErr) { callback(obsErr); return; }
+            historial = (observaciones || []).map(function (o) {
+              return { id: o.id, autor: o.autorId || "Despacho", fecha: o.fecha ? o.fecha.slice(0, 10) : "—", texto: o.texto || "" };
+            });
+            callback(null);
+          });
+        });
+      }
+      if (seleccionado && seleccionado.id) { cargar(seleccionado.id); return; }
+      api.request("GET", "/expedientes?estado=CON_OBSERVACIONES&pagina=0&tamano=20", { pantalla: "I-08" }, function (err, page) {
+        var lista = page && page.contenido ? page.contenido : [];
+        if (err || !lista.length) { callback(err || { mensajeUsuario: "No hay expedientes con observaciones." }); return; }
+        cargar(lista[0].id);
+      });
+    }
 
     function demoSelector() {
       var wrap = layout.el("label", "toolbar__demo");
@@ -111,9 +140,21 @@
           var plazo = form.querySelector("#obsPlazo");
           if (!desc || !desc.value.trim()) { errBox.textContent = "La descripción es obligatoria."; errBox.classList.add("is-visible"); return; }
           if (!plazo || !plazo.value) { errBox.textContent = "Indique el plazo de atención."; errBox.classList.add("is-visible"); return; }
-          historial.push({ autor: "Analista · Lic. Pedro Ruiz", fecha: "2026-10-11", texto: desc.value.trim() });
-          emitido = true;
-          renderContent();
+          function finalizar() {
+            historial.push({ autor: "Despacho", fecha: new Date().toISOString().slice(0, 10), texto: desc.value.trim() });
+            emitido = true;
+            renderContent();
+          }
+          if (!(api && api.isOnline() && d.id)) { finalizar(); return; }
+          api.request("POST", "/expedientes/" + encodeURIComponent(d.id) + "/observaciones", {
+            pantalla: "I-08",
+            body: { texto: desc.value.trim() },
+          }, function (err, creada) {
+            if (err) { errBox.textContent = err.mensajeUsuario || "No se pudo emitir la observación."; errBox.classList.add("is-visible"); return; }
+            historial.push({ id: creada && creada.id, autor: creada && creada.autorId ? creada.autorId : "Despacho", fecha: creada && creada.fecha ? creada.fecha.slice(0, 10) : new Date().toISOString().slice(0, 10), texto: creada && creada.texto ? creada.texto : desc.value.trim() });
+            emitido = true;
+            renderContent();
+          });
         },
       });
       actions.appendChild(perms.can(perms.PERMS.OBSERVAR) ? emitirBtn : perms.notice(perms.PERMS.OBSERVAR, "Solo un rol con permiso «observar» puede emitir observaciones."));
@@ -163,7 +204,11 @@
 
     function show(state) {
       global.tm.fixtures.setScenario(state);
-      if (state === "carga") { renderLoading(); setTimeout(renderContent, 700); return; }
+      if (state === "carga") {
+        renderLoading();
+        setTimeout(function () { cargarReal(function (err) { if (err) { renderError(); return; } renderContent(); }); }, 700);
+        return;
+      }
       if (state === "error") { renderError(); return; }
       if (state === "vacio") { renderEmpty(); return; }
       renderContent();

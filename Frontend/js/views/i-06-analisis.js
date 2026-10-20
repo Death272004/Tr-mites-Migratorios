@@ -244,9 +244,32 @@
       container.appendChild(inner);
     }
 
+    function cargarReal(callback) {
+      if (!global.tm.api.isOnline()) { callback(); return; }
+      global.tm.api.request("GET", "/expedientes?tamano=100", { pantalla: "I-06" }, function (err, page) {
+        if (err) { callback(err); return; }
+        var lista = page && page.contenido ? page.contenido : [];
+        var expediente = lista.filter(function (e) { return e.estado === "EN_ANALISIS" || e.estado === "ADMITIDO"; })[0] || lista[0];
+        if (!expediente) { d.expediente = "—"; d.tramite = "—"; d.requisitosComunes = []; d.requisitosEspecificos = []; callback(); return; }
+        d.expediente = expediente.numero || expediente.id;
+        d.tramite = expediente.tipoTramite || "—";
+        d.estadoActual = expediente.estado || "—";
+        global.tm.api.request("GET", "/expedientes/" + encodeURIComponent(expediente.id) + "/historial", { pantalla: "I-06" }, function (histErr, hist) {
+          if (!histErr && Array.isArray(hist)) d.historial = hist.map(function (h) { return { fecha: h.fecha, evento: (h.estadoAnterior || "") + " → " + h.estadoNuevo + (h.motivo ? " — " + h.motivo : "") }; });
+          global.tm.api.request("GET", "/expedientes/" + encodeURIComponent(expediente.id) + "/documentos", { pantalla: "I-06" }, function (docErr, docs) {
+            var documentos = !docErr && Array.isArray(docs) ? docs : [];
+            d.requisitosComunes = documentos.map(function (doc) { return { nombre: doc.tipoDocumental || doc.nombre || "Documento", estado: "Conforme", vigencia: doc.fechaCarga || "Cargado" }; });
+            d.requisitosEspecificos = [];
+            d.verificaciones = d.verificaciones || [];
+            callback();
+          });
+        });
+      });
+    }
+
     function show(state) {
       global.tm.fixtures.setScenario(state);
-      if (state === "carga") { renderLoading(); setTimeout(renderContent, 700); return; }
+      if (state === "carga") { renderLoading(); setTimeout(function () { cargarReal(function (err) { if (err) { renderError(); return; } if (d.expediente === "—") { renderEmpty(); return; } renderContent(); }); }, 700); return; }
       if (state === "error") { renderError(); return; }
       if (state === "vacio") { renderEmpty(); return; }
       renderContent();
