@@ -53,6 +53,14 @@
     } catch (e) { return null; }
   }
 
+  // El login institucional del MVP usa una sesión ficticia. No se debe enviar
+  // ese token al backend porque no es un JWT real; los roles internos deben
+  // consumir los fixtures locales hasta que exista autenticación institucional.
+  function isDemoSession() {
+    var t = token();
+    return typeof t === "string" && t.indexOf("demo.") === 0;
+  }
+
   function scenario() {
     var s = null;
     try { s = global.tm.fixtures && global.tm.fixtures.scenario ? global.tm.fixtures.scenario() : null; } catch (e) { s = null; }
@@ -155,7 +163,7 @@
     var pantalla = options.pantalla;
     var esc = options.escenario || scenario();
 
-    if (!isOnline()) {
+    if (!isOnline() || isDemoSession()) {
       var env = localEnvelope(pantalla, esc);
       if (!env) {
         cb({ codigo: "SVC-0404", status: 404, mensajeUsuario: translateError(404), offline: true });
