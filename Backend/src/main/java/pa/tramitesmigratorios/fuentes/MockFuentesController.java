@@ -28,14 +28,6 @@ import pa.tramitesmigratorios.fuentes.Fuentes.PersonaTe;
 @RequestMapping("/api/mock")
 class MockFuentesController {
 
-	enum Escenario {
-
-		OK, SIN_RESULTADO, ERROR_TECNICO, TIMEOUT, RATE_LIMIT, DATOS_INCOMPLETOS,
-		/** Respuesta válida idéntica en cada llamada: sirve para probar la idempotencia. */
-		LLENO
-
-	}
-
 	private final Fuentes.Te te;
 	private final Fuentes.Css css;
 	private final Fuentes.RegistroPublico registro;
@@ -82,7 +74,7 @@ class MockFuentesController {
 
 	private <T> T simular(String fuente, String encabezado, String consulta, Supplier<Optional<T>> fuenteDeDatos,
 			UnaryOperator<T> recortar) {
-		Escenario escenario = escenario(encabezado != null ? encabezado : consulta);
+		Escenario escenario = Escenario.de(encabezado != null ? encabezado : consulta);
 		esperarLatencia();
 		return switch (escenario) {
 			case ERROR_TECNICO -> throw new ErrorIntegracion(ErrorIntegracion.Tipo.ERROR_TECNICO, fuente);
@@ -93,18 +85,6 @@ class MockFuentesController {
 			case DATOS_INCOMPLETOS ->
 				recortar.apply(fuenteDeDatos.get().orElseThrow(MockFuentesController::sinResultado));
 		};
-	}
-
-	private static Escenario escenario(String valor) {
-		if (valor == null || valor.isBlank()) {
-			return Escenario.OK;
-		}
-		try {
-			return Escenario.valueOf(valor.trim().toUpperCase());
-		}
-		catch (IllegalArgumentException e) {
-			throw ErrorApi.entradaInvalida("X-Scenario", "Escenario no reconocido.");
-		}
 	}
 
 	/** Un "sin resultado" es una respuesta válida de la fuente, no un fallo técnico (CP-07). */
