@@ -1,0 +1,14 @@
+{
+  "meta": {
+    "pantalla": "P-01",
+    "titulo": "Inicio de sesión",
+    "escenario": "error",
+    "esquema": "hu-08/v1",
+    "nota": "Mensaje genérico que no revela si la cuenta existe (CP-02)."
+  },
+  "data": null,
+  "error": {
+    "codigo": 401,
+    "mensajeUsuario": "No pudimos iniciar sesión. Verifique el correo y la contraseña e intente de nuevo."
+  }
+}
