@@ -42,7 +42,7 @@
     var recibo = null;
 
     function cargarReal(callback) {
-      if (!api || !api.isOnline()) { callback(null); return; }
+      if (!api || !api.isOnline() || api.isDemoSession()) { callback(null); return; }
       var seleccionado = global.tm.expediente && global.tm.expediente.getSelected ? global.tm.expediente.getSelected() : null;
       function cargar(id) {
         api.request("GET", "/expedientes/" + encodeURIComponent(id), { pantalla: "I-04" }, function (err, expediente) {
