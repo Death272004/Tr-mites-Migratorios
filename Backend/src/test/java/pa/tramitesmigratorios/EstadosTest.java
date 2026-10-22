@@ -146,7 +146,8 @@ class EstadosTest extends PruebaApi {
 	@Test
 	void noSeLlegaALaDecisionSinRequisitosCompletosNiVerificacionesResueltas() throws Exception {
 		String cliente = tokenDe(Rol.SOLICITANTE);
-		String despacho = token(funcionarioCompleto());
+		Usuario resolutor = funcionarioCompleto();
+		String despacho = token(resolutor);
 		String id = expediente(cliente, TRAMITE_SIMPLE);
 		cambiarEstado(despacho, despacho, id, "EN_ANALISIS", "Inicio").andExpect(status().isOk());
 		cambiarEstado(despacho, despacho, id, "ADMITIDO", "Conforme").andExpect(status().isOk());
@@ -171,7 +172,7 @@ class EstadosTest extends PruebaApi {
 		assertThat(estado(cliente, id)).isEqualTo("ADMITIDO");
 
 		pendiente.registrarManual(new Respuesta(Verificacion.Fuente.TE, EstadoTecnico.RESPONDIDA,
-				Verificacion.ResultadoMinimo.COINCIDE, "Consulta pública TE", Instant.now(), UUID.randomUUID()));
+				Verificacion.ResultadoMinimo.COINCIDE, "Consulta pública TE", Instant.now(), resolutor.getId()));
 		verificaciones.save(pendiente);
 		cambiarEstado(despacho, despacho, id, "EN_RESOLUCION", "Listo").andExpect(status().isOk());
 		resolver(despacho, id, "NEGADA", "No cumple el requisito de estadía").andExpect(status().isOk())
