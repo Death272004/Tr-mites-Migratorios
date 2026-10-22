@@ -1,6 +1,8 @@
 # Secretos y configuración local
 .env
 *.env.local
+*.secret
+.secrets/
 
 # Java / Maven
 target/
@@ -10,11 +12,19 @@ target/
 
 # Node (herramientas de validación)
 node_modules/
+dist/
+build/
+coverage/
 
 # Volúmenes y datos locales de Docker
 /datos/
 /almacenamiento/
 Backend/almacenamiento/
+
+# Informes temporales; las evidencias aprobadas viven en docs/evidencias/
+reports/
+tmp/
+*.tmp
 
 # Editores e IDE
 .idea/
