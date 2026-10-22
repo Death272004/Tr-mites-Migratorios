@@ -151,7 +151,7 @@
     }
 
     function cargarReal(callback) {
-      if (!global.tm.api.isOnline()) { callback(); return; }
+      if (!global.tm.api.isOnline() || global.tm.api.isDemoSession()) { callback(); return; }
       global.tm.api.request("GET", "/expedientes?tamano=100", { pantalla: "I-02" }, function (err, data) {
         if (!err && data) {
           var expedientes = data.contenido || [];
