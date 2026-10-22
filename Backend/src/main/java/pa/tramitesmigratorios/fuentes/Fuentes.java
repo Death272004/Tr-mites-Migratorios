@@ -37,6 +37,16 @@ public final class Fuentes {
 
 	}
 
+	/**
+	 * Clave con la que una fuente identifica a la persona a partir de su documento. CSS y Registro
+	 * Público se consultan por esa clave, no por el nombre ni por otros datos del titular.
+	 */
+	public interface Identificacion {
+
+		Optional<String> idPersona(String tipoDocumento, String numeroDocumento);
+
+	}
+
 	/** Servicio Nacional de Migración: estado de un expediente en el sistema oficial. */
 	public interface Snm {
 

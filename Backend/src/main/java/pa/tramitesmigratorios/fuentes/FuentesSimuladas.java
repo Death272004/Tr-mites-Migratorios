@@ -29,7 +29,8 @@ import pa.tramitesmigratorios.fuentes.Fuentes.Registro;
  * demostración y representan integraciones futuras, sujetas a convenio.
  */
 @Component
-class FuentesSimuladas implements Fuentes.Te, Fuentes.Css, Fuentes.RegistroPublico, Fuentes.Snm {
+class FuentesSimuladas
+		implements Fuentes.Te, Fuentes.Css, Fuentes.RegistroPublico, Fuentes.Snm, Fuentes.Identificacion {
 
 	static final String FIXTURE = "fixtures/fuentes-simuladas.json";
 
@@ -63,6 +64,15 @@ class FuentesSimuladas implements Fuentes.Te, Fuentes.Css, Fuentes.RegistroPubli
 			.map(p -> new PersonaTe(texto(p, "tipoDocumento"), texto(p, "numeroDocumento"), texto(p, "nombres"),
 					texto(p, "apellidos"), texto(p, "fechaNacimiento"),
 					referencia("TE", tipoDocumento + "/" + numeroDocumento)));
+	}
+
+	@Override
+	public Optional<String> idPersona(String tipoDocumento, String numeroDocumento) {
+		return personas.stream()
+			.filter(p -> texto(p, "tipoDocumento").equalsIgnoreCase(tipoDocumento)
+					&& texto(p, "numeroDocumento").equalsIgnoreCase(numeroDocumento))
+			.findFirst()
+			.map(p -> texto(p, "idPersona"));
 	}
 
 	@Override

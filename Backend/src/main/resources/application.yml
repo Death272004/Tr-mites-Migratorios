@@ -53,6 +53,23 @@ app:
     plazo-dias: ${ARCO_PLAZO_DIAS:10}
   fuentes-simuladas:
     latencia-ms: ${MOCK_LATENCIA_MS:0}
+  # Verificaciones (HU-23, HU-24). Timeout y reintentos por fuente; solo aplican al modo simulado.
+  verificaciones:
+    reintentos-automaticos: ${VERIFICACION_REINTENTOS_AUTOMATICOS:true}
+    intervalo-reintentos-ms: 15000
+    fuentes:
+      te:
+        timeout-ms: 3000
+        reintentos-maximos: 2
+        espera-base-ms: 30000
+      css:
+        timeout-ms: 3000
+        reintentos-maximos: 2
+        espera-base-ms: 30000
+      registro-publico:
+        timeout-ms: 5000
+        reintentos-maximos: 2
+        espera-base-ms: 60000
   demo:
     usuarios: ${DEMO_USUARIOS:false}
     contrasena: ${DEMO_CONTRASENA:}
