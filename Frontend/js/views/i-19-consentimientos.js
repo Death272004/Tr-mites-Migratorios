@@ -160,7 +160,7 @@
                     aviso = "Consentimiento " + c.id + " revocado. Traza enviada a la bitácora (I-16).";
                     renderContent();
                   }
-                  if (!global.tm.api.isOnline()) { actualizar(); return; }
+                  if (!global.tm.api.isOnline() || global.tm.api.isDemoSession()) { actualizar(); return; }
                   global.tm.api.request("PATCH", "/consentimientos/" + encodeURIComponent(c.id), { pantalla: "I-19", body: {} }, function (err, data) {
                     if (err) { aviso = err.mensajeUsuario; renderContent(); return; }
                     actualizar(data);
@@ -208,7 +208,7 @@
     }
 
     function cargarReal(callback) {
-      if (!global.tm.api.isOnline()) { callback(); return; }
+      if (!global.tm.api.isOnline() || global.tm.api.isDemoSession()) { callback(); return; }
       global.tm.api.request("GET", "/consentimientos", { pantalla: "I-19" }, function (err, data) {
         if (!err && Array.isArray(data)) {
           d.consentimientos = data.map(function (c) {

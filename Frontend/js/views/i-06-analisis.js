@@ -245,7 +245,7 @@
     }
 
     function cargarReal(callback) {
-      if (!global.tm.api.isOnline()) { callback(); return; }
+      if (!global.tm.api.isOnline() || global.tm.api.isDemoSession()) { callback(); return; }
       global.tm.api.request("GET", "/expedientes?tamano=100", { pantalla: "I-06" }, function (err, page) {
         if (err) { callback(err); return; }
         var lista = page && page.contenido ? page.contenido : [];

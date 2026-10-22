@@ -233,6 +233,7 @@
     setBaseUrl: setBaseUrl,
     getBaseUrl: getBaseUrl,
     isOnline: isOnline,
+    isDemoSession: isDemoSession,
     token: token,
     scenario: scenario,
     headers: headers,
