@@ -12,3 +12,16 @@ app:
     intentos-maximos: 3
   documentos:
     directorio: target/almacenamiento-pruebas
+  # Sin planificador: las pruebas ejecutan los reintentos vencidos a mano. Timeout corto para el escenario TIMEOUT.
+  verificaciones:
+    reintentos-automaticos: false
+    fuentes:
+      te:
+        timeout-ms: 300
+        espera-base-ms: 0
+      css:
+        timeout-ms: 300
+        espera-base-ms: 0
+      registro-publico:
+        timeout-ms: 300
+        espera-base-ms: 0
