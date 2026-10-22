@@ -17,6 +17,18 @@ Contrato: [`openapi.yaml`](openapi.yaml) — HU-07 del backlog (`Documentacion/0
 3. El archivo debe validar sin errores: `npx @redocly/cli lint Backend/docs/openapi.yaml`.
 4. Se avisa a la rama Frontend cuando el cambio afecta una ruta, un campo o un enumerado que ya consume.
 
+## 0.5.0 — 2026-10-22
+
+Verificaciones del Sprint 5 (HU-23, HU-24, HU-25) para que el Frontend conecte I-07 y P-19 (HU-26). **Cambia un campo existente**: `resultadoMinimo` deja de ser texto libre.
+
+- `Verificacion.resultadoMinimo` y `VerificacionNueva.resultadoMinimo` pasan al enumerado nuevo `ResultadoMinimo`: `COINCIDE`, `NO_COINCIDE`, `VIGENTE`, `NO_VIGENTE`, `CON_REGISTROS`, `SIN_RESULTADO`. Antes el ejemplo era `"coincide"`.
+- `POST /api/expedientes/{id}/verificaciones` acepta `Idempotency-Key` (repetir responde 200 con `Idempotent-Replayed: true`) y `X-Scenario` en modo simulado. `finalidad` y `tipoVerificacion` deben ser los de la fila de la fuente en la matriz. Un fallo técnico de la fuente responde 201 con la verificación en `REINTENTO_PROGRAMADO` o `ERROR_TECNICO`, nunca con un resultado.
+- Nuevas rutas: `POST /api/expedientes/{id}/verificaciones/preparacion`, `POST .../{verificacionId}/atencion`, `POST .../{verificacionId}/reintento` y `GET /api/verificaciones/matriz`.
+- `Verificacion` suma `intentos`, `proximoIntento`, `ultimoFallo` y `correlacionId`. Para el cliente, `GET .../verificaciones` devuelve solo el estado agregado (`PENDIENTE` o `RESPONDIDA`).
+- Esquemas nuevos: `ResultadoMinimo` y `FilaMatrizFuentes`. Parámetros nuevos: `Idempotencia` y `VerificacionId`.
+
+Códigos de error nuevos: `FUENTE_NO_AUTORIZADA`, `FINALIDAD_NO_AUTORIZADA` (403), `VERIFICACION_EN_CURSO`, `REINTENTO_NO_PERMITIDO`, `TRANSICION_VERIFICACION_NO_PERMITIDA`, `DOCUMENTO_DEL_TITULAR_FALTANTE` y `EXPEDIENTE_CERRADO` (409). Se reutilizan `CONSENTIMIENTO_REQUERIDO` y `CONSENTIMIENTO_EXPRESO_REQUERIDO`.
+
 ## 0.4.0 — 2026-10-13
 
 Servicios de cuenta para que el Frontend conecte P-02, P-04 y P-05 (TASK-12.5). Cambios aditivos: ninguna ruta ni campo existente cambia.

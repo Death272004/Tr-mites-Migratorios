@@ -32,6 +32,12 @@ public class Correlacion extends OncePerRequestFilter {
 		return id != null ? id : "sin-correlacion";
 	}
 
+	/** Fuera de una petición (p. ej. un reintento programado) se genera una correlación propia. */
+	public static String actualONueva() {
+		String id = MDC.get(CLAVE);
+		return id != null ? id : UUID.randomUUID().toString();
+	}
+
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
 			throws ServletException, IOException {
