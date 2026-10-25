@@ -23,9 +23,9 @@ Aplicar indicadores de calidad y reunir evidencia técnica de seguridad, rendimi
 
 ## Evidencia disponible
 
-El informe `Informe_QA_JMeter_OWASP_ZAP_Tramites_Migratorios.pdf` contiene el reporte técnico de QA asociado a este sprint.
+El informe `qa-jmeter-zap.pdf` contiene el reporte técnico de QA asociado a este sprint.
 
-La verificación de humo del entorno está documentada en [Resultado_Verificacion_Entorno.md](Resultado_Verificacion_Entorno.md).
+La verificación de humo del entorno está documentada en [entorno.md](entorno.md).
 
 ## Criterio de aceptación
 
