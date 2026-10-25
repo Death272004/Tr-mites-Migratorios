@@ -1,6 +1,6 @@
 # Pipeline de integración continua
 
-El workflow `.github/workflows/ci.yml` se ejecuta en cada push y pull request.
+El archivo `DevOps/ci.yml` contiene el workflow propuesto para ejecutarse en cada push y pull request. Para activarlo en GitHub debe copiarse a `.github/workflows/ci.yml` con una cuenta o token que tenga permiso `workflow`.
 
 ## Etapas
 
