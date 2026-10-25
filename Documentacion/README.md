@@ -16,17 +16,17 @@ Alcance importante: cualquier convenio o integración automática dependerá de 
 
 | # | Documento | Archivo |
 | --- | --------- | ------- |
-| 1 | Propuesta de arquitectura | [01-propuesta-de-arquitectura.md](01-propuesta-de-arquitectura.md) |
-| 2 | Plan de acción | [02-plan-de-accion.md](02-plan-de-accion.md) |
-| 3 | Plan de desarrollo | [03-plan-de-desarrollo.md](03-plan-de-desarrollo.md) |
-| 4 | Plan de pruebas | [04-plan-de-pruebas.md](04-plan-de-pruebas.md) |
-| 5 | Backlog detallado del proyecto: siete sprints | [05-backlog-siete-sprints.md](05-backlog-siete-sprints.md) |
-| 6 | Roles y accesos | [06-roles-y-accesos.md](06-roles-y-accesos.md) |
-| 7 | Marco legal y matriz de fuentes de verificación (HU-06) | [07-marco-legal-y-matriz-fuentes-verificacion.md](07-marco-legal-y-matriz-fuentes-verificacion.md) |
+| 1 | Propuesta de arquitectura | [01-propuesta-de-arquitectura.md](documentos-base/01-propuesta-de-arquitectura.md) |
+| 2 | Plan de acción | [02-plan-de-accion.md](documentos-base/02-plan-de-accion.md) |
+| 3 | Plan de desarrollo | [03-plan-de-desarrollo.md](documentos-base/03-plan-de-desarrollo.md) |
+| 4 | Plan de pruebas | [04-plan-de-pruebas.md](documentos-base/04-plan-de-pruebas.md) |
+| 5 | Backlog detallado del proyecto: siete sprints | [05-backlog-siete-sprints.md](documentos-base/05-backlog-siete-sprints.md) |
+| 6 | Roles y accesos | [06-roles-y-accesos.md](documentos-base/06-roles-y-accesos.md) |
+| 7 | Marco legal y matriz de fuentes de verificación (HU-06) | [07-marco-legal-y-matriz-fuentes-verificacion.md](documentos-base/07-marco-legal-y-matriz-fuentes-verificacion.md) |
 
 ## Documentos por rama de trabajo
 
-Derivados del backlog maestro (`05-backlog-siete-sprints.md`), cada documento explica a una rama **qué tiene que hacer** (historias y tareas por sprint) y **con qué hacerlo** (herramientas obligatorias y complementarias):
+Derivados del backlog maestro (`documentos-base/05-backlog-siete-sprints.md`), cada documento explica a una rama **qué tiene que hacer** (historias y tareas por sprint) y **con qué hacerlo** (herramientas obligatorias y complementarias):
 
 | Rama | Archivo | Herramientas obligatorias principales |
 | --- | --- | --- |
@@ -36,7 +36,7 @@ Derivados del backlog maestro (`05-backlog-siete-sprints.md`), cada documento ex
 | Producto y Documentación | [Rama-04-Producto-Documentacion.md](Rama-04-Producto-Documentacion.md) | Docker, revisión de informes ZAP/JMeter |
 | DevOps | [Rama-05-DevOps.md](../DevOps/Rama-05-DevOps.md) | Docker (central), Git/CI, Java (compilación), entornos de ZAP y JMeter |
 
-> **Inventario oficial de pantallas adoptado: 45** (portal P-01…P-27 + módulo interno I-01…I-18), según `Pantallas_y_Datos_Migracion.md`; el cambio está registrado en el registro de cambios del backlog (`05-backlog-siete-sprints.md`) y el documento `06-roles-y-accesos.md`.
+> **Inventario oficial de pantallas adoptado: 45** (portal P-01…P-27 + módulo interno I-01…I-18), según `Pantallas_y_Datos_Migracion.md`; el cambio está registrado en el registro de cambios del backlog (`documentos-base/05-backlog-siete-sprints.md`) y el documento `documentos-base/06-roles-y-accesos.md`.
 
 ## Diferencia entre los documentos
 
