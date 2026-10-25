@@ -25,6 +25,10 @@ Comprobar que el entorno se puede levantar de forma reproducible y que el acceso
 
 Los resultados de la suite automatizada están en [pruebas.md](pruebas.md).
 
+## Informe PDF
+
+Consulta el informe completo en [qa.pdf](qa.pdf).
+
 ## Criterio de cierre
 
 Los casos críticos de autenticación y autorización deben estar en verde; ningún error debe revelar credenciales, documentos, datos personales ni trazas internas.

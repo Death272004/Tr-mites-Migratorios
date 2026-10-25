@@ -29,3 +29,7 @@ El flujo principal debe ser reproducible, los permisos deben respetarse, los doc
 ## Estado
 
 Alcance de validación preparado para la demostración del incremento. Los resultados deben mantenerse junto con sus evidencias.
+
+## Informe PDF
+
+Consulta el informe completo en [qa.pdf](qa.pdf).
