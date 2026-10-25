@@ -27,6 +27,8 @@ El informe `qa-jmeter-zap.pdf` contiene el reporte técnico de QA asociado a est
 
 La verificación de humo del entorno está documentada en [entorno.md](entorno.md).
 
+El resumen formal de QA está en [qa.pdf](qa.pdf).
+
 ## Criterio de aceptación
 
 Cada hallazgo debe tener severidad, responsable, estado y fecha. Las vulnerabilidades críticas y altas deben corregirse o quedar justificadas como riesgo residual. Las métricas deben interpretarse y relacionarse con decisiones del proyecto.

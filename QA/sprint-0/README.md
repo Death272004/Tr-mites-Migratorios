@@ -32,3 +32,7 @@ El Sprint 0 queda documentado cuando existe una estrategia de calidad, riesgos p
 ## Estado
 
 Planificación inicial documentada. La ejecución de pruebas se realiza a partir del Sprint 1.
+
+## Informe PDF
+
+Consulta el informe completo en [qa.pdf](qa.pdf).

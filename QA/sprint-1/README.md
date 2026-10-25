@@ -36,3 +36,7 @@ Los contratos críticos deben estar verificados, el recorrido inicial debe ser r
 ## Estado
 
 Base de pruebas definida; los resultados deben completarse con la ejecución del equipo sobre el entorno integrado.
+
+## Informe PDF
+
+Consulta el informe completo en [qa.pdf](qa.pdf).
