@@ -25,6 +25,8 @@ Aplicar indicadores de calidad y reunir evidencia técnica de seguridad, rendimi
 
 El informe `Informe_QA_JMeter_OWASP_ZAP_Tramites_Migratorios.pdf` contiene el reporte técnico de QA asociado a este sprint.
 
+La verificación de humo del entorno está documentada en [Resultado_Verificacion_Entorno.md](Resultado_Verificacion_Entorno.md).
+
 ## Criterio de aceptación
 
 Cada hallazgo debe tener severidad, responsable, estado y fecha. Las vulnerabilidades críticas y altas deben corregirse o quedar justificadas como riesgo residual. Las métricas deben interpretarse y relacionarse con decisiones del proyecto.
