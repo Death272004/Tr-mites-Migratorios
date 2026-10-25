@@ -2,7 +2,7 @@
 
 **Proyecto:** Producto comercial de gestión de expedientes migratorios para **bufetes de abogados** (Panamá, Ley 81 de 2019)
 **Rama:** Frontend (HTML / CSS / JavaScript puro)
-**Inventario oficial:** 45 pantallas — portal del cliente del bufete **P-01…P-27** + módulo interno del despacho **I-01…I-18**
+**Inventario oficial:** 45 pantallas — portal del cliente del bufete **P-01…P-27** + módulo interno del despacho **I-01…I-18** (+ **I-19**, añadida por HU-18b = 46 pantallas)
 **Sprint 1:** portal en 4 fases (A–D, ≈ 130 h, sin backend: fixtures locales) · **Sprint 2:** módulo interno en fases E y F
 **Documentos fuente:** `Pantallas_y_Datos_Migracion.md` (campos), `Rama-01-Frontend.md` (fases, convenciones, DoD), `Documentacion/06-roles-y-accesos.md` (roles y acceso)
 
@@ -10,12 +10,12 @@
 
 ## §1. Propósito
 
-Este documento es un **checklist ejecutable por pantalla**: cada una de las 45 pantallas del inventario tiene una subsección con objetivo, rol dueño, campos exactos clasificados, reglas aplicables, estados visibles, fixture y nota de integración. Un programador debe poder construir la pantalla directamente a partir de aquí, sin inventar campos ni decisiones.
+Este documento es un **checklist ejecutable por pantalla**: cada una de las 45 pantallas del inventario (más **I-19**, añadida por HU-18b) tiene una subsección con objetivo, rol dueño, campos exactos clasificados, reglas aplicables, estados visibles, fixture y nota de integración. Un programador debe poder construir la pantalla directamente a partir de aquí, sin inventar campos ni decisiones.
 
 Reglas de lectura:
 
 1. **Fuente de verdad de los campos:** `Pantallas_y_Datos_Migracion.md`. Si un dato no aparece allí, este plan escribe **POR DEFINIR (PO)** en lugar de inventarlo. Nunca se agregan campos que la fuente no pide (minimización, Ley 81).
-2. **Numeración exacta:** se conserva `P-01…P-27` e `I-01…I-18` tal como los fija el inventario adoptado (45 pantallas).
+2. **Numeración exacta:** se conserva `P-01…P-27` e `I-01…I-18` tal como los fija el inventario adoptado (45 pantallas); **I-19** (consentimientos) se añade en HU-18b.
 3. **Vocabulario del bufete** (el documento fuente usa vocabulario de la administración pública; aquí se traduce sin alterar los campos):
 
 | Vocabulario de la fuente | Vocabulario del producto (bufete) |
@@ -92,60 +92,61 @@ Toda pantalla implementa y muestra los cuatro estados, con selector de escenario
 
 ---
 
-## §3. Tabla-resumen maestra (45 pantallas)
+## §3. Tabla-resumen maestra (46 pantallas)
 
 **Fase** = fase de construcción; **todas descansan sobre la Fase A** (transversal, HU-01). Fases: A = andamiaje · B = acceso P-01…P-05 · C = bandeja/asistente P-06…P-18 · D = seguimiento/servicios P-19…P-27 · E = operación I-01…I-13 · F = administración I-14…I-18.
-**Estado:** `CONSTRUIR` · `POR CONFIRMAR` (P-15 pagos sin pasarela, P-18 cita, P-24 edictos, P-25 certificaciones — pendientes §8 de la fuente; se construyen en modo mínimo según HU-03/HU-04).
+**Estado:** `CONSTRUIDO` (Sprint 1 completo: 45/45 pantallas; + I-19 en HU-18b = 46/46) · `POR CONFIRMAR` en P-15, P-18, P-24, P-25 (construidas en modo mínimo según HU-03/HU-04; pendientes §8 de la fuente, siguen marcadas POR CONFIRMAR hasta la definición del PO).
 
 | ID | Pantalla | Fase | Ruta hash propuesta | Rol dueño | Estado |
 |---|---|---|---|---|---|
-| P-01 | Inicio de sesión | B | `#/login` | SOLICITANTE (público) | CONSTRUIR |
-| P-02 | Registro de cuenta | B | `#/registro` | SOLICITANTE (público) | CONSTRUIR |
-| P-03 | Verificación de identidad (OTP) | B | `#/identidad/otp` | SOLICITANTE (público) | CONSTRUIR |
-| P-04 | Recuperación de contraseña | B | `#/recuperar-clave` | SOLICITANTE (público) | CONSTRUIR |
-| P-05 | Mi perfil / datos de contacto | B | `#/perfil` | SOLICITANTE | CONSTRUIR |
-| P-06 | Mis trámites (bandeja) | C | `#/mis-tramites` | SOLICITANTE | CONSTRUIR |
-| P-07 | Nueva solicitud — selección de trámite | C | `#/solicitud/tramite` | SOLICITANTE | CONSTRUIR |
-| P-08 | Titularidad y representación | C | `#/solicitud/titularidad` | SOLICITANTE | CONSTRUIR |
-| P-09 | Paso 1 — Datos personales | C | `#/solicitud/paso-1` | SOLICITANTE | CONSTRUIR |
-| P-10 | Paso 2 — Pasaporte e historial migratorio | C | `#/solicitud/paso-2` | SOLICITANTE | CONSTRUIR |
-| P-11 | Paso 3 — Domicilio y notificaciones | C | `#/solicitud/paso-3` | SOLICITANTE | CONSTRUIR |
-| P-12 | Paso 4 — Situación laboral, económica o de vínculos | C | `#/solicitud/paso-4` | SOLICITANTE | CONSTRUIR |
-| P-13 | Paso 5 — Dependientes | C | `#/solicitud/paso-5` | SOLICITANTE | CONSTRUIR |
-| P-14 | Paso 6 — Requisitos y carga de documentos | C | `#/solicitud/paso-6` | SOLICITANTE | CONSTRUIR |
+| P-01 | Inicio de sesión | B | `#/login` | SOLICITANTE (público) | CONSTRUIDO |
+| P-02 | Registro de cuenta | B | `#/registro` | SOLICITANTE (público) | CONSTRUIDO |
+| P-03 | Verificación de identidad (OTP) | B | `#/identidad/otp` | SOLICITANTE (público) | CONSTRUIDO |
+| P-04 | Recuperación de contraseña | B | `#/recuperar-clave` | SOLICITANTE (público) | CONSTRUIDO |
+| P-05 | Mi perfil / datos de contacto | B | `#/perfil` | SOLICITANTE | CONSTRUIDO |
+| P-06 | Mis trámites (bandeja) | C | `#/mis-tramites` | SOLICITANTE | CONSTRUIDO |
+| P-07 | Nueva solicitud — selección de trámite | C | `#/solicitud/tramite` | SOLICITANTE | CONSTRUIDO |
+| P-08 | Titularidad y representación | C | `#/solicitud/titularidad` | SOLICITANTE | CONSTRUIDO |
+| P-09 | Paso 1 — Datos personales | C | `#/solicitud/paso-1` | SOLICITANTE | CONSTRUIDO |
+| P-10 | Paso 2 — Pasaporte e historial migratorio | C | `#/solicitud/paso-2` | SOLICITANTE | CONSTRUIDO |
+| P-11 | Paso 3 — Domicilio y notificaciones | C | `#/solicitud/paso-3` | SOLICITANTE | CONSTRUIDO |
+| P-12 | Paso 4 — Situación laboral, económica o de vínculos | C | `#/solicitud/paso-4` | SOLICITANTE | CONSTRUIDO |
+| P-13 | Paso 5 — Dependientes | C | `#/solicitud/paso-5` | SOLICITANTE | CONSTRUIDO |
+| P-14 | Paso 6 — Requisitos y carga de documentos | C | `#/solicitud/paso-6` | SOLICITANTE | CONSTRUIDO |
 | P-15 | Paso 7 — Pagos y tasas | C | `#/solicitud/paso-7` | SOLICITANTE | **POR CONFIRMAR** (§8.3: ¿pago en línea o cheque?) |
-| P-16 | Paso 8 — Declaración jurada y firma | C | `#/solicitud/paso-8` | SOLICITANTE | CONSTRUIR |
-| P-17 | Resumen y envío | C | `#/solicitud/resumen` | SOLICITANTE | CONSTRUIR |
+| P-16 | Paso 8 — Declaración jurada y firma | C | `#/solicitud/paso-8` | SOLICITANTE | CONSTRUIDO |
+| P-17 | Resumen y envío | C | `#/solicitud/resumen` | SOLICITANTE | CONSTRUIDO |
 | P-18 | Reserva de cita | C | `#/solicitud/cita` | SOLICITANTE | **POR CONFIRMAR** (§8.4: cobertura de ventanilla) |
-| P-19 | Estado del trámite (línea de tiempo) | D | `#/seguimiento/estado` | SOLICITANTE | CONSTRUIR |
-| P-20 | Observaciones y notificaciones | D | `#/seguimiento/observaciones` | SOLICITANTE | CONSTRUIR |
-| P-21 | Subsanación (corrección del expediente) | D | `#/seguimiento/subsanacion` | SOLICITANTE | CONSTRUIR |
-| P-22 | Resultados: resoluciones, carné digital, certificados | D | `#/seguimiento/resultados` | SOLICITANTE | CONSTRUIR |
-| P-23 | Historial de pagos | D | `#/seguimiento/pagos` | SOLICITANTE | CONSTRUIR |
+| P-19 | Estado del trámite (línea de tiempo) | D | `#/seguimiento/estado` | SOLICITANTE | CONSTRUIDO |
+| P-20 | Observaciones y notificaciones | D | `#/seguimiento/observaciones` | SOLICITANTE | CONSTRUIDO |
+| P-21 | Subsanación (corrección del expediente) | D | `#/seguimiento/subsanacion` | SOLICITANTE | CONSTRUIDO |
+| P-22 | Resultados: resoluciones, carné digital, certificados | D | `#/seguimiento/resultados` | SOLICITANTE | CONSTRUIDO |
+| P-23 | Historial de pagos | D | `#/seguimiento/pagos` | SOLICITANTE | CONSTRUIDO |
 | P-24 | Edictos y citaciones | D | `#/seguimiento/edictos` | SOLICITANTE | **POR CONFIRMAR** (HU-04 CA-7: modo consulta mínimo) |
 | P-25 | Certificaciones en línea | D | `#/servicios/certificaciones` | SOLICITANTE | **POR CONFIRMAR** (HU-04 CA-7: modo consulta mínimo) |
-| P-26 | Naturalización — flujo específico (N-1…N-13) | D | `#/servicios/naturalizacion` | SOLICITANTE (con abogado) | CONSTRUIR |
-| P-27 | Ayuda, FAQ y peticiones | D | `#/servicios/ayuda` | SOLICITANTE | CONSTRUIR |
-| I-01 | Login institucional con MFA | E | `#/interno/login` | Todos los roles internos (público) | CONSTRUIR |
-| I-02 | Tablero de gestión | E | `#/interno/tablero` | FUNCIONARIO (SUPERVISOR/AUDITOR en lectura) | CONSTRUIR |
-| I-03 | Bandeja de recepción (citas y turnos) | E | `#/interno/recepcion` | FUNCIONARIO (recepción) | CONSTRUIR |
-| I-04 | Recepción y verificación de completitud | E | `#/interno/completitud` | FUNCIONARIO (recepción) | CONSTRUIR |
-| I-05 | Asignación de analista | E | `#/interno/asignacion` | FUNCIONARIO (recepción / supervisor de mesa) | CONSTRUIR |
-| I-06 | Análisis del expediente (checklist) | E | `#/interno/analisis` | FUNCIONARIO (abogado analista) | CONSTRUIR |
-| I-07 | Panel de verificación interoperable | E | `#/interno/verificaciones` | FUNCIONARIO con permiso `verificar` | CONSTRUIR |
-| I-08 | Emisión y atención de observaciones | E | `#/interno/observaciones` | FUNCIONARIO (recepción y analista) | CONSTRUIR |
-| I-09 | Edictos y publicaciones | E | `#/interno/edictos` | FUNCIONARIO (analista) | CONSTRUIR |
-| I-10 | Resolución (aprobar / negar) | E | `#/interno/resolucion` | FUNCIONARIO con permiso `resolver` | CONSTRUIR |
-| I-11 | Notificación | E | `#/interno/notificacion` | FUNCIONARIO (notificador) | CONSTRUIR |
-| I-12 | Entrega en ventanilla | E | `#/interno/entrega` | FUNCIONARIO (notificador / ventanilla) | CONSTRUIR |
-| I-13 | Expedientes archivados y reactivación | E | `#/interno/archivo` | FUNCIONARIO (notificador, lectura); ver detalle I-13 | CONSTRUIR |
-| I-14 | Catálogos: trámites, requisitos, tasas y vigencias | F | `#/interno/catalogos` | ADMIN | CONSTRUIR |
-| I-15 | Usuarios, roles y permisos | F | `#/interno/usuarios` | ADMIN | CONSTRUIR |
-| I-16 | Bitácora de auditoría | F | `#/interno/bitacora` | AUDITOR (solo lectura) | CONSTRUIR |
-| I-17 | Reportes y tiempos por etapa | F | `#/interno/reportes` | SUPERVISOR y AUDITOR | CONSTRUIR |
-| I-18 | Salud de las conexiones de interoperabilidad | F | `#/interno/conexiones` | ADMIN (SUPERVISOR/AUDITOR en lectura) | CONSTRUIR |
+| P-26 | Naturalización — flujo específico (N-1…N-13) | D | `#/servicios/naturalizacion` | SOLICITANTE (con abogado) | CONSTRUIDO |
+| P-27 | Ayuda, FAQ y peticiones | D | `#/servicios/ayuda` | SOLICITANTE | CONSTRUIDO |
+| I-01 | Login institucional con MFA | E | `#/interno/login` | Todos los roles internos (público) | CONSTRUIDO |
+| I-02 | Tablero de gestión | E | `#/interno/tablero` | FUNCIONARIO (SUPERVISOR/AUDITOR en lectura) | CONSTRUIDO |
+| I-03 | Bandeja de recepción (citas y turnos) | E | `#/interno/recepcion` | FUNCIONARIO (recepción) | CONSTRUIDO |
+| I-04 | Recepción y verificación de completitud | E | `#/interno/completitud` | FUNCIONARIO (recepción) | CONSTRUIDO |
+| I-05 | Asignación de analista | E | `#/interno/asignacion` | FUNCIONARIO (recepción / supervisor de mesa) | CONSTRUIDO |
+| I-06 | Análisis del expediente (checklist) | E | `#/interno/analisis` | FUNCIONARIO (abogado analista) | CONSTRUIDO |
+| I-07 | Panel de verificación interoperable | E | `#/interno/verificaciones` | FUNCIONARIO con permiso `verificar` | CONSTRUIDO |
+| I-08 | Emisión y atención de observaciones | E | `#/interno/observaciones` | FUNCIONARIO (recepción y analista) | CONSTRUIDO |
+| I-09 | Edictos y publicaciones | E | `#/interno/edictos` | FUNCIONARIO (analista) | CONSTRUIDO |
+| I-10 | Resolución (aprobar / negar) | E | `#/interno/resolucion` | FUNCIONARIO con permiso `resolver` | CONSTRUIDO |
+| I-11 | Notificación | E | `#/interno/notificacion` | FUNCIONARIO (notificador) | CONSTRUIDO |
+| I-12 | Entrega en ventanilla | E | `#/interno/entrega` | FUNCIONARIO (notificador / ventanilla) | CONSTRUIDO |
+| I-13 | Expedientes archivados y reactivación | E | `#/interno/archivo` | FUNCIONARIO (notificador, lectura); ver detalle I-13 | CONSTRUIDO |
+| I-14 | Catálogos: trámites, requisitos, tasas y vigencias | F | `#/interno/catalogos` | ADMIN | CONSTRUIDO |
+| I-15 | Usuarios, roles y permisos | F | `#/interno/usuarios` | ADMIN | CONSTRUIDO |
+| I-16 | Bitácora de auditoría | F | `#/interno/bitacora` | AUDITOR (solo lectura) | CONSTRUIDO |
+| I-17 | Reportes y tiempos por etapa | F | `#/interno/reportes` | SUPERVISOR y AUDITOR | CONSTRUIDO |
+| I-18 | Salud de las conexiones de interoperabilidad | F | `#/interno/conexiones` | ADMIN (SUPERVISOR/AUDITOR en lectura) | CONSTRUIDO |
+| I-19 | Consentimientos del titular (ver/revocar) | F | `#/interno/consentimientos` | FUNCIONARIO/ADMIN; AUDITOR (lectura) | CONSTRUIDO (HU-18b) |
 
-**Total: 27 + 18 = 45 pantallas.** · `POR CONFIRMAR`: 4 (P-15, P-18, P-24, P-25).
+**Total: 27 + 19 = 46 pantallas.** · `POR CONFIRMAR`: 4 (P-15, P-18, P-24, P-25).
 
 ---
 
@@ -841,12 +842,15 @@ Toda pantalla implementa y muestra los cuatro estados, con selector de escenario
 * **(e) Estados de trámite visibles:** no aplica.
 * **(f) Fixture sugerida:** `js/fixtures/p-27-ayuda.json`.
 * **(g) Nota de integración:** HU-04 / TASK-04.5; formulario de derechos ARCO y consentimiento → HU nueva del backlog (Sprint 3, endpoints HU-11). CP-14 (ARCO), CP-05.
+* **(h) Construido (HU-18c, 5aa7209):** P-27 incluye la sección «Ejercicio de derechos ARCO (Ley 81 de 2019)» con los cuatro derechos (acceso 10 días hábiles; rectificación/cancelación 5 días hábiles; oposición con fundamento), condición titular/representante, notificación, adjunto y aviso de recurso ante la ANTAI; además, tabla «Mis solicitudes ARCO». La autorización de tratamiento y el consentimiento informado se registran en P-02/P-16 y en P-05/I-19.
 
 ---
 
 ## §5. Módulo interno del despacho (I-01 … I-18) — Fases E y F (inicio del Sprint 2)
 
 > **Planificado en el Sprint 1, construido al inicio del Sprint 2** (HU-05, fases E ≈ 60 h y F ≈ 25 h). Mismo formato que §4. Acceso por rol según `06-roles-y-accesos.md` §6.4; la UI solo oculta lo que el backend rechaza. Los campos de origen `A`/`S` que en el portal aparecen sellados aquí se **registran** en modo manual asistido.
+
+> **Nota (HU-18b):** se añade la pantalla **I-19 Consentimientos del titular** (`#/interno/consentimientos`, Fase F) con el registro, la vigencia y la revocación de los consentimientos (informado y expreso para datos sensibles); el detalle del portal correspondiente está en **P-05** (§4).
 
 ### I-01 Login institucional con MFA — Fase E · `#/interno/login`
 
@@ -959,7 +963,7 @@ Toda pantalla implementa y muestra los cuatro estados, con selector de escenario
 ### I-06 Análisis del expediente (checklist) — Fase E · `#/interno/analisis`
 
 * **(a) Objetivo:** revisar requisitos y vigencias, pedir verificaciones externas y decidir la conformidad del expediente.
-* **(b) Rol dueño y acceso:** `FUNCIONARIO` abogado analista (`consultar`, `verificar`, `observar`, proponer resolución); también accede el resolutor; vista ampliada con documentos, historial y requisitos del catálogo I-14 (HU-05 CA-3); línea de tiempo del expediente (HU-21).
+* **(b) Rol dueño y acceso:** `FUNCIONARIO` abogado analista (`consultar`, `verificar`, `observar`, proponer resolución); también accede el resolutor; vista ampliada con documentos, historial y requisitos del catálogo I-14 (HU-05 CA-3); línea de tiempo del expediente (**implementada, TASK-21.2**: bloque "Historial del expediente" que se actualiza al guardar dictamen).
 * **(c) Checklist de campos:**
 
 | Campo (fuente) | Tipo | Obl. | Etiqueta | Nota de la fuente |
@@ -1271,7 +1275,7 @@ Pantallas compartidas que no llevan identificador `P-`/`I-` pero que se construy
 | **Cabecera por rol** | Logo/producto, menú según rol (§2.1), identificador del usuario activo, botón cerrar sesión (limpia estado local → `#/login`) | Todas las pantallas autenticadas |
 | **Notificaciones / avisos** | Bloques de éxito, aviso e información (no confidenciales), tipo "toast" o banda | Confirmaciones de guardado, alertas de vigencias, resultados de verificación |
 | Stepper del asistente | 8 pasos (P-09…P-16) con validación por paso y borrador; se reutiliza en P-26 (N-1…N-13) | Fase C y P-26 |
-| Línea de tiempo | Etapas con autor, fecha, cambio y motivo; nivel de detalle por rol | P-19, I-06 (HU-21) |
+| Línea de tiempo | Etapas con autor, fecha, cambio y motivo; nivel de detalle por rol | P-19, I-06 (HU-21). `js/components/timeline.js` (TASK-21.2) acepta `{fecha, titulo|evento, detalle, autor, done, active, estado}` y un `emptyText`. |
 | Selector de escenarios locales | Cambia el fixture entre carga, éxito, vacío y error | Demostración Sprint 1 (Fase A) |
 
 ---
@@ -1337,7 +1341,7 @@ Una pantalla está terminada cuando:
 
 1. **Campos:** implementa exactamente los campos de `Pantallas_y_Datos_Migracion.md` de su ID — ni más (minimización, Ley 81) ni menos; lo no documentado figura como **POR DEFINIR (PO)** y no se inventa.
 2. **Estados:** implementa y muestra los **4 estados** (carga, éxito, vacío, error con reintento) — §2.2.
-3. **Permisos:** respeta el guard por rol; las acciones no permitidas no se muestran o están deshabilitadas con explicación (§2.1) — la validación real sigue siendo del backend.
+3. **Permisos:** respeta el guard por rol; las acciones no permitidas no se muestran o están deshabilitadas con explicación (§2.1) — la validación real sigue siendo del backend. Desde **TASK-13.5 (HU-13)** la UI aplica la matriz de permisos granulares con `tm.perms` (`js/utils/perms.js`): `can(perm)` decide si una acción se muestra o se sustituye por un aviso "Sin permiso «perm» para su rol" (p. ej. I-06 `observar`, I-07 `verificar`, I-10 `resolver`, I-11/I-12/I-13 `notificar`, I-13 reactivar/I-14/I-15/I-18 `administrar`).
 4. **Campos [V]:** sellados como *verificado automáticamente · fuente · fecha · estado* con estado **"pendiente de verificación automática (futuro convenio)"** y **bloqueados** para carga manual (§2.3).
 5. **Datos:** funciona con su fixture local en `js/fixtures/` con el **mismo esquema JSON que los mocks de la HU-08** (§2.5).
 6. **Responsive y calidad:** funciona en escritorio y tablet, sin errores de consola en el recorrido principal.

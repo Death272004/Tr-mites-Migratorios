@@ -1,8 +1,6 @@
-# Configuración y secretos locales
+# Secretos y configuración local
 .env
 *.env.local
-*.secret
-.secrets/
 
 # Java / Maven
 target/
@@ -10,21 +8,13 @@ target/
 *.log
 .mvn/wrapper/maven-wrapper.jar
 
-# Node y artefactos del frontend
+# Node (herramientas de validación)
 node_modules/
-dist/
-build/
-coverage/
 
-# Datos y almacenamiento local de Docker
+# Volúmenes y datos locales de Docker
 /datos/
 /almacenamiento/
 Backend/almacenamiento/
-
-# Informes temporales; las evidencias aprobadas viven en docs/evidencias/
-reports/
-tmp/
-*.tmp
 
 # Editores e IDE
 .idea/
