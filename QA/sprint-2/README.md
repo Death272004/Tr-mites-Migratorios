@@ -23,7 +23,7 @@ Comprobar que el entorno se puede levantar de forma reproducible y que el acceso
 
 ## Evidencia registrada
 
-Los resultados de la suite automatizada están en [Resultado_Pruebas_Automatizadas.md](Resultado_Pruebas_Automatizadas.md).
+Los resultados de la suite automatizada están en [pruebas.md](pruebas.md).
 
 ## Criterio de cierre
 
