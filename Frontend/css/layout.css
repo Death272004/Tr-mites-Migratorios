@@ -840,6 +840,10 @@ fieldset.form-field .form-field__label {
   background: var(--color-info-bg);
   border-color: var(--color-info);
 }
+.app-alert--danger {
+  background: var(--color-danger-bg);
+  border-color: var(--color-danger);
+}
 
 /* ---------- Ficha de requisitos (P-07) ---------- */
 .ficha {
