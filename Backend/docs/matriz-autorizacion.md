@@ -32,6 +32,9 @@ prueba `AutorizacionTest`. Todo endpoint que no aparece en la matriz se deniega.
 | `PATCH` | `/api/expedientes/{id}/estado` | `FUNCIONARIO` | Además requiere permiso granular y transición válida. |
 | `GET` | `/api/expedientes/{id}/observaciones` | `SOLICITANTE`, `FUNCIONARIO`, `SUPERVISOR`, `AUDITOR` | Consulta limitada al expediente accesible. |
 | `POST` | `/api/expedientes/{id}/observaciones` | `SOLICITANTE`, `FUNCIONARIO` | Requiere permiso `OBSERVAR` cuando aplica. |
+| `GET` | `/api/expedientes/{id}/verificaciones` | `SOLICITANTE`, `FUNCIONARIO`, `SUPERVISOR`, `AUDITOR` | El cliente solo ve el estado agregado (pendiente o completada). |
+| `POST` | `/api/expedientes/{id}/verificaciones`, `/preparacion`, `/{verificacionId}/atencion` y `/{verificacionId}/reintento` | `FUNCIONARIO` | Requiere permiso `VERIFICAR`, finalidad de la matriz de fuentes y consentimiento del titular. |
+| `GET` | `/api/verificaciones/matriz` | `FUNCIONARIO`, `SUPERVISOR`, `AUDITOR` | Matriz de fuentes y finalidad, solo lectura. |
 | `GET`, `POST`, `PATCH` | `/api/consentimientos` y `/{consentimientoId}` | Según operación: `SOLICITANTE`, `FUNCIONARIO`, `AUDITOR` | El titular solo gestiona su consentimiento. |
 | `GET`, `POST`, `PATCH` | `/api/solicitudes-arco` y `/{solicitudId}` | Consulta: `SOLICITANTE`, `FUNCIONARIO`, `AUDITOR`; creación: `SOLICITANTE`; atención: `FUNCIONARIO` | Se verifica titularidad y ámbito. |
 | `GET`, `PUT` | `/api/notificaciones` y `/{notificacionId}/leida` | `SOLICITANTE`, `FUNCIONARIO` | Solo notificaciones del usuario o ámbito permitido. |

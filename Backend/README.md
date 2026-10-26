@@ -95,6 +95,10 @@ El encabezado `X-Scenario` (o `?scenario=`) fuerza el comportamiento:
 
 `MOCK_LATENCIA_MS` agrega una espera a cada respuesta. El modo de producción es la verificación manual asistida; los simuladores representan integraciones futuras, sujetas a convenio.
 
+### Verificaciones del expediente (Sprint 5)
+
+`/api/expedientes/{id}/verificaciones` registra verificaciones en modo manual asistido o las envía a las fuentes simuladas a través de adaptadores (`verificacion/adaptadores`). El mismo `X-Scenario` fuerza el comportamiento de la fuente en modo simulado. Un fallo técnico programa un reintento con espera exponencial; agotado el tope queda en `ERROR_TECNICO` y se coteja a mano. Timeout y reintentos por fuente en `app.verificaciones.fuentes.*`; `VERIFICACION_REINTENTOS_AUTOMATICOS=false` apaga los reintentos programados. Ver `docs/matriz-fuentes-finalidad.md` y `docs/sustitucion-adaptadores.md`.
+
 ## Decisiones tomadas que el PO debe confirmar
 
 - **Registro sin verificación de correo:** la cuenta nace `ACTIVA`, porque el código de P-03 sigue simulado en el frontend. Por eso el registro sí informa cuando el correo o el documento ya existen.

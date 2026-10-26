@@ -2,7 +2,7 @@ openapi: 3.0.3
 
 info:
   title: Sistema Interoperable para la Gestión de Trámites Migratorios en Panamá
-  version: 0.4.0
+  version: 0.5.0
   description: |
     Contrato de la API REST del producto (HU-07).
 
@@ -593,7 +593,8 @@ paths:
       summary: Consultar las verificaciones de un expediente
       description: |
         Acceso restringido y con minimización: solo el resultado de la verificación. El
-        solicitante recibe únicamente el estado agregado.
+        solicitante recibe únicamente el estado agregado: `estado` es `PENDIENTE` o `RESPONDIDA`
+        (completada) y no se incluyen resultado, responsable, finalidad, notas ni datos técnicos.
       x-roles: [SOLICITANTE, FUNCIONARIO, SUPERVISOR, AUDITOR]
       parameters:
         - $ref: "#/components/parameters/ExpedienteId"
@@ -619,12 +620,25 @@ paths:
       operationId: registrarVerificacion
       summary: Registrar una verificación
       description: |
-        En modo manual asistido registra el resultado con fuente, fecha y responsable. Valida
-        finalidad, consentimiento del titular y el permiso `verificar` antes de aceptar. Produce
-        la misma entidad que el modo simulado. Genera evento de auditoría.
+        En modo manual asistido registra el resultado con fuente, fecha y responsable. En modo
+        simulado envía la consulta a la fuente simulada con solo los campos autorizados por la
+        matriz de fuentes y finalidad (`GET /api/verificaciones/matriz`). Valida finalidad,
+        consentimiento del titular (expreso para CSS y documentos del exterior) y el permiso
+        `verificar` antes de aceptar. Produce la misma entidad en ambos modos. Genera evento de
+        auditoría.
+
+        Un fallo técnico de la fuente **no** es un error HTTP ni un resultado negativo: la
+        verificación responde 201 en `REINTENTO_PROGRAMADO` (o `ERROR_TECNICO` si se agotaron los
+        intentos), sin `resultadoMinimo` (CP-07). Si ya hay una verificación abierta de la misma
+        fuente, el registro manual la completa; en modo simulado responde 409 `VERIFICACION_EN_CURSO`.
+
+        Con `Idempotency-Key`, repetir la petición devuelve 200 con la verificación ya registrada y
+        el encabezado `Idempotent-Replayed: true`, sin consultar de nuevo la fuente (CP-08).
       x-roles: [FUNCIONARIO]
       parameters:
         - $ref: "#/components/parameters/ExpedienteId"
+        - $ref: "#/components/parameters/Idempotencia"
+        - $ref: "#/components/parameters/Escenario"
       requestBody:
         required: true
         content:
@@ -632,6 +646,17 @@ paths:
             schema:
               $ref: "#/components/schemas/VerificacionNueva"
       responses:
+        "200":
+          description: Petición repetida con la misma `Idempotency-Key`; no se hizo nada nuevo.
+          headers:
+            Idempotent-Replayed:
+              schema:
+                type: string
+                enum: ["true"]
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Verificacion"
         "201":
           description: Verificación registrada.
           content:
@@ -650,6 +675,123 @@ paths:
           $ref: "#/components/responses/Conflicto"
         "500":
           $ref: "#/components/responses/ErrorInterno"
+
+  /api/expedientes/{id}/verificaciones/preparacion:
+    post:
+      tags: [Verificaciones]
+      operationId: prepararVerificaciones
+      summary: Crear las verificaciones que aplican al trámite
+      description: |
+        Determina, según la matriz de fuentes y los requisitos del tipo de trámite, qué
+        verificaciones aplican y crea en `PENDIENTE` (modo manual asistido) las que aún no existen.
+        Repetirla no duplica nada: devuelve solo las creadas en esta llamada (TASK-24.2).
+      x-roles: [FUNCIONARIO]
+      parameters:
+        - $ref: "#/components/parameters/ExpedienteId"
+      responses:
+        "201":
+          description: Verificaciones creadas en esta llamada (puede ser una lista vacía).
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Verificacion"
+        "401":
+          $ref: "#/components/responses/NoAutenticado"
+        "403":
+          $ref: "#/components/responses/SinPermiso"
+        "404":
+          $ref: "#/components/responses/NoEncontrado"
+        "409":
+          $ref: "#/components/responses/Conflicto"
+        "500":
+          $ref: "#/components/responses/ErrorInterno"
+
+  /api/expedientes/{id}/verificaciones/{verificacionId}/atencion:
+    post:
+      tags: [Verificaciones]
+      operationId: atenderVerificacion
+      summary: Tomar una verificación pendiente para cotejarla a mano
+      description: Pasa de `PENDIENTE` a `EN_ATENCION` con el usuario como responsable. Otro estado responde 409.
+      x-roles: [FUNCIONARIO]
+      parameters:
+        - $ref: "#/components/parameters/ExpedienteId"
+        - $ref: "#/components/parameters/VerificacionId"
+      responses:
+        "200":
+          description: Verificación en atención.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Verificacion"
+        "401":
+          $ref: "#/components/responses/NoAutenticado"
+        "403":
+          $ref: "#/components/responses/SinPermiso"
+        "404":
+          $ref: "#/components/responses/NoEncontrado"
+        "409":
+          $ref: "#/components/responses/Conflicto"
+        "500":
+          $ref: "#/components/responses/ErrorInterno"
+
+  /api/expedientes/{id}/verificaciones/{verificacionId}/reintento:
+    post:
+      tags: [Verificaciones]
+      operationId: reintentarVerificacion
+      summary: Reintentar ahora una verificación simulada
+      description: |
+        Solo en modo simulado, en `REINTENTO_PROGRAMADO` y sin superar el tope de intentos de la
+        fuente; en otro caso responde 409 `REINTENTO_NO_PERMITIDO`. Agotados los intentos, la
+        verificación queda en `ERROR_TECNICO` y se resuelve con un registro manual asistido.
+        Los reintentos programados también se ejecutan solos, con espera exponencial.
+      x-roles: [FUNCIONARIO]
+      parameters:
+        - $ref: "#/components/parameters/ExpedienteId"
+        - $ref: "#/components/parameters/VerificacionId"
+        - $ref: "#/components/parameters/Escenario"
+      responses:
+        "200":
+          description: Resultado del reintento.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Verificacion"
+        "401":
+          $ref: "#/components/responses/NoAutenticado"
+        "403":
+          $ref: "#/components/responses/SinPermiso"
+        "404":
+          $ref: "#/components/responses/NoEncontrado"
+        "409":
+          $ref: "#/components/responses/Conflicto"
+        "500":
+          $ref: "#/components/responses/ErrorInterno"
+
+  /api/verificaciones/matriz:
+    get:
+      tags: [Verificaciones]
+      operationId: matrizFuentes
+      summary: Matriz de fuentes y finalidad
+      description: |
+        Fuente → finalidad → base legal → responsable → qué se envía → qué se guarda (HU-25).
+        La finalidad y el tipo de verificación de una fila son los únicos valores que acepta
+        `POST /api/expedientes/{id}/verificaciones` para esa fuente.
+      x-roles: [FUNCIONARIO, SUPERVISOR, AUDITOR]
+      responses:
+        "200":
+          description: Filas de la matriz.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FilaMatrizFuentes"
+        "401":
+          $ref: "#/components/responses/NoAutenticado"
+        "403":
+          $ref: "#/components/responses/SinPermiso"
 
   # ---------- Consentimientos (HU-18b) ----------
   /api/consentimientos:
@@ -1204,6 +1346,21 @@ components:
       schema:
         $ref: "#/components/schemas/EscenarioMock"
 
+    Idempotencia:
+      name: Idempotency-Key
+      in: header
+      description: Clave única de la petición (8 a 80 caracteres `A-Z a-z 0-9 _ -`). Repetirla no duplica la operación.
+      schema:
+        type: string
+        pattern: "^[A-Za-z0-9_-]{8,80}$"
+    VerificacionId:
+      name: verificacionId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+
     EscenarioConsulta:
       name: scenario
       in: query
@@ -1619,16 +1776,72 @@ components:
           type: string
           format: date-time
         resultadoMinimo:
-          type: string
-          description: Por ejemplo, "coincide" o "no coincide".
+          $ref: "#/components/schemas/ResultadoMinimo"
         referenciaOrigen:
           type: string
-          description: Referencia de la consulta o de correlación técnica.
+          description: Referencia de la consulta en la fuente.
         responsableId:
           type: string
           format: uuid
-          description: Persona del despacho que realizó el cotejo (modo manual asistido).
+          description: |
+            Persona del despacho que realizó el cotejo (manual asistido) o que lanzó la consulta
+            (simulado).
         nota:
+          type: string
+        intentos:
+          type: integer
+          description: Envíos a la fuente simulada.
+        proximoIntento:
+          type: string
+          format: date-time
+          description: Solo en `REINTENTO_PROGRAMADO`.
+        ultimoFallo:
+          type: string
+          description: Estado técnico del último intento fallido.
+          enum: [ERROR_TECNICO, TIEMPO_AGOTADO, LIMITE_EXCEDIDO, RESPUESTA_INVALIDA]
+        correlacionId:
+          type: string
+          description: Referencia de correlación técnica del último envío.
+
+    ResultadoMinimo:
+      type: string
+      description: |
+        Vocabulario cerrado del resultado (HU-25): no admite texto libre ni copias de la fuente.
+        TE: `COINCIDE`, `NO_COINCIDE`. CSS y documentos del exterior: `VIGENTE`, `NO_VIGENTE`.
+        Registro Público: `CON_REGISTROS`. Cualquier fuente: `SIN_RESULTADO`. Ningún valor
+        representa un fallo técnico.
+      enum: [COINCIDE, NO_COINCIDE, VIGENTE, NO_VIGENTE, CON_REGISTROS, SIN_RESULTADO]
+
+    FilaMatrizFuentes:
+      type: object
+      required: [fuente, tipoVerificacion, finalidad, baseLegal, responsable, consentimiento, modos, camposEnviados, seGuarda]
+      properties:
+        fuente:
+          $ref: "#/components/schemas/FuenteVerificacion"
+        tipoVerificacion:
+          type: string
+        finalidad:
+          type: string
+          description: Código de finalidad que se envía al registrar la verificación.
+        descripcion:
+          type: string
+        baseLegal:
+          type: string
+        responsable:
+          type: string
+        consentimiento:
+          type: string
+          enum: [VIGENTE, EXPRESO]
+        modos:
+          type: array
+          items:
+            $ref: "#/components/schemas/ModoVerificacion"
+        camposEnviados:
+          type: array
+          description: Datos del titular que pueden salir hacia la fuente.
+          items:
+            type: string
+        seGuarda:
           type: string
 
     Consentimiento:
@@ -1954,21 +2167,26 @@ components:
           $ref: "#/components/schemas/FuenteVerificacion"
         tipoVerificacion:
           type: string
+          description: El de la fila de la fuente en la matriz (p. ej. `IDENTIDAD` para TE).
         modo:
           $ref: "#/components/schemas/ModoVerificacion"
         finalidad:
           type: string
+          description: Código de finalidad de la fila de la fuente en la matriz (p. ej. `IDENTIDAD_DEL_TITULAR`).
         fechaResultado:
           type: string
           format: date-time
-          description: Obligatoria en modo manual asistido.
+          description: Obligatoria en modo manual asistido; no puede estar en el futuro.
         resultadoMinimo:
-          type: string
-          description: Obligatorio en modo manual asistido.
+          allOf:
+            - $ref: "#/components/schemas/ResultadoMinimo"
+          description: Obligatorio en modo manual asistido; debe corresponder a la fuente.
         referenciaOrigen:
           type: string
+          maxLength: 120
         nota:
           type: string
+          maxLength: 500
 
     ConsentimientoNuevo:
       type: object
