@@ -1,13 +1,18 @@
-# Plataforma Interoperable de Trámites Migratorios
-
 <p align="center">
   <img src="docs/assets/readme-banner.svg" alt="Banner de la Plataforma Interoperable de Trámites Migratorios" width="100%">
+</p>
+
+<p align="center">
+  <img src="docs/assets/tech-stack.svg" alt="Tecnologías del proyecto" width="100%">
 </p>
 
 <p align="center">
   <img src="https://img.shields.io/badge/Proyecto-Universitario-0B1B2B?style=for-the-badge" alt="Proyecto universitario">
   <img src="https://img.shields.io/badge/Ingeniería%20de%20Software%20III-2026-F28C28?style=for-the-badge" alt="Ingeniería de Software III">
   <img src="https://img.shields.io/badge/MVP-en%20desarrollo-56C596?style=for-the-badge" alt="MVP en desarrollo">
+  <img src="https://img.shields.io/badge/Java-17-F28C28?style=for-the-badge&logo=openjdk&logoColor=white" alt="Java 17">
+  <img src="https://img.shields.io/badge/Docker-Compose-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker Compose">
+  <img src="https://img.shields.io/badge/QA-JMeter%20%2B%20ZAP-8B5CF6?style=for-the-badge" alt="QA con JMeter y ZAP">
 </p>
 
 > Una plataforma académica para que un bufete pueda organizar expedientes migratorios, consultar documentos y dar seguimiento a verificaciones desde un solo lugar.
