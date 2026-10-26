@@ -1,117 +1,134 @@
 # Plataforma Interoperable de Trámites Migratorios
 
-**Sistema académico para la gestión y verificación de trámites migratorios en Panamá.**
+<p align="center">
+  <img src="https://img.shields.io/badge/Proyecto-Universitario-0B1B2B?style=for-the-badge" alt="Proyecto universitario">
+  <img src="https://img.shields.io/badge/Ingeniería%20de%20Software%20III-2026-F28C28?style=for-the-badge" alt="Ingeniería de Software III">
+  <img src="https://img.shields.io/badge/MVP-en%20desarrollo-56C596?style=for-the-badge" alt="MVP en desarrollo">
+</p>
 
-> Una plataforma para que un bufete pueda organizar expedientes, documentos y verificaciones de forma segura, trazable y ordenada.
+> Una plataforma académica para que un bufete pueda organizar expedientes migratorios, consultar documentos y dar seguimiento a verificaciones desde un solo lugar.
 
-![Java](https://img.shields.io/badge/Java-17-orange?logo=openjdk&logoColor=white)
-![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.x-6DB33F?logo=springboot&logoColor=white)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791?logo=postgresql&logoColor=white)
-![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)
-![Estado](https://img.shields.io/badge/estado-MVP%20funcional-2E8B57)
+Este repositorio contiene el proyecto integrador de **Ingeniería de Software III**. La solución se construye como un MVP: primero demostramos el flujo principal de forma segura y trazable, y después dejamos preparadas las bases para futuras integraciones.
 
-## ¿Qué problema resolvemos?
+## El problema que estamos resolviendo
 
-Los trámites migratorios pueden tardar meses por la revisión manual de documentos, la falta de seguimiento y la información dispersa entre distintas instituciones. Esta plataforma centraliza el expediente del cliente y permite al bufete controlar el avance del trámite desde un solo lugar.
+Los trámites migratorios pueden tardar meses cuando la información está repartida, los documentos se revisan manualmente y no existe una vista clara del estado del expediente. Esto genera duplicidad, errores de seguimiento y poca visibilidad para el bufete y sus clientes.
 
-El proyecto utiliza datos ficticios y fuentes simuladas para representar verificaciones con el Tribunal Electoral, la CSS y el Registro Público. No realiza conexiones institucionales reales.
+Nuestra propuesta centraliza el expediente del cliente y organiza el flujo del abogado:
 
-## Funcionalidades principales
+1. Inicia sesión.
+2. Abre o crea el expediente del cliente.
+3. Asocia los documentos necesarios.
+4. Solicita verificaciones a fuentes simuladas.
+5. Consulta el resultado normalizado y el estado técnico.
+6. Da seguimiento al trámite con trazabilidad.
 
-- Inicio de sesión y control de acceso por roles.
-- Registro y seguimiento de expedientes migratorios.
-- Carga y consulta de documentos.
-- Verificaciones manuales y simuladas.
-- Manejo de errores técnicos, reintentos e idempotencia.
-- Minimización de datos y validación de consentimiento.
-- Historial, auditoría y trazabilidad de operaciones.
-- Panel de seguimiento para el cliente y el personal del bufete.
+> **Importante:** el sistema utiliza datos ficticios y servicios simulados. No consulta APIs reales del Tribunal Electoral, la CSS ni el Registro Público.
 
-## Flujo principal
+## Qué incluye el MVP
+
+| Módulo | Qué permite demostrar |
+| --- | --- |
+| Acceso por roles | Cada usuario ve las funciones que le corresponden. |
+| Expedientes | El abogado registra y consulta la información del cliente. |
+| Documentos | Los documentos se asocian al expediente correcto. |
+| Verificaciones | Se consultan tres fuentes simuladas mediante adaptadores. |
+| DTO común | Las respuestas incluyen fuente, resultado, referencia, fecha, responsable y estado técnico. |
+| Reintentos | Se manejan errores, timeouts e idempotencia sin crear duplicados. |
+| Trazabilidad | Se registra quién realizó la operación, cuándo y qué resultado obtuvo. |
+
+## Flujo técnico
 
 ```mermaid
 flowchart LR
-    A[Inicio de sesión] --> B[Crear o consultar expediente]
-    B --> C[Asociar documentos]
-    C --> D[Solicitar verificaciones]
-    D --> E{Resultado}
-    E -->|Respondida| F[Actualizar expediente]
-    E -->|Error técnico| G[Reintento controlado]
-    E -->|Sin resultado| H[Cotejo manual]
-    F --> I[Seguimiento y auditoría]
+    A[Abogado inicia sesión] --> B[Expediente del cliente]
+    B --> C[Documentos asociados]
+    C --> D[Solicitud de verificación]
+    D --> E[Adaptador común]
+    E --> F[Tribunal Electoral simulado]
+    E --> G[CSS simulada]
+    E --> H[Registro Público simulado]
+    F --> I[DTO normalizado]
     G --> I
     H --> I
+    I --> J[Resultado y estado técnico]
+    J --> K[Seguimiento y auditoría]
+```
+
+## Arquitectura del proyecto
+
+```text
+Tr-mites-Migratorios/
+├── Backend/              API, reglas de negocio, DTOs y pruebas
+├── Frontend/             Pantallas, estilos y flujo del usuario
+├── QA/                   Evidencias de pruebas, seguridad y calidad
+├── DevOps/               Entorno, CI/CD, despliegue y reproducibilidad
+├── Documentacion/        Backlog, arquitectura, roles y entregas por Sprint
+├── docs/                 Convenciones, entornos y evidencias generales
+├── docker/               Nginx y configuración del proxy
+├── docker-compose.yml    Servicios locales del proyecto
+└── Versiones_Anteriores/ Material histórico de ramas archivadas
 ```
 
 ## Tecnologías
 
-| Capa | Tecnología |
+| Área | Herramientas |
 | --- | --- |
-| Backend | Java 17, Spring Boot, Maven |
-| Persistencia | PostgreSQL 16, Flyway |
+| Backend | Java 17, Spring Boot y Maven |
+| Base de datos | PostgreSQL 16 y Flyway |
 | Frontend | HTML, CSS y JavaScript modular |
+| Entorno | Docker y Docker Compose |
 | Servidor web | Nginx |
-| Entorno | Docker Compose |
-| Calidad | JUnit, Spring Test, Testcontainers |
-| Control de versiones | Git y GitHub |
+| Pruebas | JUnit, Spring Test, Testcontainers y Apache JMeter |
+| Seguridad | OWASP ZAP, roles y datos ficticios |
+| Trabajo en equipo | GitHub y TeamTrack |
 
-## Cómo ejecutar el proyecto
+## Ejecutar el proyecto
 
 ### Requisitos
 
-- Docker Desktop instalado y ejecutándose.
 - Git.
-- Al menos 4 GB de memoria disponible para Docker.
-- Para ejecutar el backend fuera de Docker: JDK 17 o superior.
+- Docker Desktop instalado y ejecutándose.
+- Al menos 4 GB de memoria disponibles para Docker.
+- JDK 17 o superior si se ejecutará el backend fuera de Docker.
 
 ### Opción recomendada: Docker Compose
-
-Clona el repositorio y entra en la carpeta del proyecto:
 
 ```bash
 git clone https://github.com/Death272004/Tr-mites-Migratorios.git
 cd Tr-mites-Migratorios
-```
-
-Levanta el backend, PostgreSQL y frontend:
-
-```bash
 docker compose up --build
 ```
 
-Cuando los contenedores estén saludables, abre:
+| Servicio | Dirección |
+| --- | --- |
+| Frontend | <http://localhost:8081> |
+| Backend | <http://localhost:8080> |
+| Salud del backend | <http://localhost:8080/actuator/health> |
+| Salud del frontend | <http://localhost:8081/salud> |
+| PostgreSQL | `localhost:5433` |
 
-- Frontend: <http://localhost:8081>
-- Backend: <http://localhost:8080>
-- Salud del backend: <http://localhost:8080/actuator/health>
-- Salud del frontend: <http://localhost:8081/salud>
-- PostgreSQL: `localhost:5433`
-
-Para detener los servicios:
+Para detener los contenedores:
 
 ```bash
 docker compose down
 ```
 
-Para detenerlos y eliminar los datos locales de PostgreSQL:
+Para detenerlos y eliminar la base de datos local:
 
 ```bash
 docker compose down -v
 ```
 
-### Cambiar puertos locales
-
-Si los puertos ya están ocupados, copia la plantilla de configuración:
+### Si un puerto ya está ocupado
 
 ```bash
 cp .env.example .env
 ```
 
-Después cambia en `.env` `DB_PORT`, `BACKEND_PORT` o `FRONTEND_PORT`. El archivo `.env` es local y no debe subirse al repositorio.
+Edita `.env` y cambia `DB_PORT`, `BACKEND_PORT` o `FRONTEND_PORT`. Ese archivo es local: no debe subirse al repositorio.
 
-### Ejecutar solo el backend fuera de Docker
-
-Mantén PostgreSQL levantado y ejecuta:
+### Ejecutar únicamente el backend
 
 ```bash
 docker compose up -d db
@@ -119,65 +136,96 @@ cd Backend
 ./mvnw spring-boot:run -Dspring-boot.run.profiles=local
 ```
 
-En Windows utiliza `mvnw.cmd` en lugar de `./mvnw`.
+En Windows se utiliza `mvnw.cmd` en lugar de `./mvnw`.
 
-## Usuarios ficticios de demostración
+## Ejecutar pruebas
 
-El entorno local crea usuarios de prueba para demostrar los roles del sistema. Las credenciales se encuentran documentadas en [`Backend/README.md`](Backend/README.md). Son datos de demostración y no deben utilizarse en producción.
-
-## Ejecutar las pruebas
-
-Desde la raíz del proyecto:
+Pruebas del backend:
 
 ```bash
 cd Backend
 ./mvnw test
 ```
 
-Las pruebas levantan una base PostgreSQL de prueba mediante Testcontainers. También se pueden validar los archivos JavaScript con:
+Validación rápida de JavaScript:
 
 ```bash
 find Frontend/js -name '*.js' -print0 | xargs -0 -n1 node --check
 ```
 
-## Estructura del proyecto
+Pruebas de calidad y seguridad:
 
-| Carpeta | Contenido |
+- **Apache JMeter:** usuarios simulados, tiempos de respuesta, peticiones y errores.
+- **OWASP ZAP:** revisión básica de seguridad sobre el entorno local.
+- **JUnit/Testcontainers:** pruebas automatizadas del backend y la persistencia.
+
+## Cómo trabajamos con Git
+
+Las ramas de rol mantienen separado el trabajo de cada área:
+
+| Rama | Responsable principal |
 | --- | --- |
-| `Backend/` | API Spring Boot, reglas de negocio, migraciones y pruebas |
-| `Frontend/` | Portal del cliente, módulo interno, HTML, CSS y JavaScript |
-| `Documentacion/` | Arquitectura, backlog, roles, marco legal y entregas por Sprint |
-| `QA/` | Evidencias y validaciones de calidad |
-| `DevOps/` | Entorno reproducible, CI/CD y evidencias de integración |
-| `docs/` | Convenciones técnicas, ambientes y evidencias históricas |
-| `docker/` | Configuración de Nginx y proxy hacia el backend |
-| `Versiones_Anteriores/` | Material histórico de ramas y versiones anteriores |
+| `main` | Versión estable del proyecto |
+| `Backend` | Servicios, reglas y persistencia |
+| `Frontend` | Pantallas y experiencia de usuario |
+| `QA` | Pruebas, seguridad y evidencias |
+| `DevOps` | Entorno, integración y CI/CD |
+| `Documentacion` | Backlog, informes y entregables |
 
-## Equipo
+Para iniciar una tarea nueva:
 
-| Integrante | Área principal |
+```bash
+git switch main
+git pull origin main
+git switch -c feature/nombre-de-la-tarea
+```
+
+Después de trabajar y probar:
+
+```bash
+git add .
+git commit -m "tipo: describir el cambio"
+git push -u origin feature/nombre-de-la-tarea
+```
+
+La rama se integra mediante Pull Request después de verificar que el proyecto compile, las pruebas pasen y la documentación esté actualizada. `main` se reserva para una versión estable y demostrable.
+
+## Equipo y responsabilidades
+
+| Integrante | Responsabilidad principal |
 | --- | --- |
-| Kenneth Carter | DevOps, integración y entorno |
+| Kenneth Carter | Scrum Master, DevOps e integración del entorno |
 | Edgar Rosario | Backend y servicios |
-| Jonhatan (Jonas) | Frontend e interfaces |
-| Vivian Paris | QA y validación |
-| Richard Rodriguez | Documentación y coordinación técnica |
+| Jonathan Gómez | Frontend e interfaces |
+| Vivian Paris | QA y seguridad |
+| Richard Rodríguez | Documentación y coordinación técnica |
 
-## Documentación relacionada
+## Documentación útil
 
 - [Documentación general](Documentacion/README.md)
 - [Backend y API](Backend/README.md)
+- [DevOps y despliegue](DevOps/README.md)
+- [Frontend](Frontend/README.md)
+- [QA y seguridad](QA/README.md)
 - [Evidencias técnicas](docs/evidencias/README.md)
 - [Evidencia QA del Sprint 5](QA/sprint-5/README.md)
-- [Documentación de integración futura autorizada](Documentacion/documentos-base/09-integracion-automatica-autorizada.md)
+- [Documentación base](Documentacion/documentos-base/)
+- [Convenciones de Git](docs/CONVENCIONES-GIT.md)
+- [Entornos y secretos](docs/ENTORNOS-Y-SECRETOS.md)
 
-## Reglas del proyecto
+## Reglas importantes
 
 - Utilizar únicamente datos ficticios en desarrollo, pruebas y demostraciones.
 - No subir contraseñas, tokens, archivos `.env` ni datos personales.
-- Las instituciones externas se representan mediante mocks y adaptadores simulados.
-- Toda integración futura con una institución requiere convenio, autorización y revisión de seguridad.
+- Representar las instituciones externas mediante mocks y adaptadores simulados.
+- Registrar las decisiones técnicas importantes en la documentación.
+- Probar los cambios antes de solicitar su integración.
+- Cualquier integración real requiere autorización institucional y revisión de seguridad.
+
+## Estado actual
+
+El proyecto se encuentra en la etapa de refinamiento del MVP. El foco actual es cerrar el recorrido completo del abogado, demostrar las verificaciones simuladas y presentar evidencias de calidad, seguridad, trazabilidad y DevOps para el Sprint 6.
 
 ---
 
-Proyecto universitario de Ingeniería de Software III · Panamá · 2026
+**Proyecto universitario · Ingeniería de Software III · Panamá · 2026**
