@@ -1,0 +1,5 @@
+Listado paginado (tamano=100) con 1,000 expedientes del cliente y 2,000+ en total
+Muestras por perfil: 30 · página aleatoria entre 0 y 9
+Cliente  → P95 30 ms · máx 101 ms · mediana 13 ms
+Despacho → P95 16 ms · máx 16 ms · mediana 15 ms
+Umbral de aceptación: P95 < 500 ms

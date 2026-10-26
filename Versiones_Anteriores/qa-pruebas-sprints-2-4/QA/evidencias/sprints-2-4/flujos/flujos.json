@@ -1,0 +1,2353 @@
+{
+ "fecha": "2026-10-18T20:06:52.391Z",
+ "api": "http://localhost:8080",
+ "flujos": [
+  {
+   "id": "F-01",
+   "modulo": "Entorno",
+   "nombre": "Health check del backend",
+   "rol": "Público",
+   "tareas": [
+    "TASK-10.6"
+   ],
+   "esperado": "GET /actuator/health responde 200 con status UP sin exponer detalles.",
+   "pasos": [
+    {
+     "actor": "sin sesión",
+     "metodo": "GET",
+     "ruta": "/actuator/health",
+     "peticion": "",
+     "extraHeaders": null,
+     "estado": 200,
+     "esperado": [
+      200
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"groups\": [\n    \"liveness\",\n    \"readiness\"\n  ],\n  \"status\": \"UP\"\n}",
+     "correlacion": "f2dc7964-53e3-4e70-9393-ae64091410d5"
+    }
+   ],
+   "notas": [],
+   "ok": true
+  },
+  {
+   "id": "F-02",
+   "modulo": "Acceso",
+   "nombre": "Iniciar sesión con credenciales válidas",
+   "rol": "Cliente",
+   "tareas": [
+    "TASK-13.4",
+    "TASK-22.5"
+   ],
+   "esperado": "Login correcto devuelve token, rol y datos del usuario; el token se enmascara en la evidencia.",
+   "pasos": [
+    {
+     "actor": "cliente",
+     "metodo": "POST",
+     "ruta": "/api/auth/login",
+     "peticion": "{\"correo\":\"cliente@demo.pa\",\"contrasena\":\"•••\"}",
+     "extraHeaders": null,
+     "estado": 200,
+     "esperado": [
+      200
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"token\": \"•••\",\n  \"expiraEn\": 3600,\n  \"rol\": \"SOLICITANTE\",\n  \"usuario\": {\n    \"id\": \"9947f9da-efc3-4a08-bbaa-c616a94a06db\",\n    \"nombre\": \"Carla Cliente (ficticia)\",\n    \"correo\": \"cliente@demo.pa\",\n    \"rol\": \"SOLICITANTE\",\n    \"permisos\": [\n      \"PORTAL\"\n    ],\n    \"estadoCuenta\": \"ACTIVA\"\n  }\n}",
+     "correlacion": "71aeb483-2246-4a9d-9c19-279c52f03b43"
+    },
+    {
+     "actor": "cliente",
+     "metodo": "GET",
+     "ruta": "/api/perfil",
+     "peticion": "",
+     "extraHeaders": null,
+     "estado": 200,
+     "esperado": [
+      200
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"id\": \"9947f9da-efc3-4a08-bbaa-c616a94a06db\",\n  \"nombre\": \"Carla Cliente (ficticia)\",\n  \"correo\": \"cliente@demo.pa\",\n  \"rol\": \"SOLICITANTE\",\n  \"telefono\": \"+507 6111-2222\",\n  \"idiomaNotificacion\": \"ES\",\n  \"medioNotificacion\": \"CORREO\"\n}",
+     "correlacion": "9db756e2-647a-449e-ab32-abf3a664aec5"
+    }
+   ],
+   "notas": [],
+   "ok": true
+  },
+  {
+   "id": "F-03",
+   "modulo": "Acceso",
+   "nombre": "Login fallido sin revelar si el correo existe",
+   "rol": "Sin sesión",
+   "tareas": [
+    "TASK-14.4",
+    "TASK-22.5"
+   ],
+   "esperado": "Contraseña errónea y correo inexistente responden igual: 401 con el mismo código y mensaje.",
+   "pasos": [
+    {
+     "actor": "sin sesión",
+     "metodo": "POST",
+     "ruta": "/api/auth/login",
+     "peticion": "{\"correo\":\"cliente2@demo.pa\",\"contrasena\":\"•••\"}",
+     "extraHeaders": null,
+     "estado": 401,
+     "esperado": [
+      401
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"codigo\": \"CREDENCIALES_INVALIDAS\",\n  \"mensaje\": \"Correo o contraseña incorrectos. Tras varios intentos fallidos la cuenta se bloquea temporalmente.\",\n  \"correlacionId\": \"037dab57-dd05-4644-8a11-14491b092adf\"\n}",
+     "correlacion": "037dab57-dd05-4644-8a11-14491b092adf"
+    },
+    {
+     "actor": "sin sesión",
+     "metodo": "POST",
+     "ruta": "/api/auth/login",
+     "peticion": "{\"correo\":\"no-existe@demo.pa\",\"contrasena\":\"•••\"}",
+     "extraHeaders": null,
+     "estado": 401,
+     "esperado": [
+      401
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"codigo\": \"CREDENCIALES_INVALIDAS\",\n  \"mensaje\": \"Correo o contraseña incorrectos. Tras varios intentos fallidos la cuenta se bloquea temporalmente.\",\n  \"correlacionId\": \"62a7a202-576a-4d6e-be33-72c94d408e4c\"\n}",
+     "correlacion": "62a7a202-576a-4d6e-be33-72c94d408e4c"
+    }
+   ],
+   "notas": [],
+   "ok": true
+  },
+  {
+   "id": "F-04",
+   "modulo": "Cuenta",
+   "nombre": "Registro de cuenta de cliente (P-02)",
+   "rol": "Sin sesión",
+   "tareas": [],
+   "esperado": "Registro con datos válidos crea la cuenta (201); política de contraseña y aceptación de tratamiento obligatorias (400).",
+   "pasos": [
+    {
+     "actor": "sin sesión",
+     "metodo": "POST",
+     "ruta": "/api/auth/registro",
+     "peticion": "{\"tipoDocumento\":\"PASAPORTE\",\"numeroDocumento\":\"QA54010587\",\"nombre\":\"Cliente QA (ficticio)\",\"nacionalidad\":\"CO\",\"correo\":\"xqa-1792354010587@demo.pa\",\"telefono\":\"+507 6000-0000\",\"paisResidencia\":\"PA\",\"contrasena\":\"•••\",\"aceptaTratamientoDatos\":true}",
+     "extraHeaders": null,
+     "estado": 400,
+     "esperado": [
+      400
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"codigo\": \"ENTRADA_INVALIDA\",\n  \"mensaje\": \"Revise los datos enviados.\",\n  \"correlacionId\": \"a9ea7253-309d-460e-9107-a65a9ffe80d2\",\n  \"errores\": [\n    {\n      \"campo\": \"contrasena\",\n      \"mensaje\": \"Debe tener entre 10 y 72 caracteres.\"\n    },\n    {\n      \"campo\": \"contrasena\",\n      \"mensaje\": \"Debe incluir una letra mayúscula.\"\n    },\n    {\n      \"campo\": \"contrasena\",\n      \"mensaje\": \"Debe incluir un número.\"\n    },\n    {\n      \"campo\": \"contrasena\",\n      \"mensaje\": \"Debe incluir un símbolo.\"\n    }\n  ]\n}",
+     "correlacion": "a9ea7253-309d-460e-9107-a65a9ffe80d2"
+    },
+    {
+     "actor": "sin sesión",
+     "metodo": "POST",
+     "ruta": "/api/auth/registro",
+     "peticion": "{\"tipoDocumento\":\"PASAPORTE\",\"numeroDocumento\":\"QA54010587\",\"nombre\":\"Cliente QA (ficticio)\",\"nacionalidad\":\"CO\",\"correo\":\"yqa-1792354010587@demo.pa\",\"telefono\":\"+507 6000-0000\",\"paisResidencia\":\"PA\",\"contrasena\":\"•••\",\"aceptaTratamientoDatos\":false}",
+     "extraHeaders": null,
+     "estado": 400,
+     "esperado": [
+      400
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"codigo\": \"ENTRADA_INVALIDA\",\n  \"mensaje\": \"Revise los datos enviados.\",\n  \"correlacionId\": \"6053b818-d20a-459d-ade0-47f45ed98a85\",\n  \"errores\": [\n    {\n      \"campo\": \"aceptaTratamientoDatos\",\n      \"mensaje\": \"Debe aceptar los términos y la autorización de tratamiento de datos.\"\n    }\n  ]\n}",
+     "correlacion": "6053b818-d20a-459d-ade0-47f45ed98a85"
+    },
+    {
+     "actor": "sin sesión",
+     "metodo": "POST",
+     "ruta": "/api/auth/registro",
+     "peticion": "{\"tipoDocumento\":\"PASAPORTE\",\"numeroDocumento\":\"QA54010587\",\"nombre\":\"Cliente QA (ficticio)\",\"nacionalidad\":\"CO\",\"correo\":\"qa-1792354010587@demo.pa\",\"telefono\":\"+507 6000-0000\",\"paisResidencia\":\"PA\",\"contrasena\":\"•••\",\"aceptaTratamientoDatos\":true}",
+     "extraHeaders": null,
+     "estado": 201,
+     "esperado": [
+      201
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"id\": \"2dcce1e7-948a-46fe-be5c-99664be2b08b\",\n  \"nombre\": \"Cliente QA (ficticio)\",\n  \"correo\": \"qa-1792354010587@demo.pa\",\n  \"rol\": \"SOLICITANTE\",\n  \"permisos\": [\n    \"PORTAL\"\n  ],\n  \"estadoCuenta\": \"ACTIVA\"\n}",
+     "correlacion": "a5f78480-eba4-4d08-86ee-b20347440259"
+    }
+   ],
+   "notas": [],
+   "ok": true
+  },
+  {
+   "id": "F-05",
+   "modulo": "Cuenta",
+   "nombre": "Recuperación de contraseña (P-04)",
+   "rol": "Sin sesión",
+   "tareas": [
+    "TASK-14.4"
+   ],
+   "esperado": "La solicitud responde 202 igual exista o no la cuenta; un token inválido se rechaza.",
+   "pasos": [
+    {
+     "actor": "sin sesión",
+     "metodo": "POST",
+     "ruta": "/api/auth/recuperacion",
+     "peticion": "{\"correo\":\"qa-1792354010587@demo.pa\"}",
+     "extraHeaders": null,
+     "estado": 202,
+     "esperado": [
+      202
+     ],
+     "ok": true,
+     "respuesta": "",
+     "correlacion": "387c014f-00bd-4fb5-ad8c-20eb485d5430"
+    },
+    {
+     "actor": "sin sesión",
+     "metodo": "POST",
+     "ruta": "/api/auth/recuperacion",
+     "peticion": "{\"correo\":\"no-existe@demo.pa\"}",
+     "extraHeaders": null,
+     "estado": 202,
+     "esperado": [
+      202
+     ],
+     "ok": true,
+     "respuesta": "",
+     "correlacion": "d294006a-b5f1-4996-96eb-cb8e5f7428a4"
+    },
+    {
+     "actor": "sin sesión",
+     "metodo": "POST",
+     "ruta": "/api/auth/recuperacion/confirmacion",
+     "peticion": "{\"token\":\"•••\",\"contrasenaNueva\":\"•••\"}",
+     "extraHeaders": null,
+     "estado": 400,
+     "esperado": [
+      400
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"codigo\": \"ENLACE_INVALIDO\",\n  \"mensaje\": \"El enlace de recuperación no es válido o ya venció. Solicite uno nuevo.\",\n  \"correlacionId\": \"5d589800-3e58-41b2-8bd4-76d4c23d81f5\"\n}",
+     "correlacion": "5d589800-3e58-41b2-8bd4-76d4c23d81f5"
+    }
+   ],
+   "notas": [],
+   "ok": true
+  },
+  {
+   "id": "F-06",
+   "modulo": "Cuenta",
+   "nombre": "Consultar y actualizar mi perfil (P-05)",
+   "rol": "Cliente",
+   "tareas": [
+    "TASK-13.4"
+   ],
+   "esperado": "El cliente ve su perfil y cambia teléfono e idioma; intentar cambiar su rol no tiene efecto.",
+   "pasos": [
+    {
+     "actor": "cliente",
+     "metodo": "PATCH",
+     "ruta": "/api/perfil",
+     "peticion": "{\"telefono\":\"+507 6111-2222\",\"idiomaNotificacion\":\"ES\",\"rol\":\"ADMIN\"}",
+     "extraHeaders": null,
+     "estado": 200,
+     "esperado": [
+      200
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"id\": \"9947f9da-efc3-4a08-bbaa-c616a94a06db\",\n  \"nombre\": \"Carla Cliente (ficticia)\",\n  \"correo\": \"cliente@demo.pa\",\n  \"rol\": \"SOLICITANTE\",\n  \"telefono\": \"+507 6111-2222\",\n  \"idiomaNotificacion\": \"ES\",\n  \"medioNotificacion\": \"CORREO\"\n}",
+     "correlacion": "3fe591c6-4c82-4888-b6da-6a764867e3cd"
+    },
+    {
+     "actor": "cliente",
+     "metodo": "GET",
+     "ruta": "/api/perfil",
+     "peticion": "",
+     "extraHeaders": null,
+     "estado": 200,
+     "esperado": [
+      200
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"id\": \"9947f9da-efc3-4a08-bbaa-c616a94a06db\",\n  \"nombre\": \"Carla Cliente (ficticia)\",\n  \"correo\": \"cliente@demo.pa\",\n  \"rol\": \"SOLICITANTE\",\n  \"telefono\": \"+507 6111-2222\",\n  \"idiomaNotificacion\": \"ES\",\n  \"medioNotificacion\": \"CORREO\"\n}",
+     "correlacion": "dbc5b0d9-6f32-4e73-bc6c-970b629a7e0a"
+    }
+   ],
+   "notas": [
+    "El rol sigue siendo SOLICITANTE."
+   ],
+   "ok": true
+  },
+  {
+   "id": "F-07",
+   "modulo": "Cuenta",
+   "nombre": "Cambio de contraseña con la actual incorrecta",
+   "rol": "Cliente",
+   "tareas": [
+    "TASK-22.5"
+   ],
+   "esperado": "Sin la contraseña actual correcta el cambio se rechaza (400) y queda auditado como FALLO.",
+   "pasos": [
+    {
+     "actor": "cliente",
+     "metodo": "PUT",
+     "ruta": "/api/auth/contrasena",
+     "peticion": "{\"contrasenaActual\":\"•••\",\"contrasenaNueva\":\"•••\"}",
+     "extraHeaders": null,
+     "estado": 400,
+     "esperado": [
+      400
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"codigo\": \"ENTRADA_INVALIDA\",\n  \"mensaje\": \"Revise los datos enviados.\",\n  \"correlacionId\": \"b652ea61-54bb-4802-9593-b36666be13b3\",\n  \"errores\": [\n    {\n      \"campo\": \"contrasenaActual\",\n      \"mensaje\": \"La contraseña actual no es correcta.\"\n    }\n  ]\n}",
+     "correlacion": "b652ea61-54bb-4802-9593-b36666be13b3"
+    }
+   ],
+   "notas": [],
+   "ok": true
+  },
+  {
+   "id": "F-08",
+   "modulo": "Acceso",
+   "nombre": "Cerrar sesión invalida el token",
+   "rol": "Cliente 2",
+   "tareas": [
+    "TASK-13.4"
+   ],
+   "esperado": "Tras POST /api/auth/logout (204), el mismo token responde 401.",
+   "pasos": [
+    {
+     "actor": "temporal",
+     "metodo": "POST",
+     "ruta": "/api/auth/login",
+     "peticion": "{\"correo\":\"cliente2@demo.pa\",\"contrasena\":\"•••\"}",
+     "extraHeaders": null,
+     "estado": 200,
+     "esperado": [
+      200
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"token\": \"•••\",\n  \"expiraEn\": 3600,\n  \"rol\": \"SOLICITANTE\",\n  \"usuario\": {\n    \"id\": \"babe40a3-138f-432d-8f4c-1b6357220be1\",\n    \"nombre\": \"Tomás Titular (ficticio)\",\n    \"correo\": \"cliente2@demo.pa\",\n    \"rol\": \"SOLICITANTE\",\n    \"permisos\": [\n      \"PORTAL\"\n    ],\n    \"estadoCuenta\": \"ACTIVA\"\n  }\n}",
+     "correlacion": "02def1de-b2c9-4b59-aea5-4340fd7364e1"
+    },
+    {
+     "actor": "temporal",
+     "metodo": "GET",
+     "ruta": "/api/perfil",
+     "peticion": "",
+     "extraHeaders": null,
+     "estado": 200,
+     "esperado": [
+      200
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"id\": \"babe40a3-138f-432d-8f4c-1b6357220be1\",\n  \"nombre\": \"Tomás Titular (ficticio)\",\n  \"correo\": \"cliente2@demo.pa\",\n  \"rol\": \"SOLICITANTE\",\n  \"idiomaNotificacion\": \"ES\",\n  \"medioNotificacion\": \"CORREO\"\n}",
+     "correlacion": "1ca94a69-d74e-4715-ae79-2266d45c5acc"
+    },
+    {
+     "actor": "temporal",
+     "metodo": "POST",
+     "ruta": "/api/auth/logout",
+     "peticion": "",
+     "extraHeaders": null,
+     "estado": 204,
+     "esperado": [
+      204
+     ],
+     "ok": true,
+     "respuesta": "",
+     "correlacion": "9f23e04c-4092-46de-97d0-0b54b2aa5364"
+    },
+    {
+     "actor": "temporal",
+     "metodo": "GET",
+     "ruta": "/api/perfil",
+     "peticion": "",
+     "extraHeaders": null,
+     "estado": 401,
+     "esperado": [
+      401
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"codigo\": \"NO_AUTENTICADO\",\n  \"mensaje\": \"Inicie sesión para continuar.\",\n  \"correlacionId\": \"006bd162-8fb8-4ff2-bd1d-f97c579bc8fd\"\n}",
+     "correlacion": "006bd162-8fb8-4ff2-bd1d-f97c579bc8fd"
+    }
+   ],
+   "notas": [],
+   "ok": true
+  },
+  {
+   "id": "F-09",
+   "modulo": "Seguridad",
+   "nombre": "Token falso o ausente",
+   "rol": "Sin sesión",
+   "tareas": [
+    "TASK-13.4",
+    "TASK-14.4"
+   ],
+   "esperado": "Sin token o con un token inventado la API responde 401 con cuerpo uniforme.",
+   "pasos": [
+    {
+     "actor": "sin sesión",
+     "metodo": "GET",
+     "ruta": "/api/expedientes",
+     "peticion": "",
+     "extraHeaders": null,
+     "estado": 401,
+     "esperado": [
+      401
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"codigo\": \"NO_AUTENTICADO\",\n  \"mensaje\": \"Inicie sesión para continuar.\",\n  \"correlacionId\": \"beae171f-632a-4548-b235-72c753271417\"\n}",
+     "correlacion": "beae171f-632a-4548-b235-72c753271417"
+    },
+    {
+     "actor": "falso",
+     "metodo": "GET",
+     "ruta": "/api/expedientes",
+     "peticion": "",
+     "extraHeaders": null,
+     "estado": 401,
+     "esperado": [
+      401
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"codigo\": \"NO_AUTENTICADO\",\n  \"mensaje\": \"Inicie sesión para continuar.\",\n  \"correlacionId\": \"abf75406-9fd7-44dd-943b-a31687a64f93\"\n}",
+     "correlacion": "abf75406-9fd7-44dd-943b-a31687a64f93"
+    }
+   ],
+   "notas": [],
+   "ok": true
+  },
+  {
+   "id": "F-10",
+   "modulo": "Catálogos",
+   "nombre": "Consultar tipos de trámite y tipos documentales",
+   "rol": "Cliente",
+   "tareas": [
+    "TASK-16.4"
+   ],
+   "esperado": "Se listan los 4 trámites con sus requisitos y los tipos documentales con MIME y tamaño máximo.",
+   "pasos": [
+    {
+     "actor": "cliente",
+     "metodo": "GET",
+     "ruta": "/api/catalogos/tipos-tramite",
+     "peticion": "",
+     "extraHeaders": null,
+     "estado": 200,
+     "esperado": [
+      200
+     ],
+     "ok": true,
+     "respuesta": "[\n  {\n    \"codigo\": \"NATURALIZACION\",\n    \"nombre\": \"Naturalización\",\n    \"requisitos\": [\n      {\n        \"tipoDocumental\": \"PASAPORTE\",\n        \"nombre\": \"Pasaporte vigente\",\n        \"obligatorio\": true,\n        \"sensible\": false\n      },\n      {\n        \"tipoDocumental\": \"FOTO_CARNE\",\n        \"nombre\": \"Fotografía tamaño carné\",\n        \"obligatorio\": true,\n        \"sensible\": false\n      },\n      {\n        \"tipoDocumental\": \"ANTECEDENTES_PENALES\",\n        \"nombre\": \"Certificado de antecedentes penales\",\n        \"obligatorio\": true,\n        \"sensible\": true\n      },\n      {\n        \"tipoDocumental\": \"FICHA_CSS\",\n        \"nombre\": \"Ficha de la Caja de Seguro Social\",\n        \"obligatorio\": true,\n        \"sensible\": false\n      },\n      {\n        \"tipoDocumental\": \"DECLARACION_JURADA\",\n        \"nombre\": \"Declaración jurada\",\n        \"obligatorio\": true,\n        \"sensible\": false\n      },\n… (recortado)",
+     "correlacion": "94b96811-b2fb-410c-97b5-9d9de9f73462"
+    },
+    {
+     "actor": "cliente",
+     "metodo": "GET",
+     "ruta": "/api/catalogos/tipos-documentales",
+     "peticion": "",
+     "extraHeaders": null,
+     "estado": 200,
+     "esperado": [
+      200
+     ],
+     "ok": true,
+     "respuesta": "[\n  {\n    \"codigo\": \"PASAPORTE\",\n    \"nombre\": \"Pasaporte vigente\",\n    \"sensible\": false,\n    \"tiposMimePermitidos\": [\n      \"application/pdf\",\n      \"image/jpeg\",\n      \"image/png\"\n    ],\n    \"tamanoMaximoBytes\": 10485760\n  },\n  {\n    \"codigo\": \"FOTO_CARNE\",\n    \"nombre\": \"Fotografía tamaño carné\",\n    \"sensible\": false,\n    \"tiposMimePermitidos\": [\n      \"application/pdf\",\n      \"image/jpeg\",\n      \"image/png\"\n    ],\n    \"tamanoMaximoBytes\": 10485760\n  },\n  {\n    \"codigo\": \"PODER_NOTARIADO\",\n    \"nombre\": \"Poder notariado al abogado\",\n    \"sensible\": false,\n    \"tiposMimePermitidos\": [\n      \"application/pdf\",\n      \"image/jpeg\",\n      \"image/png\"\n    ],\n    \"tamanoMaximoBytes\": 10485760\n  },\n  {\n    \"codigo\": \"DECLARACION_JURADA\",\n    \"nombre\": \"Declaración jurada\",\n    \"sensible\": false,\n    \"tiposMimePermitidos\": [\n      \"application/pdf\",\n      \"image/jpeg\",\n      \"image/png\"\n    \n… (recortado)",
+     "correlacion": "168e2d14-4aaa-44a0-9058-c63b436b330a"
+    }
+   ],
+   "notas": [],
+   "ok": true
+  },
+  {
+   "id": "F-11",
+   "modulo": "Expedientes",
+   "nombre": "Crear expediente (P-09…P-17)",
+   "rol": "Cliente",
+   "tareas": [
+    "TASK-16.4"
+   ],
+   "esperado": "El cliente crea un expediente (201, estado RECIBIDO); un tipo inexistente responde 400 con el campo señalado.",
+   "pasos": [
+    {
+     "actor": "cliente",
+     "metodo": "POST",
+     "ruta": "/api/expedientes",
+     "peticion": "{\"tipoTramite\":\"PRORROGA_ESTADIA\"}",
+     "extraHeaders": null,
+     "estado": 201,
+     "esperado": [
+      201
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"id\": \"a07e4d6d-5628-44e4-ac2e-fb497c6f1a6e\",\n  \"numero\": \"EXP-2026-000013\",\n  \"solicitanteId\": \"9947f9da-efc3-4a08-bbaa-c616a94a06db\",\n  \"tipoTramite\": \"PRORROGA_ESTADIA\",\n  \"estado\": \"RECIBIDO\",\n  \"fechaCreacion\": \"2026-10-18T20:06:50.973990658Z\",\n  \"fechaActualizacion\": \"2026-10-18T20:06:50.973990658Z\",\n  \"version\": 0\n}",
+     "correlacion": "12f907fe-226f-4bcf-a0fd-cf4ec95fe932"
+    },
+    {
+     "actor": "cliente",
+     "metodo": "POST",
+     "ruta": "/api/expedientes",
+     "peticion": "{\"tipoTramite\":\"NO_EXISTE\"}",
+     "extraHeaders": null,
+     "estado": 400,
+     "esperado": [
+      400
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"codigo\": \"ENTRADA_INVALIDA\",\n  \"mensaje\": \"Revise los datos enviados.\",\n  \"correlacionId\": \"38a59134-90dc-4d0b-8a95-dce4500a5095\",\n  \"errores\": [\n    {\n      \"campo\": \"tipoTramite\",\n      \"mensaje\": \"El tipo de trámite no existe en el catálogo.\"\n    }\n  ]\n}",
+     "correlacion": "38a59134-90dc-4d0b-8a95-dce4500a5095"
+    }
+   ],
+   "notas": [],
+   "ok": true
+  },
+  {
+   "id": "F-12",
+   "modulo": "Expedientes",
+   "nombre": "Listar mis expedientes con filtros y paginación (P-06)",
+   "rol": "Cliente",
+   "tareas": [
+    "TASK-16.4"
+   ],
+   "esperado": "El listado trae solo expedientes del cliente, con filtros y paginación; tamaño fuera de rango → 400.",
+   "pasos": [
+    {
+     "actor": "cliente",
+     "metodo": "GET",
+     "ruta": "/api/expedientes?tamano=5&pagina=0",
+     "peticion": "",
+     "extraHeaders": null,
+     "estado": 200,
+     "esperado": [
+      200
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"contenido\": [\n    {\n      \"id\": \"a07e4d6d-5628-44e4-ac2e-fb497c6f1a6e\",\n      \"numero\": \"EXP-2026-000013\",\n      \"solicitanteId\": \"9947f9da-efc3-4a08-bbaa-c616a94a06db\",\n      \"tipoTramite\": \"PRORROGA_ESTADIA\",\n      \"estado\": \"RECIBIDO\",\n      \"fechaCreacion\": \"2026-10-18T20:06:50.973991Z\",\n      \"fechaActualizacion\": \"2026-10-18T20:06:50.973991Z\",\n      \"version\": 0\n    },\n    {\n      \"id\": \"ea035ab0-6bc0-488d-855f-a29f8df04ff2\",\n      \"numero\": \"EXP-2026-000012\",\n      \"solicitanteId\": \"9947f9da-efc3-4a08-bbaa-c616a94a06db\",\n      \"tipoTramite\": \"PRORROGA_ESTADIA\",\n      \"estado\": \"RECIBIDO\",\n      \"fechaCreacion\": \"2026-10-18T20:05:18.920103Z\",\n      \"fechaActualizacion\": \"2026-10-18T20:05:18.920103Z\",\n      \"version\": 0\n    },\n    {\n      \"id\": \"832318a4-a3c5-48f9-8fad-db16c9ac1d7b\",\n      \"numero\": \"EXP-2026-000010\",\n      \"solicitanteId\": \"9947f9da-efc3-4a08-bbaa-c616a94a06db\n… (recortado)",
+     "correlacion": "8a86d4fb-b381-4f2c-a777-a191c034cd94"
+    },
+    {
+     "actor": "cliente",
+     "metodo": "GET",
+     "ruta": "/api/expedientes?tipoTramite=PRORROGA_ESTADIA&estado=RECIBIDO",
+     "peticion": "",
+     "extraHeaders": null,
+     "estado": 200,
+     "esperado": [
+      200
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"contenido\": [\n    {\n      \"id\": \"a07e4d6d-5628-44e4-ac2e-fb497c6f1a6e\",\n      \"numero\": \"EXP-2026-000013\",\n      \"solicitanteId\": \"9947f9da-efc3-4a08-bbaa-c616a94a06db\",\n      \"tipoTramite\": \"PRORROGA_ESTADIA\",\n      \"estado\": \"RECIBIDO\",\n      \"fechaCreacion\": \"2026-10-18T20:06:50.973991Z\",\n      \"fechaActualizacion\": \"2026-10-18T20:06:50.973991Z\",\n      \"version\": 0\n    },\n    {\n      \"id\": \"ea035ab0-6bc0-488d-855f-a29f8df04ff2\",\n      \"numero\": \"EXP-2026-000012\",\n      \"solicitanteId\": \"9947f9da-efc3-4a08-bbaa-c616a94a06db\",\n      \"tipoTramite\": \"PRORROGA_ESTADIA\",\n      \"estado\": \"RECIBIDO\",\n      \"fechaCreacion\": \"2026-10-18T20:05:18.920103Z\",\n      \"fechaActualizacion\": \"2026-10-18T20:05:18.920103Z\",\n      \"version\": 0\n    },\n    {\n      \"id\": \"832318a4-a3c5-48f9-8fad-db16c9ac1d7b\",\n      \"numero\": \"EXP-2026-000010\",\n      \"solicitanteId\": \"9947f9da-efc3-4a08-bbaa-c616a94a06db\n… (recortado)",
+     "correlacion": "52f75ed6-e5b1-4d04-b7af-e9979fd1fdc2"
+    },
+    {
+     "actor": "cliente",
+     "metodo": "GET",
+     "ruta": "/api/expedientes?tamano=101",
+     "peticion": "",
+     "extraHeaders": null,
+     "estado": 400,
+     "esperado": [
+      400
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"codigo\": \"ENTRADA_INVALIDA\",\n  \"mensaje\": \"Revise los datos enviados.\",\n  \"correlacionId\": \"8bfe86e1-13ce-4da5-86ca-7795fa010766\",\n  \"errores\": [\n    {\n      \"campo\": \"tamano\",\n      \"mensaje\": \"Debe estar entre 1 y 100.\"\n    }\n  ]\n}",
+     "correlacion": "8bfe86e1-13ce-4da5-86ca-7795fa010766"
+    }
+   ],
+   "notas": [],
+   "ok": true
+  },
+  {
+   "id": "F-13",
+   "modulo": "Expedientes",
+   "nombre": "Expediente ajeno responde como inexistente",
+   "rol": "Cliente 2",
+   "tareas": [
+    "TASK-16.4",
+    "TASK-13.4"
+   ],
+   "esperado": "Otro cliente recibe 404 (sin revelar el expediente) en detalle, documentos e historial.",
+   "pasos": [
+    {
+     "actor": "cliente2",
+     "metodo": "GET",
+     "ruta": "/api/expedientes/a07e4d6d-5628-44e4-ac2e-fb497c6f1a6e",
+     "peticion": "",
+     "extraHeaders": null,
+     "estado": 404,
+     "esperado": [
+      404
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"codigo\": \"NO_ENCONTRADO\",\n  \"mensaje\": \"El recurso solicitado no existe.\",\n  \"correlacionId\": \"ba3c03c3-6ab2-46b5-b182-1af169d041d2\"\n}",
+     "correlacion": "ba3c03c3-6ab2-46b5-b182-1af169d041d2"
+    },
+    {
+     "actor": "cliente2",
+     "metodo": "GET",
+     "ruta": "/api/expedientes/a07e4d6d-5628-44e4-ac2e-fb497c6f1a6e/historial",
+     "peticion": "",
+     "extraHeaders": null,
+     "estado": 404,
+     "esperado": [
+      404
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"codigo\": \"NO_ENCONTRADO\",\n  \"mensaje\": \"El recurso solicitado no existe.\",\n  \"correlacionId\": \"a716d46d-7d6a-4fda-a3db-12feb61e8100\"\n}",
+     "correlacion": "a716d46d-7d6a-4fda-a3db-12feb61e8100"
+    }
+   ],
+   "notas": [],
+   "ok": true
+  },
+  {
+   "id": "F-14",
+   "modulo": "Expedientes",
+   "nombre": "Representante crea expediente a nombre de su representado",
+   "rol": "Abogada",
+   "tareas": [
+    "TASK-16.4"
+   ],
+   "esperado": "Con representación acreditada se crea a nombre del titular (201); sin ella → 403 SIN_REPRESENTACION.",
+   "pasos": [
+    {
+     "actor": "abogado",
+     "metodo": "POST",
+     "ruta": "/api/expedientes",
+     "peticion": "{\"tipoTramite\":\"PRORROGA_ESTADIA\",\"titularId\":\"9947f9da-efc3-4a08-bbaa-c616a94a06db\"}",
+     "extraHeaders": null,
+     "estado": 201,
+     "esperado": [
+      201
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"id\": \"f8828536-c566-4625-9d20-e30c85ebfd81\",\n  \"numero\": \"EXP-2026-000014\",\n  \"solicitanteId\": \"9947f9da-efc3-4a08-bbaa-c616a94a06db\",\n  \"tipoTramite\": \"PRORROGA_ESTADIA\",\n  \"estado\": \"RECIBIDO\",\n  \"fechaCreacion\": \"2026-10-18T20:06:51.087498541Z\",\n  \"fechaActualizacion\": \"2026-10-18T20:06:51.087498541Z\",\n  \"version\": 0\n}",
+     "correlacion": "f78b59c9-20b5-4216-b937-0f709bcefdc8"
+    },
+    {
+     "actor": "abogado",
+     "metodo": "POST",
+     "ruta": "/api/expedientes",
+     "peticion": "{\"tipoTramite\":\"PRORROGA_ESTADIA\",\"titularId\":\"babe40a3-138f-432d-8f4c-1b6357220be1\"}",
+     "extraHeaders": null,
+     "estado": 403,
+     "esperado": [
+      403
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"codigo\": \"SIN_REPRESENTACION\",\n  \"mensaje\": \"No tiene una representación acreditada para presentar en nombre de ese titular.\",\n  \"correlacionId\": \"d2ca4725-ba7a-4e60-a23d-db07a2b485c7\"\n}",
+     "correlacion": "d2ca4725-ba7a-4e60-a23d-db07a2b485c7"
+    },
+    {
+     "actor": "cliente",
+     "metodo": "GET",
+     "ruta": "/api/expedientes/f8828536-c566-4625-9d20-e30c85ebfd81",
+     "peticion": "",
+     "extraHeaders": null,
+     "estado": 200,
+     "esperado": [
+      200
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"id\": \"f8828536-c566-4625-9d20-e30c85ebfd81\",\n  \"numero\": \"EXP-2026-000014\",\n  \"solicitanteId\": \"9947f9da-efc3-4a08-bbaa-c616a94a06db\",\n  \"tipoTramite\": \"PRORROGA_ESTADIA\",\n  \"estado\": \"RECIBIDO\",\n  \"fechaCreacion\": \"2026-10-18T20:06:51.087499Z\",\n  \"fechaActualizacion\": \"2026-10-18T20:06:51.087499Z\",\n  \"version\": 0\n}",
+     "correlacion": "c7a946f9-dfca-447b-9d1f-7c0599de3b97"
+    }
+   ],
+   "notas": [],
+   "ok": true
+  },
+  {
+   "id": "F-15",
+   "modulo": "Expedientes",
+   "nombre": "Consulta del despacho, supervisor y auditor",
+   "rol": "Recepción / Supervisor / Auditor",
+   "tareas": [
+    "TASK-16.4",
+    "TASK-13.4"
+   ],
+   "esperado": "Personal interno lista y ve el expediente; el administrador recibe 403.",
+   "pasos": [
+    {
+     "actor": "recepcion",
+     "metodo": "GET",
+     "ruta": "/api/expedientes/a07e4d6d-5628-44e4-ac2e-fb497c6f1a6e",
+     "peticion": "",
+     "extraHeaders": null,
+     "estado": 200,
+     "esperado": [
+      200
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"id\": \"a07e4d6d-5628-44e4-ac2e-fb497c6f1a6e\",\n  \"numero\": \"EXP-2026-000013\",\n  \"solicitanteId\": \"9947f9da-efc3-4a08-bbaa-c616a94a06db\",\n  \"tipoTramite\": \"PRORROGA_ESTADIA\",\n  \"estado\": \"RECIBIDO\",\n  \"fechaCreacion\": \"2026-10-18T20:06:50.973991Z\",\n  \"fechaActualizacion\": \"2026-10-18T20:06:50.973991Z\",\n  \"version\": 0\n}",
+     "correlacion": "cda6b49a-ea2b-4371-be86-03defae57ffd"
+    },
+    {
+     "actor": "supervisor",
+     "metodo": "GET",
+     "ruta": "/api/expedientes?tamano=3",
+     "peticion": "",
+     "extraHeaders": null,
+     "estado": 200,
+     "esperado": [
+      200
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"contenido\": [\n    {\n      \"id\": \"f8828536-c566-4625-9d20-e30c85ebfd81\",\n      \"numero\": \"EXP-2026-000014\",\n      \"solicitanteId\": \"9947f9da-efc3-4a08-bbaa-c616a94a06db\",\n      \"tipoTramite\": \"PRORROGA_ESTADIA\",\n      \"estado\": \"RECIBIDO\",\n      \"fechaCreacion\": \"2026-10-18T20:06:51.087499Z\",\n      \"fechaActualizacion\": \"2026-10-18T20:06:51.087499Z\",\n      \"version\": 0\n    },\n    {\n      \"id\": \"a07e4d6d-5628-44e4-ac2e-fb497c6f1a6e\",\n      \"numero\": \"EXP-2026-000013\",\n      \"solicitanteId\": \"9947f9da-efc3-4a08-bbaa-c616a94a06db\",\n      \"tipoTramite\": \"PRORROGA_ESTADIA\",\n      \"estado\": \"RECIBIDO\",\n      \"fechaCreacion\": \"2026-10-18T20:06:50.973991Z\",\n      \"fechaActualizacion\": \"2026-10-18T20:06:50.973991Z\",\n      \"version\": 0\n    },\n    {\n      \"id\": \"ea035ab0-6bc0-488d-855f-a29f8df04ff2\",\n      \"numero\": \"EXP-2026-000012\",\n      \"solicitanteId\": \"9947f9da-efc3-4a08-bbaa-c616a94a06db\n… (recortado)",
+     "correlacion": "b5ea2c70-9b19-40b0-9ec4-ad5f9bf4033e"
+    },
+    {
+     "actor": "auditor",
+     "metodo": "GET",
+     "ruta": "/api/expedientes/a07e4d6d-5628-44e4-ac2e-fb497c6f1a6e",
+     "peticion": "",
+     "extraHeaders": null,
+     "estado": 200,
+     "esperado": [
+      200
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"id\": \"a07e4d6d-5628-44e4-ac2e-fb497c6f1a6e\",\n  \"numero\": \"EXP-2026-000013\",\n  \"solicitanteId\": \"9947f9da-efc3-4a08-bbaa-c616a94a06db\",\n  \"tipoTramite\": \"PRORROGA_ESTADIA\",\n  \"estado\": \"RECIBIDO\",\n  \"fechaCreacion\": \"2026-10-18T20:06:50.973991Z\",\n  \"fechaActualizacion\": \"2026-10-18T20:06:50.973991Z\",\n  \"version\": 0\n}",
+     "correlacion": "b4daf4e9-142e-4843-b73f-f9bfe9d57621"
+    },
+    {
+     "actor": "admin",
+     "metodo": "GET",
+     "ruta": "/api/expedientes/a07e4d6d-5628-44e4-ac2e-fb497c6f1a6e",
+     "peticion": "",
+     "extraHeaders": null,
+     "estado": 403,
+     "esperado": [
+      403
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"codigo\": \"SIN_PERMISO\",\n  \"mensaje\": \"No tiene permiso para realizar esta operación.\",\n  \"correlacionId\": \"8ab1bd26-e885-4399-968b-537c0e963c9a\"\n}",
+     "correlacion": "8ab1bd26-e885-4399-968b-537c0e963c9a"
+    }
+   ],
+   "notas": [],
+   "ok": true
+  },
+  {
+   "id": "F-16",
+   "modulo": "Documentos",
+   "nombre": "Subir documentos válidos (P-14)",
+   "rol": "Cliente",
+   "tareas": [
+    "TASK-17.5"
+   ],
+   "esperado": "PDF válido se adjunta (201) sin exponer la ruta del almacén; segundo del mismo tipo avisa duplicado.",
+   "pasos": [
+    {
+     "actor": "cliente",
+     "metodo": "POST",
+     "ruta": "/api/expedientes/a07e4d6d-5628-44e4-ac2e-fb497c6f1a6e/documentos",
+     "peticion": "multipart: archivo=pasaporte.pdf (application/pdf, 50 bytes), tipoDocumental=PASAPORTE",
+     "extraHeaders": null,
+     "estado": 201,
+     "esperado": [
+      201
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"id\": \"67a59e34-5e7e-49db-b48d-f2fa0c73a9b9\",\n  \"expedienteId\": \"a07e4d6d-5628-44e4-ac2e-fb497c6f1a6e\",\n  \"tipoDocumental\": \"PASAPORTE\",\n  \"nombreArchivo\": \"pasaporte.pdf\",\n  \"tipoMime\": \"application/pdf\",\n  \"tamanoBytes\": 50,\n  \"fechaCarga\": \"2026-10-18T20:06:51.174171771Z\",\n  \"estadoRevision\": \"PENDIENTE\",\n  \"avisoDuplicado\": false\n}",
+     "correlacion": "934941dd-a91c-4e18-8c22-ea1739b2b7fe"
+    },
+    {
+     "actor": "cliente",
+     "metodo": "POST",
+     "ruta": "/api/expedientes/a07e4d6d-5628-44e4-ac2e-fb497c6f1a6e/documentos",
+     "peticion": "multipart: archivo=pago.pdf (application/pdf, 50 bytes), tipoDocumental=COMPROBANTE_PAGO",
+     "extraHeaders": null,
+     "estado": 201,
+     "esperado": [
+      201
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"id\": \"c2574ebe-ae7a-4e11-bd16-4e50c5ac2d88\",\n  \"expedienteId\": \"a07e4d6d-5628-44e4-ac2e-fb497c6f1a6e\",\n  \"tipoDocumental\": \"COMPROBANTE_PAGO\",\n  \"nombreArchivo\": \"pago.pdf\",\n  \"tipoMime\": \"application/pdf\",\n  \"tamanoBytes\": 50,\n  \"fechaCarga\": \"2026-10-18T20:06:51.192917782Z\",\n  \"estadoRevision\": \"PENDIENTE\",\n  \"avisoDuplicado\": false\n}",
+     "correlacion": "4f40ea22-3b7b-4a67-b4ed-4d8fedf94245"
+    },
+    {
+     "actor": "cliente",
+     "metodo": "GET",
+     "ruta": "/api/expedientes/a07e4d6d-5628-44e4-ac2e-fb497c6f1a6e/documentos",
+     "peticion": "",
+     "extraHeaders": null,
+     "estado": 200,
+     "esperado": [
+      200
+     ],
+     "ok": true,
+     "respuesta": "[\n  {\n    \"id\": \"67a59e34-5e7e-49db-b48d-f2fa0c73a9b9\",\n    \"expedienteId\": \"a07e4d6d-5628-44e4-ac2e-fb497c6f1a6e\",\n    \"tipoDocumental\": \"PASAPORTE\",\n    \"nombreArchivo\": \"pasaporte.pdf\",\n    \"tipoMime\": \"application/pdf\",\n    \"tamanoBytes\": 50,\n    \"fechaCarga\": \"2026-10-18T20:06:51.174172Z\",\n    \"estadoRevision\": \"PENDIENTE\"\n  },\n  {\n    \"id\": \"c2574ebe-ae7a-4e11-bd16-4e50c5ac2d88\",\n    \"expedienteId\": \"a07e4d6d-5628-44e4-ac2e-fb497c6f1a6e\",\n    \"tipoDocumental\": \"COMPROBANTE_PAGO\",\n    \"nombreArchivo\": \"pago.pdf\",\n    \"tipoMime\": \"application/pdf\",\n    \"tamanoBytes\": 50,\n    \"fechaCarga\": \"2026-10-18T20:06:51.192918Z\",\n    \"estadoRevision\": \"PENDIENTE\"\n  }\n]",
+     "correlacion": "5f584b4b-aef8-4f77-81be-295b2a8530af"
+    }
+   ],
+   "notas": [],
+   "ok": true
+  },
+  {
+   "id": "F-17",
+   "modulo": "Documentos",
+   "nombre": "Rechazo de archivos inválidos",
+   "rol": "Cliente",
+   "tareas": [
+    "TASK-17.5"
+   ],
+   "esperado": "Ejecutable, contenido que no es PDF y archivo > 10 MB se rechazan con 400 y el campo archivo.",
+   "pasos": [
+    {
+     "actor": "cliente",
+     "metodo": "POST",
+     "ruta": "/api/expedientes/a07e4d6d-5628-44e4-ac2e-fb497c6f1a6e/documentos",
+     "peticion": "multipart: archivo=programa.exe (application/x-msdownload, 11 bytes), tipoDocumental=PASAPORTE",
+     "extraHeaders": null,
+     "estado": 400,
+     "esperado": [
+      400
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"codigo\": \"ENTRADA_INVALIDA\",\n  \"mensaje\": \"Revise los datos enviados.\",\n  \"correlacionId\": \"a6fd8662-8ba0-4623-ad0b-814e26f86d27\",\n  \"errores\": [\n    {\n      \"campo\": \"archivo\",\n      \"mensaje\": \"Tipo de archivo no permitido. Use PDF, JPG o PNG.\"\n    }\n  ]\n}",
+     "correlacion": "a6fd8662-8ba0-4623-ad0b-814e26f86d27"
+    },
+    {
+     "actor": "cliente",
+     "metodo": "POST",
+     "ruta": "/api/expedientes/a07e4d6d-5628-44e4-ac2e-fb497c6f1a6e/documentos",
+     "peticion": "multipart: archivo=falso.pdf (application/pdf, 23 bytes), tipoDocumental=PASAPORTE",
+     "extraHeaders": null,
+     "estado": 400,
+     "esperado": [
+      400
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"codigo\": \"ENTRADA_INVALIDA\",\n  \"mensaje\": \"Revise los datos enviados.\",\n  \"correlacionId\": \"001a272f-391a-4d95-b2f7-20a85381722c\",\n  \"errores\": [\n    {\n      \"campo\": \"archivo\",\n      \"mensaje\": \"El contenido del archivo no corresponde a su tipo.\"\n    }\n  ]\n}",
+     "correlacion": "001a272f-391a-4d95-b2f7-20a85381722c"
+    },
+    {
+     "actor": "cliente",
+     "metodo": "POST",
+     "ruta": "/api/expedientes/a07e4d6d-5628-44e4-ac2e-fb497c6f1a6e/documentos",
+     "peticion": "multipart: archivo=enorme.pdf (application/pdf, 10485761 bytes), tipoDocumental=PASAPORTE",
+     "extraHeaders": null,
+     "estado": 400,
+     "esperado": [
+      400
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"codigo\": \"ENTRADA_INVALIDA\",\n  \"mensaje\": \"Revise los datos enviados.\",\n  \"correlacionId\": \"4c0522fb-5189-4122-8429-a1d910770cb0\",\n  \"errores\": [\n    {\n      \"campo\": \"archivo\",\n      \"mensaje\": \"El archivo supera el tamaño máximo de 10 MB.\"\n    }\n  ]\n}",
+     "correlacion": "4c0522fb-5189-4122-8429-a1d910770cb0"
+    }
+   ],
+   "notas": [],
+   "ok": true
+  },
+  {
+   "id": "F-18",
+   "modulo": "Documentos",
+   "nombre": "Descarga protegida por rol",
+   "rol": "Varios",
+   "tareas": [
+    "TASK-17.5",
+    "TASK-13.4"
+   ],
+   "esperado": "Titular, recepción (CONSULTAR) y supervisor descargan (200); auditor y admin 403; otro cliente 404.",
+   "pasos": [
+    {
+     "actor": "cliente",
+     "metodo": "GET",
+     "ruta": "/api/expedientes/a07e4d6d-5628-44e4-ac2e-fb497c6f1a6e/documentos/67a59e34-5e7e-49db-b48d-f2fa0c73a9b9/contenido",
+     "peticion": "",
+     "extraHeaders": null,
+     "estado": 200,
+     "esperado": [
+      200
+     ],
+     "ok": true,
+     "respuesta": "%PDF-1.4\ncontenido ficticio de demostración\n%%EOF",
+     "correlacion": "0ed60d31-b2db-4d00-afef-58be4a59b9ec"
+    },
+    {
+     "actor": "recepcion",
+     "metodo": "GET",
+     "ruta": "/api/expedientes/a07e4d6d-5628-44e4-ac2e-fb497c6f1a6e/documentos/67a59e34-5e7e-49db-b48d-f2fa0c73a9b9/contenido",
+     "peticion": "",
+     "extraHeaders": null,
+     "estado": 200,
+     "esperado": [
+      200
+     ],
+     "ok": true,
+     "respuesta": "%PDF-1.4\ncontenido ficticio de demostración\n%%EOF",
+     "correlacion": "1067b6c2-0ac1-496c-a271-1a5c653b0046"
+    },
+    {
+     "actor": "supervisor",
+     "metodo": "GET",
+     "ruta": "/api/expedientes/a07e4d6d-5628-44e4-ac2e-fb497c6f1a6e/documentos/67a59e34-5e7e-49db-b48d-f2fa0c73a9b9/contenido",
+     "peticion": "",
+     "extraHeaders": null,
+     "estado": 200,
+     "esperado": [
+      200
+     ],
+     "ok": true,
+     "respuesta": "%PDF-1.4\ncontenido ficticio de demostración\n%%EOF",
+     "correlacion": "eea7f228-145b-43ab-8a62-fe7d4a05e8da"
+    },
+    {
+     "actor": "auditor",
+     "metodo": "GET",
+     "ruta": "/api/expedientes/a07e4d6d-5628-44e4-ac2e-fb497c6f1a6e/documentos/67a59e34-5e7e-49db-b48d-f2fa0c73a9b9/contenido",
+     "peticion": "",
+     "extraHeaders": null,
+     "estado": 403,
+     "esperado": [
+      403
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"codigo\": \"SIN_PERMISO\",\n  \"mensaje\": \"No tiene permiso para realizar esta operación.\",\n  \"correlacionId\": \"d2499915-2d8a-4674-b45d-f5667652e979\"\n}",
+     "correlacion": "d2499915-2d8a-4674-b45d-f5667652e979"
+    },
+    {
+     "actor": "admin",
+     "metodo": "GET",
+     "ruta": "/api/expedientes/a07e4d6d-5628-44e4-ac2e-fb497c6f1a6e/documentos/67a59e34-5e7e-49db-b48d-f2fa0c73a9b9/contenido",
+     "peticion": "",
+     "extraHeaders": null,
+     "estado": 403,
+     "esperado": [
+      403
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"codigo\": \"SIN_PERMISO\",\n  \"mensaje\": \"No tiene permiso para realizar esta operación.\",\n  \"correlacionId\": \"e5f91054-f884-41fb-96a9-4c80a1a68cfd\"\n}",
+     "correlacion": "e5f91054-f884-41fb-96a9-4c80a1a68cfd"
+    },
+    {
+     "actor": "cliente2",
+     "metodo": "GET",
+     "ruta": "/api/expedientes/a07e4d6d-5628-44e4-ac2e-fb497c6f1a6e/documentos/67a59e34-5e7e-49db-b48d-f2fa0c73a9b9/contenido",
+     "peticion": "",
+     "extraHeaders": null,
+     "estado": 404,
+     "esperado": [
+      404
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"codigo\": \"NO_ENCONTRADO\",\n  \"mensaje\": \"El recurso solicitado no existe.\",\n  \"correlacionId\": \"2333c9e7-f241-4955-89e5-c416f57a73e6\"\n}",
+     "correlacion": "2333c9e7-f241-4955-89e5-c416f57a73e6"
+    }
+   ],
+   "notas": [],
+   "ok": true
+  },
+  {
+   "id": "F-19",
+   "modulo": "Estados",
+   "nombre": "Recorrido completo hasta la resolución y el archivo",
+   "rol": "Analista / Resolutora",
+   "tareas": [
+    "TASK-19.5"
+   ],
+   "esperado": "Cada transición válida responde 200 con versión incrementada: RECIBIDO → EN_ANALISIS → ADMITIDO → EN_RESOLUCION → RESUELTO (APROBADA) → NOTIFICADO → ENTREGADO → ARCHIVADO.",
+   "pasos": [
+    {
+     "actor": "analista",
+     "metodo": "PATCH",
+     "ruta": "/api/expedientes/a07e4d6d-5628-44e4-ac2e-fb497c6f1a6e/estado",
+     "peticion": "{\"estadoNuevo\":\"EN_ANALISIS\",\"motivo\":\"Nota interna: revisar pasaporte\",\"version\":0}",
+     "extraHeaders": null,
+     "estado": 200,
+     "esperado": [
+      200
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"id\": \"a07e4d6d-5628-44e4-ac2e-fb497c6f1a6e\",\n  \"numero\": \"EXP-2026-000013\",\n  \"solicitanteId\": \"9947f9da-efc3-4a08-bbaa-c616a94a06db\",\n  \"tipoTramite\": \"PRORROGA_ESTADIA\",\n  \"estado\": \"EN_ANALISIS\",\n  \"fechaCreacion\": \"2026-10-18T20:06:50.973991Z\",\n  \"fechaActualizacion\": \"2026-10-18T20:06:51.490360298Z\",\n  \"version\": 1\n}",
+     "correlacion": "24c16f97-c963-4dc4-9c3a-93b24794fa6f"
+    },
+    {
+     "actor": "analista",
+     "metodo": "PATCH",
+     "ruta": "/api/expedientes/a07e4d6d-5628-44e4-ac2e-fb497c6f1a6e/estado",
+     "peticion": "{\"estadoNuevo\":\"ADMITIDO\",\"motivo\":\"Solicitud conforme\",\"version\":1}",
+     "extraHeaders": null,
+     "estado": 200,
+     "esperado": [
+      200
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"id\": \"a07e4d6d-5628-44e4-ac2e-fb497c6f1a6e\",\n  \"numero\": \"EXP-2026-000013\",\n  \"solicitanteId\": \"9947f9da-efc3-4a08-bbaa-c616a94a06db\",\n  \"tipoTramite\": \"PRORROGA_ESTADIA\",\n  \"estado\": \"ADMITIDO\",\n  \"fechaCreacion\": \"2026-10-18T20:06:50.973991Z\",\n  \"fechaActualizacion\": \"2026-10-18T20:06:51.502679605Z\",\n  \"version\": 2\n}",
+     "correlacion": "6f0c2ff4-cde5-43f5-88ab-56f3a200f20b"
+    },
+    {
+     "actor": "resolutor",
+     "metodo": "PATCH",
+     "ruta": "/api/expedientes/a07e4d6d-5628-44e4-ac2e-fb497c6f1a6e/estado",
+     "peticion": "{\"estadoNuevo\":\"EN_RESOLUCION\",\"motivo\":\"Requisitos completos\",\"version\":2}",
+     "extraHeaders": null,
+     "estado": 200,
+     "esperado": [
+      200
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"id\": \"a07e4d6d-5628-44e4-ac2e-fb497c6f1a6e\",\n  \"numero\": \"EXP-2026-000013\",\n  \"solicitanteId\": \"9947f9da-efc3-4a08-bbaa-c616a94a06db\",\n  \"tipoTramite\": \"PRORROGA_ESTADIA\",\n  \"estado\": \"EN_RESOLUCION\",\n  \"fechaCreacion\": \"2026-10-18T20:06:50.973991Z\",\n  \"fechaActualizacion\": \"2026-10-18T20:06:51.517847402Z\",\n  \"version\": 3\n}",
+     "correlacion": "c52025af-1c6a-4495-b721-b0a95b1683cb"
+    },
+    {
+     "actor": "resolutor",
+     "metodo": "PATCH",
+     "ruta": "/api/expedientes/a07e4d6d-5628-44e4-ac2e-fb497c6f1a6e/estado",
+     "peticion": "{\"estadoNuevo\":\"RESUELTO\",\"motivo\":\"Cumple los requisitos del trámite\",\"version\":3,\"resultado\":\"APROBADA\"}",
+     "extraHeaders": null,
+     "estado": 200,
+     "esperado": [
+      200
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"id\": \"a07e4d6d-5628-44e4-ac2e-fb497c6f1a6e\",\n  \"numero\": \"EXP-2026-000013\",\n  \"solicitanteId\": \"9947f9da-efc3-4a08-bbaa-c616a94a06db\",\n  \"tipoTramite\": \"PRORROGA_ESTADIA\",\n  \"estado\": \"RESUELTO\",\n  \"resultado\": \"APROBADA\",\n  \"fechaCreacion\": \"2026-10-18T20:06:50.973991Z\",\n  \"fechaActualizacion\": \"2026-10-18T20:06:51.533820622Z\",\n  \"version\": 4\n}",
+     "correlacion": "659a4b1d-0fa2-41a5-8a11-f1e524a0cf45"
+    },
+    {
+     "actor": "resolutor",
+     "metodo": "PATCH",
+     "ruta": "/api/expedientes/a07e4d6d-5628-44e4-ac2e-fb497c6f1a6e/estado",
+     "peticion": "{\"estadoNuevo\":\"NOTIFICADO\",\"motivo\":\"Resolución notificada\",\"version\":4}",
+     "extraHeaders": null,
+     "estado": 200,
+     "esperado": [
+      200
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"id\": \"a07e4d6d-5628-44e4-ac2e-fb497c6f1a6e\",\n  \"numero\": \"EXP-2026-000013\",\n  \"solicitanteId\": \"9947f9da-efc3-4a08-bbaa-c616a94a06db\",\n  \"tipoTramite\": \"PRORROGA_ESTADIA\",\n  \"estado\": \"NOTIFICADO\",\n  \"resultado\": \"APROBADA\",\n  \"fechaCreacion\": \"2026-10-18T20:06:50.973991Z\",\n  \"fechaActualizacion\": \"2026-10-18T20:06:51.547659626Z\",\n  \"version\": 5\n}",
+     "correlacion": "03f7dc47-57d2-474b-ad72-0d1cd369f642"
+    },
+    {
+     "actor": "resolutor",
+     "metodo": "PATCH",
+     "ruta": "/api/expedientes/a07e4d6d-5628-44e4-ac2e-fb497c6f1a6e/estado",
+     "peticion": "{\"estadoNuevo\":\"ENTREGADO\",\"motivo\":\"Documento entregado\",\"version\":5}",
+     "extraHeaders": null,
+     "estado": 200,
+     "esperado": [
+      200
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"id\": \"a07e4d6d-5628-44e4-ac2e-fb497c6f1a6e\",\n  \"numero\": \"EXP-2026-000013\",\n  \"solicitanteId\": \"9947f9da-efc3-4a08-bbaa-c616a94a06db\",\n  \"tipoTramite\": \"PRORROGA_ESTADIA\",\n  \"estado\": \"ENTREGADO\",\n  \"resultado\": \"APROBADA\",\n  \"fechaCreacion\": \"2026-10-18T20:06:50.973991Z\",\n  \"fechaActualizacion\": \"2026-10-18T20:06:51.560377467Z\",\n  \"version\": 6\n}",
+     "correlacion": "0e3eb0fe-ca66-49b1-91d3-599232ba5ec8"
+    },
+    {
+     "actor": "resolutor",
+     "metodo": "PATCH",
+     "ruta": "/api/expedientes/a07e4d6d-5628-44e4-ac2e-fb497c6f1a6e/estado",
+     "peticion": "{\"estadoNuevo\":\"ARCHIVADO\",\"motivo\":\"Trámite concluido\",\"version\":6}",
+     "extraHeaders": null,
+     "estado": 200,
+     "esperado": [
+      200
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"id\": \"a07e4d6d-5628-44e4-ac2e-fb497c6f1a6e\",\n  \"numero\": \"EXP-2026-000013\",\n  \"solicitanteId\": \"9947f9da-efc3-4a08-bbaa-c616a94a06db\",\n  \"tipoTramite\": \"PRORROGA_ESTADIA\",\n  \"estado\": \"ARCHIVADO\",\n  \"resultado\": \"APROBADA\",\n  \"fechaCreacion\": \"2026-10-18T20:06:50.973991Z\",\n  \"fechaActualizacion\": \"2026-10-18T20:06:51.573461825Z\",\n  \"version\": 7\n}",
+     "correlacion": "04fb0176-1705-4874-83b6-df9e290d17e3"
+    }
+   ],
+   "notas": [],
+   "ok": true
+  },
+  {
+   "id": "F-20",
+   "modulo": "Estados",
+   "nombre": "Transición no permitida, sin requisitos y versión desactualizada",
+   "rol": "Analista / Resolutora",
+   "tareas": [
+    "TASK-19.5"
+   ],
+   "esperado": "Saltar estados → 409 TRANSICION_NO_PERMITIDA; resolver sin documentos → 409 REQUISITOS_INCOMPLETOS; versión vieja → 409 VERSION_DESACTUALIZADA; el estado no cambia.",
+   "pasos": [
+    {
+     "actor": "cliente",
+     "metodo": "POST",
+     "ruta": "/api/expedientes",
+     "peticion": "{\"tipoTramite\":\"PRORROGA_ESTADIA\"}",
+     "extraHeaders": null,
+     "estado": 201,
+     "esperado": [
+      201
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"id\": \"6cc86399-ff29-4fec-ba82-1ae01163c0cb\",\n  \"numero\": \"EXP-2026-000015\",\n  \"solicitanteId\": \"9947f9da-efc3-4a08-bbaa-c616a94a06db\",\n  \"tipoTramite\": \"PRORROGA_ESTADIA\",\n  \"estado\": \"RECIBIDO\",\n  \"fechaCreacion\": \"2026-10-18T20:06:51.588306002Z\",\n  \"fechaActualizacion\": \"2026-10-18T20:06:51.588306002Z\",\n  \"version\": 0\n}",
+     "correlacion": "c474b657-7fa7-4c3e-8386-40347f09e07e"
+    },
+    {
+     "actor": "resolutor",
+     "metodo": "PATCH",
+     "ruta": "/api/expedientes/6cc86399-ff29-4fec-ba82-1ae01163c0cb/estado",
+     "peticion": "{\"estadoNuevo\":\"NOTIFICADO\",\"motivo\":\"Saltar el proceso\",\"version\":0}",
+     "extraHeaders": null,
+     "estado": 409,
+     "esperado": [
+      403,
+      409
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"codigo\": \"TRANSICION_NO_PERMITIDA\",\n  \"mensaje\": \"Un expediente en estado RECIBIDO no puede pasar a NOTIFICADO.\",\n  \"correlacionId\": \"da5200f6-5803-48b9-89f5-003d27c00c60\"\n}",
+     "correlacion": "da5200f6-5803-48b9-89f5-003d27c00c60"
+    },
+    {
+     "actor": "analista",
+     "metodo": "PATCH",
+     "ruta": "/api/expedientes/6cc86399-ff29-4fec-ba82-1ae01163c0cb/estado",
+     "peticion": "{\"estadoNuevo\":\"ADMITIDO\",\"motivo\":\"Saltar el análisis\",\"version\":0}",
+     "extraHeaders": null,
+     "estado": 409,
+     "esperado": [
+      409
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"codigo\": \"TRANSICION_NO_PERMITIDA\",\n  \"mensaje\": \"Un expediente en estado RECIBIDO no puede pasar a ADMITIDO.\",\n  \"correlacionId\": \"d204ddcf-7ef3-4f76-bb73-a979be345586\"\n}",
+     "correlacion": "d204ddcf-7ef3-4f76-bb73-a979be345586"
+    },
+    {
+     "actor": "analista",
+     "metodo": "PATCH",
+     "ruta": "/api/expedientes/6cc86399-ff29-4fec-ba82-1ae01163c0cb/estado",
+     "peticion": "{\"estadoNuevo\":\"EN_ANALISIS\",\"motivo\":\"Inicio\",\"version\":0}",
+     "extraHeaders": null,
+     "estado": 200,
+     "esperado": [
+      200
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"id\": \"6cc86399-ff29-4fec-ba82-1ae01163c0cb\",\n  \"numero\": \"EXP-2026-000015\",\n  \"solicitanteId\": \"9947f9da-efc3-4a08-bbaa-c616a94a06db\",\n  \"tipoTramite\": \"PRORROGA_ESTADIA\",\n  \"estado\": \"EN_ANALISIS\",\n  \"fechaCreacion\": \"2026-10-18T20:06:51.588306Z\",\n  \"fechaActualizacion\": \"2026-10-18T20:06:51.624660261Z\",\n  \"version\": 1\n}",
+     "correlacion": "28b8f081-0bd5-4bdf-b239-f5b95c4d29ad"
+    },
+    {
+     "actor": "analista",
+     "metodo": "PATCH",
+     "ruta": "/api/expedientes/6cc86399-ff29-4fec-ba82-1ae01163c0cb/estado",
+     "peticion": "{\"estadoNuevo\":\"ADMITIDO\",\"motivo\":\"Conforme\",\"version\":1}",
+     "extraHeaders": null,
+     "estado": 200,
+     "esperado": [
+      200
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"id\": \"6cc86399-ff29-4fec-ba82-1ae01163c0cb\",\n  \"numero\": \"EXP-2026-000015\",\n  \"solicitanteId\": \"9947f9da-efc3-4a08-bbaa-c616a94a06db\",\n  \"tipoTramite\": \"PRORROGA_ESTADIA\",\n  \"estado\": \"ADMITIDO\",\n  \"fechaCreacion\": \"2026-10-18T20:06:51.588306Z\",\n  \"fechaActualizacion\": \"2026-10-18T20:06:51.637952675Z\",\n  \"version\": 2\n}",
+     "correlacion": "517e361f-e0d3-49b2-a9ce-b6b657f30529"
+    },
+    {
+     "actor": "resolutor",
+     "metodo": "PATCH",
+     "ruta": "/api/expedientes/6cc86399-ff29-4fec-ba82-1ae01163c0cb/estado",
+     "peticion": "{\"estadoNuevo\":\"EN_RESOLUCION\",\"motivo\":\"Sin documentos\",\"version\":2}",
+     "extraHeaders": null,
+     "estado": 409,
+     "esperado": [
+      409
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"codigo\": \"REQUISITOS_INCOMPLETOS\",\n  \"mensaje\": \"No se puede pasar a EN_RESOLUCION: faltan documentos obligatorios (COMPROBANTE_PAGO, PASAPORTE).\",\n  \"correlacionId\": \"28aa187b-3a93-454e-a95f-637a56ab3f6d\"\n}",
+     "correlacion": "28aa187b-3a93-454e-a95f-637a56ab3f6d"
+    },
+    {
+     "actor": "analista",
+     "metodo": "PATCH",
+     "ruta": "/api/expedientes/6cc86399-ff29-4fec-ba82-1ae01163c0cb/estado",
+     "peticion": "{\"estadoNuevo\":\"CON_OBSERVACIONES\",\"motivo\":\"Versión vieja\",\"version\":0}",
+     "extraHeaders": null,
+     "estado": 409,
+     "esperado": [
+      409
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"codigo\": \"VERSION_DESACTUALIZADA\",\n  \"mensaje\": \"El expediente cambió mientras lo revisaba. Vuelva a cargarlo e intente de nuevo.\",\n  \"correlacionId\": \"c1699df3-3c1c-4aff-85f0-da1b9bfb0981\"\n}",
+     "correlacion": "c1699df3-3c1c-4aff-85f0-da1b9bfb0981"
+    }
+   ],
+   "notas": [],
+   "ok": true
+  },
+  {
+   "id": "F-21",
+   "modulo": "Estados",
+   "nombre": "Permisos por etapa",
+   "rol": "Cliente / Supervisor / Resolutora",
+   "tareas": [
+    "TASK-19.5",
+    "TASK-13.4"
+   ],
+   "esperado": "Cliente y supervisor no cambian estados (403); la resolutora no inicia el análisis (403).",
+   "pasos": [
+    {
+     "actor": "cliente",
+     "metodo": "POST",
+     "ruta": "/api/expedientes",
+     "peticion": "{\"tipoTramite\":\"PRORROGA_ESTADIA\"}",
+     "extraHeaders": null,
+     "estado": 201,
+     "esperado": [
+      201
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"id\": \"7ca29808-b5f4-4ac3-8b2c-89c4989cf362\",\n  \"numero\": \"EXP-2026-000016\",\n  \"solicitanteId\": \"9947f9da-efc3-4a08-bbaa-c616a94a06db\",\n  \"tipoTramite\": \"PRORROGA_ESTADIA\",\n  \"estado\": \"RECIBIDO\",\n  \"fechaCreacion\": \"2026-10-18T20:06:51.671524688Z\",\n  \"fechaActualizacion\": \"2026-10-18T20:06:51.671524688Z\",\n  \"version\": 0\n}",
+     "correlacion": "ab3c2c1a-d986-41a6-b59b-810156473467"
+    },
+    {
+     "actor": "cliente",
+     "metodo": "PATCH",
+     "ruta": "/api/expedientes/7ca29808-b5f4-4ac3-8b2c-89c4989cf362/estado",
+     "peticion": "{\"estadoNuevo\":\"EN_ANALISIS\",\"motivo\":\"Inicio\",\"version\":0}",
+     "extraHeaders": null,
+     "estado": 403,
+     "esperado": [
+      403
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"codigo\": \"SIN_PERMISO\",\n  \"mensaje\": \"No tiene permiso para realizar esta operación.\",\n  \"correlacionId\": \"36bead3c-e16d-4ce4-9a21-1576010de39b\"\n}",
+     "correlacion": "36bead3c-e16d-4ce4-9a21-1576010de39b"
+    },
+    {
+     "actor": "supervisor",
+     "metodo": "PATCH",
+     "ruta": "/api/expedientes/7ca29808-b5f4-4ac3-8b2c-89c4989cf362/estado",
+     "peticion": "{\"estadoNuevo\":\"EN_ANALISIS\",\"motivo\":\"Inicio\",\"version\":0}",
+     "extraHeaders": null,
+     "estado": 403,
+     "esperado": [
+      403
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"codigo\": \"SIN_PERMISO\",\n  \"mensaje\": \"No tiene permiso para realizar esta operación.\",\n  \"correlacionId\": \"0ac59f7b-8e7d-4491-a965-4cbd2cae2763\"\n}",
+     "correlacion": "0ac59f7b-8e7d-4491-a965-4cbd2cae2763"
+    },
+    {
+     "actor": "resolutor",
+     "metodo": "PATCH",
+     "ruta": "/api/expedientes/7ca29808-b5f4-4ac3-8b2c-89c4989cf362/estado",
+     "peticion": "{\"estadoNuevo\":\"EN_ANALISIS\",\"motivo\":\"Inicio\",\"version\":0}",
+     "extraHeaders": null,
+     "estado": 403,
+     "esperado": [
+      403
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"codigo\": \"SIN_PERMISO\",\n  \"mensaje\": \"No tiene permiso para realizar esta operación.\",\n  \"correlacionId\": \"01774fc6-b21f-4f55-ae09-b3f55251fc7c\"\n}",
+     "correlacion": "01774fc6-b21f-4f55-ae09-b3f55251fc7c"
+    }
+   ],
+   "notas": [],
+   "ok": true
+  },
+  {
+   "id": "F-22",
+   "modulo": "Observaciones",
+   "nombre": "Registrar y responder observaciones (I-08 / P-20)",
+   "rol": "Analista / Cliente",
+   "tareas": [
+    "TASK-20.3"
+   ],
+   "esperado": "Analista con OBSERVAR y cliente titular registran (201); ambos ven el hilo; texto vacío → 400.",
+   "pasos": [
+    {
+     "actor": "analista",
+     "metodo": "POST",
+     "ruta": "/api/expedientes/6cc86399-ff29-4fec-ba82-1ae01163c0cb/observaciones",
+     "peticion": "{\"texto\":\"La foto del pasaporte está borrosa.\"}",
+     "extraHeaders": null,
+     "estado": 201,
+     "esperado": [
+      201
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"id\": \"7eb61129-09aa-407d-b6b0-88316ebba68f\",\n  \"expedienteId\": \"6cc86399-ff29-4fec-ba82-1ae01163c0cb\",\n  \"autorId\": \"cc44c308-1837-4edc-a9dc-2f33cd3c3b34\",\n  \"fecha\": \"2026-10-18T20:06:51.714676348Z\",\n  \"texto\": \"La foto del pasaporte está borrosa.\"\n}",
+     "correlacion": "f73b6796-3448-4b27-819e-072498412384"
+    },
+    {
+     "actor": "cliente",
+     "metodo": "POST",
+     "ruta": "/api/expedientes/6cc86399-ff29-4fec-ba82-1ae01163c0cb/observaciones",
+     "peticion": "{\"texto\":\"Subo una foto nueva hoy.\"}",
+     "extraHeaders": null,
+     "estado": 201,
+     "esperado": [
+      201
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"id\": \"7f670587-da0d-4592-b6d8-0725dfba2bf2\",\n  \"expedienteId\": \"6cc86399-ff29-4fec-ba82-1ae01163c0cb\",\n  \"autorId\": \"9947f9da-efc3-4a08-bbaa-c616a94a06db\",\n  \"fecha\": \"2026-10-18T20:06:51.727781077Z\",\n  \"texto\": \"Subo una foto nueva hoy.\"\n}",
+     "correlacion": "43d20458-b102-4e78-8558-6f929e170eeb"
+    },
+    {
+     "actor": "cliente",
+     "metodo": "GET",
+     "ruta": "/api/expedientes/6cc86399-ff29-4fec-ba82-1ae01163c0cb/observaciones",
+     "peticion": "",
+     "extraHeaders": null,
+     "estado": 200,
+     "esperado": [
+      200
+     ],
+     "ok": true,
+     "respuesta": "[\n  {\n    \"id\": \"7eb61129-09aa-407d-b6b0-88316ebba68f\",\n    \"expedienteId\": \"6cc86399-ff29-4fec-ba82-1ae01163c0cb\",\n    \"autorId\": \"cc44c308-1837-4edc-a9dc-2f33cd3c3b34\",\n    \"fecha\": \"2026-10-18T20:06:51.714676Z\",\n    \"texto\": \"La foto del pasaporte está borrosa.\"\n  },\n  {\n    \"id\": \"7f670587-da0d-4592-b6d8-0725dfba2bf2\",\n    \"expedienteId\": \"6cc86399-ff29-4fec-ba82-1ae01163c0cb\",\n    \"autorId\": \"9947f9da-efc3-4a08-bbaa-c616a94a06db\",\n    \"fecha\": \"2026-10-18T20:06:51.727781Z\",\n    \"texto\": \"Subo una foto nueva hoy.\"\n  }\n]",
+     "correlacion": "9e463e4b-c062-4446-9c8f-42d5956cfdbb"
+    },
+    {
+     "actor": "analista",
+     "metodo": "POST",
+     "ruta": "/api/expedientes/6cc86399-ff29-4fec-ba82-1ae01163c0cb/observaciones",
+     "peticion": "{\"texto\":\"   \"}",
+     "extraHeaders": null,
+     "estado": 400,
+     "esperado": [
+      400
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"codigo\": \"ENTRADA_INVALIDA\",\n  \"mensaje\": \"Revise los datos enviados.\",\n  \"correlacionId\": \"e20ed0b6-a5a0-43be-b873-73f1171f5148\",\n  \"errores\": [\n    {\n      \"campo\": \"texto\",\n      \"mensaje\": \"El texto es obligatorio.\"\n    }\n  ]\n}",
+     "correlacion": "e20ed0b6-a5a0-43be-b873-73f1171f5148"
+    }
+   ],
+   "notas": [],
+   "ok": true
+  },
+  {
+   "id": "F-23",
+   "modulo": "Observaciones",
+   "nombre": "Observaciones: roles sin permiso",
+   "rol": "Resolutora / Supervisor / Auditor / Admin",
+   "tareas": [
+    "TASK-20.3",
+    "TASK-13.4"
+   ],
+   "esperado": "Resolutora (sin OBSERVAR), supervisor y auditor no escriben (403); supervisor lee (200); admin no lee (403).",
+   "pasos": [
+    {
+     "actor": "resolutor",
+     "metodo": "POST",
+     "ruta": "/api/expedientes/6cc86399-ff29-4fec-ba82-1ae01163c0cb/observaciones",
+     "peticion": "{\"texto\":\"x\"}",
+     "extraHeaders": null,
+     "estado": 403,
+     "esperado": [
+      403
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"codigo\": \"SIN_PERMISO\",\n  \"mensaje\": \"No tiene permiso para realizar esta operación.\",\n  \"correlacionId\": \"2fd29381-4e53-4d9c-91c4-fa6502f4e820\"\n}",
+     "correlacion": "2fd29381-4e53-4d9c-91c4-fa6502f4e820"
+    },
+    {
+     "actor": "supervisor",
+     "metodo": "POST",
+     "ruta": "/api/expedientes/6cc86399-ff29-4fec-ba82-1ae01163c0cb/observaciones",
+     "peticion": "{\"texto\":\"x\"}",
+     "extraHeaders": null,
+     "estado": 403,
+     "esperado": [
+      403
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"codigo\": \"SIN_PERMISO\",\n  \"mensaje\": \"No tiene permiso para realizar esta operación.\",\n  \"correlacionId\": \"3da6e76e-574b-44d2-b145-988f3f12dfdd\"\n}",
+     "correlacion": "3da6e76e-574b-44d2-b145-988f3f12dfdd"
+    },
+    {
+     "actor": "auditor",
+     "metodo": "POST",
+     "ruta": "/api/expedientes/6cc86399-ff29-4fec-ba82-1ae01163c0cb/observaciones",
+     "peticion": "{\"texto\":\"x\"}",
+     "extraHeaders": null,
+     "estado": 403,
+     "esperado": [
+      403
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"codigo\": \"SIN_PERMISO\",\n  \"mensaje\": \"No tiene permiso para realizar esta operación.\",\n  \"correlacionId\": \"31360a52-5900-4e0c-a029-a00e0527608b\"\n}",
+     "correlacion": "31360a52-5900-4e0c-a029-a00e0527608b"
+    },
+    {
+     "actor": "supervisor",
+     "metodo": "GET",
+     "ruta": "/api/expedientes/6cc86399-ff29-4fec-ba82-1ae01163c0cb/observaciones",
+     "peticion": "",
+     "extraHeaders": null,
+     "estado": 200,
+     "esperado": [
+      200
+     ],
+     "ok": true,
+     "respuesta": "[\n  {\n    \"id\": \"7eb61129-09aa-407d-b6b0-88316ebba68f\",\n    \"expedienteId\": \"6cc86399-ff29-4fec-ba82-1ae01163c0cb\",\n    \"autorId\": \"cc44c308-1837-4edc-a9dc-2f33cd3c3b34\",\n    \"fecha\": \"2026-10-18T20:06:51.714676Z\",\n    \"texto\": \"La foto del pasaporte está borrosa.\"\n  },\n  {\n    \"id\": \"7f670587-da0d-4592-b6d8-0725dfba2bf2\",\n    \"expedienteId\": \"6cc86399-ff29-4fec-ba82-1ae01163c0cb\",\n    \"autorId\": \"9947f9da-efc3-4a08-bbaa-c616a94a06db\",\n    \"fecha\": \"2026-10-18T20:06:51.727781Z\",\n    \"texto\": \"Subo una foto nueva hoy.\"\n  }\n]",
+     "correlacion": "a91d2e76-bf9b-4f8e-aa5b-277fc1027607"
+    },
+    {
+     "actor": "admin",
+     "metodo": "GET",
+     "ruta": "/api/expedientes/6cc86399-ff29-4fec-ba82-1ae01163c0cb/observaciones",
+     "peticion": "",
+     "extraHeaders": null,
+     "estado": 403,
+     "esperado": [
+      403
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"codigo\": \"SIN_PERMISO\",\n  \"mensaje\": \"No tiene permiso para realizar esta operación.\",\n  \"correlacionId\": \"e6d74ac1-be8a-4bb1-8e53-d237d4fc96e1\"\n}",
+     "correlacion": "e6d74ac1-be8a-4bb1-8e53-d237d4fc96e1"
+    }
+   ],
+   "notas": [],
+   "ok": true
+  },
+  {
+   "id": "F-24",
+   "modulo": "Historial",
+   "nombre": "Historial con proyección por rol (P-19 / I-06)",
+   "rol": "Cliente / Analista",
+   "tareas": [
+    "TASK-21.3"
+   ],
+   "esperado": "El cliente ve todos los cambios sin la nota interna; la analista ve la nota interna.",
+   "pasos": [
+    {
+     "actor": "cliente",
+     "metodo": "GET",
+     "ruta": "/api/expedientes/a07e4d6d-5628-44e4-ac2e-fb497c6f1a6e/historial",
+     "peticion": "",
+     "extraHeaders": null,
+     "estado": 200,
+     "esperado": [
+      200
+     ],
+     "ok": true,
+     "respuesta": "[\n  {\n    \"estadoNuevo\": \"RECIBIDO\",\n    \"usuarioId\": \"9947f9da-efc3-4a08-bbaa-c616a94a06db\",\n    \"fecha\": \"2026-10-18T20:06:50.974618Z\",\n    \"motivo\": \"Presentación de la solicitud\"\n  },\n  {\n    \"estadoAnterior\": \"RECIBIDO\",\n    \"estadoNuevo\": \"EN_ANALISIS\",\n    \"usuarioId\": \"cc44c308-1837-4edc-a9dc-2f33cd3c3b34\",\n    \"fecha\": \"2026-10-18T20:06:51.491272Z\"\n  },\n  {\n    \"estadoAnterior\": \"EN_ANALISIS\",\n    \"estadoNuevo\": \"ADMITIDO\",\n    \"usuarioId\": \"cc44c308-1837-4edc-a9dc-2f33cd3c3b34\",\n    \"fecha\": \"2026-10-18T20:06:51.503519Z\"\n  },\n  {\n    \"estadoAnterior\": \"ADMITIDO\",\n    \"estadoNuevo\": \"EN_RESOLUCION\",\n    \"usuarioId\": \"28b7c32e-cafc-4f19-86aa-dd0343014a5b\",\n    \"fecha\": \"2026-10-18T20:06:51.518653Z\"\n  },\n  {\n    \"estadoAnterior\": \"EN_RESOLUCION\",\n    \"estadoNuevo\": \"RESUELTO\",\n    \"usuarioId\": \"28b7c32e-cafc-4f19-86aa-dd0343014a5b\",\n    \"fecha\": \"2026-10-18T20:06:51.534709Z\",\n    \n… (recortado)",
+     "correlacion": "6285e07f-ff30-4fef-a884-b7d074cab357"
+    },
+    {
+     "actor": "analista",
+     "metodo": "GET",
+     "ruta": "/api/expedientes/a07e4d6d-5628-44e4-ac2e-fb497c6f1a6e/historial",
+     "peticion": "",
+     "extraHeaders": null,
+     "estado": 200,
+     "esperado": [
+      200
+     ],
+     "ok": true,
+     "respuesta": "[\n  {\n    \"estadoNuevo\": \"RECIBIDO\",\n    \"usuarioId\": \"9947f9da-efc3-4a08-bbaa-c616a94a06db\",\n    \"fecha\": \"2026-10-18T20:06:50.974618Z\",\n    \"motivo\": \"Presentación de la solicitud\"\n  },\n  {\n    \"estadoAnterior\": \"RECIBIDO\",\n    \"estadoNuevo\": \"EN_ANALISIS\",\n    \"usuarioId\": \"cc44c308-1837-4edc-a9dc-2f33cd3c3b34\",\n    \"fecha\": \"2026-10-18T20:06:51.491272Z\",\n    \"motivo\": \"Nota interna: revisar pasaporte\"\n  },\n  {\n    \"estadoAnterior\": \"EN_ANALISIS\",\n    \"estadoNuevo\": \"ADMITIDO\",\n    \"usuarioId\": \"cc44c308-1837-4edc-a9dc-2f33cd3c3b34\",\n    \"fecha\": \"2026-10-18T20:06:51.503519Z\",\n    \"motivo\": \"Solicitud conforme\"\n  },\n  {\n    \"estadoAnterior\": \"ADMITIDO\",\n    \"estadoNuevo\": \"EN_RESOLUCION\",\n    \"usuarioId\": \"28b7c32e-cafc-4f19-86aa-dd0343014a5b\",\n    \"fecha\": \"2026-10-18T20:06:51.518653Z\",\n    \"motivo\": \"Requisitos completos\"\n  },\n  {\n    \"estadoAnterior\": \"EN_RESOLUCION\",\n    \"estadoNu\n… (recortado)",
+     "correlacion": "a31ae2e7-5d27-4bcc-8371-2b5b2cc19a41"
+    }
+   ],
+   "notas": [
+    "Nota interna visible para el cliente: no · para la analista: sí."
+   ],
+   "ok": true
+  },
+  {
+   "id": "F-25",
+   "modulo": "Historial",
+   "nombre": "Historial: accesos denegados",
+   "rol": "Admin / Cliente 2 / Sin sesión",
+   "tareas": [
+    "TASK-21.3"
+   ],
+   "esperado": "Admin 403, cliente ajeno 404, sin sesión 401; el historial no se escribe por la API (403).",
+   "pasos": [
+    {
+     "actor": "admin",
+     "metodo": "GET",
+     "ruta": "/api/expedientes/a07e4d6d-5628-44e4-ac2e-fb497c6f1a6e/historial",
+     "peticion": "",
+     "extraHeaders": null,
+     "estado": 403,
+     "esperado": [
+      403
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"codigo\": \"SIN_PERMISO\",\n  \"mensaje\": \"No tiene permiso para realizar esta operación.\",\n  \"correlacionId\": \"201c9e89-2b4b-423c-b947-d65a528cafd2\"\n}",
+     "correlacion": "201c9e89-2b4b-423c-b947-d65a528cafd2"
+    },
+    {
+     "actor": "cliente2",
+     "metodo": "GET",
+     "ruta": "/api/expedientes/a07e4d6d-5628-44e4-ac2e-fb497c6f1a6e/historial",
+     "peticion": "",
+     "extraHeaders": null,
+     "estado": 404,
+     "esperado": [
+      404
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"codigo\": \"NO_ENCONTRADO\",\n  \"mensaje\": \"El recurso solicitado no existe.\",\n  \"correlacionId\": \"3e1bc92a-d24a-4e82-9f54-d05e2b1b0390\"\n}",
+     "correlacion": "3e1bc92a-d24a-4e82-9f54-d05e2b1b0390"
+    },
+    {
+     "actor": "sin sesión",
+     "metodo": "GET",
+     "ruta": "/api/expedientes/a07e4d6d-5628-44e4-ac2e-fb497c6f1a6e/historial",
+     "peticion": "",
+     "extraHeaders": null,
+     "estado": 401,
+     "esperado": [
+      401
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"codigo\": \"NO_AUTENTICADO\",\n  \"mensaje\": \"Inicie sesión para continuar.\",\n  \"correlacionId\": \"cae665a5-8f61-47a9-b180-ce5be5148b02\"\n}",
+     "correlacion": "cae665a5-8f61-47a9-b180-ce5be5148b02"
+    },
+    {
+     "actor": "analista",
+     "metodo": "POST",
+     "ruta": "/api/expedientes/a07e4d6d-5628-44e4-ac2e-fb497c6f1a6e/historial",
+     "peticion": "{\"estadoNuevo\":\"RESUELTO\"}",
+     "extraHeaders": null,
+     "estado": 403,
+     "esperado": [
+      403
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"codigo\": \"SIN_PERMISO\",\n  \"mensaje\": \"No tiene permiso para realizar esta operación.\",\n  \"correlacionId\": \"4e847b24-43fe-4cd2-a0d2-c89e05ce650c\"\n}",
+     "correlacion": "4e847b24-43fe-4cd2-a0d2-c89e05ce650c"
+    }
+   ],
+   "notas": [],
+   "ok": true
+  },
+  {
+   "id": "F-26",
+   "modulo": "Notificaciones",
+   "nombre": "Ver notificaciones y marcar como leída (P-20)",
+   "rol": "Cliente",
+   "tareas": [
+    "TASK-18.4"
+   ],
+   "esperado": "El cliente ve sus avisos con plantilla fija (sin textos del caso) y marca uno como leído (204, idempotente); el auditor no tiene bandeja (403).",
+   "pasos": [
+    {
+     "actor": "cliente",
+     "metodo": "GET",
+     "ruta": "/api/notificaciones?tamano=5",
+     "peticion": "",
+     "extraHeaders": null,
+     "estado": 200,
+     "esperado": [
+      200
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"contenido\": [\n    {\n      \"id\": \"702d8c97-9f25-4e00-b3f8-cbfaa6cf7840\",\n      \"destinatarioId\": \"9947f9da-efc3-4a08-bbaa-c616a94a06db\",\n      \"expedienteId\": \"6cc86399-ff29-4fec-ba82-1ae01163c0cb\",\n      \"tipo\": \"OBSERVACION\",\n      \"mensaje\": \"El despacho registró una observación en el expediente EXP-2026-000015.\",\n      \"fecha\": \"2026-10-18T20:06:51.717517Z\",\n      \"leida\": false\n    },\n    {\n      \"id\": \"f66faa43-5ad2-4995-b8e4-69185af79f5b\",\n      \"destinatarioId\": \"9947f9da-efc3-4a08-bbaa-c616a94a06db\",\n      \"expedienteId\": \"a07e4d6d-5628-44e4-ac2e-fb497c6f1a6e\",\n      \"tipo\": \"DECISION_FINAL\",\n      \"mensaje\": \"El expediente EXP-2026-000013 ya tiene una resolución. Consulte el resultado en el portal.\",\n      \"fecha\": \"2026-10-18T20:06:51.536973Z\",\n      \"leida\": false\n    },\n    {\n      \"id\": \"1b265ead-b9fb-407c-a85c-bdd78919ccea\",\n      \"destinatarioId\": \"9947f9da-efc3-4a08-\n… (recortado)",
+     "correlacion": "2e3c98f6-5560-4277-9350-135777c1afaf"
+    },
+    {
+     "actor": "cliente",
+     "metodo": "PUT",
+     "ruta": "/api/notificaciones/702d8c97-9f25-4e00-b3f8-cbfaa6cf7840/leida",
+     "peticion": "",
+     "extraHeaders": null,
+     "estado": 204,
+     "esperado": [
+      204
+     ],
+     "ok": true,
+     "respuesta": "",
+     "correlacion": "89c49b67-329f-4f6f-9146-ca5ff8ede309"
+    },
+    {
+     "actor": "cliente",
+     "metodo": "PUT",
+     "ruta": "/api/notificaciones/702d8c97-9f25-4e00-b3f8-cbfaa6cf7840/leida",
+     "peticion": "",
+     "extraHeaders": null,
+     "estado": 204,
+     "esperado": [
+      204
+     ],
+     "ok": true,
+     "respuesta": "",
+     "correlacion": "79952fa7-3d19-4561-ab16-c11324e19678"
+    },
+    {
+     "actor": "cliente2",
+     "metodo": "PUT",
+     "ruta": "/api/notificaciones/702d8c97-9f25-4e00-b3f8-cbfaa6cf7840/leida",
+     "peticion": "",
+     "extraHeaders": null,
+     "estado": 404,
+     "esperado": [
+      404
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"codigo\": \"NO_ENCONTRADO\",\n  \"mensaje\": \"El recurso solicitado no existe.\",\n  \"correlacionId\": \"75dcd280-70d5-4a9b-99d6-661a40104df0\"\n}",
+     "correlacion": "75dcd280-70d5-4a9b-99d6-661a40104df0"
+    },
+    {
+     "actor": "auditor",
+     "metodo": "GET",
+     "ruta": "/api/notificaciones",
+     "peticion": "",
+     "extraHeaders": null,
+     "estado": 403,
+     "esperado": [
+      403
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"codigo\": \"SIN_PERMISO\",\n  \"mensaje\": \"No tiene permiso para realizar esta operación.\",\n  \"correlacionId\": \"2ed7d6c7-fce1-4e84-81fe-055c5ae1c118\"\n}",
+     "correlacion": "2ed7d6c7-fce1-4e84-81fe-055c5ae1c118"
+    }
+   ],
+   "notas": [
+    "Ningún aviso contiene textos de observaciones ni motivos."
+   ],
+   "ok": true
+  },
+  {
+   "id": "F-27",
+   "modulo": "Consentimiento",
+   "nombre": "Documento sensible sin consentimiento expreso",
+   "rol": "Cliente 2",
+   "tareas": [
+    "TASK-18b.5"
+   ],
+   "esperado": "Adjuntar CERTIFICADO_SALUD sin consentimiento expreso vigente → 403 CONSENTIMIENTO_EXPRESO_REQUERIDO.",
+   "pasos": [
+    {
+     "actor": "cliente2",
+     "metodo": "POST",
+     "ruta": "/api/expedientes",
+     "peticion": "{\"tipoTramite\":\"RESIDENCIA_TEMPORAL\"}",
+     "extraHeaders": null,
+     "estado": 201,
+     "esperado": [
+      201
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"id\": \"24936f26-1eee-45e5-80be-f0c248ae683f\",\n  \"numero\": \"EXP-2026-000017\",\n  \"solicitanteId\": \"babe40a3-138f-432d-8f4c-1b6357220be1\",\n  \"tipoTramite\": \"RESIDENCIA_TEMPORAL\",\n  \"estado\": \"RECIBIDO\",\n  \"fechaCreacion\": \"2026-10-18T20:06:51.924135078Z\",\n  \"fechaActualizacion\": \"2026-10-18T20:06:51.924135078Z\",\n  \"version\": 0\n}",
+     "correlacion": "898b03ca-8e86-4d02-8968-946158827e25"
+    },
+    {
+     "actor": "cliente2",
+     "metodo": "POST",
+     "ruta": "/api/expedientes/24936f26-1eee-45e5-80be-f0c248ae683f/documentos",
+     "peticion": "multipart: archivo=salud.pdf (application/pdf, 50 bytes), tipoDocumental=CERTIFICADO_SALUD",
+     "extraHeaders": null,
+     "estado": 403,
+     "esperado": [
+      403
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"codigo\": \"CONSENTIMIENTO_EXPRESO_REQUERIDO\",\n  \"mensaje\": \"Este documento contiene datos sensibles y requiere el consentimiento expreso vigente del titular.\",\n  \"correlacionId\": \"c2d2b20c-9864-4d08-8029-2987891c1d3a\"\n}",
+     "correlacion": "c2d2b20c-9864-4d08-8029-2987891c1d3a"
+    }
+   ],
+   "notas": [],
+   "ok": true
+  },
+  {
+   "id": "F-28",
+   "modulo": "Consentimiento",
+   "nombre": "Registrar, consultar y revocar consentimiento (P-05)",
+   "rol": "Cliente 2 / Recepción",
+   "tareas": [
+    "TASK-18b.5"
+   ],
+   "esperado": "Alta 201 VIGENTE; con consentimiento expreso se admite el sensible (201); revocación 200 REVOCADO conservando la evidencia; segunda revocación 409.",
+   "pasos": [
+    {
+     "actor": "cliente2",
+     "metodo": "POST",
+     "ruta": "/api/consentimientos",
+     "peticion": "{\"titularId\":\"babe40a3-138f-432d-8f4c-1b6357220be1\",\"finalidad\":\"Trámite de residencia temporal\",\"alcance\":\"Identidad y documentos del trámite\",\"baseLegal\":\"Ley 81 de 2019\",\"expreso\":true}",
+     "extraHeaders": null,
+     "estado": 201,
+     "esperado": [
+      201
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"id\": \"7c105d1e-1632-47e6-93c2-bb688b27e729\",\n  \"titularId\": \"babe40a3-138f-432d-8f4c-1b6357220be1\",\n  \"responsable\": \"Bufete de demostración\",\n  \"finalidad\": \"Trámite de residencia temporal\",\n  \"alcance\": \"Identidad y documentos del trámite\",\n  \"baseLegal\": \"Ley 81 de 2019\",\n  \"fecha\": \"2026-10-18T20:06:51.962529709Z\",\n  \"estado\": \"VIGENTE\",\n  \"expreso\": true\n}",
+     "correlacion": "bc9f9fb1-f69f-491a-8f7a-346cb09ac95e"
+    },
+    {
+     "actor": "cliente2",
+     "metodo": "POST",
+     "ruta": "/api/expedientes/24936f26-1eee-45e5-80be-f0c248ae683f/documentos",
+     "peticion": "multipart: archivo=salud.pdf (application/pdf, 50 bytes), tipoDocumental=CERTIFICADO_SALUD",
+     "extraHeaders": null,
+     "estado": 201,
+     "esperado": [
+      201
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"id\": \"e1ae39d6-4aca-4213-905e-0bd0fa04f7b3\",\n  \"expedienteId\": \"24936f26-1eee-45e5-80be-f0c248ae683f\",\n  \"tipoDocumental\": \"CERTIFICADO_SALUD\",\n  \"nombreArchivo\": \"salud.pdf\",\n  \"tipoMime\": \"application/pdf\",\n  \"tamanoBytes\": 50,\n  \"fechaCarga\": \"2026-10-18T20:06:51.981515215Z\",\n  \"estadoRevision\": \"PENDIENTE\",\n  \"avisoDuplicado\": false\n}",
+     "correlacion": "6bd7d8ef-0f3a-44ef-bf3a-b5633fc73dd0"
+    },
+    {
+     "actor": "recepcion",
+     "metodo": "GET",
+     "ruta": "/api/consentimientos?titularId=babe40a3-138f-432d-8f4c-1b6357220be1",
+     "peticion": "",
+     "extraHeaders": null,
+     "estado": 200,
+     "esperado": [
+      200
+     ],
+     "ok": true,
+     "respuesta": "[\n  {\n    \"id\": \"7c105d1e-1632-47e6-93c2-bb688b27e729\",\n    \"titularId\": \"babe40a3-138f-432d-8f4c-1b6357220be1\",\n    \"responsable\": \"Bufete de demostración\",\n    \"finalidad\": \"Trámite de residencia temporal\",\n    \"alcance\": \"Identidad y documentos del trámite\",\n    \"baseLegal\": \"Ley 81 de 2019\",\n    \"fecha\": \"2026-10-18T20:06:51.962530Z\",\n    \"estado\": \"VIGENTE\",\n    \"expreso\": true\n  },\n  {\n    \"id\": \"bc8577f4-154d-45d3-9a64-187804202aa2\",\n    \"titularId\": \"babe40a3-138f-432d-8f4c-1b6357220be1\",\n    \"responsable\": \"Bufete de demostración\",\n    \"finalidad\": \"Trámite de residencia temporal\",\n    \"alcance\": \"Identidad y documentos del trámite\",\n    \"baseLegal\": \"Ley 81 de 2019\",\n    \"fecha\": \"2026-10-18T20:05:18.651655Z\",\n    \"estado\": \"REVOCADO\",\n    \"expreso\": true,\n    \"fechaRevocacion\": \"2026-10-18T20:05:18.686097Z\"\n  },\n  {\n    \"id\": \"ba23c431-fc9f-476f-b0b3-c38e2ccf4fe1\",\n    \"titula\n… (recortado)",
+     "correlacion": "6a7bf63b-e9ce-4010-aef1-32a74466b6d8"
+    },
+    {
+     "actor": "cliente2",
+     "metodo": "PATCH",
+     "ruta": "/api/consentimientos/7c105d1e-1632-47e6-93c2-bb688b27e729",
+     "peticion": "",
+     "extraHeaders": null,
+     "estado": 200,
+     "esperado": [
+      200
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"id\": \"7c105d1e-1632-47e6-93c2-bb688b27e729\",\n  \"titularId\": \"babe40a3-138f-432d-8f4c-1b6357220be1\",\n  \"responsable\": \"Bufete de demostración\",\n  \"finalidad\": \"Trámite de residencia temporal\",\n  \"alcance\": \"Identidad y documentos del trámite\",\n  \"baseLegal\": \"Ley 81 de 2019\",\n  \"fecha\": \"2026-10-18T20:06:51.962530Z\",\n  \"estado\": \"REVOCADO\",\n  \"expreso\": true,\n  \"fechaRevocacion\": \"2026-10-18T20:06:52.008185276Z\"\n}",
+     "correlacion": "8a1a8c8b-a059-4c1d-877d-696a3020e10f"
+    },
+    {
+     "actor": "cliente2",
+     "metodo": "PATCH",
+     "ruta": "/api/consentimientos/7c105d1e-1632-47e6-93c2-bb688b27e729",
+     "peticion": "",
+     "extraHeaders": null,
+     "estado": 409,
+     "esperado": [
+      409
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"codigo\": \"CONSENTIMIENTO_YA_REVOCADO\",\n  \"mensaje\": \"El consentimiento ya estaba revocado.\",\n  \"correlacionId\": \"459c9c5e-59a2-4793-bbb2-07fddbb719a6\"\n}",
+     "correlacion": "459c9c5e-59a2-4793-bbb2-07fddbb719a6"
+    }
+   ],
+   "notas": [],
+   "ok": true
+  },
+  {
+   "id": "F-29",
+   "modulo": "Derechos ARCO",
+   "nombre": "Crear y atender una solicitud ARCO",
+   "rol": "Cliente 2 / Recepción",
+   "tareas": [
+    "TASK-18c.5"
+   ],
+   "esperado": "Registro 201 RECIBIDA con plazo; atención EN_ATENCION → ATENDIDA (200); saltar a ATENDIDA → 409; rechazo sin motivo → 400.",
+   "pasos": [
+    {
+     "actor": "cliente2",
+     "metodo": "POST",
+     "ruta": "/api/solicitudes-arco",
+     "peticion": "{\"tipo\":\"RECTIFICACION\",\"descripcion\":\"Mi segundo apellido está mal escrito.\"}",
+     "extraHeaders": null,
+     "estado": 201,
+     "esperado": [
+      201
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"id\": \"75f3c3eb-43b4-4729-bc25-c5054219dd58\",\n  \"titularId\": \"babe40a3-138f-432d-8f4c-1b6357220be1\",\n  \"tipo\": \"RECTIFICACION\",\n  \"descripcion\": \"Mi segundo apellido está mal escrito.\",\n  \"fechaCreacion\": \"2026-10-18T20:06:52.035440720Z\",\n  \"estado\": \"RECIBIDA\",\n  \"plazoAtencion\": \"2026-10-28\",\n  \"fueraDePlazo\": false\n}",
+     "correlacion": "5da31d6d-0812-4b78-b08b-f6f17c631c0b"
+    },
+    {
+     "actor": "recepcion",
+     "metodo": "PATCH",
+     "ruta": "/api/solicitudes-arco/75f3c3eb-43b4-4729-bc25-c5054219dd58",
+     "peticion": "{\"estado\":\"ATENDIDA\"}",
+     "extraHeaders": null,
+     "estado": 409,
+     "esperado": [
+      409
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"codigo\": \"TRANSICION_NO_PERMITIDA\",\n  \"mensaje\": \"Una solicitud en estado RECIBIDA no puede pasar a ATENDIDA.\",\n  \"correlacionId\": \"8ffce92e-620b-47a9-9309-ef8317f28e95\"\n}",
+     "correlacion": "8ffce92e-620b-47a9-9309-ef8317f28e95"
+    },
+    {
+     "actor": "recepcion",
+     "metodo": "PATCH",
+     "ruta": "/api/solicitudes-arco/75f3c3eb-43b4-4729-bc25-c5054219dd58",
+     "peticion": "{\"estado\":\"EN_ATENCION\"}",
+     "extraHeaders": null,
+     "estado": 200,
+     "esperado": [
+      200
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"id\": \"75f3c3eb-43b4-4729-bc25-c5054219dd58\",\n  \"titularId\": \"babe40a3-138f-432d-8f4c-1b6357220be1\",\n  \"tipo\": \"RECTIFICACION\",\n  \"descripcion\": \"Mi segundo apellido está mal escrito.\",\n  \"fechaCreacion\": \"2026-10-18T20:06:52.035441Z\",\n  \"estado\": \"EN_ATENCION\",\n  \"responsableId\": \"92110527-af65-4bd9-b09c-cff8918449a3\",\n  \"plazoAtencion\": \"2026-10-28\",\n  \"fueraDePlazo\": false\n}",
+     "correlacion": "b9cf368e-3d27-4a35-b9ba-fb783a84d05e"
+    },
+    {
+     "actor": "recepcion",
+     "metodo": "PATCH",
+     "ruta": "/api/solicitudes-arco/75f3c3eb-43b4-4729-bc25-c5054219dd58",
+     "peticion": "{\"estado\":\"RECHAZADA\"}",
+     "extraHeaders": null,
+     "estado": 400,
+     "esperado": [
+      400
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"codigo\": \"ENTRADA_INVALIDA\",\n  \"mensaje\": \"Revise los datos enviados.\",\n  \"correlacionId\": \"8142d654-549f-4c9d-80b8-c0561cc7b924\",\n  \"errores\": [\n    {\n      \"campo\": \"motivoRechazo\",\n      \"mensaje\": \"El motivo es obligatorio al rechazar.\"\n    }\n  ]\n}",
+     "correlacion": "8142d654-549f-4c9d-80b8-c0561cc7b924"
+    },
+    {
+     "actor": "recepcion",
+     "metodo": "PATCH",
+     "ruta": "/api/solicitudes-arco/75f3c3eb-43b4-4729-bc25-c5054219dd58",
+     "peticion": "{\"estado\":\"ATENDIDA\"}",
+     "extraHeaders": null,
+     "estado": 200,
+     "esperado": [
+      200
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"id\": \"75f3c3eb-43b4-4729-bc25-c5054219dd58\",\n  \"titularId\": \"babe40a3-138f-432d-8f4c-1b6357220be1\",\n  \"tipo\": \"RECTIFICACION\",\n  \"descripcion\": \"Mi segundo apellido está mal escrito.\",\n  \"fechaCreacion\": \"2026-10-18T20:06:52.035441Z\",\n  \"estado\": \"ATENDIDA\",\n  \"responsableId\": \"92110527-af65-4bd9-b09c-cff8918449a3\",\n  \"plazoAtencion\": \"2026-10-28\",\n  \"fueraDePlazo\": false\n}",
+     "correlacion": "c1bbda8e-8b60-4061-a4d6-bcd6c392e041"
+    }
+   ],
+   "notas": [],
+   "ok": true
+  },
+  {
+   "id": "F-30",
+   "modulo": "Derechos ARCO",
+   "nombre": "ARCO: titularidad y acceso por rol",
+   "rol": "Cliente / Auditor / Supervisor / Admin",
+   "tareas": [
+    "TASK-18c.5"
+   ],
+   "esperado": "Otro cliente no ve la solicitud (404); el auditor la consulta (200) pero no la atiende (403); supervisor y admin 403.",
+   "pasos": [
+    {
+     "actor": "cliente",
+     "metodo": "GET",
+     "ruta": "/api/solicitudes-arco/75f3c3eb-43b4-4729-bc25-c5054219dd58",
+     "peticion": "",
+     "extraHeaders": null,
+     "estado": 404,
+     "esperado": [
+      404
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"codigo\": \"NO_ENCONTRADO\",\n  \"mensaje\": \"El recurso solicitado no existe.\",\n  \"correlacionId\": \"ff2c65ca-1550-4bd1-a7b4-8910f9810aca\"\n}",
+     "correlacion": "ff2c65ca-1550-4bd1-a7b4-8910f9810aca"
+    },
+    {
+     "actor": "auditor",
+     "metodo": "GET",
+     "ruta": "/api/solicitudes-arco/75f3c3eb-43b4-4729-bc25-c5054219dd58",
+     "peticion": "",
+     "extraHeaders": null,
+     "estado": 200,
+     "esperado": [
+      200
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"id\": \"75f3c3eb-43b4-4729-bc25-c5054219dd58\",\n  \"titularId\": \"babe40a3-138f-432d-8f4c-1b6357220be1\",\n  \"tipo\": \"RECTIFICACION\",\n  \"descripcion\": \"Mi segundo apellido está mal escrito.\",\n  \"fechaCreacion\": \"2026-10-18T20:06:52.035441Z\",\n  \"estado\": \"ATENDIDA\",\n  \"responsableId\": \"92110527-af65-4bd9-b09c-cff8918449a3\",\n  \"plazoAtencion\": \"2026-10-28\",\n  \"fueraDePlazo\": false\n}",
+     "correlacion": "d5c98e0c-6b70-455b-8189-c53e9fced0d6"
+    },
+    {
+     "actor": "auditor",
+     "metodo": "PATCH",
+     "ruta": "/api/solicitudes-arco/75f3c3eb-43b4-4729-bc25-c5054219dd58",
+     "peticion": "{\"estado\":\"EN_ATENCION\"}",
+     "extraHeaders": null,
+     "estado": 403,
+     "esperado": [
+      403
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"codigo\": \"SIN_PERMISO\",\n  \"mensaje\": \"No tiene permiso para realizar esta operación.\",\n  \"correlacionId\": \"a146d9bc-8eb3-48b5-9369-c8f4faae8de5\"\n}",
+     "correlacion": "a146d9bc-8eb3-48b5-9369-c8f4faae8de5"
+    },
+    {
+     "actor": "supervisor",
+     "metodo": "GET",
+     "ruta": "/api/solicitudes-arco",
+     "peticion": "",
+     "extraHeaders": null,
+     "estado": 403,
+     "esperado": [
+      403
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"codigo\": \"SIN_PERMISO\",\n  \"mensaje\": \"No tiene permiso para realizar esta operación.\",\n  \"correlacionId\": \"186ced49-ceb1-46b5-bf1e-318edc9f2011\"\n}",
+     "correlacion": "186ced49-ceb1-46b5-bf1e-318edc9f2011"
+    },
+    {
+     "actor": "admin",
+     "metodo": "GET",
+     "ruta": "/api/solicitudes-arco",
+     "peticion": "",
+     "extraHeaders": null,
+     "estado": 403,
+     "esperado": [
+      403
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"codigo\": \"SIN_PERMISO\",\n  \"mensaje\": \"No tiene permiso para realizar esta operación.\",\n  \"correlacionId\": \"15f09c06-3d8b-4b45-becd-ea75377ae6ba\"\n}",
+     "correlacion": "15f09c06-3d8b-4b45-becd-ea75377ae6ba"
+    }
+   ],
+   "notas": [],
+   "ok": true
+  },
+  {
+   "id": "F-31",
+   "modulo": "Auditoría",
+   "nombre": "Consultar la bitácora con filtros (I-16)",
+   "rol": "Auditor",
+   "tareas": [
+    "TASK-22.5"
+   ],
+   "esperado": "El auditor consulta eventos filtrados por operación y recurso con actor, resultado y correlación; otros roles 403.",
+   "pasos": [
+    {
+     "actor": "auditor",
+     "metodo": "GET",
+     "ruta": "/api/auditoria/eventos?operacion=CAMBIAR_ESTADO&tamano=3",
+     "peticion": "",
+     "extraHeaders": null,
+     "estado": 200,
+     "esperado": [
+      200
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"contenido\": [\n    {\n      \"id\": \"6e86b210-2a07-44b2-9ae4-9ee90b85c557\",\n      \"actorId\": \"28b7c32e-cafc-4f19-86aa-dd0343014a5b\",\n      \"operacion\": \"CAMBIAR_ESTADO\",\n      \"recurso\": \"expediente/6cc86399-ff29-4fec-ba82-1ae01163c0cb\",\n      \"fecha\": \"2026-10-18T20:06:51.652880Z\",\n      \"resultado\": \"FALLO\",\n      \"correlacionId\": \"28aa187b-3a93-454e-a95f-637a56ab3f6d\"\n    },\n    {\n      \"id\": \"7e0bfc12-bc73-482c-a84e-eea6b6338452\",\n      \"actorId\": \"cc44c308-1837-4edc-a9dc-2f33cd3c3b34\",\n      \"operacion\": \"CAMBIAR_ESTADO\",\n      \"recurso\": \"expediente/6cc86399-ff29-4fec-ba82-1ae01163c0cb\",\n      \"fecha\": \"2026-10-18T20:06:51.639038Z\",\n      \"resultado\": \"EXITO\",\n      \"correlacionId\": \"517e361f-e0d3-49b2-a9ce-b6b657f30529\"\n    },\n    {\n      \"id\": \"fda54671-a06a-405a-8cb3-f098d02b0ab0\",\n      \"actorId\": \"cc44c308-1837-4edc-a9dc-2f33cd3c3b34\",\n      \"operacion\": \"CAMBIAR_ESTADO\",\n   \n… (recortado)",
+     "correlacion": "762960d0-7794-4075-ba7d-4127e422b6f1"
+    },
+    {
+     "actor": "auditor",
+     "metodo": "GET",
+     "ruta": "/api/auditoria/eventos?recurso=a07e4d6d-5628-44e4-ac2e-fb497c6f1a6e&tamano=3",
+     "peticion": "",
+     "extraHeaders": null,
+     "estado": 200,
+     "esperado": [
+      200
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"contenido\": [\n    {\n      \"id\": \"c2bdd772-eb21-4ad3-b08e-cbcc169987f9\",\n      \"actorId\": \"cc44c308-1837-4edc-a9dc-2f33cd3c3b34\",\n      \"operacion\": \"ACCESO_DENEGADO\",\n      \"recurso\": \"POST /api/expedientes/a07e4d6d-5628-44e4-ac2e-fb497c6f1a6e/historial\",\n      \"fecha\": \"2026-10-18T20:06:51.853669Z\",\n      \"resultado\": \"DENEGADO\",\n      \"correlacionId\": \"4e847b24-43fe-4cd2-a0d2-c89e05ce650c\"\n    },\n    {\n      \"id\": \"c4453c84-422c-466b-9b69-154d045ce87c\",\n      \"actorId\": \"babe40a3-138f-432d-8f4c-1b6357220be1\",\n      \"operacion\": \"ACCESO_DENEGADO\",\n      \"recurso\": \"expediente/a07e4d6d-5628-44e4-ac2e-fb497c6f1a6e\",\n      \"fecha\": \"2026-10-18T20:06:51.839127Z\",\n      \"resultado\": \"DENEGADO\",\n      \"correlacionId\": \"3e1bc92a-d24a-4e82-9f54-d05e2b1b0390\"\n    },\n    {\n      \"id\": \"9bf722ea-86f0-46bb-861d-9adf1a35e524\",\n      \"actorId\": \"d2c1485e-e79c-431f-b1fb-df46a0e43f30\",\n      \"oper\n… (recortado)",
+     "correlacion": "9c4fb3ec-4ffc-4477-902d-777764684276"
+    },
+    {
+     "actor": "auditor",
+     "metodo": "GET",
+     "ruta": "/api/auditoria/eventos?operacion=ACCESO_DENEGADO&tamano=3",
+     "peticion": "",
+     "extraHeaders": null,
+     "estado": 200,
+     "esperado": [
+      200
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"contenido\": [\n    {\n      \"id\": \"37f264a3-008c-4b79-aca0-30f9563ab41a\",\n      \"actorId\": \"d2c1485e-e79c-431f-b1fb-df46a0e43f30\",\n      \"operacion\": \"ACCESO_DENEGADO\",\n      \"recurso\": \"GET /api/solicitudes-arco\",\n      \"fecha\": \"2026-10-18T20:06:52.129960Z\",\n      \"resultado\": \"DENEGADO\",\n      \"correlacionId\": \"15f09c06-3d8b-4b45-becd-ea75377ae6ba\"\n    },\n    {\n      \"id\": \"552cde4e-cee7-4af8-8374-f9fe2d176328\",\n      \"actorId\": \"fdf5cd68-6c6b-4862-8724-05d4ced7160f\",\n      \"operacion\": \"ACCESO_DENEGADO\",\n      \"recurso\": \"GET /api/solicitudes-arco\",\n      \"fecha\": \"2026-10-18T20:06:52.121383Z\",\n      \"resultado\": \"DENEGADO\",\n      \"correlacionId\": \"186ced49-ceb1-46b5-bf1e-318edc9f2011\"\n    },\n    {\n      \"id\": \"9be2be05-922b-401d-966b-d6501f2024a1\",\n      \"actorId\": \"b045fa1e-06c8-42e4-ba5f-a444836eab5a\",\n      \"operacion\": \"ACCESO_DENEGADO\",\n      \"recurso\": \"PATCH /api/solicitud\n… (recortado)",
+     "correlacion": "3736614c-f975-438e-8362-5b54bacdcc97"
+    },
+    {
+     "actor": "supervisor",
+     "metodo": "GET",
+     "ruta": "/api/auditoria/eventos",
+     "peticion": "",
+     "extraHeaders": null,
+     "estado": 403,
+     "esperado": [
+      403
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"codigo\": \"SIN_PERMISO\",\n  \"mensaje\": \"No tiene permiso para realizar esta operación.\",\n  \"correlacionId\": \"1f6d38a9-92cc-44a9-a253-5d18a45198da\"\n}",
+     "correlacion": "1f6d38a9-92cc-44a9-a253-5d18a45198da"
+    }
+   ],
+   "notas": [],
+   "ok": true
+  },
+  {
+   "id": "F-32",
+   "modulo": "Auditoría",
+   "nombre": "Exportar la bitácora a CSV",
+   "rol": "Auditor",
+   "tareas": [
+    "TASK-22.5"
+   ],
+   "esperado": "La exportación responde 200 text/csv con los filtros aplicados; el cliente recibe 403.",
+   "pasos": [
+    {
+     "actor": "auditor",
+     "metodo": "GET",
+     "ruta": "/api/auditoria/eventos/exportacion?recurso=a07e4d6d-5628-44e4-ac2e-fb497c6f1a6e",
+     "peticion": "",
+     "extraHeaders": null,
+     "estado": 200,
+     "esperado": [
+      200
+     ],
+     "ok": true,
+     "respuesta": "id,actorId,operacion,recurso,fecha,resultado,correlacionId\r\nc2bdd772-eb21-4ad3-b08e-cbcc169987f9,cc44c308-1837-4edc-a9dc-2f33cd3c3b34,\"ACCESO_DENEGADO\",\"POST /api/expedientes/a07e4d6d-5628-44e4-ac2e-fb497c6f1a6e/historial\",2026-10-18T20:06:51.853669Z,DENEGADO,\"4e847b24-43fe-4cd2-a0d2-c89e05ce650c\"\r\nc4453c84-422c-466b-9b69-154d045ce87c,babe40a3-138f-432d-8f4c-1b6357220be1,\"ACCESO_DENEGADO\",\"expediente/a07e4d6d-5628-44e4-ac2e-fb497c6f1a6e\",2026-10-18T20:06:51.839127Z,DENEGADO,\"3e1bc92a-d24a-4e82-9f54-d05e2b1b0390\"\r\n9bf722ea-86f0-46bb-861d-9adf1a35e524,d2c1485e-e79c-431f-b1fb-df46a0e43f30,\"ACCESO_DENEGADO\",\"GET /api/expedientes/a07e4d6d-5628-44e4-ac2e-fb497c6f1a6e/historial\",2026-10-18T20:06:51.828314Z,DENEGADO,\"201c9e89-2b4b-423c-b947-d65a528cafd2\"\r\ncc947f7d-7b53-4816-aeee-7363c63091b0,28b7c32e-cafc-4f19-86aa-dd0343014a5b,\"CAMBIAR_ESTADO\",\"expediente/a07e4d6d-5628-44e4-ac2e-fb497c6f1a6e\",2\n… (recortado)",
+     "correlacion": "f7f389dd-d5b5-4086-a1c0-e0529524a39a"
+    },
+    {
+     "actor": "cliente",
+     "metodo": "GET",
+     "ruta": "/api/auditoria/eventos/exportacion",
+     "peticion": "",
+     "extraHeaders": null,
+     "estado": 403,
+     "esperado": [
+      403
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"codigo\": \"SIN_PERMISO\",\n  \"mensaje\": \"No tiene permiso para realizar esta operación.\",\n  \"correlacionId\": \"c260757d-74d7-4289-b9f9-8e449a451cb3\"\n}",
+     "correlacion": "c260757d-74d7-4289-b9f9-8e449a451cb3"
+    }
+   ],
+   "notas": [],
+   "ok": true
+  },
+  {
+   "id": "F-33",
+   "modulo": "Errores",
+   "nombre": "Cuerpo de error uniforme por código",
+   "rol": "Varios",
+   "tareas": [
+    "TASK-14.4"
+   ],
+   "esperado": "400, 401, 403, 404, 409 y 415 responden {codigo, mensaje, correlacionId} sin trazas ni SQL.",
+   "pasos": [
+    {
+     "actor": "cliente",
+     "metodo": "POST",
+     "ruta": "/api/expedientes",
+     "peticion": "{\"tipoTramite\":",
+     "extraHeaders": null,
+     "estado": 400,
+     "esperado": [
+      400
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"codigo\": \"ENTRADA_INVALIDA\",\n  \"mensaje\": \"Revise los datos enviados.\",\n  \"correlacionId\": \"dd68a269-7609-4300-8dbc-73257949776d\"\n}",
+     "correlacion": "dd68a269-7609-4300-8dbc-73257949776d"
+    },
+    {
+     "actor": "sin sesión",
+     "metodo": "GET",
+     "ruta": "/api/expedientes",
+     "peticion": "",
+     "extraHeaders": null,
+     "estado": 401,
+     "esperado": [
+      401
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"codigo\": \"NO_AUTENTICADO\",\n  \"mensaje\": \"Inicie sesión para continuar.\",\n  \"correlacionId\": \"f9e674c4-fcd2-4c49-bbb5-6b6577aa1cc4\"\n}",
+     "correlacion": "f9e674c4-fcd2-4c49-bbb5-6b6577aa1cc4"
+    },
+    {
+     "actor": "cliente",
+     "metodo": "GET",
+     "ruta": "/api/auditoria/eventos",
+     "peticion": "",
+     "extraHeaders": null,
+     "estado": 403,
+     "esperado": [
+      403
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"codigo\": \"SIN_PERMISO\",\n  \"mensaje\": \"No tiene permiso para realizar esta operación.\",\n  \"correlacionId\": \"119b6fda-6cdb-45b7-bade-34bc0abf7da1\"\n}",
+     "correlacion": "119b6fda-6cdb-45b7-bade-34bc0abf7da1"
+    },
+    {
+     "actor": "cliente",
+     "metodo": "GET",
+     "ruta": "/api/expedientes/00000000-0000-0000-0000-000000000000",
+     "peticion": "",
+     "extraHeaders": null,
+     "estado": 404,
+     "esperado": [
+      404
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"codigo\": \"NO_ENCONTRADO\",\n  \"mensaje\": \"El recurso solicitado no existe.\",\n  \"correlacionId\": \"f509f93a-ba58-448e-8394-f503477a3713\"\n}",
+     "correlacion": "f509f93a-ba58-448e-8394-f503477a3713"
+    },
+    {
+     "actor": "cliente",
+     "metodo": "POST",
+     "ruta": "/api/expedientes",
+     "peticion": "tipoTramite=PRORROGA_ESTADIA",
+     "extraHeaders": null,
+     "estado": 415,
+     "esperado": [
+      415
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"codigo\": \"FORMATO_NO_SOPORTADO\",\n  \"mensaje\": \"No se pudo procesar la solicitud.\",\n  \"correlacionId\": \"6df7c594-53c0-4512-89ac-d9bbee117037\"\n}",
+     "correlacion": "6df7c594-53c0-4512-89ac-d9bbee117037"
+    },
+    {
+     "actor": "analista",
+     "metodo": "PATCH",
+     "ruta": "/api/expedientes/6cc86399-ff29-4fec-ba82-1ae01163c0cb/estado",
+     "peticion": "{\"estadoNuevo\":\"CON_OBSERVACIONES\",\"motivo\":\"Versión vieja\",\"version\":0}",
+     "extraHeaders": null,
+     "estado": 409,
+     "esperado": [
+      409
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"codigo\": \"VERSION_DESACTUALIZADA\",\n  \"mensaje\": \"El expediente cambió mientras lo revisaba. Vuelva a cargarlo e intente de nuevo.\",\n  \"correlacionId\": \"414515f4-3810-4684-9ec6-5f4d59ce9187\"\n}",
+     "correlacion": "414515f4-3810-4684-9ec6-5f4d59ce9187"
+    }
+   ],
+   "notas": [],
+   "ok": true
+  },
+  {
+   "id": "F-34",
+   "modulo": "Fuentes simuladas",
+   "nombre": "Consultas a fuentes simuladas con escenarios",
+   "rol": "Recepción",
+   "tareas": [
+    "TASK-14.4"
+   ],
+   "esperado": "TE OK (200), sin resultado (4xx), fallo técnico (500 ERROR_TECNICO), tiempo agotado (504) y límite (429); el cliente no accede (403).",
+   "pasos": [
+    {
+     "actor": "recepcion",
+     "metodo": "GET",
+     "ruta": "/api/mock/te/personas/CEDULA/8-123-456",
+     "peticion": "",
+     "extraHeaders": null,
+     "estado": 404,
+     "esperado": [
+      200,
+      404
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"codigo\": \"SIN_RESULTADO\",\n  \"mensaje\": \"La fuente no tiene resultado para la consulta.\",\n  \"correlacionId\": \"5f708c70-2567-4811-b7f8-51ca0ef6e4e3\"\n}",
+     "correlacion": "5f708c70-2567-4811-b7f8-51ca0ef6e4e3"
+    },
+    {
+     "actor": "recepcion",
+     "metodo": "GET",
+     "ruta": "/api/mock/te/personas/CEDULA/8-123-456",
+     "peticion": "",
+     "extraHeaders": {
+      "X-Scenario": "SIN_RESULTADO"
+     },
+     "estado": 404,
+     "esperado": [
+      404,
+      422
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"codigo\": \"SIN_RESULTADO\",\n  \"mensaje\": \"La fuente no tiene resultado para la consulta.\",\n  \"correlacionId\": \"97264956-75a2-48f7-964a-fc8250b8e8f7\"\n}",
+     "correlacion": "97264956-75a2-48f7-964a-fc8250b8e8f7"
+    },
+    {
+     "actor": "recepcion",
+     "metodo": "GET",
+     "ruta": "/api/mock/te/personas/CEDULA/8-123-456",
+     "peticion": "",
+     "extraHeaders": {
+      "X-Scenario": "ERROR_TECNICO"
+     },
+     "estado": 500,
+     "esperado": [
+      500
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"codigo\": \"ERROR_TECNICO\",\n  \"mensaje\": \"La fuente de verificación tuvo un fallo técnico. Intente de nuevo.\",\n  \"correlacionId\": \"78d83e69-751c-4362-8d51-ea38f448d52c\"\n}",
+     "correlacion": "78d83e69-751c-4362-8d51-ea38f448d52c"
+    },
+    {
+     "actor": "recepcion",
+     "metodo": "GET",
+     "ruta": "/api/mock/te/personas/CEDULA/8-123-456",
+     "peticion": "",
+     "extraHeaders": {
+      "X-Scenario": "TIMEOUT"
+     },
+     "estado": 504,
+     "esperado": [
+      504
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"codigo\": \"TIEMPO_AGOTADO\",\n  \"mensaje\": \"La fuente de verificación no respondió a tiempo. Intente de nuevo.\",\n  \"correlacionId\": \"697b17f0-ec0b-4226-86cb-321d3710b051\"\n}",
+     "correlacion": "697b17f0-ec0b-4226-86cb-321d3710b051"
+    },
+    {
+     "actor": "recepcion",
+     "metodo": "GET",
+     "ruta": "/api/mock/te/personas/CEDULA/8-123-456",
+     "peticion": "",
+     "extraHeaders": {
+      "X-Scenario": "RATE_LIMIT"
+     },
+     "estado": 429,
+     "esperado": [
+      429
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"codigo\": \"LIMITE_EXCEDIDO\",\n  \"mensaje\": \"Se alcanzó el límite de consultas de la fuente. Intente más tarde.\",\n  \"correlacionId\": \"0eb268df-141e-4e40-8c05-a8fa95ab3ca1\"\n}",
+     "correlacion": "0eb268df-141e-4e40-8c05-a8fa95ab3ca1"
+    },
+    {
+     "actor": "cliente",
+     "metodo": "GET",
+     "ruta": "/api/mock/te/personas/CEDULA/8-123-456",
+     "peticion": "",
+     "extraHeaders": null,
+     "estado": 403,
+     "esperado": [
+      403
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"codigo\": \"SIN_PERMISO\",\n  \"mensaje\": \"No tiene permiso para realizar esta operación.\",\n  \"correlacionId\": \"92765269-b3e7-4eb1-add6-0fa53c64e94f\"\n}",
+     "correlacion": "92765269-b3e7-4eb1-add6-0fa53c64e94f"
+    }
+   ],
+   "notas": [],
+   "ok": true
+  },
+  {
+   "id": "F-35",
+   "modulo": "Seguridad",
+   "nombre": "Matriz de acceso por rol (muestra)",
+   "rol": "Todos los roles",
+   "tareas": [
+    "TASK-13.4"
+   ],
+   "esperado": "Cada rol accede solo a lo que le permite la matriz: crear expediente solo cliente; bitácora solo auditor; bandeja ARCO cliente/funcionario/auditor.",
+   "pasos": [
+    {
+     "actor": "cliente",
+     "metodo": "POST",
+     "ruta": "/api/expedientes",
+     "peticion": "{\"tipoTramite\":\"PRORROGA_ESTADIA\"}",
+     "extraHeaders": null,
+     "estado": 201,
+     "esperado": [
+      201
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"id\": \"463155af-85e5-4ae0-b9e2-c7047ff66871\",\n  \"numero\": \"EXP-2026-000018\",\n  \"solicitanteId\": \"9947f9da-efc3-4a08-bbaa-c616a94a06db\",\n  \"tipoTramite\": \"PRORROGA_ESTADIA\",\n  \"estado\": \"RECIBIDO\",\n  \"fechaCreacion\": \"2026-10-18T20:06:52.299922695Z\",\n  \"fechaActualizacion\": \"2026-10-18T20:06:52.299922695Z\",\n  \"version\": 0\n}",
+     "correlacion": "2ec29009-9e50-4a81-88c6-740de8f09b25"
+    },
+    {
+     "actor": "recepcion",
+     "metodo": "POST",
+     "ruta": "/api/expedientes",
+     "peticion": "{\"tipoTramite\":\"PRORROGA_ESTADIA\"}",
+     "extraHeaders": null,
+     "estado": 403,
+     "esperado": [
+      403
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"codigo\": \"SIN_PERMISO\",\n  \"mensaje\": \"No tiene permiso para realizar esta operación.\",\n  \"correlacionId\": \"1d7a7eea-60b3-4e6d-95dc-1a6d30ebffd1\"\n}",
+     "correlacion": "1d7a7eea-60b3-4e6d-95dc-1a6d30ebffd1"
+    },
+    {
+     "actor": "supervisor",
+     "metodo": "POST",
+     "ruta": "/api/expedientes",
+     "peticion": "{\"tipoTramite\":\"PRORROGA_ESTADIA\"}",
+     "extraHeaders": null,
+     "estado": 403,
+     "esperado": [
+      403
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"codigo\": \"SIN_PERMISO\",\n  \"mensaje\": \"No tiene permiso para realizar esta operación.\",\n  \"correlacionId\": \"f1a15bbb-9e11-47f3-8728-2bf0c45140f1\"\n}",
+     "correlacion": "f1a15bbb-9e11-47f3-8728-2bf0c45140f1"
+    },
+    {
+     "actor": "auditor",
+     "metodo": "POST",
+     "ruta": "/api/expedientes",
+     "peticion": "{\"tipoTramite\":\"PRORROGA_ESTADIA\"}",
+     "extraHeaders": null,
+     "estado": 403,
+     "esperado": [
+      403
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"codigo\": \"SIN_PERMISO\",\n  \"mensaje\": \"No tiene permiso para realizar esta operación.\",\n  \"correlacionId\": \"60653efe-b7b7-4a0e-b07a-c757d34a3a16\"\n}",
+     "correlacion": "60653efe-b7b7-4a0e-b07a-c757d34a3a16"
+    },
+    {
+     "actor": "admin",
+     "metodo": "POST",
+     "ruta": "/api/expedientes",
+     "peticion": "{\"tipoTramite\":\"PRORROGA_ESTADIA\"}",
+     "extraHeaders": null,
+     "estado": 403,
+     "esperado": [
+      403
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"codigo\": \"SIN_PERMISO\",\n  \"mensaje\": \"No tiene permiso para realizar esta operación.\",\n  \"correlacionId\": \"e3bfd0f7-47aa-41eb-b701-aa7b6c95fa3f\"\n}",
+     "correlacion": "e3bfd0f7-47aa-41eb-b701-aa7b6c95fa3f"
+    },
+    {
+     "actor": "cliente",
+     "metodo": "GET",
+     "ruta": "/api/auditoria/eventos?tamano=1",
+     "peticion": "",
+     "extraHeaders": null,
+     "estado": 403,
+     "esperado": [
+      403
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"codigo\": \"SIN_PERMISO\",\n  \"mensaje\": \"No tiene permiso para realizar esta operación.\",\n  \"correlacionId\": \"4b2664d5-d419-456b-b41a-6e9bfc181a40\"\n}",
+     "correlacion": "4b2664d5-d419-456b-b41a-6e9bfc181a40"
+    },
+    {
+     "actor": "recepcion",
+     "metodo": "GET",
+     "ruta": "/api/auditoria/eventos?tamano=1",
+     "peticion": "",
+     "extraHeaders": null,
+     "estado": 403,
+     "esperado": [
+      403
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"codigo\": \"SIN_PERMISO\",\n  \"mensaje\": \"No tiene permiso para realizar esta operación.\",\n  \"correlacionId\": \"542d92bb-aef5-465f-8746-477a59520b16\"\n}",
+     "correlacion": "542d92bb-aef5-465f-8746-477a59520b16"
+    },
+    {
+     "actor": "supervisor",
+     "metodo": "GET",
+     "ruta": "/api/auditoria/eventos?tamano=1",
+     "peticion": "",
+     "extraHeaders": null,
+     "estado": 403,
+     "esperado": [
+      403
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"codigo\": \"SIN_PERMISO\",\n  \"mensaje\": \"No tiene permiso para realizar esta operación.\",\n  \"correlacionId\": \"c9223ad8-d025-45d8-97eb-a87af3bef7ca\"\n}",
+     "correlacion": "c9223ad8-d025-45d8-97eb-a87af3bef7ca"
+    },
+    {
+     "actor": "auditor",
+     "metodo": "GET",
+     "ruta": "/api/auditoria/eventos?tamano=1",
+     "peticion": "",
+     "extraHeaders": null,
+     "estado": 200,
+     "esperado": [
+      200
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"contenido\": [\n    {\n      \"id\": \"a20686ec-0df1-451e-81f2-90d246459447\",\n      \"actorId\": \"fdf5cd68-6c6b-4862-8724-05d4ced7160f\",\n      \"operacion\": \"ACCESO_DENEGADO\",\n      \"recurso\": \"GET /api/auditoria/eventos\",\n      \"fecha\": \"2026-10-18T20:06:52.366811Z\",\n      \"resultado\": \"DENEGADO\",\n      \"correlacionId\": \"c9223ad8-d025-45d8-97eb-a87af3bef7ca\"\n    }\n  ],\n  \"paginacion\": {\n    \"pagina\": 0,\n    \"tamano\": 1,\n    \"totalElementos\": 270,\n    \"totalPaginas\": 270\n  }\n}",
+     "correlacion": "e7568108-10e9-415f-9079-20b424aa751c"
+    },
+    {
+     "actor": "admin",
+     "metodo": "GET",
+     "ruta": "/api/auditoria/eventos?tamano=1",
+     "peticion": "",
+     "extraHeaders": null,
+     "estado": 403,
+     "esperado": [
+      403
+     ],
+     "ok": true,
+     "respuesta": "{\n  \"codigo\": \"SIN_PERMISO\",\n  \"mensaje\": \"No tiene permiso para realizar esta operación.\",\n  \"correlacionId\": \"d14d6eb4-bb90-4b9d-bc4d-da970432e0db\"\n}",
+     "correlacion": "d14d6eb4-bb90-4b9d-bc4d-da970432e0db"
+    }
+   ],
+   "notas": [],
+   "ok": true
+  }
+ ]
+}

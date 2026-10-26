@@ -1,0 +1,14 @@
+# Perfil test: la base de datos la levanta Testcontainers (TestcontainersConfiguration) y
+# sustituye esta conexión; los valores solo evitan exigir variables de entorno al probar.
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/prueba
+    username: prueba
+    password: prueba
+
+app:
+  seguridad:
+    bcrypt-coste: 4
+    intentos-maximos: 3
+  documentos:
+    directorio: target/almacenamiento-pruebas
