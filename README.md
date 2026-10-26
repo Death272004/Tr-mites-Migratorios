@@ -1,12 +1,23 @@
 # Plataforma Interoperable de Trámites Migratorios
 
 <p align="center">
+  <img src="docs/assets/readme-banner.svg" alt="Banner de la Plataforma Interoperable de Trámites Migratorios" width="100%">
+</p>
+
+<p align="center">
   <img src="https://img.shields.io/badge/Proyecto-Universitario-0B1B2B?style=for-the-badge" alt="Proyecto universitario">
   <img src="https://img.shields.io/badge/Ingeniería%20de%20Software%20III-2026-F28C28?style=for-the-badge" alt="Ingeniería de Software III">
   <img src="https://img.shields.io/badge/MVP-en%20desarrollo-56C596?style=for-the-badge" alt="MVP en desarrollo">
 </p>
 
 > Una plataforma académica para que un bufete pueda organizar expedientes migratorios, consultar documentos y dar seguimiento a verificaciones desde un solo lugar.
+
+<p align="center">
+  <a href="#ejecutar-el-proyecto">▶ Ejecutar</a> ·
+  <a href="#qué-incluye-el-mvp">MVP</a> ·
+  <a href="#cómo-trabajamos-con-git">Git y ramas</a> ·
+  <a href="#documentación-útil">Documentación</a>
+</p>
 
 Este repositorio contiene el proyecto integrador de **Ingeniería de Software III**. La solución se construye como un MVP: primero demostramos el flujo principal de forma segura y trazable, y después dejamos preparadas las bases para futuras integraciones.
 
@@ -159,6 +170,19 @@ Pruebas de calidad y seguridad:
 - **OWASP ZAP:** revisión básica de seguridad sobre el entorno local.
 - **JUnit/Testcontainers:** pruebas automatizadas del backend y la persistencia.
 
+<details>
+<summary><strong>🧪 Qué revisamos en cada prueba</strong></summary>
+
+| Prueba | Qué buscamos |
+| --- | --- |
+| Flujo normal | Que el abogado pueda consultar el expediente y obtener una respuesta. |
+| Error de fuente | Que el sistema muestre el estado técnico sin romper el expediente. |
+| Timeout | Que exista un reintento controlado. |
+| Duplicado | Que repetir una solicitud no cree una verificación duplicada. |
+| Seguridad | Que los roles y los datos ficticios se respeten. |
+
+</details>
+
 ## Cómo trabajamos con Git
 
 Las ramas de rol mantienen separado el trabajo de cada área:
@@ -212,6 +236,18 @@ La rama se integra mediante Pull Request después de verificar que el proyecto c
 - [Documentación base](Documentacion/documentos-base/)
 - [Convenciones de Git](docs/CONVENCIONES-GIT.md)
 - [Entornos y secretos](docs/ENTORNOS-Y-SECRETOS.md)
+
+<details>
+<summary><strong>🧭 Ruta rápida para un integrante nuevo</strong></summary>
+
+1. Lee este README completo.
+2. Instala Docker y Git.
+3. Levanta el proyecto con `docker compose up --build`.
+4. Revisa la rama correspondiente a tu rol.
+5. Crea una rama `feature/...` para tu tarea.
+6. Prueba localmente y abre un Pull Request con una descripción clara.
+
+</details>
 
 ## Reglas importantes
 

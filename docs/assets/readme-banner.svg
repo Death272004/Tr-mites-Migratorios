@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 360" role="img" aria-labelledby="title desc">
+  <title id="title">Plataforma Interoperable de Trámites Migratorios</title>
+  <desc id="desc">Banner animado del proyecto con expediente digital y conexiones simuladas.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#071B2B"/>
+      <stop offset="100%" stop-color="#123B56"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#F28C28"/>
+      <stop offset="100%" stop-color="#FFC15A"/>
+    </linearGradient>
+    <filter id="glow"><feGaussianBlur stdDeviation="5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <style>
+      .pulse { animation: pulse 2.8s ease-in-out infinite; transform-origin: center; }
+      .dash { animation: dash 5s linear infinite; }
+      .float { animation: float 4s ease-in-out infinite; }
+      @keyframes pulse { 0%,100% { opacity:.35; transform:scale(.92); } 50% { opacity:.85; transform:scale(1.05); } }
+      @keyframes dash { to { stroke-dashoffset:-80; } }
+      @keyframes float { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-8px); } }
+    </style>
+  </defs>
+  <rect width="1400" height="360" rx="28" fill="url(#bg)"/>
+  <circle class="pulse" cx="1180" cy="-10" r="220" fill="#1B5275" opacity=".5"/>
+  <circle class="pulse" cx="1190" cy="-10" r="160" fill="none" stroke="#5EA9D2" stroke-width="2" opacity=".5"/>
+  <rect x="58" y="56" width="8" height="248" rx="4" fill="url(#accent)"/>
+  <text x="100" y="92" fill="#F28C28" font-family="Arial, sans-serif" font-size="18" font-weight="700" letter-spacing="3">INGENIERÍA DE SOFTWARE III · 2026</text>
+  <text x="100" y="156" fill="#F6F8FB" font-family="Arial, sans-serif" font-size="42" font-weight="700">Plataforma Interoperable</text>
+  <text x="100" y="207" fill="#F6F8FB" font-family="Arial, sans-serif" font-size="42" font-weight="700">de Trámites Migratorios</text>
+  <text x="102" y="252" fill="#B7C8D5" font-family="Arial, sans-serif" font-size="19">Expedientes · documentos · verificaciones · trazabilidad</text>
+  <rect x="100" y="278" width="270" height="5" rx="3" fill="#F28C28"/>
+  <g class="float" transform="translate(900 92)">
+    <rect x="0" y="0" width="330" height="184" rx="20" fill="#102F47" stroke="#35617B" stroke-width="2"/>
+    <rect x="28" y="30" width="274" height="18" rx="9" fill="#F28C28" opacity=".95"/>
+    <rect x="28" y="74" width="190" height="12" rx="6" fill="#B7C8D5" opacity=".75"/>
+    <rect x="28" y="103" width="245" height="12" rx="6" fill="#B7C8D5" opacity=".48"/>
+    <rect x="28" y="132" width="160" height="12" rx="6" fill="#56C596" opacity=".9"/>
+    <circle class="pulse" cx="270" cy="138" r="20" fill="#56C596" filter="url(#glow)"/>
+  </g>
+  <path class="dash" d="M770 178 C820 178 835 178 880 178" fill="none" stroke="#F28C28" stroke-width="4" stroke-linecap="round" stroke-dasharray="12 14"/>
+</svg>
