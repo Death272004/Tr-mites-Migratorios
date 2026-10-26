@@ -15,6 +15,10 @@
   <img src="https://img.shields.io/badge/QA-JMeter%20%2B%20ZAP-8B5CF6?style=for-the-badge" alt="QA con JMeter y ZAP">
 </p>
 
+<p align="center">
+  <img src="docs/assets/project-status.svg" alt="Estado del MVP, QA y trazabilidad" width="100%">
+</p>
+
 > Una plataforma académica para que un bufete pueda organizar expedientes migratorios, consultar documentos y dar seguimiento a verificaciones desde un solo lugar.
 
 <p align="center">
@@ -24,9 +28,21 @@
   <a href="#documentación-útil">Documentación</a>
 </p>
 
+<p align="center">
+  <sub>Construido con trazabilidad · datos ficticios · integración simulada · trabajo colaborativo</sub>
+</p>
+
+<img src="docs/assets/section-divider.svg" alt="Separador visual" width="100%">
+
 Este repositorio contiene el proyecto integrador de **Ingeniería de Software III**. La solución se construye como un MVP: primero demostramos el flujo principal de forma segura y trazable, y después dejamos preparadas las bases para futuras integraciones.
 
-## El problema que estamos resolviendo
+<p>
+  <img src="https://img.shields.io/badge/Estado-MVP%20en%20desarrollo-56C596?style=flat-square" alt="MVP en desarrollo">
+  <img src="https://img.shields.io/badge/Datos-Ficticios-F28C28?style=flat-square" alt="Datos ficticios">
+  <img src="https://img.shields.io/badge/Arquitectura-Interoperable-2496ED?style=flat-square" alt="Arquitectura interoperable">
+</p>
+
+## 🧭 El problema que estamos resolviendo
 
 Los trámites migratorios pueden tardar meses cuando la información está repartida, los documentos se revisan manualmente y no existe una vista clara del estado del expediente. Esto genera duplicidad, errores de seguimiento y poca visibilidad para el bufete y sus clientes.
 
@@ -41,7 +57,11 @@ Nuestra propuesta centraliza el expediente del cliente y organiza el flujo del a
 
 > **Importante:** el sistema utiliza datos ficticios y servicios simulados. No consulta APIs reales del Tribunal Electoral, la CSS ni el Registro Público.
 
-## Qué incluye el MVP
+<img src="docs/assets/section-divider.svg" alt="Separador visual" width="100%">
+
+## 🚀 Qué incluye el MVP
+
+> El objetivo del MVP no es cubrir todos los trámites posibles: es demostrar un flujo completo, medible y fácil de revisar.
 
 | Módulo | Qué permite demostrar |
 | --- | --- |
@@ -53,7 +73,14 @@ Nuestra propuesta centraliza el expediente del cliente y organiza el flujo del a
 | Reintentos | Se manejan errores, timeouts e idempotencia sin crear duplicados. |
 | Trazabilidad | Se registra quién realizó la operación, cuándo y qué resultado obtuvo. |
 
-## Flujo técnico
+## 🔄 Flujo técnico
+
+<p align="center">
+  <img src="https://img.shields.io/badge/1%20Acceso-0B1B2B?style=for-the-badge" alt="Acceso">
+  <img src="https://img.shields.io/badge/2%20Expediente-123C59?style=for-the-badge" alt="Expediente">
+  <img src="https://img.shields.io/badge/3%20Verificación-56C596?style=for-the-badge" alt="Verificación">
+  <img src="https://img.shields.io/badge/4%20Auditoría-A78BFA?style=for-the-badge" alt="Auditoría">
+</p>
 
 ```mermaid
 flowchart LR
@@ -71,7 +98,9 @@ flowchart LR
     J --> K[Seguimiento y auditoría]
 ```
 
-## Arquitectura del proyecto
+<img src="docs/assets/section-divider.svg" alt="Separador visual" width="100%">
+
+## 🧱 Arquitectura del proyecto
 
 ```text
 Tr-mites-Migratorios/
@@ -86,7 +115,7 @@ Tr-mites-Migratorios/
 └── Versiones_Anteriores/ Material histórico de ramas archivadas
 ```
 
-## Tecnologías
+## 🛠️ Tecnologías
 
 | Área | Herramientas |
 | --- | --- |
@@ -99,7 +128,14 @@ Tr-mites-Migratorios/
 | Seguridad | OWASP ZAP, roles y datos ficticios |
 | Trabajo en equipo | GitHub y TeamTrack |
 
-## Ejecutar el proyecto
+<img src="docs/assets/section-divider.svg" alt="Separador visual" width="100%">
+
+## ▶️ Ejecutar el proyecto
+
+<p>
+  <img src="https://img.shields.io/badge/Inicio%20rápido-Docker%20Compose-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Inicio rápido con Docker Compose">
+  <img src="https://img.shields.io/badge/Entorno-Local-56C596?style=for-the-badge" alt="Entorno local">
+</p>
 
 ### Requisitos
 
@@ -154,7 +190,7 @@ cd Backend
 
 En Windows se utiliza `mvnw.cmd` en lugar de `./mvnw`.
 
-## Ejecutar pruebas
+## 🧪 Ejecutar pruebas
 
 Pruebas del backend:
 
@@ -175,6 +211,12 @@ Pruebas de calidad y seguridad:
 - **OWASP ZAP:** revisión básica de seguridad sobre el entorno local.
 - **JUnit/Testcontainers:** pruebas automatizadas del backend y la persistencia.
 
+<p>
+  <img src="https://img.shields.io/badge/Rendimiento-JMeter-8B5CF6?style=flat-square&logo=apache" alt="Pruebas de rendimiento con JMeter">
+  <img src="https://img.shields.io/badge/Seguridad-OWASP%20ZAP-A78BFA?style=flat-square" alt="Pruebas de seguridad con OWASP ZAP">
+  <img src="https://img.shields.io/badge/Automatización-JUnit-56C596?style=flat-square" alt="Pruebas automatizadas con JUnit">
+</p>
+
 <details>
 <summary><strong>🧪 Qué revisamos en cada prueba</strong></summary>
 
@@ -188,7 +230,11 @@ Pruebas de calidad y seguridad:
 
 </details>
 
-## Cómo trabajamos con Git
+<img src="docs/assets/section-divider.svg" alt="Separador visual" width="100%">
+
+## 🌿 Cómo trabajamos con Git
+
+> Regla del equipo: cada cambio se prueba en una rama de trabajo y `main` conserva una versión demostrable.
 
 Las ramas de rol mantienen separado el trabajo de cada área:
 
@@ -219,7 +265,7 @@ git push -u origin feature/nombre-de-la-tarea
 
 La rama se integra mediante Pull Request después de verificar que el proyecto compile, las pruebas pasen y la documentación esté actualizada. `main` se reserva para una versión estable y demostrable.
 
-## Equipo y responsabilidades
+## 👥 Equipo y responsabilidades
 
 | Integrante | Responsabilidad principal |
 | --- | --- |
@@ -229,7 +275,16 @@ La rama se integra mediante Pull Request después de verificar que el proyecto c
 | Vivian Paris | QA y seguridad |
 | Richard Rodríguez | Documentación y coordinación técnica |
 
-## Documentación útil
+<p>
+  <img src="https://img.shields.io/badge/Scrum-Coordinar-0B1B2B?style=flat-square" alt="Scrum">
+  <img src="https://img.shields.io/badge/DevOps-Integrar-2496ED?style=flat-square" alt="DevOps">
+  <img src="https://img.shields.io/badge/QA-Verificar-8B5CF6?style=flat-square" alt="QA">
+  <img src="https://img.shields.io/badge/Documentación-Trazar-F28C28?style=flat-square" alt="Documentación">
+</p>
+
+<img src="docs/assets/section-divider.svg" alt="Separador visual" width="100%">
+
+## 📚 Documentación útil
 
 - [Documentación general](Documentacion/README.md)
 - [Backend y API](Backend/README.md)
@@ -254,7 +309,7 @@ La rama se integra mediante Pull Request después de verificar que el proyecto c
 
 </details>
 
-## Reglas importantes
+## 🔐 Reglas importantes
 
 - Utilizar únicamente datos ficticios en desarrollo, pruebas y demostraciones.
 - No subir contraseñas, tokens, archivos `.env` ni datos personales.
@@ -266,6 +321,10 @@ La rama se integra mediante Pull Request después de verificar que el proyecto c
 ## Estado actual
 
 El proyecto se encuentra en la etapa de refinamiento del MVP. El foco actual es cerrar el recorrido completo del abogado, demostrar las verificaciones simuladas y presentar evidencias de calidad, seguridad, trazabilidad y DevOps para el Sprint 6.
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Próximo%20objetivo-Review%20%232-56C596?style=for-the-badge" alt="Próximo objetivo: Review 2">
+</p>
 
 ---
 
