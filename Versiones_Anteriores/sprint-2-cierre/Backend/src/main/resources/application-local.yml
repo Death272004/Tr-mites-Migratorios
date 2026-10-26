@@ -1,0 +1,7 @@
+# Perfil local: backend fuera de Docker contra la base de datos del docker-compose.
+# Los valores por defecto coinciden con .env.example y solo sirven en desarrollo.
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5433/tramites}
+    username: ${DB_USER:tramites}
+    password: ${DB_PASSWORD:tramites_local}
