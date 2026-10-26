@@ -158,10 +158,10 @@ class FuentesSimuladasTest extends PruebaApi {
 		UUID responsable = funcionarioCompleto().getId();
 
 		Verificacion manual = verificaciones.save(Verificacion.manualAsistida(id, Verificacion.Fuente.TE, "IDENTIDAD",
-				"Verificar la identidad del titular", responsable, Instant.now(), "coincide", "Consulta pública TE"));
+				"Verificar la identidad del titular", responsable, Instant.now(), Verificacion.ResultadoMinimo.COINCIDE, "Consulta pública TE"));
 		Verificacion simulada = Verificacion.simulada(id, Verificacion.Fuente.TE, "IDENTIDAD",
 				"Verificar la identidad del titular");
-		simulada.responder("coincide", "SIM-TE-0001");
+		simulada.responder(Verificacion.ResultadoMinimo.COINCIDE, "SIM-TE-0001");
 		verificaciones.save(simulada);
 
 		List<Map<String, Object>> filas = jdbc.queryForList(
@@ -178,7 +178,9 @@ class FuentesSimuladasTest extends PruebaApi {
 		assertThat(jdbc.queryForList(
 				"SELECT column_name FROM information_schema.columns WHERE table_name = 'verificacion'", String.class))
 			.containsExactlyInAnyOrder("id", "expediente_id", "fuente", "tipo_verificacion", "modo", "estado", "finalidad",
-					"fecha_solicitud", "fecha_resultado", "resultado_minimo", "referencia_origen", "responsable_id", "nota");
+					"fecha_solicitud", "fecha_resultado", "resultado_minimo", "referencia_origen", "responsable_id", "nota",
+					// Sprint 5: solo datos técnicos de la orquestación (HU-24).
+					"version", "intentos", "proximo_intento", "ultimo_fallo", "clave_idempotencia", "correlacion_id");
 	}
 
 	// ---------- Validación mínima de un objeto JSON contra un esquema del contrato ----------

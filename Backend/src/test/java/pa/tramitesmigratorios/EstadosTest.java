@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.Callable;
@@ -21,6 +22,9 @@ import pa.tramitesmigratorios.seguridad.Rol;
 import pa.tramitesmigratorios.seguridad.Usuario;
 import pa.tramitesmigratorios.verificacion.Verificacion;
 import pa.tramitesmigratorios.verificacion.VerificacionRepo;
+import pa.tramitesmigratorios.verificacion.adaptadores.Puertos.EstadoTecnico;
+import pa.tramitesmigratorios.verificacion.adaptadores.Puertos.Politica;
+import pa.tramitesmigratorios.verificacion.adaptadores.Puertos.Respuesta;
 
 /** HU-19, HU-20 y HU-21: máquina de estados, observaciones e historial. CP-04, CP-09. */
 class EstadosTest extends PruebaApi {
@@ -142,7 +146,8 @@ class EstadosTest extends PruebaApi {
 	@Test
 	void noSeLlegaALaDecisionSinRequisitosCompletosNiVerificacionesResueltas() throws Exception {
 		String cliente = tokenDe(Rol.SOLICITANTE);
-		String despacho = token(funcionarioCompleto());
+		Usuario resolutor = funcionarioCompleto();
+		String despacho = token(resolutor);
 		String id = expediente(cliente, TRAMITE_SIMPLE);
 		cambiarEstado(despacho, despacho, id, "EN_ANALISIS", "Inicio").andExpect(status().isOk());
 		cambiarEstado(despacho, despacho, id, "ADMITIDO", "Conforme").andExpect(status().isOk());
@@ -159,12 +164,15 @@ class EstadosTest extends PruebaApi {
 		cambiarEstado(despacho, despacho, id, "EN_RESOLUCION", "Listo").andExpect(status().isConflict())
 			.andExpect(jsonPath("$.mensaje", containsString("1 verificación(es) sin respuesta")));
 		// Un error técnico no cuenta como resultado.
-		pendiente.marcar(Verificacion.Estado.ERROR_TECNICO);
-		verificaciones.save(pendiente);
+		pendiente.aplicar(new Respuesta(Verificacion.Fuente.TE, EstadoTecnico.ERROR_TECNICO, null, null, Instant.now(), null),
+				new Politica(1000, 0, 0), Instant.now());
+		pendiente = verificaciones.save(pendiente);
+		assertThat(pendiente.getEstado()).isEqualTo(Verificacion.Estado.ERROR_TECNICO);
 		cambiarEstado(despacho, despacho, id, "EN_RESOLUCION", "Listo").andExpect(status().isConflict());
 		assertThat(estado(cliente, id)).isEqualTo("ADMITIDO");
 
-		pendiente.responder("coincide", "SIM-TE-0001");
+		pendiente.registrarManual(new Respuesta(Verificacion.Fuente.TE, EstadoTecnico.RESPONDIDA,
+				Verificacion.ResultadoMinimo.COINCIDE, "Consulta pública TE", Instant.now(), resolutor.getId()));
 		verificaciones.save(pendiente);
 		cambiarEstado(despacho, despacho, id, "EN_RESOLUCION", "Listo").andExpect(status().isOk());
 		resolver(despacho, id, "NEGADA", "No cumple el requisito de estadía").andExpect(status().isOk())
