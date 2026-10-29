@@ -16,6 +16,18 @@ Propósito: reunir la evidencia reproducible del Review #2 sin presentar como te
 | Interfaz | `Frontend/qa/usabilidad-sprint6.md` | Mejoras de foco, navegación por teclado, mensajes `aria-live`, menú móvil y controles táctiles documentadas. |
 | CI/CD | `.github/workflows/backend-tests.yml` | Workflow configurado para ejecutar Maven, publicar Surefire y JaCoCo en cada `push` y `pull_request`. |
 
+## Smoke test automatizado de la interfaz
+
+Se ejecutó una comprobación manual automatizada sobre el entorno local activo usando únicamente datos ficticios:
+
+1. Se abrió el portal del cliente.
+2. Se inició sesión con la cuenta de demostración documentada por la aplicación.
+3. El sistema mostró el portal de cliente y la pantalla de trámites sin error de carga.
+4. Se navegó a «Nueva solicitud» y se mostró el paso 1 de 11 con sus validaciones y controles.
+5. La página mantuvo un elemento `main` y una región `[aria-live]` para anunciar cambios de navegación.
+
+Esta comprobación confirma el flujo básico de interfaz y los puntos técnicos de accesibilidad. No sustituye una sesión con una persona, porque no mide tiempo de aprendizaje, errores humanos ni necesidad de asistencia.
+
 ## Medidas técnicas registradas
 
 En la ejecución anterior de la suite del backend se registraron 139 pruebas, sin fallos, errores ni pruebas omitidas. La cobertura JaCoCo registrada fue:
