@@ -1,6 +1,9 @@
 name: HU28 - seguridad autenticada
 on:
   workflow_dispatch:
+  push:
+    branches: [integration/sprint-6-devops]
+    paths: [".github/workflows/hu28-security.yml"]
 permissions:
   contents: read
 jobs:
