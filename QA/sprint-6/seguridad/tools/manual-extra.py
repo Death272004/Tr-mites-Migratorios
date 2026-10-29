@@ -1,6 +1,6 @@
 from pathlib import Path
 import urllib.request,urllib.error,json,subprocess,datetime
-r=Path(__file__).resolve().parents[4];out=r/'QA/sprint-6/seguridad/revalidacion';tests=[]
+r=Path(__file__).resolve().parents[4];out=r/'QA/sprint-6/seguridad/revalidacion';out.mkdir(parents=True,exist_ok=True);tests=[]
 def req(path,token=None,method='GET',obj=None,raw=None,extra=None):
  headers={'Content-Type':'application/json',**(extra or {})}
  if token: headers['Authorization']='Bearer '+token

@@ -1,4 +1,4 @@
-name: HU28 - seguridad autenticada
+name: HU28 - seguridad autenticada # create evidence directory before manual checks
 on:
   workflow_dispatch:
   push:
