@@ -1,9 +1,6 @@
 name: HU28 - seguridad autenticada # create evidence directory before manual checks
 on:
   workflow_dispatch:
-  push:
-    branches: [integration/sprint-6-devops]
-    paths: [".github/workflows/hu28-security.yml"]
 permissions:
   contents: read
 jobs:

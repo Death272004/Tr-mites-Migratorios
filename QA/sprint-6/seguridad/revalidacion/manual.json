@@ -1,0 +1,236 @@
+{
+  "date": "2026-10-29T21:01:03.989455+00:00",
+  "tests": [
+    {
+      "name": "login cliente",
+      "method": "POST",
+      "path": "/api/auth/login",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "name": "authenticated profile cliente",
+      "method": "GET",
+      "path": "/api/perfil",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "name": "login cliente2",
+      "method": "POST",
+      "path": "/api/auth/login",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "name": "authenticated profile cliente2",
+      "method": "GET",
+      "path": "/api/perfil",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "name": "login analista",
+      "method": "POST",
+      "path": "/api/auth/login",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "name": "authenticated profile analista",
+      "method": "GET",
+      "path": "/api/perfil",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "name": "login supervisor",
+      "method": "POST",
+      "path": "/api/auth/login",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "name": "authenticated profile supervisor",
+      "method": "GET",
+      "path": "/api/perfil",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "name": "login auditor",
+      "method": "POST",
+      "path": "/api/auth/login",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "name": "authenticated profile auditor",
+      "method": "GET",
+      "path": "/api/perfil",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "name": "login admin",
+      "method": "POST",
+      "path": "/api/auth/login",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "name": "authenticated profile admin",
+      "method": "GET",
+      "path": "/api/perfil",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "name": "no token",
+      "method": "GET",
+      "path": "/api/expedientes",
+      "expected": 401,
+      "actual": 401
+    },
+    {
+      "name": "invalid token",
+      "method": "GET",
+      "path": "/api/expedientes",
+      "expected": 401,
+      "actual": 401
+    },
+    {
+      "name": "permitted list cliente",
+      "method": "GET",
+      "path": "/api/expedientes",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "name": "permitted list analista",
+      "method": "GET",
+      "path": "/api/expedientes",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "name": "permitted list supervisor",
+      "method": "GET",
+      "path": "/api/expedientes",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "name": "permitted list auditor",
+      "method": "GET",
+      "path": "/api/expedientes",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "name": "admin cannot read cases",
+      "method": "GET",
+      "path": "/api/expedientes",
+      "expected": 403,
+      "actual": 403
+    },
+    {
+      "name": "analyst cannot read audit",
+      "method": "GET",
+      "path": "/api/auditoria/eventos",
+      "expected": 403,
+      "actual": 403
+    },
+    {
+      "name": "auditor audit access",
+      "method": "GET",
+      "path": "/api/auditoria/eventos",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "name": "invalid state SQLi rejected",
+      "method": "GET",
+      "path": "/api/expedientes?estado=%27%20OR%201%3D1--",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "name": "security headers",
+      "method": "GET",
+      "path": "/html/index.html",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "name": "session pre scan cliente",
+      "method": "GET",
+      "path": "/api/perfil",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "name": "session post scan cliente",
+      "method": "GET",
+      "path": "/api/perfil",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "name": "session pre scan analista",
+      "method": "GET",
+      "path": "/api/perfil",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "name": "session post scan analista",
+      "method": "GET",
+      "path": "/api/perfil",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "name": "session pre scan supervisor",
+      "method": "GET",
+      "path": "/api/perfil",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "name": "session post scan supervisor",
+      "method": "GET",
+      "path": "/api/perfil",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "name": "session pre scan auditor",
+      "method": "GET",
+      "path": "/api/perfil",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "name": "session post scan auditor",
+      "method": "GET",
+      "path": "/api/perfil",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "name": "session pre scan admin",
+      "method": "GET",
+      "path": "/api/perfil",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "name": "session post scan admin",
+      "method": "GET",
+      "path": "/api/perfil",
+      "expected": 200,
+      "actual": 200
+    }
+  ]
+}
