@@ -2,7 +2,7 @@
  * api.js — módulo único de servicios HTTP (TASK-09.1, HU-09).
  *
  * Regla del proyecto (§2.1): ninguna vista llama a `fetch`/`XHR` por su cuenta;
- * todo pasa por este módulo. Mientras no haya backend (Sprint 1) opera en modo
+ * cada llamada pasa por este módulo. Mientras no haya backend (Sprint 1) opera en modo
  * OFFLINE y lee los fixtures locales con el MISMO esquema que los mocks de la
  * HU-08 (`{ meta, data, error }`), de modo que conectar el backend no exija
  * reescribir vistas: basta con `tm.api.setBaseUrl("http://host/api")`.

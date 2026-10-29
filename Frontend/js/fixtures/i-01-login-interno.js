@@ -26,7 +26,6 @@
         nota: "MFA simulado en el MVP: use 123456 o cualquier código de 6 dígitos.",
       },
       estacion: "WKS-DEMO-01",
-      ip: "10.0.0.24",
     },
     error: null,
   });

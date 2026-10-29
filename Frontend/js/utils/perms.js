@@ -33,7 +33,7 @@
   });
 
   // Matriz mock rol × permisos (06-roles-y-accesos.md §6.3.2 y §6.4).
-  // FUNCIONARIO se modela como operador completo (demo); en producción ADMIN (I-15)
+  // FUNCIONARIO se modela como operador completo (demo); en producción el perfil administrador (I-15)
   // asigna los permisos granulares por función y vigencia.
   var MATRIX = Object.freeze({
     SOLICITANTE: [PERMS.PORTAL],

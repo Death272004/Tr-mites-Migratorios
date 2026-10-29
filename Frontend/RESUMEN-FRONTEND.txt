@@ -34,7 +34,7 @@ Modulo interno (login institucional I-01):
     usuario:    analista | supervisor | auditor | admin
     contrasena: Interno123!
     MFA:        cualquier codigo de 6 digitos (demo 123456)
-    Estacion/IP demo: WKS-DEMO-01 · 10.0.0.24
+    Estacion demo: WKS-DEMO-01 · red interna del despacho
 
 Roles del sistema: SOLICITANTE, FUNCIONARIO, SUPERVISOR, AUDITOR, ADMIN.
 Para entrar al modulo interno: cambiar el selector de ROL (demo) de la cabecera
