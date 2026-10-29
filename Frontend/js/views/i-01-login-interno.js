@@ -2,7 +2,7 @@
  * I-01 — Login institucional con MFA (Fase E).
  * Autentica al personal del despacho con segundo factor obligatorio (simulado).
  * Reglas: timeout de sesión, bitácora de intentos (HU-05), mensaje genérico de
- * fallo (CP-02), sin credenciales ni secretos en el cliente (CP-01).
+ * fallo (CP-02), sin credenciales ni datos sensibles en el cliente (CP-01).
  * Script clásico: expone `tm.views.i01.renderI01`.
  */
 (function (global) {
@@ -24,7 +24,6 @@
     ],
     mfa: { longitud: 6, codigoDemo: "123456" },
     estacion: "WKS-DEMO-01",
-    ip: "10.0.0.24",
   };
 
   // Con backend (Docker/nginx) el login es real: POST /auth/login con las cuentas
@@ -48,7 +47,7 @@
     var d = global.tm.fixtures.data("I-01", "exito");
     d = d && d.usuarios ? d : FALLBACK;
     if (!online()) return d;
-    return { usuarios: USUARIOS_BACKEND, mfa: d.mfa, estacion: d.estacion, ip: d.ip };
+    return { usuarios: USUARIOS_BACKEND, mfa: d.mfa, estacion: d.estacion };
   }
 
   function correoCorporativo(u) {
@@ -90,7 +89,7 @@
       label: "Contraseña",
       required: true,
       toggle: true,
-      helpText: "Política de dominio (mínimo 8, mayúscula, número y símbolo)",
+      helpText: "Ingrese la contraseña de su cuenta institucional.",
     });
     form.appendChild(usuario);
     form.appendChild(clave);
@@ -106,7 +105,7 @@
     form.appendChild(mfaWrap);
 
     var station = layout.el("div", "verified-field__meta");
-    station.appendChild(layout.el("span", null, "Estación / IP (automático): " + datos.estacion + " · " + datos.ip));
+    station.appendChild(layout.el("span", null, "Estación (automático): " + datos.estacion + " · red interna del despacho"));
     station.appendChild(layout.el("span", null, "Se registra en la bitácora de auditoría (I-16)."));
     form.appendChild(station);
 
@@ -188,7 +187,6 @@
       if (paso === 1) {
         if (!u) return setError("El usuario corporativo es obligatorio.");
         if (!c) return setError("La contraseña es obligatoria.");
-        if (!validatePass(c)) return setError("La contraseña no cumple con los requisitos mínimos.");
 
         perfil = perfilPorUsuario(selPerfil());
         setLoading(true);
@@ -230,7 +228,7 @@
           var cuenta = sesionBackend.usuario || {};
           opts.onInternalLoginSuccess({
             rol: sesionBackend.rol,
-            usuario: { id: cuenta.id, nombre: cuenta.nombre, correo: cuenta.correo, permisos: cuenta.permisos, estacion: datos.estacion, ip: datos.ip },
+            usuario: { id: cuenta.id, nombre: cuenta.nombre, correo: cuenta.correo, permisos: cuenta.permisos, estacion: datos.estacion },
             token: sesionBackend.token,
             expiraEn: sesionBackend.expiraEn,
           });
@@ -239,7 +237,7 @@
         if (opts.onInternalLoginSuccess) {
           opts.onInternalLoginSuccess({
             rol: perfil.rol,
-            usuario: { nombre: perfil.rolLabel, correo: perfil.usuario + "@despacho.test", estacion: datos.estacion, ip: datos.ip },
+            usuario: { nombre: perfil.rolLabel, correo: perfil.usuario + "@despacho.test", estacion: datos.estacion },
           });
         }
       }, 400);
@@ -271,9 +269,6 @@
       loading = state;
       btnContinuar.disabled = state;
       btnContinuar.textContent = state ? "Verificando…" : (paso === 2 ? "Verificar e ingresar" : "Continuar");
-    }
-    function validatePass(p) {
-      return /^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$/.test(p);
     }
 
     inner.appendChild(form);

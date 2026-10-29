@@ -1,6 +1,6 @@
 /**
  * I-15 — Usuarios, roles y permisos (Fase F).
- * Administración de cuentas y permisos granulares (solo ADMIN). Confirmación
+ * Administración de cuentas y permisos granulares (solo perfil administrador). Confirmación
  * antes de asignar/quitar permisos; separación técnico-funcional. 4 estados.
  * Script clásico: expone `tm.views.i15.renderI15`.
  */

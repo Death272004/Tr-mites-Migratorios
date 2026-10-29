@@ -1,9 +1,9 @@
 /**
  * P-21 — Subsanación (corrección del expediente).
- * Permite corregir el expediente en un SOLO reingreso que atienda TODAS las
- * observaciones. Por cada ítem observado (prellenado): documento corregido
+ * Permite corregir el expediente en un SOLO reingreso que atienda cada una de
+ * las observaciones. Por cada ítem observado (prellenado): documento corregido
  * (archivo, obligatorio), justificación (opcional) y sustitución de dato
- * digitalizado (condicional). Confirmación final obligatoria de atender todo.
+ * digitalizado (condicional). Confirmación final obligatoria de atender cada punto.
  * Al reingresar, el trámite vuelve a EN ANÁLISIS (simulado).
  * 4 estados de vista: carga, éxito, vacío, error.
  * Script clásico: expone `tm.views.p21.renderP21`.

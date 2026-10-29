@@ -1,7 +1,7 @@
 /**
  * I-14 — Catálogos: trámites, requisitos, tasas y vigencias (Fase F).
- * Administración del catálogo base (solo ADMIN). Toda modificación conserva la
- * versión anterior. 4 estados de vista.
+ * Administración del catálogo base (solo perfil administrador). Cada modificación
+ * conserva la versión anterior. 4 estados de vista.
  * Script clásico: expone `tm.views.i14.renderI14`.
  */
 (function (global) {

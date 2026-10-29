@@ -377,6 +377,10 @@
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
 }
+.form-field__required {
+  color: var(--color-danger);
+  font-weight: var(--font-weight-regular);
+}
 .form-field__input,
 .form-field__select,
 .form-field__textarea {
