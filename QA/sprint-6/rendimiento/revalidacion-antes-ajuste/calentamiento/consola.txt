@@ -1,0 +1,13 @@
+WARN StatusConsoleListener The use of package scanning to locate plugins is deprecated and will be removed in a future release
+WARN StatusConsoleListener The use of package scanning to locate plugins is deprecated and will be removed in a future release
+WARN StatusConsoleListener The use of package scanning to locate plugins is deprecated and will be removed in a future release
+WARN StatusConsoleListener The use of package scanning to locate plugins is deprecated and will be removed in a future release
+Creating summariser <summary>
+Created the tree successfully using /home/richard/Documents/Proyecto/hu29-validacion/QA/sprint-6/rendimiento/revalidacion/carga-revalidacion.jmx
+Starting standalone test @ 2026 Oct 29 16:46:52 EST (1793310412350)
+Waiting for possible Shutdown/StopTestNow/HeapDump/ThreadDump message on port 4445
+summary +     12 in 00:00:07 =    1.6/s Avg:   101 Min:    18 Max:   293 Err:     0 (0.00%) Active: 1 Started: 1 Finished: 0
+summary +      4 in 00:00:02 =    1.7/s Avg:    80 Min:    29 Max:   181 Err:     0 (0.00%) Active: 0 Started: 1 Finished: 1
+summary =     16 in 00:00:10 =    1.6/s Avg:    96 Min:    18 Max:   293 Err:     0 (0.00%)
+Tidying up ...    @ 2026 Oct 29 16:47:02 EST (1793310422472)
+... end of run

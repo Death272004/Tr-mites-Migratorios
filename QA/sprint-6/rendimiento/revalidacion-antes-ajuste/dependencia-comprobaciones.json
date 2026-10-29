@@ -1,0 +1,180 @@
+{
+  "checks": [
+    {
+      "scenario": "ERROR_TECNICO",
+      "http": 201,
+      "estado": "REINTENTO_PROGRAMADO",
+      "ultimoFallo": "ERROR_TECNICO",
+      "resultadoMinimo": null,
+      "latency_ms": 18.52,
+      "health_http": 200,
+      "health": "UP",
+      "listing_http": 200,
+      "pass": true
+    },
+    {
+      "scenario": "TIMEOUT",
+      "http": 201,
+      "estado": "REINTENTO_PROGRAMADO",
+      "ultimoFallo": "TIEMPO_AGOTADO",
+      "resultadoMinimo": null,
+      "latency_ms": 3017.45,
+      "health_http": 200,
+      "health": "UP",
+      "listing_http": 200,
+      "pass": true
+    }
+  ],
+  "mock_latency_samples": [
+    {
+      "scenario": "OK",
+      "http": 200,
+      "latency_ms": 14.11
+    },
+    {
+      "scenario": "OK",
+      "http": 200,
+      "latency_ms": 6.73
+    },
+    {
+      "scenario": "OK",
+      "http": 200,
+      "latency_ms": 7.64
+    },
+    {
+      "scenario": "OK",
+      "http": 200,
+      "latency_ms": 5.67
+    },
+    {
+      "scenario": "OK",
+      "http": 200,
+      "latency_ms": 7.5
+    },
+    {
+      "scenario": "OK",
+      "http": 200,
+      "latency_ms": 5.67
+    },
+    {
+      "scenario": "OK",
+      "http": 200,
+      "latency_ms": 5.04
+    },
+    {
+      "scenario": "OK",
+      "http": 200,
+      "latency_ms": 7.34
+    },
+    {
+      "scenario": "OK",
+      "http": 200,
+      "latency_ms": 5.07
+    },
+    {
+      "scenario": "OK",
+      "http": 200,
+      "latency_ms": 5.14
+    },
+    {
+      "scenario": "ERROR_TECNICO",
+      "http": 500,
+      "latency_ms": 8.14
+    },
+    {
+      "scenario": "ERROR_TECNICO",
+      "http": 500,
+      "latency_ms": 6.81
+    },
+    {
+      "scenario": "ERROR_TECNICO",
+      "http": 500,
+      "latency_ms": 7.76
+    },
+    {
+      "scenario": "ERROR_TECNICO",
+      "http": 500,
+      "latency_ms": 5.87
+    },
+    {
+      "scenario": "ERROR_TECNICO",
+      "http": 500,
+      "latency_ms": 6.58
+    },
+    {
+      "scenario": "ERROR_TECNICO",
+      "http": 500,
+      "latency_ms": 6.99
+    },
+    {
+      "scenario": "ERROR_TECNICO",
+      "http": 500,
+      "latency_ms": 5.76
+    },
+    {
+      "scenario": "ERROR_TECNICO",
+      "http": 500,
+      "latency_ms": 7.72
+    },
+    {
+      "scenario": "ERROR_TECNICO",
+      "http": 500,
+      "latency_ms": 5.79
+    },
+    {
+      "scenario": "ERROR_TECNICO",
+      "http": 500,
+      "latency_ms": 7.58
+    },
+    {
+      "scenario": "TIMEOUT",
+      "http": 504,
+      "latency_ms": 7.02
+    },
+    {
+      "scenario": "TIMEOUT",
+      "http": 504,
+      "latency_ms": 6.37
+    },
+    {
+      "scenario": "TIMEOUT",
+      "http": 504,
+      "latency_ms": 8.14
+    },
+    {
+      "scenario": "TIMEOUT",
+      "http": 504,
+      "latency_ms": 6.16
+    },
+    {
+      "scenario": "TIMEOUT",
+      "http": 504,
+      "latency_ms": 10.26
+    },
+    {
+      "scenario": "TIMEOUT",
+      "http": 504,
+      "latency_ms": 6.95
+    },
+    {
+      "scenario": "TIMEOUT",
+      "http": 504,
+      "latency_ms": 7.85
+    },
+    {
+      "scenario": "TIMEOUT",
+      "http": 504,
+      "latency_ms": 6.09
+    },
+    {
+      "scenario": "TIMEOUT",
+      "http": 504,
+      "latency_ms": 8.25
+    },
+    {
+      "scenario": "TIMEOUT",
+      "http": 504,
+      "latency_ms": 6.1
+    }
+  ]
+}

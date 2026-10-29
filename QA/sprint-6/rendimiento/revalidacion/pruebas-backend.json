@@ -1,0 +1,10 @@
+{
+  "counts": {
+    "tests": 150,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "command": "mvn -B verify",
+  "github_actions": "https://github.com/Death272004/Tr-mites-Migratorios/actions/runs/40961554979"
+}
