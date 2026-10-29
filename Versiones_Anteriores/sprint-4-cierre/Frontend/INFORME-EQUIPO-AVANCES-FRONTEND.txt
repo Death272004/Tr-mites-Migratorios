@@ -1,0 +1,95 @@
+================================================================================
+INFORME DE AVANCES - FRONTEND
+Producto: Gestión de expedientes migratorios para bufetes (Panamá, Ley 81 de 2019)
+Rama: Frontend · Último commit previo: af3a0b9
+Fecha del corte: Octubre 2026
+================================================================================
+
+1) EN QUÉ ESTAMOS
+-----------------
+El portal del ciudadano del frontend está COMPLETO en su alcance Sprint 1:
+
+  - Fase A (HU-01): armazón de la app (layout, menú por rol, enrutado por hash
+    con guards, componentes base) .................. 100%
+  - Fase B (HU-02): autenticación y perfil (login, registro, OTP simulado,
+    recuperar clave, perfil y gestor de sesión) ... 100%
+  - Fase C (HU-03): flujo del solicitante P-06..P-18 . 100%
+  - Fase D (HU-04): seguimiento y servicios P-19..P-27 100%
+  - TASK-03.6: fixtures del flujo + 4 estados por pantalla (carga/éxito/vacío/
+    error) en P-06..P-18 ............................ 100%
+
+  Total: 27 pantallas del portal + componentes + loader de fixtures.
+
+2) CÓMO ABRIR Y PROBAR (sin servidor)
+-------------------------------------
+  Entrar a:  Frontend\html\index.html  → DOBLE CLIC (se abre en el navegador).
+  Funciona con file:// porque TODO el JS son scripts clásicos que exponen
+  window.tm (sin ES modules, que el navegador bloquea en file://).
+
+  Login demo (rol SOLICITANTE):
+      correo:     demo@bufete.test
+      contraseña: Demo123!
+
+  Flujo navegable:
+      Login → Mis trámites (P-06) → Nueva solicitud (P-07) →
+      Asistente P-08 … P-16 → Resumen/envío (P-17) → Cita (P-18).
+  Además: seguimiento (P-19 estado, P-20 observaciones, P-21 subsanación,
+  P-22 resultados, P-23 pagos, P-24 edictos) y servicios (P-25 certificaciones,
+  P-26 naturalización, P-27 ayuda/FAQ).
+
+  Casi toda pantalla tiene un selector "Vista (demo)" en la parte superior con
+  4 escenarios: Carga / Éxito / Vacío / Error. El escenario elegido persiste en
+  la sesión (preparado para el X-Scenario de la integración futura).
+
+3) NOVEDAD EN ESTE CORTE: FIXTURES + 4 ESTADOS
+----------------------------------------------
+  - Nuevo loader js/utils/fixtures.js (expone `tm.fixtures`). En file:// no se
+    puede usar fetch()/JSON, así que cada fixture es un <script src> que
+    registra un envelope { meta, data, error } — EL MISMO esquema provisional
+    acordado para los mocks de la HU-08 (documentado en js/fixtures/README.md).
+  - 52 fixtures nuevos (13 pantallas del flujo × 4 escenarios):
+      js/fixtures/p-06…p-18-<slug>.js  (éxito/base)
+      js/fixtures/p-06…p-18-<slug>.carga/vacio/error.js
+  - Los datos de demostración que antes estaban "inline" en las vistas se
+    movieron VERBATIM a los fixtures (sin inventar campos):
+      P-06 trámites · P-07 catálogo + requisitos Art. 28 + motivos + países ·
+      P-08 verificaciones [A] · P-10 historial migratorio · P-11 notificaciones ·
+      P-12 títulos/opciones del bloque · P-14 requisitos fallback ·
+      P-15 tasas por categoría · P-18 sedes y horarios.
+  - Las vistas P-06..P-18 ahora tienen el patrón de 4 estados
+    (show(state) → renderLoading/renderEmpty/renderError + demoSelector).
+  - P-07 exporta CATALOGO/REQUISITOS_ART_28 leídos del fixture y P-14 los sigue
+    consumiendo (dependencia transversal cuidada).
+
+4) VERIFICACIÓN REALIZADA
+-------------------------
+  - Smoke tests con Edge headless (sin navegador manual):
+      13 vistas × 3 estados de datos (éxito/vacío/error) = 39/39 OK,
+      sin errores en consola (window.onerror = 0).
+  - index.html real arranca en la pantalla de login sin romper con los 52
+    fixtures registrados.
+  - El orden de carga de scripts quedó: utils(roles,nav,router,data,draft,
+    fixtures) → components → wizard → session → fixtures(p-06..p-18) → views.
+
+5) ESTADO GIT / PENDIENTE
+-------------------------
+  - Rama local Frontend con upstream origin/Frontend.
+  - PENDIENTE: commitear todo el trabajo acumulado (Fase D P-19..P-27, fixtures
+    TASK-03.6, wiring de 4 estados) y hacer push. ESTE INFORME SE COMMITEA CON ESO.
+  - Siguientes hitos (ver tareas-frontend.md y ESTADO-Y-CONTINUACION.txt):
+      1) HU-09: integrar fixtures → mocks (servicio HTTP central + selector
+         X-Scenario, reutilizando tm.fixtures.scenario()).
+      2) Módulo interno del despacho I-01..I-18 (Sprint 2; hoy solo guardas de rol).
+      3) Publicar el esquema oficial de envelopes (PO/HU-08) y migrar los sobres
+         provisionales sin reescribir vistas.
+
+6) CONVENCIONES PARA COLABORAR
+------------------------------
+  - Nada de ES modules: IIFE (function(global){ ... })(window) y window.tm.*.
+  - Variables `var` en vistas; DOM con layout.el() (sin innerHTML con datos).
+  - Sin credenciales/secretos; todo dato es ficticio (Ley 81: minimización).
+  - Verificar con Edge headless + harness temporal y borrar los _*.html antes
+    de commitear.
+  - Al agregar una pantalla: su <script>, su bloque de fixtures y su rama
+    (key === "p-XX") en js/app.js.
+================================================================================

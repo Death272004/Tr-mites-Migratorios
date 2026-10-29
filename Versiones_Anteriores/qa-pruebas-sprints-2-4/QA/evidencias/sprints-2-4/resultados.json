@@ -1,0 +1,1024 @@
+{
+ "generado": "2026-10-18T19:31:41.575Z",
+ "totalSuite": 111,
+ "fallasSuite": 0,
+ "tareas": [
+  {
+   "clave": "10-6",
+   "tt": 98,
+   "task": "TASK-10.6",
+   "hu": "HU-10",
+   "sprint": 2,
+   "titulo": "Verificar arranque limpio en máquina nueva y registrar evidencia",
+   "cp": "Criterio del sprint: instalación limpia ≤ 30 min siguiendo el README",
+   "esperado": "Con un clon nuevo del repositorio y sin configuración, `docker compose up --build` levanta base de datos, backend y frontend en estado healthy; el health check responde UP, se aplican las migraciones y se puede iniciar sesión con un usuario de demostración.",
+   "datos": "Clon nuevo desde GitHub (rama integracion/frontend-backend, commit b8a1b91) en una carpeta vacía; construcción sin caché (`docker compose build --no-cache`); usuario ficticio cliente@demo.pa.",
+   "clases": [],
+   "casos": [],
+   "pasan": 0,
+   "total": 0
+  },
+  {
+   "clave": "13-4",
+   "tt": 113,
+   "task": "TASK-13.4",
+   "hu": "HU-13",
+   "sprint": 2,
+   "titulo": "Suite de pruebas de autorización (permitido/denegado por rol)",
+   "cp": "CP-01, CP-02, CP-03",
+   "esperado": "Cada endpoint acepta solo los roles de la matriz; sin sesión o con sesión inválida responde 401; con rol o permiso insuficiente responde 403 y deja evento de auditoría; nadie puede escalar privilegios.",
+   "datos": "Usuarios ficticios creados por prueba para los 5 roles (SOLICITANTE, FUNCIONARIO, SUPERVISOR, AUDITOR, ADMIN) y funcionarios con permisos granulares; PostgreSQL 16 en Testcontainers.",
+   "clases": [
+    "QaAutorizacionTest",
+    "AutorizacionTest"
+   ],
+   "casos": [
+    {
+     "clase": "QaAutorizacionTest",
+     "metodo": "cadaRolSoloHaceLoQueLeTocaSobreUnMismoExpediente",
+     "tiempo": 0.129,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "Cada rol solo hace lo que le toca sobre un mismo expediente.",
+     "nueva": true
+    },
+    {
+     "clase": "QaAutorizacionTest",
+     "metodo": "unMetodoQueNoEstaEnLaMatrizSeDeniegaParaTodos",
+     "tiempo": 0.073,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "Un método que no está en la matriz se deniega para todos.",
+     "nueva": true
+    },
+    {
+     "clase": "QaAutorizacionTest",
+     "metodo": "unFuncionarioSinPermisoDeConsultaNoDescargaDocumentos",
+     "tiempo": 0.049,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "Un funcionario sin permiso de consulta no descarga documentos.",
+     "nueva": true
+    },
+    {
+     "clase": "QaAutorizacionTest",
+     "metodo": "unTokenFalsoMalFormadoOSinPrefijoBearerNoAutentica",
+     "tiempo": 0.021,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "Un token falso mal formado o sin prefijo bearer no autentica.",
+     "nueva": true
+    },
+    {
+     "clase": "QaAutorizacionTest",
+     "metodo": "unaSesionCerradaVencidaODeUnaCuentaDeshabilitadaYaNoSirve",
+     "tiempo": 0.054,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "Una sesión cerrada vencida o de una cuenta deshabilitada ya no sirve.",
+     "nueva": true
+    },
+    {
+     "clase": "QaAutorizacionTest",
+     "metodo": "elClienteNoPuedeCambiarSuRolNiSusPermisosDesdeElPerfil",
+     "tiempo": 0.032,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "El cliente no puede cambiar su rol ni sus permisos desde el perfil.",
+     "nueva": true
+    },
+    {
+     "clase": "AutorizacionTest",
+     "metodo": "elPermisoDenegadoDejaEventoDeAuditoria",
+     "tiempo": 0.027,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "El permiso denegado deja evento de auditoría.",
+     "nueva": false
+    },
+    {
+     "clase": "AutorizacionTest",
+     "metodo": "elFuncionarioNecesitaElPermisoGranularDeCadaOperacion",
+     "tiempo": 0.115,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "El funcionario necesita el permiso granular de cada operación.",
+     "nueva": false
+    },
+    {
+     "clase": "AutorizacionTest",
+     "metodo": "cadaEndpointAceptaSoloLosRolesDeLaMatriz",
+     "tiempo": 1.329,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "Cada endpoint acepta solo los roles de la matriz.",
+     "nueva": false
+    },
+    {
+     "clase": "AutorizacionTest",
+     "metodo": "unaRutaQueNoEstaEnLaMatrizSeDeniega",
+     "tiempo": 0.072,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "Una ruta que no está en la matriz se deniega.",
+     "nueva": false
+    },
+    {
+     "clase": "AutorizacionTest",
+     "metodo": "elAdministradorNoLeeNiDecideExpedientes",
+     "tiempo": 0.066,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "El administrador no lee ni decide expedientes.",
+     "nueva": false
+    }
+   ],
+   "pasan": 11,
+   "total": 11
+  },
+  {
+   "clave": "14-4",
+   "tt": 118,
+   "task": "TASK-14.4",
+   "hu": "HU-14",
+   "sprint": 2,
+   "titulo": "Pruebas de cada código de error y revisión de no exposición de datos",
+   "cp": "CP-02, CP-11",
+   "esperado": "Los códigos 400, 401, 403, 404, 409, 415, 429, 500 y 504 responden con el cuerpo uniforme {codigo, mensaje, correlacionId}; ninguno expone trazas, SQL, paquetes, correos ni contraseñas; un fallo técnico de una fuente no se confunde con un resultado negativo.",
+   "datos": "Errores provocados con JSON roto, sesión ausente, rol sin permiso, id inexistente, versión desactualizada, Content-Type no soportado, escenarios X-Scenario de las fuentes simuladas y una excepción inesperada inyectada con datos sensibles.",
+   "clases": [
+    "QaCodigosErrorTest",
+    "QaErrorInternoTest",
+    "ErroresYModeloTest"
+   ],
+   "casos": [
+    {
+     "clase": "QaCodigosErrorTest",
+     "metodo": "elLoginFallidoNoRevelaSiElCorreoExiste",
+     "tiempo": 0.021,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "El login fallido no revela si el correo existe.",
+     "nueva": true
+    },
+    {
+     "clase": "QaCodigosErrorTest",
+     "metodo": "cadaCodigoDeErrorRespondeConElCuerpoUniformeYSinDetallesInternos",
+     "tiempo": 0.076,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "Cada código de error responde con el cuerpo uniforme y sin detalles internos.",
+     "nueva": true
+    },
+    {
+     "clase": "QaCodigosErrorTest",
+     "metodo": "unaFuenteCaidaNoSeConfundeConUnResultadoNegativo",
+     "tiempo": 0.023,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "Una fuente caída no se confunde con un resultado negativo.",
+     "nueva": true
+    },
+    {
+     "clase": "QaCodigosErrorTest",
+     "metodo": "losErroresDeValidacionSeñalanElCampoSinDevolverElValorEnviado",
+     "tiempo": 0.019,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "Los errores de validación señalan el campo sin devolver el valor enviado.",
+     "nueva": true
+    },
+    {
+     "clase": "QaErrorInternoTest",
+     "metodo": "unaExcepcionNoControladaSeConvierteEn500SinFiltrarSuContenido",
+     "tiempo": 0.164,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "Una excepción no controlada se convierte en 500 sin filtrar su contenido.",
+     "nueva": true
+    },
+    {
+     "clase": "ErroresYModeloTest",
+     "metodo": "unaCorrelacionRecibidaConFormatoExtranoSeSustituye",
+     "tiempo": 0.003,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "Una correlación recibida con formato extraño se sustituye.",
+     "nueva": false
+    },
+    {
+     "clase": "ErroresYModeloTest",
+     "metodo": "laPoliticaDeContrasenasExigeLongitudYVariedad",
+     "tiempo": 0.002,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "La política de contraseñas exige longitud y variedad.",
+     "nueva": false
+    },
+    {
+     "clase": "ErroresYModeloTest",
+     "metodo": "todoErrorUsaElMismoCuerpoConCorrelacionYSinDetallesTecnicos",
+     "tiempo": 0.038,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "Todo error usa el mismo cuerpo con correlación y sin detalles técnicos.",
+     "nueva": false
+    },
+    {
+     "clase": "ErroresYModeloTest",
+     "metodo": "laBaseDeDatosImponeLaIntegridad",
+     "tiempo": 0.017,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "La base de datos impone la integridad.",
+     "nueva": false
+    },
+    {
+     "clase": "ErroresYModeloTest",
+     "metodo": "lasMigracionesDejanLosDatosSemillaYLosIndicesDeListado",
+     "tiempo": 0.009,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "Las migraciones dejan los datos semilla y los índices de listado.",
+     "nueva": false
+    }
+   ],
+   "pasan": 10,
+   "total": 10
+  },
+  {
+   "clave": "16-4",
+   "tt": 127,
+   "task": "TASK-16.4",
+   "hu": "HU-16",
+   "sprint": 3,
+   "titulo": "Pruebas de titularidad, paginación y rendimiento básico del listado",
+   "cp": "CP-03, CP-10 (rendimiento básico)",
+   "esperado": "Un cliente solo ve sus expedientes aunque existan 1,000+ ajenos; uno ajeno responde como inexistente; la paginación respeta límites y no repite elementos; el P95 del listado paginado con 1,000 expedientes queda por debajo de 500 ms.",
+   "datos": "1,000 a 2,000 expedientes sembrados por SQL con generate_series; 30 muestras por perfil (cliente y despacho) sobre páginas aleatorias de tamaño 100.",
+   "clases": [
+    "QaListadoTitularidadTest",
+    "ExpedienteTest"
+   ],
+   "casos": [
+    {
+     "clase": "QaListadoTitularidadTest",
+     "metodo": "entreMilExpedientesAjenosElClienteSoloVeLosSuyos",
+     "tiempo": 0.186,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "Entre mil expedientes ajenos el cliente solo ve los suyos.",
+     "nueva": true
+    },
+    {
+     "clase": "QaListadoTitularidadTest",
+     "metodo": "elDespachoElSupervisorYElAuditorVenElTotalYElClienteNo",
+     "tiempo": 0.118,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "El despacho el supervisor y el auditor ven el total y el cliente no.",
+     "nueva": true
+    },
+    {
+     "clase": "QaListadoTitularidadTest",
+     "metodo": "laPaginacionRespetaSusLimites",
+     "tiempo": 0.11,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "La paginación respeta sus límites.",
+     "nueva": true
+    },
+    {
+     "clase": "QaListadoTitularidadTest",
+     "metodo": "elP95DelListadoConMilExpedientesQuedaPorDebajoDeMedioSegundo",
+     "tiempo": 1.192,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "El P95 del listado con mil expedientes queda por debajo de medio segundo.",
+     "nueva": true
+    },
+    {
+     "clase": "ExpedienteTest",
+     "metodo": "elTipoDeTramiteSeValidaEnElServidorConDetallePorCampo",
+     "tiempo": 0.029,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "El tipo de trámite se valida en el servidor con detalle por campo.",
+     "nueva": false
+    },
+    {
+     "clase": "ExpedienteTest",
+     "metodo": "nadieCreaExpedientesANombreDeOtroSinRepresentacionAcreditada",
+     "tiempo": 0.071,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "Nadie crea expedientes a nombre de otro sin representación acreditada.",
+     "nueva": false
+    },
+    {
+     "clase": "ExpedienteTest",
+     "metodo": "elSolicitanteRegistraUnExpedienteASuNombre",
+     "tiempo": 0.034,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "El solicitante registra un expediente a su nombre.",
+     "nueva": false
+    },
+    {
+     "clase": "ExpedienteTest",
+     "metodo": "elDespachoYElAuditorVenTodoYSuConsultaQuedaEnAuditoria",
+     "tiempo": 0.096,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "El despacho y el auditor ven todo y su consulta queda en auditoría.",
+     "nueva": false
+    },
+    {
+     "clase": "ExpedienteTest",
+     "metodo": "unExpedienteAjenoRespondeIgualQueUnoInexistente",
+     "tiempo": 0.065,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "Un expediente ajeno responde igual que uno inexistente.",
+     "nueva": false
+    },
+    {
+     "clase": "ExpedienteTest",
+     "metodo": "losCatalogosEntreganTramitesConSusRequisitos",
+     "tiempo": 0.032,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "Los catálogos entregan trámites con sus requisitos.",
+     "nueva": false
+    },
+    {
+     "clase": "ExpedienteTest",
+     "metodo": "elListadoRespondeRapidoConMilExpedientes",
+     "tiempo": 0.116,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "El listado responde rápido con mil expedientes.",
+     "nueva": false
+    },
+    {
+     "clase": "ExpedienteTest",
+     "metodo": "elListadoSoloTraeLosExpedientesAccesiblesConFiltrosYPaginacion",
+     "tiempo": 0.131,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "El listado solo trae los expedientes accesibles con filtros y paginación.",
+     "nueva": false
+    }
+   ],
+   "pasan": 12,
+   "total": 12
+  },
+  {
+   "clave": "17-5",
+   "tt": 132,
+   "task": "TASK-17.5",
+   "hu": "HU-17",
+   "sprint": 3,
+   "titulo": "Pruebas de carga, rechazo, descarga y permisos de documentos",
+   "cp": "CP-05, CP-12",
+   "esperado": "Se aceptan PDF, JPG y PNG hasta exactamente 10 MB; se rechazan tipos no permitidos, contenidos que no coinciden con el tipo declarado y archivos mayores; los nombres maliciosos se neutralizan; solo descargan el titular, el funcionario con CONSULTAR y el supervisor.",
+   "datos": "Archivos ficticios: PDF, JPG y PNG con firmas reales, PDF de 10 MB y 10 MB + 1 byte, HTML/SVG con script, nombres con ../ y saltos de línea.",
+   "clases": [
+    "QaDocumentosTest",
+    "DocumentoTest"
+   ],
+   "casos": [
+    {
+     "clase": "QaDocumentosTest",
+     "metodo": "seRechazanContenidosQueNoCorrespondenAlTipoDeclarado",
+     "tiempo": 0.083,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "Se rechazan contenidos que no corresponden al tipo declarado.",
+     "nueva": true
+    },
+    {
+     "clase": "QaDocumentosTest",
+     "metodo": "losNombresMaliciososSeNeutralizanYNoSalenDelAlmacen",
+     "tiempo": 0.065,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "Los nombres maliciosos se neutralizan y no salen del almacén.",
+     "nueva": true
+    },
+    {
+     "clase": "QaDocumentosTest",
+     "metodo": "unClienteNoSubeDocumentosAUnExpedienteAjeno",
+     "tiempo": 0.057,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "Un cliente no sube documentos a un expediente ajeno.",
+     "nueva": true
+    },
+    {
+     "clase": "QaDocumentosTest",
+     "metodo": "lasDescargasNoAutorizadasSeBloqueanYLasPermitidasFuncionan",
+     "tiempo": 0.119,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "Las descargas no autorizadas se bloquean y las permitidas funcionan.",
+     "nueva": true
+    },
+    {
+     "clase": "QaDocumentosTest",
+     "metodo": "seAceptanLosTresFormatosPermitidosYJustoElTamanoMaximo",
+     "tiempo": 0.122,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "Se aceptan los tres formatos permitidos y justo el tamaño máximo.",
+     "nueva": true
+    },
+    {
+     "clase": "DocumentoTest",
+     "metodo": "seRechazanTipoNoPermitidoContenidoFalsoYTamanoExcedido",
+     "tiempo": 0.118,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "Se rechazan tipo no permitido contenido falso y tamaño excedido.",
+     "nueva": false
+    },
+    {
+     "clase": "DocumentoTest",
+     "metodo": "unArchivoValidoQuedaVinculadoAlExpedienteYFueraDeLaBase",
+     "tiempo": 0.072,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "Un archivo válido queda vinculado al expediente y fuera de la base.",
+     "nueva": false
+    },
+    {
+     "clase": "DocumentoTest",
+     "metodo": "losDatosSensiblesExigenConsentimientoExpresoVigente",
+     "tiempo": 0.163,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "Los datos sensibles exigen consentimiento expreso vigente.",
+     "nueva": false
+    },
+    {
+     "clase": "DocumentoTest",
+     "metodo": "subirUnTipoQueYaTieneDocumentoValidoAvisaDelDuplicado",
+     "tiempo": 0.053,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "Subir un tipo que ya tiene documento válido avisa del duplicado.",
+     "nueva": false
+    },
+    {
+     "clase": "DocumentoTest",
+     "metodo": "laDescargaExigePermisoYQuedaEnAuditoria",
+     "tiempo": 0.13,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "La descarga exige permiso y queda en auditoría.",
+     "nueva": false
+    },
+    {
+     "clase": "DocumentoTest",
+     "metodo": "unExpedienteArchivadoYaNoAdmiteDocumentos",
+     "tiempo": 0.078,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "Un expediente archivado ya no admite documentos.",
+     "nueva": false
+    }
+   ],
+   "pasan": 11,
+   "total": 11
+  },
+  {
+   "clave": "18-4",
+   "tt": 136,
+   "task": "TASK-18.4",
+   "hu": "HU-18",
+   "sprint": 3,
+   "titulo": "Pruebas de generación y de contenido seguro de notificaciones",
+   "cp": "CP-09, CP-11",
+   "esperado": "Cada evento (observación, observaciones por atender, resolución, consentimiento revocado, solicitud ARCO registrada y atendida) genera el aviso correcto solo para su destinatario, con una plantilla fija sin datos personales ni contenido del caso.",
+   "datos": "Textos “trampa” con datos sensibles ficticios en observaciones, motivos, finalidades y descripciones ARCO; funcionario activo, deshabilitado y supervisor.",
+   "clases": [
+    "QaNotificacionesTest",
+    "AuditoriaTest#cadaUsuarioVeYMarcaSoloSusNotificaciones"
+   ],
+   "casos": [
+    {
+     "clase": "QaNotificacionesTest",
+     "metodo": "soloLosFuncionariosActivosRecibenLosAvisosDelDespacho",
+     "tiempo": 0.135,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "Solo los funcionarios activos reciben los avisos del despacho.",
+     "nueva": true
+    },
+    {
+     "clase": "QaNotificacionesTest",
+     "metodo": "todosLosEventosGeneranAvisosConPlantillaFijaYSinDatosDelCaso",
+     "tiempo": 0.424,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "Todos los eventos generan avisos con plantilla fija y sin datos del caso.",
+     "nueva": true
+    },
+    {
+     "clase": "QaNotificacionesTest",
+     "metodo": "losCambiosIntermediosNoAvisanYNadieRecibeAvisosAjenos",
+     "tiempo": 0.124,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "Los cambios intermedios no avisan y nadie recibe avisos ajenos.",
+     "nueva": true
+    },
+    {
+     "clase": "AuditoriaTest",
+     "metodo": "cadaUsuarioVeYMarcaSoloSusNotificaciones",
+     "tiempo": 1.144,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "Cada usuario ve y marca solo sus notificaciones.",
+     "nueva": false
+    }
+   ],
+   "pasan": 4,
+   "total": 4
+  },
+  {
+   "clave": "18b-5",
+   "tt": 141,
+   "task": "TASK-18b.5",
+   "hu": "HU-18b",
+   "sprint": 3,
+   "titulo": "Pruebas de alta, revocación, limitación del tratamiento y auditoría del consentimiento",
+   "cp": "CP-09, CP-11, CP-13",
+   "esperado": "El consentimiento se registra, consulta y revoca conservando la evidencia; sin consentimiento vigente el tratamiento se limita a lo contractual; los datos sensibles exigen consentimiento expreso vigente (también si vence); cada alta y revocación queda auditada.",
+   "datos": "Consentimientos ficticios expresos y no expresos, con vigencia futura y vencida; documentos sensibles CERTIFICADO_SALUD y ANTECEDENTES_PENALES.",
+   "clases": [
+    "QaConsentimientoTest",
+    "PrivacidadTest#elConsentimientoSeRegistraSeConsultaYSeRevocaConservandoLaEvidencia",
+    "PrivacidadTest#unClienteNoRegistraNiConsultaNiRevocaConsentimientosAjenos",
+    "PrivacidadTest#elConsentimientoValidaSusCamposYQueElTitularSeaUnCliente",
+    "DocumentoTest#losDatosSensiblesExigenConsentimientoExpresoVigente"
+   ],
+   "casos": [
+    {
+     "clase": "QaConsentimientoTest",
+     "metodo": "sinConsentimientoElTratamientoSeLimitaALoContractual",
+     "tiempo": 0.122,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "Sin consentimiento el tratamiento se limita a lo contractual.",
+     "nueva": true
+    },
+    {
+     "clase": "QaConsentimientoTest",
+     "metodo": "quienPuedeConsultarYQuienNoLosConsentimientosDeUnCliente",
+     "tiempo": 0.1,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "Quién puede consultar y quién no los consentimientos de un cliente.",
+     "nueva": true
+    },
+    {
+     "clase": "QaConsentimientoTest",
+     "metodo": "unConsentimientoVencidoCuentaComoNoVigente",
+     "tiempo": 0.054,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "Un consentimiento vencido cuenta como no vigente.",
+     "nueva": true
+    },
+    {
+     "clase": "QaConsentimientoTest",
+     "metodo": "cadaAltaYRevocacionQuedaAuditadaConActorYResultado",
+     "tiempo": 0.1,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "Cada alta y revocación queda auditada con actor y resultado.",
+     "nueva": true
+    },
+    {
+     "clase": "PrivacidadTest",
+     "metodo": "elConsentimientoSeRegistraSeConsultaYSeRevocaConservandoLaEvidencia",
+     "tiempo": 0.128,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "El consentimiento se registra se consulta y se revoca conservando la evidencia.",
+     "nueva": false
+    },
+    {
+     "clase": "PrivacidadTest",
+     "metodo": "unClienteNoRegistraNiConsultaNiRevocaConsentimientosAjenos",
+     "tiempo": 0.051,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "Un cliente no registra ni consulta ni revoca consentimientos ajenos.",
+     "nueva": false
+    },
+    {
+     "clase": "PrivacidadTest",
+     "metodo": "elConsentimientoValidaSusCamposYQueElTitularSeaUnCliente",
+     "tiempo": 0.066,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "El consentimiento valida sus campos y que el titular sea un cliente.",
+     "nueva": false
+    },
+    {
+     "clase": "DocumentoTest",
+     "metodo": "losDatosSensiblesExigenConsentimientoExpresoVigente",
+     "tiempo": 0.163,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "Los datos sensibles exigen consentimiento expreso vigente.",
+     "nueva": false
+    }
+   ],
+   "pasan": 8,
+   "total": 8
+  },
+  {
+   "clave": "18c-5",
+   "tt": 146,
+   "task": "TASK-18c.5",
+   "hu": "HU-18c",
+   "sprint": 3,
+   "titulo": "Pruebas de registro, titularidad, plazos, auditoría y no exposición de datos ARCO",
+   "cp": "CP-03, CP-11, CP-14",
+   "esperado": "Se registran los cuatro derechos con plazo = registro + 10 días; cada rol accede solo a lo suyo; la atención queda auditada con su responsable; ni respuestas, avisos ni bitácora exponen datos del titular.",
+   "datos": "Solicitudes ACCESO, RECTIFICACION, CANCELACION y OPOSICION con descripciones que contienen una cédula ficticia.",
+   "clases": [
+    "QaArcoTest",
+    "PrivacidadTest#laSolicitudArcoSigueSuCicloYElClienteSoloVeLasSuyas",
+    "PrivacidadTest#elRechazoExigeMotivoYElVencimientoSoloEsUnaAlerta"
+   ],
+   "casos": [
+    {
+     "clase": "QaArcoTest",
+     "metodo": "losCuatroDerechosSeRegistranConElPlazoConfigurado",
+     "tiempo": 0.232,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "Los cuatro derechos se registran con el plazo configurado.",
+     "nueva": true
+    },
+    {
+     "clase": "QaArcoTest",
+     "metodo": "cadaRolAccedeSoloALoQueLeCorresponde",
+     "tiempo": 0.146,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "Cada rol accede solo a lo que le corresponde.",
+     "nueva": true
+    },
+    {
+     "clase": "QaArcoTest",
+     "metodo": "laAtencionQuedaAuditadaConElResponsableYElRechazoConSuMotivo",
+     "tiempo": 0.097,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "La atención queda auditada con el responsable y el rechazo con su motivo.",
+     "nueva": true
+    },
+    {
+     "clase": "QaArcoTest",
+     "metodo": "niLaRespuestaNiLosAvisosDelDespachoExponenDatosDelTitular",
+     "tiempo": 0.085,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "Ni la respuesta ni los avisos del despacho exponen datos del titular.",
+     "nueva": true
+    },
+    {
+     "clase": "PrivacidadTest",
+     "metodo": "laSolicitudArcoSigueSuCicloYElClienteSoloVeLasSuyas",
+     "tiempo": 0.158,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "La solicitud ARCO sigue su ciclo y el cliente solo ve las suyas.",
+     "nueva": false
+    },
+    {
+     "clase": "PrivacidadTest",
+     "metodo": "elRechazoExigeMotivoYElVencimientoSoloEsUnaAlerta",
+     "tiempo": 0.123,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "El rechazo exige motivo y el vencimiento solo es una alerta.",
+     "nueva": false
+    }
+   ],
+   "pasan": 6,
+   "total": 6
+  },
+  {
+   "clave": "19-5",
+   "tt": 151,
+   "task": "TASK-19.5",
+   "hu": "HU-19",
+   "sprint": 4,
+   "titulo": "Pruebas de transiciones válidas, inválidas, concurrentes y de bloqueo",
+   "cp": "CP-04",
+   "esperado": "Los 100 pares de estados (10 × 10) responden según la especificación: 17 permitidos (200) y 83 rechazados (409) sin cambiar el estado; no se aprueba ni niega sin requisitos completos; dos cambios simultáneos no se pisan; cada rechazo queda auditado como FALLO.",
+   "datos": "Un expediente nuevo por cada par origen → destino, con documentos obligatorios completos; matriz esperada escrita de forma independiente al código.",
+   "clases": [
+    "QaTransicionesTest",
+    "EstadosTest#unaTransicionNoPermitidaRespondeConflictoYConservaElEstado",
+    "EstadosTest#noSeLlegaALaDecisionSinRequisitosCompletosNiVerificacionesResueltas",
+    "EstadosTest#unaVersionDesactualizadaRespondeConflicto",
+    "EstadosTest#dosCambiosSimultaneosNoSePisan",
+    "EstadosTest#elMotivoLaVersionElEstadoYElResultadoSonObligatorios",
+    "EstadosTest#cadaEtapaExigeAlFuncionarioElPermisoQueLeCorresponde"
+   ],
+   "casos": [
+    {
+     "clase": "QaTransicionesTest",
+     "metodo": "noSeApruebaNiSeNiegaSinLosRequisitosCompletos",
+     "tiempo": 0.085,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "No se aprueba ni se niega sin los requisitos completos.",
+     "nueva": true
+    },
+    {
+     "clase": "QaTransicionesTest",
+     "metodo": "unRechazoDejaRegistroDeFalloYNoTocaElHistorial",
+     "tiempo": 0.085,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "Un rechazo deja registro de fallo y no toca el historial.",
+     "nueva": true
+    },
+    {
+     "clase": "QaTransicionesTest",
+     "metodo": "unResultadoInventadoNoSeAcepta",
+     "tiempo": 0.086,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "Un resultado inventado no se acepta.",
+     "nueva": true
+    },
+    {
+     "clase": "QaTransicionesTest",
+     "metodo": "cadaParDeEstadosRespondeSegunLaMatriz",
+     "tiempo": 4.857,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "Cada par de estados responde según la matriz.",
+     "nueva": true
+    },
+    {
+     "clase": "EstadosTest",
+     "metodo": "unaTransicionNoPermitidaRespondeConflictoYConservaElEstado",
+     "tiempo": 0.086,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "Una transición no permitida responde conflicto y conserva el estado.",
+     "nueva": false
+    },
+    {
+     "clase": "EstadosTest",
+     "metodo": "noSeLlegaALaDecisionSinRequisitosCompletosNiVerificacionesResueltas",
+     "tiempo": 0.227,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "No se llega a la decisión sin requisitos completos ni verificaciones resueltas.",
+     "nueva": false
+    },
+    {
+     "clase": "EstadosTest",
+     "metodo": "unaVersionDesactualizadaRespondeConflicto",
+     "tiempo": 0.068,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "Una versión desactualizada responde conflicto.",
+     "nueva": false
+    },
+    {
+     "clase": "EstadosTest",
+     "metodo": "dosCambiosSimultaneosNoSePisan",
+     "tiempo": 0.074,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "Dos cambios simultáneos no se pisan.",
+     "nueva": false
+    },
+    {
+     "clase": "EstadosTest",
+     "metodo": "elMotivoLaVersionElEstadoYElResultadoSonObligatorios",
+     "tiempo": 0.068,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "El motivo la versión el estado y el resultado son obligatorios.",
+     "nueva": false
+    },
+    {
+     "clase": "EstadosTest",
+     "metodo": "cadaEtapaExigeAlFuncionarioElPermisoQueLeCorresponde",
+     "tiempo": 0.133,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "Cada etapa exige al funcionario el permiso que le corresponde.",
+     "nueva": false
+    }
+   ],
+   "pasan": 10,
+   "total": 10
+  },
+  {
+   "clave": "20-3",
+   "tt": 154,
+   "task": "TASK-20.3",
+   "hu": "HU-20",
+   "sprint": 4,
+   "titulo": "Pruebas de permisos y registro con auditoría de observaciones",
+   "cp": "CP-03, CP-09",
+   "esperado": "Solo el cliente titular y el funcionario con permiso OBSERVAR registran observaciones; supervisor y auditor leen pero no escriben; el administrador no accede; el texto se valida (1–2000 caracteres); cada observación y cada intento denegado queda en auditoría sin copiar el texto.",
+   "datos": "Funcionarios con distintas combinaciones de permisos, supervisor, auditor, administrador y un cliente ajeno.",
+   "clases": [
+    "QaObservacionesTest",
+    "EstadosTest#lasObservacionesNoCambianElEstadoYAvisanAlCliente"
+   ],
+   "casos": [
+    {
+     "clase": "QaObservacionesTest",
+     "metodo": "elTextoSeValidaEnElServidor",
+     "tiempo": 0.07,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "El texto se valida en el servidor.",
+     "nueva": true
+    },
+    {
+     "clase": "QaObservacionesTest",
+     "metodo": "cadaObservacionYCadaIntentoDenegadoQuedanEnAuditoria",
+     "tiempo": 0.098,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "Cada observación y cada intento denegado quedan en auditoría.",
+     "nueva": true
+    },
+    {
+     "clase": "QaObservacionesTest",
+     "metodo": "elSupervisorYElAuditorLeenPeroElAdministradorNo",
+     "tiempo": 0.11,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "El supervisor y el auditor leen pero el administrador no.",
+     "nueva": true
+    },
+    {
+     "clase": "QaObservacionesTest",
+     "metodo": "soloElClienteTitularYElFuncionarioConPermisoDeObservarEscriben",
+     "tiempo": 0.169,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "Solo el cliente titular y el funcionario con permiso de observar escriben.",
+     "nueva": true
+    },
+    {
+     "clase": "EstadosTest",
+     "metodo": "lasObservacionesNoCambianElEstadoYAvisanAlCliente",
+     "tiempo": 0.109,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "Las observaciones no cambian el estado y avisan al cliente.",
+     "nueva": false
+    }
+   ],
+   "pasan": 5,
+   "total": 5
+  },
+  {
+   "clave": "21-3",
+   "tt": 157,
+   "task": "TASK-21.3",
+   "hu": "HU-21",
+   "sprint": 4,
+   "titulo": "Pruebas de autorización del historial",
+   "cp": "CP-03, CP-09",
+   "esperado": "El cliente titular ve todos los cambios pero no las notas internas; funcionario con CONSULTAR, supervisor y auditor ven todo; cliente ajeno 404; funcionario sin permisos y administrador 403; el historial no se puede escribir por la API.",
+   "datos": "Expediente con una nota interna (EN_ANALISIS) y un motivo dirigido al cliente (CON_OBSERVACIONES).",
+   "clases": [
+    "QaHistorialTest",
+    "EstadosTest#elRecorridoCompletoHastaLaDecisionDejaHistorialYAvisos"
+   ],
+   "casos": [
+    {
+     "clase": "QaHistorialTest",
+     "metodo": "elHistorialNoSePuedeEscribirNiBorrarPorLaApi",
+     "tiempo": 0.21,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "El historial no se puede escribir ni borrar por la API.",
+     "nueva": true
+    },
+    {
+     "clase": "QaHistorialTest",
+     "metodo": "elHistorialDeUnExpedienteInexistenteOMalFormadoNoRevelaNada",
+     "tiempo": 0.038,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "El historial de un expediente inexistente o mal formado no revela nada.",
+     "nueva": true
+    },
+    {
+     "clase": "QaHistorialTest",
+     "metodo": "cadaRolVeElHistorialSegunLaMatrizYSuProyeccion",
+     "tiempo": 0.312,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "Cada rol ve el historial según la matriz y su proyección.",
+     "nueva": true
+    },
+    {
+     "clase": "EstadosTest",
+     "metodo": "elRecorridoCompletoHastaLaDecisionDejaHistorialYAvisos",
+     "tiempo": 0.205,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "El recorrido completo hasta la decisión deja historial y avisos.",
+     "nueva": false
+    }
+   ],
+   "pasan": 4,
+   "total": 4
+  },
+  {
+   "clave": "22-5",
+   "tt": 162,
+   "task": "TASK-22.5",
+   "hu": "HU-22",
+   "sprint": 4,
+   "titulo": "Pruebas de cobertura de eventos críticos y de no exposición de datos en logs",
+   "cp": "CP-09, CP-11",
+   "esperado": "Las 16 operaciones críticas (inicio y cierre de sesión, expediente, documentos, estados, observaciones, consentimiento, ARCO, acceso denegado, cambio de contraseña y exportación) dejan su evento; ni la bitácora ni los registros del servidor contienen contraseñas, tokens ni contenido del caso.",
+   "datos": "Recorrido completo con contraseña equivocada, tokens de tres usuarios, textos confidenciales ficticios y un fallo técnico simulado; salida del servidor capturada con OutputCaptureExtension.",
+   "clases": [
+    "QaAuditoriaLogsTest",
+    "AuditoriaTest"
+   ],
+   "casos": [
+    {
+     "clase": "QaAuditoriaLogsTest",
+     "metodo": "cadaOperacionCriticaDejaSuEventoYNingunSecretoSaleEnLaBitacoraNiEnLosRegistros(CapturedOutput)",
+     "tiempo": 0.282,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "Cada operación crítica deja su evento y ningún secreto sale en la bitácora ni en los registros.",
+     "nueva": true
+    },
+    {
+     "clase": "AuditoriaTest",
+     "metodo": "cadaUsuarioVeYMarcaSoloSusNotificaciones",
+     "tiempo": 1.144,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "Cada usuario ve y marca solo sus notificaciones.",
+     "nueva": false
+    },
+    {
+     "clase": "AuditoriaTest",
+     "metodo": "laExportacionCsvAplicaLosFiltrosYQuedaAuditada",
+     "tiempo": 0.161,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "La exportación CSV aplica los filtros y queda auditada.",
+     "nueva": false
+    },
+    {
+     "clase": "AuditoriaTest",
+     "metodo": "lasOperacionesCriticasQuedanRegistradasConActorRecursoResultadoYCorrelacion",
+     "tiempo": 0.246,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "Las operaciones críticas quedan registradas con actor recurso resultado y correlación.",
+     "nueva": false
+    },
+    {
+     "clase": "AuditoriaTest",
+     "metodo": "losEventosNoSePuedenModificarNiEliminar",
+     "tiempo": 0.085,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "Los eventos no se pueden modificar ni eliminar.",
+     "nueva": false
+    },
+    {
+     "clase": "AuditoriaTest",
+     "metodo": "soloElAuditorConsultaLaBitacoraConFiltrosYPaginacion",
+     "tiempo": 0.264,
+     "estado": "PASA",
+     "stamp": "2026-10-18 14:23",
+     "descripcion": "Solo el auditor consulta la bitácora con filtros y paginación.",
+     "nueva": false
+    }
+   ],
+   "pasan": 6,
+   "total": 6
+  }
+ ]
+}

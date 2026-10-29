@@ -1,0 +1,6 @@
+# No publicar documentación ni metadatos del repositorio en el contenedor web.
+*.md
+*.txt
+.gitkeep
+Dockerfile
+.dockerignore
