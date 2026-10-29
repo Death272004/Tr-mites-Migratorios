@@ -16,6 +16,7 @@
   // Último aplicador de estado (4 estados) de la vista montada; lo usa el
   // selector de escenarios global de la cabecera (HU-09 / TASK-09.4).
   var currentShow = null;
+  var lastRenderedRoute = null;
 
   function showView(renderFn, opts) {
     renderFn(els.content, opts);
@@ -64,6 +65,9 @@
       return;
     }
 
+    var routeChanged = lastRenderedRoute !== state.route;
+    lastRenderedRoute = state.route;
+
     els.context.textContent = isInternalRole(state.role) ? "Módulo interno" : "Portal del cliente";
 
     layout.renderHeaderUser(els.user, {
@@ -99,6 +103,17 @@
     });
 
     layout.renderNav(els.nav, { role: state.role, currentRoute: state.route });
+
+    if (routeChanged) {
+      var routeTitle = els.nav.querySelector('[aria-current="page"]');
+      var routeLabel = routeTitle ? routeTitle.textContent.trim() : "Pantalla actual";
+      document.title = routeLabel + " | Trámites Migratorios";
+      var announcer = document.getElementById("app-announcer");
+      if (announcer) announcer.textContent = "Navegaste a: " + routeLabel;
+      // Deja el foco en el contenido para que teclado y lector de pantalla no
+      // obliguen al usuario a recorrer nuevamente el menú lateral.
+      window.setTimeout(function () { els.content.focus({ preventScroll: true }); }, 0);
+    }
 
     var key = router.getViewKey(state.route);
 
@@ -242,6 +257,15 @@
       els.navToggle.setAttribute("aria-expanded", String(open));
     });
   }
+
+  // En móvil, un enlace seleccionado cierra el menú y evita que tape el
+  // contenido recién abierto.
+  els.nav.addEventListener("click", function (event) {
+    if (event.target.closest("a") && els.nav.classList.contains("is-open")) {
+      els.nav.classList.remove("is-open");
+      els.navToggle?.setAttribute("aria-expanded", "false");
+    }
+  });
 
   if (!window.location.hash) window.location.hash = INITIAL_ROUTE[state.role];
   render();
