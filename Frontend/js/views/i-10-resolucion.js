@@ -33,7 +33,7 @@
     var resuelto = null;
 
     function cargarReal(callback) {
-      if (!api || !api.isOnline()) { callback(null); return; }
+      if (!api || !api.isOnline() || api.isDemoSession()) { callback(null); return; }
       var seleccionado = global.tm.expediente && global.tm.expediente.getSelected ? global.tm.expediente.getSelected() : null;
       function cargar(id) {
         api.request("GET", "/expedientes/" + encodeURIComponent(id), { pantalla: "I-10" }, function (err, expediente) {
@@ -54,7 +54,8 @@
       if (seleccionado && seleccionado.id) { cargar(seleccionado.id); return; }
       api.request("GET", "/expedientes?estado=EN_RESOLUCION&pagina=0&tamano=20", { pantalla: "I-10" }, function (err, page) {
         var lista = page && page.contenido ? page.contenido : [];
-        if (err || !lista.length) { callback(err || { mensajeUsuario: "No hay expedientes en resolución." }); return; }
+        if (err) { callback(err); return; }
+        if (!lista.length) { callback({ vacio: true, mensajeUsuario: "No hay expedientes en resolución." }); return; }
         cargar(lista[0].id);
       });
     }
@@ -265,7 +266,11 @@
       if (state === "carga") {
         renderLoading();
         setTimeout(function () {
-          cargarReal(function (err) { if (err) { renderError(); return; } renderContent(); });
+          cargarReal(function (err) {
+            if (err && err.vacio) { show("vacio"); return; }
+            if (err) { renderError(); return; }
+            renderContent();
+          });
         }, 700);
         return;
       }

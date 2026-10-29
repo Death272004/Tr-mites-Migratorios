@@ -31,7 +31,7 @@
     var emitido = false;
 
     function cargarReal(callback) {
-      if (!api || !api.isOnline()) { callback(null); return; }
+      if (!api || !api.isOnline() || api.isDemoSession()) { callback(null); return; }
       var seleccionado = global.tm.expediente && global.tm.expediente.getSelected ? global.tm.expediente.getSelected() : null;
       function cargar(id) {
         api.request("GET", "/expedientes/" + encodeURIComponent(id), { pantalla: "I-08" }, function (err, expediente) {
@@ -53,7 +53,8 @@
       if (seleccionado && seleccionado.id) { cargar(seleccionado.id); return; }
       api.request("GET", "/expedientes?estado=CON_OBSERVACIONES&pagina=0&tamano=20", { pantalla: "I-08" }, function (err, page) {
         var lista = page && page.contenido ? page.contenido : [];
-        if (err || !lista.length) { callback(err || { mensajeUsuario: "No hay expedientes con observaciones." }); return; }
+        if (err) { callback(err); return; }
+        if (!lista.length) { callback({ vacio: true, mensajeUsuario: "No hay expedientes con observaciones." }); return; }
         cargar(lista[0].id);
       });
     }
@@ -206,7 +207,7 @@
       global.tm.fixtures.setScenario(state);
       if (state === "carga") {
         renderLoading();
-        setTimeout(function () { cargarReal(function (err) { if (err) { renderError(); return; } renderContent(); }); }, 700);
+        setTimeout(function () { cargarReal(function (err) { if (err && err.vacio) { renderEmpty(); return; } if (err) { renderError(); return; } renderContent(); }); }, 700);
         return;
       }
       if (state === "error") { renderError(); return; }

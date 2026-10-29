@@ -1,0 +1,2025 @@
+{
+	"@programName": "ZAP",
+	"@version": "2.17.0",
+	"@generated": "Wed, 28 Oct 2026 23:54:46",
+	"created": "2026-10-28T23:54:46.764034308Z",
+	"insights":[
+		{
+			"level": "Medium",
+			"reason": "Exceeded High",
+			"site": "http://frontend",
+			"key": "insight.code.4xx",
+			"description": "Percentage of responses with status code 4xx",
+			"statistic": "99"
+		},
+		{
+			"level": "Info",
+			"reason": "Informational",
+			"site": "http://frontend",
+			"key": "insight.endpoint.ctype.application/json",
+			"description": "Percentage of endpoints with content type application/json",
+			"statistic": "92"
+		},
+		{
+			"level": "Info",
+			"reason": "Informational",
+			"site": "http://frontend",
+			"key": "insight.endpoint.ctype.text/html",
+			"description": "Percentage of endpoints with content type text/html",
+			"statistic": "6"
+		},
+		{
+			"level": "Info",
+			"reason": "Informational",
+			"site": "http://frontend",
+			"key": "insight.endpoint.method.GET",
+			"description": "Percentage of endpoints with method GET",
+			"statistic": "70"
+		},
+		{
+			"level": "Info",
+			"reason": "Informational",
+			"site": "http://frontend",
+			"key": "insight.endpoint.method.PATCH",
+			"description": "Percentage of endpoints with method PATCH",
+			"statistic": "4"
+		},
+		{
+			"level": "Info",
+			"reason": "Informational",
+			"site": "http://frontend",
+			"key": "insight.endpoint.method.POST",
+			"description": "Percentage of endpoints with method POST",
+			"statistic": "17"
+		},
+		{
+			"level": "Info",
+			"reason": "Informational",
+			"site": "http://frontend",
+			"key": "insight.endpoint.method.PUT",
+			"description": "Percentage of endpoints with method PUT",
+			"statistic": "6"
+		},
+		{
+			"level": "Info",
+			"reason": "Informational",
+			"site": "http://frontend",
+			"key": "insight.endpoint.total",
+			"description": "Count of total endpoints",
+			"statistic": "164"
+		}
+	],
+	"site":[ 
+		{
+			"@name": "http://frontend",
+			"@host": "frontend",
+			"@port": "80",
+			"@ssl": "false",
+			"alerts": [ 
+				{
+					"pluginid": "90004",
+					"alertRef": "90004-1",
+					"alert": "Cross-Origin-Resource-Policy Header Missing or Invalid",
+					"name": "Cross-Origin-Resource-Policy Header Missing or Invalid",
+					"riskcode": "1",
+					"confidence": "2",
+					"riskdesc": "Low (Medium)",
+					"desc": "<p>Cross-Origin-Resource-Policy header is an opt-in header designed to counter side-channels attacks like Spectre. Resource should be specifically set as shareable amongst different origins.</p>",
+					"instances":[ 
+						{
+							"id": "817",
+							"uri": "http://frontend/api/auth/logout",
+							"nodeName": "http:\/\/frontend\/api\/auth\/logout",
+							"method": "POST",
+							"param": "Cross-Origin-Resource-Policy",
+							"attack": "",
+							"evidence": "",
+							"otherinfo": ""
+						}
+					],
+					"count": "1",
+					"systemic": false,
+					"solution": "<p>Ensure that the application/web server sets the Cross-Origin-Resource-Policy header appropriately, and that it sets the Cross-Origin-Resource-Policy header to 'same-origin' for all web pages.</p><p>'same-site' is considered as less secured and should be avoided.</p><p>If resources must be shared, set the header to 'cross-origin'.</p><p>If possible, ensure that the end user uses a standards-compliant and modern web browser that supports the Cross-Origin-Resource-Policy header (https://caniuse.com/mdn-http_headers_cross-origin-resource-policy).</p>",
+					"otherinfo": "",
+					"reference": "<p>https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Cross-Origin-Embedder-Policy</p>",
+					"cweid": "693",
+					"wascid": "14",
+					"sourceid": "5"
+				},
+				{
+					"pluginid": "10036",
+					"alertRef": "10036-2",
+					"alert": "Server Leaks Version Information via \"Server\" HTTP Response Header Field",
+					"name": "Server Leaks Version Information via \"Server\" HTTP Response Header Field",
+					"riskcode": "1",
+					"confidence": "3",
+					"riskdesc": "Low (High)",
+					"desc": "<p>The web/application server is leaking version information via the \"Server\" HTTP response header. Access to such information may facilitate attackers identifying other vulnerabilities your web/application server is subject to.</p>",
+					"instances":[ 
+						{
+							"id": "825",
+							"uri": "http://frontend/api/expedientes/id/documentos/documentoId/contenido",
+							"nodeName": "http:\/\/frontend\/api\/expedientes\/id\/documentos\/documentoId\/contenido",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "nginx/1.27.5",
+							"otherinfo": ""
+						},
+						{
+							"id": "808",
+							"uri": "http://frontend/api/auth/login",
+							"nodeName": "http:\/\/frontend\/api\/auth\/login ()({correo,contrasena})",
+							"method": "POST",
+							"param": "",
+							"attack": "",
+							"evidence": "nginx/1.27.5",
+							"otherinfo": ""
+						},
+						{
+							"id": "800",
+							"uri": "http://frontend/api/auth/logout",
+							"nodeName": "http:\/\/frontend\/api\/auth\/logout",
+							"method": "POST",
+							"param": "",
+							"attack": "",
+							"evidence": "nginx/1.27.5",
+							"otherinfo": ""
+						},
+						{
+							"id": "801",
+							"uri": "http://frontend/api/auth/recuperacion",
+							"nodeName": "http:\/\/frontend\/api\/auth\/recuperacion ()({correo})",
+							"method": "POST",
+							"param": "",
+							"attack": "",
+							"evidence": "nginx/1.27.5",
+							"otherinfo": ""
+						},
+						{
+							"id": "805",
+							"uri": "http://frontend/api/auth/registro",
+							"nodeName": "http:\/\/frontend\/api\/auth\/registro ()({tipoDocumento,numeroDocumento,nombre,nacionalidad,correo,telefono,paisResidencia,contrasena,aceptaTratamientoDatos})",
+							"method": "POST",
+							"param": "",
+							"attack": "",
+							"evidence": "nginx/1.27.5",
+							"otherinfo": ""
+						}
+					],
+					"count": "5",
+					"systemic": true,
+					"solution": "<p>Ensure that your web server, application server, load balancer, etc. is configured to suppress the \"Server\" header or provide generic details.</p>",
+					"otherinfo": "",
+					"reference": "<p>https://httpd.apache.org/docs/current/mod/core.html#servertokens</p><p>https://learn.microsoft.com/en-us/previous-versions/msp-n-p/ff648552(v=pandp.10)</p><p>https://www.troyhunt.com/shhh-dont-let-your-response-headers/</p>",
+					"cweid": "497",
+					"wascid": "13",
+					"sourceid": "20"
+				},
+				{
+					"pluginid": "100001",
+					"alertRef": "100001",
+					"alert": "Unexpected Content-Type was returned",
+					"name": "Unexpected Content-Type was returned",
+					"riskcode": "1",
+					"confidence": "3",
+					"riskdesc": "Low (High)",
+					"desc": "<p>A Content-Type of text/html was returned by the server.</p><p>This is not one of the types expected to be returned by an API.</p><p>Raised by the 'Alert on Unexpected Content Types' script</p>",
+					"instances":[ 
+						{
+							"id": "70",
+							"uri": "http://frontend",
+							"nodeName": "http:\/\/frontend",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "text/html",
+							"otherinfo": ""
+						},
+						{
+							"id": "8083",
+							"uri": "http://frontend/",
+							"nodeName": "http:\/\/frontend\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "text/html",
+							"otherinfo": ""
+						},
+						{
+							"id": "41",
+							"uri": "http://frontend/6354193540994251355",
+							"nodeName": "http:\/\/frontend\/6354193540994251355",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "text/html",
+							"otherinfo": ""
+						},
+						{
+							"id": "72",
+							"uri": "http://frontend/api",
+							"nodeName": "http:\/\/frontend\/api",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "text/html",
+							"otherinfo": ""
+						},
+						{
+							"id": "8082",
+							"uri": "http://frontend/html/index.html",
+							"nodeName": "http:\/\/frontend\/html\/index.html",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "text/html",
+							"otherinfo": ""
+						},
+						{
+							"id": "6014",
+							"uri": "http://frontend/computeMetadata/v1/",
+							"nodeName": "http:\/\/frontend\/computeMetadata\/v1\/ ()({contrasenaActual,contrasenaNueva})",
+							"method": "PUT",
+							"param": "",
+							"attack": "",
+							"evidence": "text/html",
+							"otherinfo": ""
+						},
+						{
+							"id": "6010",
+							"uri": "http://frontend/latest/meta-data/",
+							"nodeName": "http:\/\/frontend\/latest\/meta-data\/ ()({contrasenaActual,contrasenaNueva})",
+							"method": "PUT",
+							"param": "",
+							"attack": "",
+							"evidence": "text/html",
+							"otherinfo": ""
+						},
+						{
+							"id": "6133",
+							"uri": "http://frontend/metadata/instance",
+							"nodeName": "http:\/\/frontend\/metadata\/instance ()({contrasenaActual,contrasenaNueva})",
+							"method": "PUT",
+							"param": "",
+							"attack": "",
+							"evidence": "text/html",
+							"otherinfo": ""
+						},
+						{
+							"id": "6155",
+							"uri": "http://frontend/metadata/v1",
+							"nodeName": "http:\/\/frontend\/metadata\/v1 ()({contrasenaActual,contrasenaNueva})",
+							"method": "PUT",
+							"param": "",
+							"attack": "",
+							"evidence": "text/html",
+							"otherinfo": ""
+						},
+						{
+							"id": "6041",
+							"uri": "http://frontend/opc/v1/instance/",
+							"nodeName": "http:\/\/frontend\/opc\/v1\/instance\/ ()({contrasenaActual,contrasenaNueva})",
+							"method": "PUT",
+							"param": "",
+							"attack": "",
+							"evidence": "text/html",
+							"otherinfo": ""
+						},
+						{
+							"id": "6067",
+							"uri": "http://frontend/opc/v2/instance/",
+							"nodeName": "http:\/\/frontend\/opc\/v2\/instance\/ ()({contrasenaActual,contrasenaNueva})",
+							"method": "PUT",
+							"param": "",
+							"attack": "",
+							"evidence": "text/html",
+							"otherinfo": ""
+						},
+						{
+							"id": "6173",
+							"uri": "http://frontend/openstack/latest/meta_data.json",
+							"nodeName": "http:\/\/frontend\/openstack\/latest\/meta_data.json ()({contrasenaActual,contrasenaNueva})",
+							"method": "PUT",
+							"param": "",
+							"attack": "",
+							"evidence": "text/html",
+							"otherinfo": ""
+						}
+					],
+					"count": "12",
+					"systemic": false,
+					"solution": "",
+					"otherinfo": "",
+					"reference": "",
+					"cweid": "-1",
+					"wascid": "-1",
+					"sourceid": "127"
+				},
+				{
+					"pluginid": "100000",
+					"alertRef": "100000-1",
+					"alert": "A Client Error response code was returned by the server",
+					"name": "A Client Error response code was returned by the server",
+					"riskcode": "0",
+					"confidence": "3",
+					"riskdesc": "Informational (High)",
+					"desc": "<p>A response code of 404 was returned by the server.</p><p>This may indicate that the application is failing to handle unexpected input correctly.</p><p>Raised by the 'Alert on HTTP Response Code Error' script</p>",
+					"instances":[ 
+						{
+							"id": "40",
+							"uri": "http://frontend/6354193540994251355",
+							"nodeName": "http:\/\/frontend\/6354193540994251355",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "404",
+							"otherinfo": ""
+						},
+						{
+							"id": "8085",
+							"uri": "http://frontend/api/",
+							"nodeName": "http:\/\/frontend\/api\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "42",
+							"uri": "http://frontend/api/7042908044010023801",
+							"nodeName": "http:\/\/frontend\/api\/7042908044010023801",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "87",
+							"uri": "http://frontend/api/auditoria",
+							"nodeName": "http:\/\/frontend\/api\/auditoria",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "8087",
+							"uri": "http://frontend/api/auditoria/",
+							"nodeName": "http:\/\/frontend\/api\/auditoria\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "43",
+							"uri": "http://frontend/api/auditoria/2753616032364541679",
+							"nodeName": "http:\/\/frontend\/api\/auditoria\/2753616032364541679",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "107",
+							"uri": "http://frontend/api/auditoria/eventos",
+							"nodeName": "http:\/\/frontend\/api\/auditoria\/eventos",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "32",
+							"uri": "http://frontend/api/auditoria/eventos?fechaDesde=fechaDesde&fechaHasta=fechaHasta&actorId=actorId&operacion=operacion&recurso=recurso&pagina=0&tamano=20",
+							"nodeName": "http:\/\/frontend\/api\/auditoria\/eventos (actorId,fechaDesde,fechaHasta,operacion,pagina,recurso,tamano)",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "8090",
+							"uri": "http://frontend/api/auditoria/eventos/",
+							"nodeName": "http:\/\/frontend\/api\/auditoria\/eventos\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "44",
+							"uri": "http://frontend/api/auditoria/eventos/9203667071248180727",
+							"nodeName": "http:\/\/frontend\/api\/auditoria\/eventos\/9203667071248180727",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "33",
+							"uri": "http://frontend/api/auditoria/eventos/exportacion?fechaDesde=fechaDesde&fechaHasta=fechaHasta&actorId=actorId&operacion=operacion&recurso=recurso",
+							"nodeName": "http:\/\/frontend\/api\/auditoria\/eventos\/exportacion (actorId,fechaDesde,fechaHasta,operacion,recurso)",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "8088",
+							"uri": "http://frontend/api/auditoria/eventos/exportacion/",
+							"nodeName": "http:\/\/frontend\/api\/auditoria\/eventos\/exportacion\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "116",
+							"uri": "http://frontend/api/auth",
+							"nodeName": "http:\/\/frontend\/api\/auth",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "8093",
+							"uri": "http://frontend/api/auth/",
+							"nodeName": "http:\/\/frontend\/api\/auth\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "45",
+							"uri": "http://frontend/api/auth/2934034633099663140",
+							"nodeName": "http:\/\/frontend\/api\/auth\/2934034633099663140",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "9164",
+							"uri": "http://frontend/api/auth/actuator/health",
+							"nodeName": "http:\/\/frontend\/api\/auth\/actuator\/health",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "129",
+							"uri": "http://frontend/api/auth/recuperacion",
+							"nodeName": "http:\/\/frontend\/api\/auth\/recuperacion",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "8095",
+							"uri": "http://frontend/api/auth/recuperacion/",
+							"nodeName": "http:\/\/frontend\/api\/auth\/recuperacion\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "46",
+							"uri": "http://frontend/api/auth/recuperacion/6711228058969259080",
+							"nodeName": "http:\/\/frontend\/api\/auth\/recuperacion\/6711228058969259080",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "153",
+							"uri": "http://frontend/api/catalogos",
+							"nodeName": "http:\/\/frontend\/api\/catalogos",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "8096",
+							"uri": "http://frontend/api/catalogos/",
+							"nodeName": "http:\/\/frontend\/api\/catalogos\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "47",
+							"uri": "http://frontend/api/catalogos/4788445302118346657",
+							"nodeName": "http:\/\/frontend\/api\/catalogos\/4788445302118346657",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "35",
+							"uri": "http://frontend/api/catalogos/tipos-documentales",
+							"nodeName": "http:\/\/frontend\/api\/catalogos\/tipos-documentales",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "8099",
+							"uri": "http://frontend/api/catalogos/tipos-documentales/",
+							"nodeName": "http:\/\/frontend\/api\/catalogos\/tipos-documentales\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "34",
+							"uri": "http://frontend/api/catalogos/tipos-tramite",
+							"nodeName": "http:\/\/frontend\/api\/catalogos\/tipos-tramite",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "8097",
+							"uri": "http://frontend/api/catalogos/tipos-tramite/",
+							"nodeName": "http:\/\/frontend\/api\/catalogos\/tipos-tramite\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "171",
+							"uri": "http://frontend/api/consentimientos",
+							"nodeName": "http:\/\/frontend\/api\/consentimientos",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "23",
+							"uri": "http://frontend/api/consentimientos?titularId=titularId&estado=VIGENTE",
+							"nodeName": "http:\/\/frontend\/api\/consentimientos (estado,titularId)",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "8100",
+							"uri": "http://frontend/api/consentimientos/",
+							"nodeName": "http:\/\/frontend\/api\/consentimientos\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "48",
+							"uri": "http://frontend/api/consentimientos/5179818043451419189",
+							"nodeName": "http:\/\/frontend\/api\/consentimientos\/5179818043451419189",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "207",
+							"uri": "http://frontend/api/expedientes",
+							"nodeName": "http:\/\/frontend\/api\/expedientes",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "7",
+							"uri": "http://frontend/api/expedientes?estado=EN_PREPARACION&tipoTramite=tipoTramite&fechaDesde=fechaDesde&fechaHasta=fechaHasta&pagina=0&tamano=20",
+							"nodeName": "http:\/\/frontend\/api\/expedientes (estado,fechaDesde,fechaHasta,pagina,tamano,tipoTramite)",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "8103",
+							"uri": "http://frontend/api/expedientes/",
+							"nodeName": "http:\/\/frontend\/api\/expedientes\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "49",
+							"uri": "http://frontend/api/expedientes/8958309870792118933",
+							"nodeName": "http:\/\/frontend\/api\/expedientes\/8958309870792118933",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "9",
+							"uri": "http://frontend/api/expedientes/id",
+							"nodeName": "http:\/\/frontend\/api\/expedientes\/id",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "8106",
+							"uri": "http://frontend/api/expedientes/id/",
+							"nodeName": "http:\/\/frontend\/api\/expedientes\/id\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "50",
+							"uri": "http://frontend/api/expedientes/id/3487700894176488466",
+							"nodeName": "http:\/\/frontend\/api\/expedientes\/id\/3487700894176488466",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "10",
+							"uri": "http://frontend/api/expedientes/id/documentos",
+							"nodeName": "http:\/\/frontend\/api\/expedientes\/id\/documentos",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "8105",
+							"uri": "http://frontend/api/expedientes/id/documentos/",
+							"nodeName": "http:\/\/frontend\/api\/expedientes\/id\/documentos\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "51",
+							"uri": "http://frontend/api/expedientes/id/documentos/6572497946973571955",
+							"nodeName": "http:\/\/frontend\/api\/expedientes\/id\/documentos\/6572497946973571955",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "225",
+							"uri": "http://frontend/api/expedientes/id/documentos/documentoId",
+							"nodeName": "http:\/\/frontend\/api\/expedientes\/id\/documentos\/documentoId",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "8110",
+							"uri": "http://frontend/api/expedientes/id/documentos/documentoId/",
+							"nodeName": "http:\/\/frontend\/api\/expedientes\/id\/documentos\/documentoId\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "52",
+							"uri": "http://frontend/api/expedientes/id/documentos/documentoId/2551442131560397934",
+							"nodeName": "http:\/\/frontend\/api\/expedientes\/id\/documentos\/documentoId\/2551442131560397934",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "12",
+							"uri": "http://frontend/api/expedientes/id/documentos/documentoId/contenido",
+							"nodeName": "http:\/\/frontend\/api\/expedientes\/id\/documentos\/documentoId\/contenido",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "8111",
+							"uri": "http://frontend/api/expedientes/id/documentos/documentoId/contenido/",
+							"nodeName": "http:\/\/frontend\/api\/expedientes\/id\/documentos\/documentoId\/contenido\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "14",
+							"uri": "http://frontend/api/expedientes/id/historial",
+							"nodeName": "http:\/\/frontend\/api\/expedientes\/id\/historial",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "8108",
+							"uri": "http://frontend/api/expedientes/id/historial/",
+							"nodeName": "http:\/\/frontend\/api\/expedientes\/id\/historial\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "15",
+							"uri": "http://frontend/api/expedientes/id/observaciones",
+							"nodeName": "http:\/\/frontend\/api\/expedientes\/id\/observaciones",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "8107",
+							"uri": "http://frontend/api/expedientes/id/observaciones/",
+							"nodeName": "http:\/\/frontend\/api\/expedientes\/id\/observaciones\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "17",
+							"uri": "http://frontend/api/expedientes/id/verificaciones",
+							"nodeName": "http:\/\/frontend\/api\/expedientes\/id\/verificaciones",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "8109",
+							"uri": "http://frontend/api/expedientes/id/verificaciones/",
+							"nodeName": "http:\/\/frontend\/api\/expedientes\/id\/verificaciones\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "53",
+							"uri": "http://frontend/api/expedientes/id/verificaciones/1426114967348551376",
+							"nodeName": "http:\/\/frontend\/api\/expedientes\/id\/verificaciones\/1426114967348551376",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "263",
+							"uri": "http://frontend/api/expedientes/id/verificaciones/verificacionId",
+							"nodeName": "http:\/\/frontend\/api\/expedientes\/id\/verificaciones\/verificacionId",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "8115",
+							"uri": "http://frontend/api/expedientes/id/verificaciones/verificacionId/",
+							"nodeName": "http:\/\/frontend\/api\/expedientes\/id\/verificaciones\/verificacionId\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "54",
+							"uri": "http://frontend/api/expedientes/id/verificaciones/verificacionId/964441362187744100",
+							"nodeName": "http:\/\/frontend\/api\/expedientes\/id\/verificaciones\/verificacionId\/964441362187744100",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "270",
+							"uri": "http://frontend/api/mock",
+							"nodeName": "http:\/\/frontend\/api\/mock",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "8117",
+							"uri": "http://frontend/api/mock/",
+							"nodeName": "http:\/\/frontend\/api\/mock\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "55",
+							"uri": "http://frontend/api/mock/7560831720980796674",
+							"nodeName": "http:\/\/frontend\/api\/mock\/7560831720980796674",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "285",
+							"uri": "http://frontend/api/mock/css",
+							"nodeName": "http:\/\/frontend\/api\/mock\/css",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "8119",
+							"uri": "http://frontend/api/mock/css/",
+							"nodeName": "http:\/\/frontend\/api\/mock\/css\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "56",
+							"uri": "http://frontend/api/mock/css/6425974310068244444",
+							"nodeName": "http:\/\/frontend\/api\/mock\/css\/6425974310068244444",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "295",
+							"uri": "http://frontend/api/mock/css/afiliaciones",
+							"nodeName": "http:\/\/frontend\/api\/mock\/css\/afiliaciones",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "8120",
+							"uri": "http://frontend/api/mock/css/afiliaciones/",
+							"nodeName": "http:\/\/frontend\/api\/mock\/css\/afiliaciones\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "57",
+							"uri": "http://frontend/api/mock/css/afiliaciones/8597549038130474992",
+							"nodeName": "http:\/\/frontend\/api\/mock\/css\/afiliaciones\/8597549038130474992",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "37",
+							"uri": "http://frontend/api/mock/css/afiliaciones/idPersona?scenario=OK",
+							"nodeName": "http:\/\/frontend\/api\/mock\/css\/afiliaciones\/idPersona (scenario)",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "8121",
+							"uri": "http://frontend/api/mock/css/afiliaciones/idPersona/",
+							"nodeName": "http:\/\/frontend\/api\/mock\/css\/afiliaciones\/idPersona\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "304",
+							"uri": "http://frontend/api/mock/registro",
+							"nodeName": "http:\/\/frontend\/api\/mock\/registro",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "8124",
+							"uri": "http://frontend/api/mock/registro/",
+							"nodeName": "http:\/\/frontend\/api\/mock\/registro\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "58",
+							"uri": "http://frontend/api/mock/registro/6701551724897803244",
+							"nodeName": "http:\/\/frontend\/api\/mock\/registro\/6701551724897803244",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "338",
+							"uri": "http://frontend/api/mock/registro/consultas",
+							"nodeName": "http:\/\/frontend\/api\/mock\/registro\/consultas",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "8127",
+							"uri": "http://frontend/api/mock/registro/consultas/",
+							"nodeName": "http:\/\/frontend\/api\/mock\/registro\/consultas\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "59",
+							"uri": "http://frontend/api/mock/registro/consultas/1979580783665143989",
+							"nodeName": "http:\/\/frontend\/api\/mock\/registro\/consultas\/1979580783665143989",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "38",
+							"uri": "http://frontend/api/mock/registro/consultas/idPersona?scenario=OK",
+							"nodeName": "http:\/\/frontend\/api\/mock\/registro\/consultas\/idPersona (scenario)",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "8126",
+							"uri": "http://frontend/api/mock/registro/consultas/idPersona/",
+							"nodeName": "http:\/\/frontend\/api\/mock\/registro\/consultas\/idPersona\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "349",
+							"uri": "http://frontend/api/mock/snm",
+							"nodeName": "http:\/\/frontend\/api\/mock\/snm",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "8129",
+							"uri": "http://frontend/api/mock/snm/",
+							"nodeName": "http:\/\/frontend\/api\/mock\/snm\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "60",
+							"uri": "http://frontend/api/mock/snm/3654643773493269302",
+							"nodeName": "http:\/\/frontend\/api\/mock\/snm\/3654643773493269302",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "370",
+							"uri": "http://frontend/api/mock/snm/expedientes",
+							"nodeName": "http:\/\/frontend\/api\/mock\/snm\/expedientes",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "8131",
+							"uri": "http://frontend/api/mock/snm/expedientes/",
+							"nodeName": "http:\/\/frontend\/api\/mock\/snm\/expedientes\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "61",
+							"uri": "http://frontend/api/mock/snm/expedientes/7466880830571717652",
+							"nodeName": "http:\/\/frontend\/api\/mock\/snm\/expedientes\/7466880830571717652",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "39",
+							"uri": "http://frontend/api/mock/snm/expedientes/numero?scenario=OK",
+							"nodeName": "http:\/\/frontend\/api\/mock\/snm\/expedientes\/numero (scenario)",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "8130",
+							"uri": "http://frontend/api/mock/snm/expedientes/numero/",
+							"nodeName": "http:\/\/frontend\/api\/mock\/snm\/expedientes\/numero\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "395",
+							"uri": "http://frontend/api/mock/te",
+							"nodeName": "http:\/\/frontend\/api\/mock\/te",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "8133",
+							"uri": "http://frontend/api/mock/te/",
+							"nodeName": "http:\/\/frontend\/api\/mock\/te\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "62",
+							"uri": "http://frontend/api/mock/te/2624699787579843536",
+							"nodeName": "http:\/\/frontend\/api\/mock\/te\/2624699787579843536",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "416",
+							"uri": "http://frontend/api/mock/te/personas",
+							"nodeName": "http:\/\/frontend\/api\/mock\/te\/personas",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "8136",
+							"uri": "http://frontend/api/mock/te/personas/",
+							"nodeName": "http:\/\/frontend\/api\/mock\/te\/personas\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "63",
+							"uri": "http://frontend/api/mock/te/personas/3335014252490770054",
+							"nodeName": "http:\/\/frontend\/api\/mock\/te\/personas\/3335014252490770054",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "432",
+							"uri": "http://frontend/api/mock/te/personas/tipoDoc",
+							"nodeName": "http:\/\/frontend\/api\/mock\/te\/personas\/tipoDoc",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "8138",
+							"uri": "http://frontend/api/mock/te/personas/tipoDoc/",
+							"nodeName": "http:\/\/frontend\/api\/mock\/te\/personas\/tipoDoc\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "64",
+							"uri": "http://frontend/api/mock/te/personas/tipoDoc/5379592324716667556",
+							"nodeName": "http:\/\/frontend\/api\/mock\/te\/personas\/tipoDoc\/5379592324716667556",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "36",
+							"uri": "http://frontend/api/mock/te/personas/tipoDoc/numero?scenario=OK",
+							"nodeName": "http:\/\/frontend\/api\/mock\/te\/personas\/tipoDoc\/numero (scenario)",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "8139",
+							"uri": "http://frontend/api/mock/te/personas/tipoDoc/numero/",
+							"nodeName": "http:\/\/frontend\/api\/mock\/te\/personas\/tipoDoc\/numero\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "452",
+							"uri": "http://frontend/api/notificaciones",
+							"nodeName": "http:\/\/frontend\/api\/notificaciones",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "30",
+							"uri": "http://frontend/api/notificaciones?leida=true&pagina=0&tamano=20",
+							"nodeName": "http:\/\/frontend\/api\/notificaciones (leida,pagina,tamano)",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "8140",
+							"uri": "http://frontend/api/notificaciones/",
+							"nodeName": "http:\/\/frontend\/api\/notificaciones\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "65",
+							"uri": "http://frontend/api/notificaciones/1106795203049414560",
+							"nodeName": "http:\/\/frontend\/api\/notificaciones\/1106795203049414560",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "471",
+							"uri": "http://frontend/api/notificaciones/notificacionId",
+							"nodeName": "http:\/\/frontend\/api\/notificaciones\/notificacionId",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "8142",
+							"uri": "http://frontend/api/notificaciones/notificacionId/",
+							"nodeName": "http:\/\/frontend\/api\/notificaciones\/notificacionId\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "66",
+							"uri": "http://frontend/api/notificaciones/notificacionId/4854038913342954904",
+							"nodeName": "http:\/\/frontend\/api\/notificaciones\/notificacionId\/4854038913342954904",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "5",
+							"uri": "http://frontend/api/perfil",
+							"nodeName": "http:\/\/frontend\/api\/perfil",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "8144",
+							"uri": "http://frontend/api/perfil/",
+							"nodeName": "http:\/\/frontend\/api\/perfil\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "481",
+							"uri": "http://frontend/api/solicitudes-arco",
+							"nodeName": "http:\/\/frontend\/api\/solicitudes-arco",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "26",
+							"uri": "http://frontend/api/solicitudes-arco?estado=RECIBIDA&fueraDePlazo=true",
+							"nodeName": "http:\/\/frontend\/api\/solicitudes-arco (estado,fueraDePlazo)",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "8146",
+							"uri": "http://frontend/api/solicitudes-arco/",
+							"nodeName": "http:\/\/frontend\/api\/solicitudes-arco\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "67",
+							"uri": "http://frontend/api/solicitudes-arco/6441346390433238690",
+							"nodeName": "http:\/\/frontend\/api\/solicitudes-arco\/6441346390433238690",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "28",
+							"uri": "http://frontend/api/solicitudes-arco/solicitudId",
+							"nodeName": "http:\/\/frontend\/api\/solicitudes-arco\/solicitudId",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "8149",
+							"uri": "http://frontend/api/solicitudes-arco/solicitudId/",
+							"nodeName": "http:\/\/frontend\/api\/solicitudes-arco\/solicitudId\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "489",
+							"uri": "http://frontend/api/verificaciones",
+							"nodeName": "http:\/\/frontend\/api\/verificaciones",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "8151",
+							"uri": "http://frontend/api/verificaciones/",
+							"nodeName": "http:\/\/frontend\/api\/verificaciones\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "68",
+							"uri": "http://frontend/api/verificaciones/8948122558978887597",
+							"nodeName": "http:\/\/frontend\/api\/verificaciones\/8948122558978887597",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "22",
+							"uri": "http://frontend/api/verificaciones/matriz",
+							"nodeName": "http:\/\/frontend\/api\/verificaciones\/matriz",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "8150",
+							"uri": "http://frontend/api/verificaciones/matriz/",
+							"nodeName": "http:\/\/frontend\/api\/verificaciones\/matriz\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "25",
+							"uri": "http://frontend/api/consentimientos/consentimientoId",
+							"nodeName": "http:\/\/frontend\/api\/consentimientos\/consentimientoId",
+							"method": "PATCH",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "8061",
+							"uri": "http://frontend/api/consentimientos/consentimientoId/",
+							"nodeName": "http:\/\/frontend\/api\/consentimientos\/consentimientoId\/",
+							"method": "PATCH",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "13",
+							"uri": "http://frontend/api/expedientes/id/estado",
+							"nodeName": "http:\/\/frontend\/api\/expedientes\/id\/estado ()({estadoNuevo,resultado,motivo,version})",
+							"method": "PATCH",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "8070",
+							"uri": "http://frontend/api/expedientes/id/estado/",
+							"nodeName": "http:\/\/frontend\/api\/expedientes\/id\/estado\/ ()({estadoNuevo,resultado,motivo,version})",
+							"method": "PATCH",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "6",
+							"uri": "http://frontend/api/perfil",
+							"nodeName": "http:\/\/frontend\/api\/perfil ()({telefono,idiomaNotificacion,medioNotificacion})",
+							"method": "PATCH",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "8074",
+							"uri": "http://frontend/api/perfil/",
+							"nodeName": "http:\/\/frontend\/api\/perfil\/ ()({telefono,idiomaNotificacion,medioNotificacion})",
+							"method": "PATCH",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "29",
+							"uri": "http://frontend/api/solicitudes-arco/solicitudId",
+							"nodeName": "http:\/\/frontend\/api\/solicitudes-arco\/solicitudId ()({estado,responsableId,motivoRechazo})",
+							"method": "PATCH",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "8075",
+							"uri": "http://frontend/api/solicitudes-arco/solicitudId/",
+							"nodeName": "http:\/\/frontend\/api\/solicitudes-arco\/solicitudId\/ ()({estado,responsableId,motivoRechazo})",
+							"method": "PATCH",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "0",
+							"uri": "http://frontend/api/auth/login",
+							"nodeName": "http:\/\/frontend\/api\/auth\/login ()({correo,contrasena})",
+							"method": "POST",
+							"param": "",
+							"attack": "",
+							"evidence": "400",
+							"otherinfo": ""
+						},
+						{
+							"id": "6281",
+							"uri": "http://frontend/api/auth/login",
+							"nodeName": "http:\/\/frontend\/api\/auth\/login ()({correo,contrasena})",
+							"method": "POST",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "8067",
+							"uri": "http://frontend/api/auth/login/",
+							"nodeName": "http:\/\/frontend\/api\/auth\/login\/ ()({correo,contrasena})",
+							"method": "POST",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "8065",
+							"uri": "http://frontend/api/auth/logout/",
+							"nodeName": "http:\/\/frontend\/api\/auth\/logout\/",
+							"method": "POST",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "3",
+							"uri": "http://frontend/api/auth/recuperacion",
+							"nodeName": "http:\/\/frontend\/api\/auth\/recuperacion ()({correo})",
+							"method": "POST",
+							"param": "",
+							"attack": "",
+							"evidence": "400",
+							"otherinfo": ""
+						},
+						{
+							"id": "8063",
+							"uri": "http://frontend/api/auth/recuperacion/",
+							"nodeName": "http:\/\/frontend\/api\/auth\/recuperacion\/ ()({correo})",
+							"method": "POST",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "4",
+							"uri": "http://frontend/api/auth/recuperacion/confirmacion",
+							"nodeName": "http:\/\/frontend\/api\/auth\/recuperacion\/confirmacion ()({token,contrasenaNueva})",
+							"method": "POST",
+							"param": "",
+							"attack": "",
+							"evidence": "400",
+							"otherinfo": ""
+						},
+						{
+							"id": "8064",
+							"uri": "http://frontend/api/auth/recuperacion/confirmacion/",
+							"nodeName": "http:\/\/frontend\/api\/auth\/recuperacion\/confirmacion\/ ()({token,contrasenaNueva})",
+							"method": "POST",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "2",
+							"uri": "http://frontend/api/auth/registro",
+							"nodeName": "http:\/\/frontend\/api\/auth\/registro ()({tipoDocumento,numeroDocumento,nombre,nacionalidad,correo,telefono,paisResidencia,contrasena,aceptaTratamientoDatos})",
+							"method": "POST",
+							"param": "",
+							"attack": "",
+							"evidence": "400",
+							"otherinfo": ""
+						},
+						{
+							"id": "8062",
+							"uri": "http://frontend/api/auth/registro/",
+							"nodeName": "http:\/\/frontend\/api\/auth\/registro\/ ()({tipoDocumento,numeroDocumento,nombre,nacionalidad,correo,telefono,paisResidencia,contrasena,aceptaTratamientoDatos})",
+							"method": "POST",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "24",
+							"uri": "http://frontend/api/consentimientos",
+							"nodeName": "http:\/\/frontend\/api\/consentimientos ()({titularId,finalidad,alcance,baseLegal,vigenciaHasta,expreso})",
+							"method": "POST",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "8066",
+							"uri": "http://frontend/api/consentimientos/",
+							"nodeName": "http:\/\/frontend\/api\/consentimientos\/ ()({titularId,finalidad,alcance,baseLegal,vigenciaHasta,expreso})",
+							"method": "POST",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "8",
+							"uri": "http://frontend/api/expedientes",
+							"nodeName": "http:\/\/frontend\/api\/expedientes ()({tipoTramite,titularId})",
+							"method": "POST",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "8072",
+							"uri": "http://frontend/api/expedientes/",
+							"nodeName": "http:\/\/frontend\/api\/expedientes\/ ()({tipoTramite,titularId})",
+							"method": "POST",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "11",
+							"uri": "http://frontend/api/expedientes/id/documentos",
+							"nodeName": "http:\/\/frontend\/api\/expedientes\/id\/documentos ()(multipart:archivo,tipoDocumental)",
+							"method": "POST",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "9281",
+							"uri": "http://frontend/api/expedientes/id/documentos",
+							"nodeName": "http:\/\/frontend\/api\/expedientes\/id\/documentos ()(multipart:rtobject,tipoDocumental)",
+							"method": "POST",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "8069",
+							"uri": "http://frontend/api/expedientes/id/documentos/",
+							"nodeName": "http:\/\/frontend\/api\/expedientes\/id\/documentos\/ ()(multipart:archivo,tipoDocumental)",
+							"method": "POST",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "16",
+							"uri": "http://frontend/api/expedientes/id/observaciones",
+							"nodeName": "http:\/\/frontend\/api\/expedientes\/id\/observaciones ()({texto})",
+							"method": "POST",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "8071",
+							"uri": "http://frontend/api/expedientes/id/observaciones/",
+							"nodeName": "http:\/\/frontend\/api\/expedientes\/id\/observaciones\/ ()({texto})",
+							"method": "POST",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "18",
+							"uri": "http://frontend/api/expedientes/id/verificaciones",
+							"nodeName": "http:\/\/frontend\/api\/expedientes\/id\/verificaciones ()({fuente,tipoVerificacion,modo,finalidad,fechaResultado,resultadoMinimo,referenciaOrigen,nota})",
+							"method": "POST",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "8068",
+							"uri": "http://frontend/api/expedientes/id/verificaciones/",
+							"nodeName": "http:\/\/frontend\/api\/expedientes\/id\/verificaciones\/ ()({fuente,tipoVerificacion,modo,finalidad,fechaResultado,resultadoMinimo,referenciaOrigen,nota})",
+							"method": "POST",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "19",
+							"uri": "http://frontend/api/expedientes/id/verificaciones/preparacion",
+							"nodeName": "http:\/\/frontend\/api\/expedientes\/id\/verificaciones\/preparacion",
+							"method": "POST",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "8079",
+							"uri": "http://frontend/api/expedientes/id/verificaciones/preparacion/",
+							"nodeName": "http:\/\/frontend\/api\/expedientes\/id\/verificaciones\/preparacion\/",
+							"method": "POST",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "20",
+							"uri": "http://frontend/api/expedientes/id/verificaciones/verificacionId/atencion",
+							"nodeName": "http:\/\/frontend\/api\/expedientes\/id\/verificaciones\/verificacionId\/atencion",
+							"method": "POST",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "8078",
+							"uri": "http://frontend/api/expedientes/id/verificaciones/verificacionId/atencion/",
+							"nodeName": "http:\/\/frontend\/api\/expedientes\/id\/verificaciones\/verificacionId\/atencion\/",
+							"method": "POST",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "21",
+							"uri": "http://frontend/api/expedientes/id/verificaciones/verificacionId/reintento",
+							"nodeName": "http:\/\/frontend\/api\/expedientes\/id\/verificaciones\/verificacionId\/reintento",
+							"method": "POST",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "8080",
+							"uri": "http://frontend/api/expedientes/id/verificaciones/verificacionId/reintento/",
+							"nodeName": "http:\/\/frontend\/api\/expedientes\/id\/verificaciones\/verificacionId\/reintento\/",
+							"method": "POST",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "27",
+							"uri": "http://frontend/api/solicitudes-arco",
+							"nodeName": "http:\/\/frontend\/api\/solicitudes-arco ()({tipo,descripcion})",
+							"method": "POST",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "8076",
+							"uri": "http://frontend/api/solicitudes-arco/",
+							"nodeName": "http:\/\/frontend\/api\/solicitudes-arco\/ ()({tipo,descripcion})",
+							"method": "POST",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "1",
+							"uri": "http://frontend/api/auth/contrasena",
+							"nodeName": "http:\/\/frontend\/api\/auth\/contrasena ()({contrasenaActual,contrasenaNueva})",
+							"method": "PUT",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "8060",
+							"uri": "http://frontend/api/auth/contrasena/",
+							"nodeName": "http:\/\/frontend\/api\/auth\/contrasena\/ ()({contrasenaActual,contrasenaNueva})",
+							"method": "PUT",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "31",
+							"uri": "http://frontend/api/notificaciones/notificacionId/leida",
+							"nodeName": "http:\/\/frontend\/api\/notificaciones\/notificacionId\/leida",
+							"method": "PUT",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "8073",
+							"uri": "http://frontend/api/notificaciones/notificacionId/leida/",
+							"nodeName": "http:\/\/frontend\/api\/notificaciones\/notificacionId\/leida\/",
+							"method": "PUT",
+							"param": "",
+							"attack": "",
+							"evidence": "401",
+							"otherinfo": ""
+						},
+						{
+							"id": "6013",
+							"uri": "http://frontend/computeMetadata/v1/",
+							"nodeName": "http:\/\/frontend\/computeMetadata\/v1\/ ()({contrasenaActual,contrasenaNueva})",
+							"method": "PUT",
+							"param": "",
+							"attack": "",
+							"evidence": "404",
+							"otherinfo": ""
+						},
+						{
+							"id": "6009",
+							"uri": "http://frontend/latest/meta-data/",
+							"nodeName": "http:\/\/frontend\/latest\/meta-data\/ ()({contrasenaActual,contrasenaNueva})",
+							"method": "PUT",
+							"param": "",
+							"attack": "",
+							"evidence": "404",
+							"otherinfo": ""
+						},
+						{
+							"id": "6132",
+							"uri": "http://frontend/metadata/instance",
+							"nodeName": "http:\/\/frontend\/metadata\/instance ()({contrasenaActual,contrasenaNueva})",
+							"method": "PUT",
+							"param": "",
+							"attack": "",
+							"evidence": "404",
+							"otherinfo": ""
+						},
+						{
+							"id": "6154",
+							"uri": "http://frontend/metadata/v1",
+							"nodeName": "http:\/\/frontend\/metadata\/v1 ()({contrasenaActual,contrasenaNueva})",
+							"method": "PUT",
+							"param": "",
+							"attack": "",
+							"evidence": "404",
+							"otherinfo": ""
+						},
+						{
+							"id": "6040",
+							"uri": "http://frontend/opc/v1/instance/",
+							"nodeName": "http:\/\/frontend\/opc\/v1\/instance\/ ()({contrasenaActual,contrasenaNueva})",
+							"method": "PUT",
+							"param": "",
+							"attack": "",
+							"evidence": "404",
+							"otherinfo": ""
+						},
+						{
+							"id": "6066",
+							"uri": "http://frontend/opc/v2/instance/",
+							"nodeName": "http:\/\/frontend\/opc\/v2\/instance\/ ()({contrasenaActual,contrasenaNueva})",
+							"method": "PUT",
+							"param": "",
+							"attack": "",
+							"evidence": "404",
+							"otherinfo": ""
+						},
+						{
+							"id": "6172",
+							"uri": "http://frontend/openstack/latest/meta_data.json",
+							"nodeName": "http:\/\/frontend\/openstack\/latest\/meta_data.json ()({contrasenaActual,contrasenaNueva})",
+							"method": "PUT",
+							"param": "",
+							"attack": "",
+							"evidence": "404",
+							"otherinfo": ""
+						}
+					],
+					"count": "161",
+					"systemic": false,
+					"solution": "",
+					"otherinfo": "",
+					"reference": "",
+					"cweid": "388",
+					"wascid": "20",
+					"sourceid": "70"
+				},
+				{
+					"pluginid": "10049",
+					"alertRef": "10049-1",
+					"alert": "Non-Storable Content",
+					"name": "Non-Storable Content",
+					"riskcode": "0",
+					"confidence": "2",
+					"riskdesc": "Informational (Medium)",
+					"desc": "<p>The response contents are not storable by caching components such as proxy servers. If the response does not contain sensitive, personal or user-specific information, it may benefit from being stored and cached, to improve performance.</p>",
+					"instances":[ 
+						{
+							"id": "907",
+							"uri": "http://frontend/api/expedientes/id/documentos",
+							"nodeName": "http:\/\/frontend\/api\/expedientes\/id\/documentos",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "no-store",
+							"otherinfo": ""
+						},
+						{
+							"id": "814",
+							"uri": "http://frontend/api/auth/login",
+							"nodeName": "http:\/\/frontend\/api\/auth\/login ()({correo,contrasena})",
+							"method": "POST",
+							"param": "",
+							"attack": "",
+							"evidence": "no-store",
+							"otherinfo": ""
+						},
+						{
+							"id": "815",
+							"uri": "http://frontend/api/auth/logout",
+							"nodeName": "http:\/\/frontend\/api\/auth\/logout",
+							"method": "POST",
+							"param": "",
+							"attack": "",
+							"evidence": "no-store",
+							"otherinfo": ""
+						},
+						{
+							"id": "883",
+							"uri": "http://frontend/api/auth/recuperacion",
+							"nodeName": "http:\/\/frontend\/api\/auth\/recuperacion ()({correo})",
+							"method": "POST",
+							"param": "",
+							"attack": "",
+							"evidence": "no-store",
+							"otherinfo": ""
+						},
+						{
+							"id": "816",
+							"uri": "http://frontend/api/auth/registro",
+							"nodeName": "http:\/\/frontend\/api\/auth\/registro ()({tipoDocumento,numeroDocumento,nombre,nacionalidad,correo,telefono,paisResidencia,contrasena,aceptaTratamientoDatos})",
+							"method": "POST",
+							"param": "",
+							"attack": "",
+							"evidence": "no-store",
+							"otherinfo": ""
+						}
+					],
+					"count": "5",
+					"systemic": true,
+					"solution": "<p>The content may be marked as storable by ensuring that the following conditions are satisfied:</p><p>The request method must be understood by the cache and defined as being cacheable (\"GET\", \"HEAD\", and \"POST\" are currently defined as cacheable)</p><p>The response status code must be understood by the cache (one of the 1XX, 2XX, 3XX, 4XX, or 5XX response classes are generally understood)</p><p>The \"no-store\" cache directive must not appear in the request or response header fields</p><p>For caching by \"shared\" caches such as \"proxy\" caches, the \"private\" response directive must not appear in the response</p><p>For caching by \"shared\" caches such as \"proxy\" caches, the \"Authorization\" header field must not appear in the request, unless the response explicitly allows it (using one of the \"must-revalidate\", \"public\", or \"s-maxage\" Cache-Control response directives)</p><p>In addition to the conditions above, at least one of the following conditions must also be satisfied by the response:</p><p>It must contain an \"Expires\" header field</p><p>It must contain a \"max-age\" response directive</p><p>For \"shared\" caches such as \"proxy\" caches, it must contain a \"s-maxage\" response directive</p><p>It must contain a \"Cache Control Extension\" that allows it to be cached</p><p>It must have a status code that is defined as cacheable by default (200, 203, 204, 206, 300, 301, 404, 405, 410, 414, 501).</p>",
+					"otherinfo": "",
+					"reference": "<p>https://datatracker.ietf.org/doc/html/rfc7234</p><p>https://datatracker.ietf.org/doc/html/rfc7231</p><p>https://www.w3.org/Protocols/rfc2616/rfc2616-sec13.html</p>",
+					"cweid": "524",
+					"wascid": "13",
+					"sourceid": "17"
+				}
+			]
+		}
+	],
+	"sequences":[
+	]
+
+}
