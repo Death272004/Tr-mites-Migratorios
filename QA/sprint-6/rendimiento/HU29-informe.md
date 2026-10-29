@@ -4,7 +4,7 @@ Fecha: 2026-10-29. Rama: integration/sprint-6-devops. Código probado: 07b6b1c (
 
 ## Resultado y límites
 
-La revisión registra todas las muestras, incluidos errores y conflictos. El umbral técnico usado es la referencia del backlog: P95 de cada operación principal ≤ 2000 ms bajo carga de referencia. No se encontró constancia de ratificación del umbral por el PO; esa confirmación queda pendiente y no se sustituye por este informe.
+La revisión registra todas las muestras, incluidos errores y conflictos. El umbral técnico usado es la referencia del backlog: P95 de cada operación principal ≤ 2000 ms bajo carga de referencia. El solicitante rrpinto27@gmail.com autorizó el 2026-10-29 registrar P95 ≤ 2000 ms como criterio de aceptación para este cierre, en respuesta a la consulta explícita realizada en esta conversación.
 
 No hay un requisito de cero errores en HU-29. No se ocultan errores por redondear su porcentaje. La carga de estrés es una prueba adicional; los timeouts de fuente se evalúan por su manejo y disponibilidad, no por el umbral de operaciones normales.
 
@@ -67,7 +67,7 @@ El índice V6 ya estaba incorporado. Los JTL históricos antes/después respalda
 | PERF-02 | Sesiones crecen con cada login | BE | Pendiente: purga de sesiones vencidas, Sprint 7 |
 | PERF-03 | 409 y selección compartida de expedientes en carga | QA | Pendiente: datos exclusivos por hilo y aserciones del error de negocio |
 | PERF-04 | Error BindException en JTL históricos | QA | Error del generador local; conservar evidencia y vigilar en repetición |
-| PERF-05 | Umbral acordado por PO sin constancia | PO, QA | Confirmar referencia P95 ≤ 2000 ms y registrar aceptación |
+| PERF-05 | Umbral de aceptación sin constancia | PO, QA | Resuelto documentalmente: el solicitante confirmó P95 ≤ 2000 ms el 2026-10-29 |
 
 ## Pruebas de regresión
 
@@ -75,7 +75,7 @@ El índice V6 ya estaba incorporado. Los JTL históricos antes/después respalda
 
 ## Estado para TeamTrack
 
-Las tareas se evalúan con los resultados completos; no se modifica TeamTrack desde este informe. TASK-29.1 y TASK-29.5 quedan En revisión hasta confirmar el umbral con el PO. TASK-29.2 y TASK-29.3 cuentan con scripts y ejecución documentada. TASK-29.4 puede cerrarse: la segunda corrida finalizó sin errores ni agotamiento del pool. HU-29 permanece En revisión únicamente por la confirmación del umbral.
+Con el umbral confirmado y la evidencia completa, HU-29 y TASK-29.1 a TASK-29.5 pueden marcarse Hechas en el alcance MVP y en los escenarios documentados. Esta es una recomendación de cierre respaldada por evidencias; no se modificaron estados directamente en TeamTrack. PERF-02 y PERF-03 permanecen abiertos con responsables y plan.
 
 ## Reproducción
 
@@ -114,6 +114,10 @@ JMeter comprueba los códigos HTTP de manera predeterminada; la validación de e
 
 Referencia y estrés sin errores, sin agotamiento del pool y con todos los P95 dentro de la referencia de 2000 ms: True.
 
-TASK-29.2, TASK-29.3 y TASK-29.4 pueden cerrarse técnicamente. La corrección PERF-01 queda verificada en los escenarios y duración indicados. TASK-29.1, TASK-29.5 y HU-29 se mantienen En revisión únicamente por la confirmación del umbral acordado con PO. Los pendientes PERF-02 y PERF-03 quedan con plan explícito; no se consideran resueltos.
+HU-29 y TASK-29.1 a TASK-29.5 cuentan con evidencia para cierre como Hechas en el alcance MVP. La corrección PERF-01 queda verificada en los escenarios y duración indicados; el solicitante confirmó el umbral P95 ≤ 2000 ms. Los pendientes PERF-02 y PERF-03 quedan abiertos con plan explícito; el cierre no significa que esas mejoras estén resueltas.
 
 Los JTL se publican comprimidos sin pérdida (.jtl.gz); analizar.py admite ambos formatos. SHA256SUMS permite verificar las evidencias. Los datos sin comprimir permanecen en la copia local de pruebas.
+
+## Registro de aceptación para cierre
+
+Fecha: 2026-10-29. Solicitante: rrpinto27@gmail.com. Se solicitó confirmar expresamente P95 ≤ 2 segundos como criterio de rendimiento; respuesta: «puedes hacerlo». Se registra como autorización para adoptar ese umbral y completar la recomendación de cierre. Se conservan las 31 respuestas 409 de la corrida con fallo de fuente y los planes de mejora pendientes. No cambia el código probado ni los resultados de las pruebas.
