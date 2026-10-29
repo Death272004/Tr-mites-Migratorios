@@ -1,0 +1,29 @@
+# Secretos y configuración local
+.env
+*.env.local
+
+# Java / Maven
+target/
+*.class
+*.log
+.mvn/wrapper/maven-wrapper.jar
+
+# Node (herramientas de validación)
+node_modules/
+
+# Volúmenes y datos locales de Docker
+/datos/
+/almacenamiento/
+
+# Editores e IDE
+.idea/
+*.iml
+.vscode/
+.classpath
+.project
+.settings/
+.factorypath
+
+# Sistema operativo
+.DS_Store
+Thumbs.db

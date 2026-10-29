@@ -88,7 +88,6 @@
         items: [
           { label: "Catálogos", route: "#/interno/catalogos" },
           { label: "Usuarios y roles", route: "#/interno/usuarios" },
-          { label: "Consentimientos", route: "#/interno/consentimientos" },
           { label: "Salud de conexiones", route: "#/interno/conexiones" },
         ],
       },

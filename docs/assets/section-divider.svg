@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="18" viewBox="0 0 1200 18" role="img" aria-label="Separador visual">
+  <defs><linearGradient id="line" x1="0" x2="1"><stop stop-color="#f28c28"/><stop offset=".5" stop-color="#56c596"/><stop offset="1" stop-color="#a78bfa"/></linearGradient></defs>
+  <rect y="8" width="1200" height="2" rx="1" fill="url(#line)"/>
+  <circle cx="80" cy="9" r="8" fill="#0b1b2b" stroke="#f28c28" stroke-width="2"/>
+  <circle cx="80" cy="9" r="3" fill="#f28c28"/>
+  <circle cx="1120" cy="9" r="8" fill="#0b1b2b" stroke="#a78bfa" stroke-width="2"/>
+  <circle cx="1120" cy="9" r="3" fill="#a78bfa"/>
+</svg>

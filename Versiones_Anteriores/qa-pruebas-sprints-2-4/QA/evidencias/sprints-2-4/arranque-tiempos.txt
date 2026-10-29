@@ -1,0 +1,2 @@
+inicio 2026-10-18 14:24:12
+fin 2026-10-18 14:26:19 rc=0 duracion=127s estado: backend=healthy db=healthy frontend=healthy 

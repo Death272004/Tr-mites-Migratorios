@@ -1,0 +1,179 @@
+================================================================================
+FRONTEND - RESUMEN Y GUIA DE PRUEBAS
+Gestion de expedientes migratorios para bufetes (Panama, Ley 81 de 2019)
+Rama: Frontend   |   Ultima actualizacion: cierre de Sprint 4 (parte frontend)
+Ultimo commit: 1885a33 ("frontend terminado sprint")
+================================================================================
+
+0. QUE ES
+---------
+Frontend de demostracion (HTML + CSS + JavaScript puro, sin frameworks ni
+build). Corre con doble clic (protocolo file://): NO requiere servidor.
+El detalle tecnico/completo esta en ESTADO-Y-CONTINUACION.txt; este archivo es
+el resumen rapido y la guia de pruebas.
+
+ALCANCE ACORDADO: se trabaja HASTA EL SPRINT 4 inclusive. Los Sprints 5, 6 y 7
+quedan FUERA DE ALCANCE.
+
+
+1. COMO ABRIR LA APP
+--------------------
+1) Ir a:  Frontend\html\index.html
+2) Doble clic (se abre en el navegador; el Chrome/Edge moderno basta).
+3) No hace falta servidor: todo el JS son scripts clasicos que exponen
+   window.tm (NO se usan ES modules porque file:// los bloquea).
+
+
+2. CREDENCIALES DEMO Y ROLES
+----------------------------
+Portal del cliente (rol SOLICITANTE):
+    correo:     demo@bufete.test
+    contrasena: Demo123!
+
+Modulo interno (login institucional I-01):
+    usuario:    analista | supervisor | auditor | admin
+    contrasena: Interno123!
+    MFA:        cualquier codigo de 6 digitos (demo 123456)
+    Estacion/IP demo: WKS-DEMO-01 · 10.0.0.24
+
+Roles del sistema: SOLICITANTE, FUNCIONARIO, SUPERVISOR, AUDITOR, ADMIN.
+Para entrar al modulo interno: cambiar el selector de ROL (demo) de la cabecera
+a un rol interno (FUNCIONARIO/SUPERVISOR/AUDITOR/ADMIN); navega solo a la ruta
+inicial del rol. Ruta inicial por rol:
+    FUNCIONARIO -> #/interno/tablero
+    SUPERVISOR  -> #/interno/reportes
+    AUDITOR     -> #/interno/bitacora
+    ADMIN       -> #/interno/catalogos
+
+
+3. INVENTARIO: 46 PANTALLAS (todas con vista, fixtures y ruta)
+--------------------------------------------------------------
+Portal (27): P-01..P-27
+    P-01 login, P-02 registro, P-03 OTP, P-04 recuperar, P-05 perfil,
+    P-06 mis tramites, P-07 nueva solicitud, P-08..P-16 asistente,
+    P-17 resumen/envio, P-18 cita, P-19 estado, P-20 observaciones,
+    P-21 subsanacion, P-22 resultados, P-23 historial de pagos,
+    P-24 edictos, P-25 certificaciones, P-26 naturalizacion, P-27 ayuda/ARCO.
+
+Interno del despacho (19): I-01..I-19
+    I-01 login MFA, I-02 tablero, I-03 recepcion, I-04 completitud,
+    I-05 asignacion, I-06 analisis, I-07 verificaciones, I-08 observaciones,
+    I-09 edictos, I-10 resolucion, I-11 notificacion, I-12 entrega,
+    I-13 archivo, I-14 catalogos, I-15 usuarios/permisos, I-16 bitacora,
+    I-17 reportes, I-18 conexiones, I-19 consentimientos.
+
+
+4. ELEMENTOS DE DEMO A CONOCER
+------------------------------
+- Selector de ROL (demo) en la cabecera: cambia el rol activo y los permisos.
+- Selector de ESCENARIO (demo) en la cabecera: exito / carga / vacio / error;
+  cambia el estado de la vista montada (equivale a la cabecera X-Scenario).
+- Selector "Vista (demo)" dentro de cada pantalla de datos: los 4 estados.
+- Guards: sin rol interno no se entra a #/interno/*; recursos ajenos -> 403.
+- Permisos de interfaz (tm.perms): las acciones se muestran u ocultan segun el
+  permiso del rol. Si no aplica, aparece "Sin permiso <<perm>> para su rol".
+  Matriz (mock): SOLICITANTE=portal; FUNCIONARIO=consultar/verificar/observar/
+  resolver/notificar; SUPERVISOR=consultar/reportar; AUDITOR=consultar/auditar/
+  reportar; ADMIN=consultar/administrar.
+
+
+5. COMO PROBAR A MANO (5 minutos)
+---------------------------------
+Flujo portal: abrir la app -> entrar con demo@bufete.test / Demo123! ->
+Mis tramites (P-06) -> Nueva solicitud (P-07) -> recorrer el asistente
+P-08..P-16 -> Resumen/envio (P-17) -> Cita (P-18) -> Seguimiento (P-19..P-23)
+-> Servicios (P-24..P-27).
+Extra portal: en P-05 revocar/otorgar consentimiento; en P-27 enviar una
+solicitud ARCO (ver referencia ARCO-2026-XXXX + plazo y tabla "Mis solicitudes
+ARCO").
+
+Modulo interno: cambiar el selector de ROL a FUNCIONARIO -> recorrer
+I-02..I-13; luego probar:
+  - I-06 Analisis: guardar dictamen; ver el bloque "Historial del expediente"
+    (linea de tiempo) que suma un evento DICTAMEN.
+  - I-07 Verificaciones: registrar; notar "error tecnico != negativo".
+  - I-10 Resolucion: motivo obligatorio si NEGADA + firma obligatoria.
+Permisos: con el rol AUDITOR, I-10/I-07/I-15/I-18 ocultan sus acciones y
+muestran "Sin permiso..."; con ADMIN se ven las de administracion.
+Estados: cambiar el selector de ESCENARIO (cabecera) a carga/vacio/error.
+
+
+6. COMO PROBAR SIN NAVEGADOR (Edge headless)
+--------------------------------------------
+Hay Microsoft Edge instalado. Patron: se copia index.html a un HTML temporal,
+se inyecta un script que renderiza la vista y escribe el resultado en un
+<div data-result="...">, y se lee con --dump-dom. Ejemplo base:
+
+  & "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" `
+      --headless=new --disable-gpu --virtual-time-budget=15000 `
+      --dump-dom "file:///C:/.../Frontend/html/_smoke.html" | Out-String
+
+Ultima verificacion (todo en verde):
+- 46/46 pantallas renderizan sin excepciones (window.onerror = 0).
+- P-06..P-27 e I-02..I-19 pasan los 4 estados (carga/exito/vacio/error);
+  P-01..P-05 e I-01 son login/formularios sin selector (por diseno).
+- TASK-13.5: FUNCIONARIO ve las acciones; AUDITOR/ADMIN correctos.
+- TASK-21.2: I-06 historial (2->3 eventos) y P-19 10 etapas (1 activa/3 hechas).
+Nota: los scripts-harness usados (mk-smoke-*.ps1) viven en la carpeta temporal
+de trabajo, no en el repositorio; RECORDAR borrar los html\_*.html temporales
+antes de commitear.
+
+
+7. ESTRUCTURA DE ARCHIVOS (Frontend\)
+-------------------------------------
+html\index.html     entrada (varias <script src>, orden IMPORTANTE, no modules)
+css\variables.css base.css layout.css
+js\app.js           bootstrap + ruteo + ramas p-01..p-27 e interno/*
+js\utils\           roles, nav, router, data, draft, wizard, fixtures, perms
+js\components\      layout, button, field, table, stepper, timeline, modal,
+                    errors, verified-field, file-upload, signature
+js\services\        session.js (sesion demo), api.js (tm.api, modulo HTTP unico)
+js\views\           p-01..p-27  y  i-01..i-19
+js\fixtures\        p-06..p-18.*, i-01..i-19.* (envelopes .js)
+                    (base=exito) + .carga.js / .vacio.js / .error.js
+Documentacion: ESTADO-Y-CONTINUACION.txt (detalle), tareas-frontend.md,
+plan-de-ejecucion-frontend.md, README.md, 06-roles-y-accesos.md.
+
+
+8. NOTAS TECNICAS CLAVE
+-----------------------
+- ES modules PROHIBIDOS: file:// los bloquea. Patron:
+  (function (global) { "use strict"; ... global.tm.X = ...; })(window).
+- Orden de carga en index.html (scripts sincronicos):
+  utils(roles,nav,router,data,draft,fixtures) -> components(layout,button,field,
+  table,stepper,timeline,modal,errors,verified-field,file-upload,signature) ->
+  utils/wizard -> services/session -> services/api -> utils/perms ->
+  fixtures(p-06..p-18 + i-01..i-19) -> views(p-01..p-27 + i-01..i-19) -> app.js
+- Conexion al backend futura: tm.api.setBaseUrl("http(s)://host/api") SIN
+  reescribir vistas (tm.fixtures.data()/message() delegan en tm.api). Online usa
+  XHR con Authorization + X-Scenario; offline lee los fixtures locales.
+- Envelopes con sobre provisional { meta, data, error } (esquema oficial HU-08
+  aun no publicado). Campos origen [A]/[V] se muestran sellados y bloqueados.
+- Sin credenciales/secretos ni datos reales; OTP/MFA/firma/pago/QR simulados.
+
+
+9. QUE ESTA HECHO / QUE FALTA
+-----------------------------
+HECHO (commiteado y pusheado):
+- Fases A-F: portal P-01..P-27 + modulo interno I-01..I-18.
+- TASK-03.6: fixtures + 4 estados en P-06..P-18.
+- HU-09: modulo unico de servicios HTTP (tm.api) + selector X-Scenario (2c195cb).
+- HU-18b: consentimiento informado (I-19 + P-05) (49d790b/6610872).
+- HU-18c: derechos ARCO en P-27 (5aa7209/8a970fa).
+- TASK-13.5: permisos de interfaz por rol (tm.perms) (71fde93).
+- TASK-21.2: componente de linea de tiempo (P-19 e I-06) (2bfd558).
+Con esto, TODA la parte frontend-only hasta el Sprint 4 esta COMPLETA.
+
+FALTA (depende de la rama Backend; fuera de esta rama):
+- Sprint 2: TASK-10.4 (Docker/docker-compose), TASK-12.5 (conectar auth).
+- Sprint 3: TASK-15.3, 16.3, 17.4, 18.3 (conexion de expediente/documentos/etc).
+- Sprint 4: TASK-19.4, 20.2, 22.4 (transiciones, observaciones P-19, bitacora).
+
+PENDIENTE DEL PO (no bloquea; se trabaja con fixtures):
+- Publicar el esquema oficial de mocks (HU-08).
+- Afinar POR DEFINIR: I-10 (transiciones/motivos), I-13 (categorias/retencion),
+  I-15 (plazos de revision de permisos), I-17 (metricas).
+
+FUERA DE ALCANCE (si se autoriza): Sprints 5-7 (verificaciones conectadas,
+seguridad/usabilidad OWASP, empaquetado y demo).
+================================================================================
