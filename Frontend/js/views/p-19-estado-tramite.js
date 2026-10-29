@@ -58,6 +58,63 @@
       { label: "Constancia de antecedentes penales", fecha: "2026-09-05", diasParaVencer: 25 },
       { label: "Permiso de trabajo (prórroga)", fecha: "2026-11-30", diasParaVencer: 50 },
     ],
+    verificaciones: [
+      {
+        id: "demo-v1", fuente: "TE", tipoVerificacion: "IDENTIDAD", modo: "MANUAL_ASISTIDO",
+        estado: "RESPONDIDA", finalidad: "IDENTIDAD_DEL_TITULAR",
+        fechaSolicitud: "2026-09-21T15:00:00Z", fechaResultado: "2026-09-22T16:20:00Z",
+        resultadoMinimo: "COINCIDE", referenciaOrigen: "TE-2026-1842",
+        responsableId: "demo-funcionario", intentos: 1
+      },
+      {
+        id: "demo-v2", fuente: "CSS", tipoVerificacion: "AFILIACION", modo: "SIMULADO",
+        estado: "ERROR_TECNICO", finalidad: "AFILIACION_DEL_TITULAR",
+        fechaSolicitud: "2026-09-23T14:10:00Z", fechaResultado: null,
+        resultadoMinimo: null, referenciaOrigen: null, responsableId: null,
+        intentos: 2, ultimoFallo: "TIMEOUT"
+      },
+      {
+        id: "demo-v3", fuente: "REGISTRO_PUBLICO", tipoVerificacion: "INFORMACION_REGISTRAL",
+        modo: "MANUAL_ASISTIDO", estado: "SIN_RESULTADO", finalidad: "INFORMACION_REGISTRAL",
+        fechaSolicitud: "2026-09-24T13:00:00Z", fechaResultado: "2026-09-24T13:15:00Z",
+        resultadoMinimo: "SIN_RESULTADO", referenciaOrigen: "RP-2026-778",
+        responsableId: "demo-funcionario", intentos: 1
+      },
+      {
+        id: "demo-v4", fuente: "DOCUMENTO_EXTERIOR", tipoVerificacion: "LEGALIZACION",
+        modo: "SIMULADO", estado: "REINTENTO_PROGRAMADO", finalidad: "VIGENCIA_Y_LEGALIZACION",
+        fechaSolicitud: "2026-09-25T11:00:00Z", fechaResultado: null,
+        resultadoMinimo: null, referenciaOrigen: null, responsableId: null,
+        intentos: 1, proximoIntento: "2026-09-25T12:00:00Z", ultimoFallo: "RATE_LIMIT"
+      }
+    ],
+  };
+
+  var VERIF_ESTADOS = {
+    PENDIENTE: "Pendiente",
+    ENVIADA: "Enviada",
+    EN_ATENCION: "En atención",
+    RESPONDIDA: "Respondida",
+    SIN_RESULTADO: "Sin resultado",
+    ERROR_TECNICO: "Error técnico",
+    REINTENTO_PROGRAMADO: "Reintento programado"
+  };
+
+  var VERIF_RESULTADOS = {
+    COINCIDE: "Coincide",
+    NO_COINCIDE: "No coincide",
+    VIGENTE: "Vigente",
+    NO_VIGENTE: "No vigente",
+    CON_REGISTROS: "Con registros",
+    SIN_RESULTADO: "Sin resultado"
+  };
+
+  var VERIF_FALLOS = {
+    TIMEOUT: "tiempo de espera agotado",
+    ERROR_TECNICO: "error técnico de la fuente",
+    RATE_LIMIT: "límite de consultas alcanzado",
+    DATOS_INCOMPLETOS: "datos incompletos",
+    LLENO: "fuente saturada"
   };
 
   function fmtFecha(iso) {
@@ -171,7 +228,136 @@
     };
   }
 
-  function renderContent(container, opts, estado) {
+  function isInternalUser() {
+    try {
+      var s = global.tm.session && typeof global.tm.session.getSession === "function" ? global.tm.session.getSession() : null;
+      var rol = s && s.datos ? s.datos.rol : null;
+      if (!rol) return false;
+      return rol !== "SOLICITANTE";
+    } catch (e) { return false; }
+  }
+
+  function esRemoto() {
+    return !!(api && api.isOnline && api.isOnline() &&
+      !(api.isDemoSession && api.isDemoSession()));
+  }
+
+  function fmtFechaVerif(iso) {
+    if (!iso) return "—";
+    var s = String(iso);
+    if (/^\d{4}-\d{2}-\d{2}/.test(s)) {
+      return s.slice(8, 10) + "/" + s.slice(5, 7) + "/" + s.slice(0, 4);
+    }
+    var d = new Date(s);
+    if (isNaN(d.getTime())) return s;
+    return d.toLocaleDateString("es-PA", { day: "2-digit", month: "2-digit", year: "numeric" });
+  }
+
+  function verifEtiqueta(v) {
+    if (v.estado === "RESPONDIDA" && v.resultadoMinimo) {
+      return VERIF_RESULTADOS[v.resultadoMinimo] || v.resultadoMinimo;
+    }
+    return VERIF_ESTADOS[v.estado] || v.estado || "Pendiente";
+  }
+
+  function verifTono(v) {
+    if (v.estado === "ERROR_TECNICO" || v.estado === "SIN_RESULTADO" || v.estado === "REINTENTO_PROGRAMADO") return "warning";
+    if (v.resultadoMinimo === "NO_COINCIDE" || v.resultadoMinimo === "NO_VIGENTE") return "danger";
+    if (v.resultadoMinimo === "COINCIDE" || v.resultadoMinimo === "VIGENTE" || v.resultadoMinimo === "CON_REGISTROS") return "success";
+    return "info";
+  }
+
+  function verifDetalle(v) {
+    if (v.estado === "ERROR_TECNICO") {
+      var fallo = v.ultimoFallo ? (VERIF_FALLOS[v.ultimoFallo] || v.ultimoFallo) : "respuesta inválida";
+      return "No es resultado negativo. Último fallo: " + fallo + ".";
+    }
+    if (v.estado === "REINTENTO_PROGRAMADO") {
+      return "Reintento programado" + (v.proximoIntento ? " para " + fmtFechaVerif(v.proximoIntento) : "") + ".";
+    }
+    if (v.estado === "SIN_RESULTADO") return "La fuente no devolvió el dato solicitado.";
+    if (v.estado === "RESPONDIDA") return "Resultado confirmado por la fuente.";
+    if (v.estado === "ENVIADA") return "Consulta enviada, pendiente de respuesta.";
+    if (v.estado === "EN_ATENCION") return "En cotejo manual por el despacho.";
+    return "Pendiente de cotejo.";
+  }
+
+  function renderVerificacionesBloque(container, lista, error) {
+    if (!lista) lista = [];
+    var interno = isInternalUser();
+    var block = layout.el("div", "seguimiento-block");
+    block.appendChild(layout.el("h2", "seguimiento-block__title", "Verificaciones"));
+
+    if (error) {
+      var alerta = layout.el("div", "app-alert app-alert--warning");
+      alerta.setAttribute("role", "alert");
+      alerta.appendChild(layout.el("span", "app-alert__title", "No se pudieron cargar las verificaciones"));
+      alerta.appendChild(layout.el("span", "app-alert__text",
+        "El estado del trámite sigue disponible. Actualice la pantalla para intentar de nuevo."));
+      block.appendChild(alerta);
+    }
+
+    if (lista.length === 0) {
+      block.appendChild(layout.el("p", "seguimiento-note",
+        error ? "No hay datos de verificaciones para mostrar." : "No hay verificaciones registradas."));
+      container.appendChild(block);
+      return;
+    }
+
+    if (!interno) {
+      var rows = lista.map(function (v) {
+        var completada = v.estado === "RESPONDIDA" || v.estado === "SIN_RESULTADO";
+        return [
+          { text: v.fuente || "—" },
+          { text: completada ? "Completada" : "Pendiente" },
+          { text: fmtFechaVerif(v.fechaResultado || v.fechaSolicitud) }
+        ];
+      });
+      block.appendChild(layout.el("p", "seguimiento-note",
+        "Estado agregado. Si una verificación está pendiente, el despacho la está gestionando; " +
+        "los detalles internos no se muestran en el portal."));
+      block.appendChild(global.tm.ui.table({
+        headers: [{ label: "Fuente" }, { label: "Estado" }, { label: "Fecha" }],
+        rows: rows
+      }));
+      container.appendChild(block);
+      return;
+    }
+
+    var rowsInt = lista.map(function (v) {
+      var estado = v.estado || "PENDIENTE";
+      var resultado = v.estado === "ERROR_TECNICO"
+        ? "No aplica (error técnico)"
+        : (v.resultadoMinimo ? (VERIF_RESULTADOS[v.resultadoMinimo] || v.resultadoMinimo) : "—");
+      return [
+        { text: v.fuente || "—" },
+        { text: v.tipoVerificacion || "—" },
+        { node: badge(VERIF_ESTADOS[estado] || estado, verifTono(v)) },
+        { text: resultado },
+        { text: fmtFechaVerif(v.fechaResultado || v.fechaSolicitud) },
+        { text: v.modo === "MANUAL_ASISTIDO" ? "Manual asistido" : (v.modo || "—") },
+        { text: v.responsableId || "—" },
+        { text: verifDetalle(v) }
+      ];
+    });
+
+    block.appendChild(global.tm.ui.table({
+      headers: [
+        { label: "Fuente" },
+        { label: "Tipo" },
+        { label: "Estado" },
+        { label: "Resultado" },
+        { label: "Fecha" },
+        { label: "Modo" },
+        { label: "Responsable" },
+        { label: "Detalle" }
+      ],
+      rows: rowsInt
+    }));
+    container.appendChild(block);
+  }
+
+  function renderContent(container, opts, estado, verifsLista, verifError) {
     layout.clear(container);
     var inner = layout.el("div", "app-content__inner");
 
@@ -182,7 +368,7 @@
 
     var toolbar = layout.el("div", "toolbar");
     toolbar.appendChild(layout.el("span", null, ""));
-    if (!api || !api.isOnline()) toolbar.appendChild(demoSelector(opts));
+    if (!esRemoto()) toolbar.appendChild(demoSelector(opts));
     inner.appendChild(toolbar);
 
     var alert = vigenciaAlert(estado.vigencias || []);
@@ -229,6 +415,8 @@
     tlBlock.appendChild(layout.el("h2", "seguimiento-block__title", "Línea de tiempo"));
     tlBlock.appendChild(timeline({ items: timelineItems(estado) }));
     inner.appendChild(tlBlock);
+
+    renderVerificacionesBloque(inner, verifsLista || [], verifError);
 
     var nota = layout.el("p", "seguimiento-note", "Estados visibles para el titular: " + ESTADOS_VISIBLES.join(" → ") + ".");
     inner.appendChild(nota);
@@ -302,7 +490,7 @@
   function renderP19(container, opts) {
     opts = opts || {};
 
-    if (api && api.isOnline()) {
+    if (esRemoto()) {
       var seleccionado = global.tm.expediente && global.tm.expediente.getSelected ? global.tm.expediente.getSelected() : null;
       if (!seleccionado || !seleccionado.id) { renderEmpty(container, opts); return; }
       renderLoading(container);
@@ -310,7 +498,10 @@
         if (err) { renderError(container, { mensaje: err.mensajeUsuario, onRetry: function () { renderP19(container, opts); } }); return; }
         api.request("GET", "/expedientes/" + encodeURIComponent(seleccionado.id) + "/historial", { pantalla: "P-19" }, function (historyErr, historial) {
           if (historyErr) { renderError(container, { mensaje: historyErr.mensajeUsuario, onRetry: function () { renderP19(container, opts); } }); return; }
-          renderContent(container, opts, estadoDesdeApi(dto, historial));
+          var estado = estadoDesdeApi(dto, historial);
+          api.request("GET", "/expedientes/" + encodeURIComponent(seleccionado.id) + "/verificaciones", { pantalla: "P-19" }, function (verr, vlist) {
+            renderContent(container, opts, estado, Array.isArray(vlist) ? vlist : [], verr || null);
+          });
         });
       });
       return;
@@ -319,12 +510,14 @@
     function show(state) {
       if (state === "carga") {
         renderLoading(container);
-        setTimeout(function () { renderContent(container, opts, DEMO_ESTADO); }, 700);
+        setTimeout(function () {
+          renderContent(container, opts, DEMO_ESTADO, DEMO_ESTADO.verificaciones);
+        }, 700);
         return;
       }
       if (state === "error") { renderError(container, { onRetry: function () { show("carga"); } }); return; }
       if (state === "vacio") { renderEmpty(container, opts); return; }
-      renderContent(container, opts, DEMO_ESTADO);
+      renderContent(container, opts, DEMO_ESTADO, DEMO_ESTADO.verificaciones);
     }
 
     opts.onDemoState = show;

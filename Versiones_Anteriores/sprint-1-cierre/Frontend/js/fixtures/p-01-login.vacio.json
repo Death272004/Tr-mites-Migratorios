@@ -1,0 +1,11 @@
+{
+  "meta": {
+    "pantalla": "P-01",
+    "titulo": "Inicio de sesión",
+    "escenario": "vacio",
+    "esquema": "hu-08/v1",
+    "nota": "No aplica contenido para login; la vista mantiene el formulario listo para captura."
+  },
+  "data": null,
+  "error": null
+}

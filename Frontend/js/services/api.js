@@ -38,9 +38,14 @@
 
   var config = { baseUrl: null, timeoutMs: 8000 };
   var cache = {}; // pantalla normalizada -> { escenario -> envelope }
+  var requestCache = {}; // "METODO ruta" -> { escenario -> envelope }
 
   function normalize(pantalla) {
     return String(pantalla || "").toUpperCase().replace(/\s+/g, "-");
+  }
+
+  function requestCacheKey(method, path) {
+    return String(method || "GET").toUpperCase() + " " + String(path || "");
   }
 
   function getBaseUrl() { return config.baseUrl; }
@@ -53,10 +58,40 @@
     } catch (e) { return null; }
   }
 
+  // El login institucional del MVP usa una sesión ficticia. No se debe enviar
+  // ese token al backend porque no es un JWT real; los roles internos deben
+  // consumir los fixtures locales hasta que exista autenticación institucional.
+  function isDemoSession() {
+    var t = token();
+    return typeof t === "string" && t.indexOf("demo.") === 0;
+  }
+
   function scenario() {
     var s = null;
     try { s = global.tm.fixtures && global.tm.fixtures.scenario ? global.tm.fixtures.scenario() : null; } catch (e) { s = null; }
     return s || DEFAULT_SCENARIO;
+  }
+
+  // El selector global usa nombres de estado de la interfaz (exito, carga,
+  // vacio, error), pero el backend solo acepta su enum de escenarios forzados.
+  // Se traducen para que cualquier POST/PATCH reciba un valor válido.
+  var BACKEND_SCENARIOS = {
+    exito: "OK",
+    carga: "OK",
+    vacio: "SIN_RESULTADO",
+    error: "ERROR_TECNICO",
+    ok: "OK",
+    sin_resultado: "SIN_RESULTADO",
+    error_tecnico: "ERROR_TECNICO",
+    timeout: "TIMEOUT",
+    rate_limit: "RATE_LIMIT",
+    datos_incompletos: "DATOS_INCOMPLETOS",
+    lleno: "LLENO"
+  };
+
+  function backendScenario(valor) {
+    var clave = String(valor || "").trim().toLowerCase().replace(/\s+/g, "_");
+    return BACKEND_SCENARIOS[clave] || "OK";
   }
 
   // Cabeceras centralizadas: token + X-Scenario (HU-09) + JSON.
@@ -66,7 +101,7 @@
     var h = omitJsonContentType ? {} : { "Content-Type": "application/json" };
     var t = token();
     if (t) h.Authorization = "Bearer " + t;
-    h["X-Scenario"] = scenario();
+    h["X-Scenario"] = backendScenario(scenario());
     if (extra) { for (var k in extra) { if (Object.prototype.hasOwnProperty.call(extra, k)) h[k] = extra[k]; } }
     return h;
   }
@@ -155,7 +190,7 @@
     var pantalla = options.pantalla;
     var esc = options.escenario || scenario();
 
-    if (!isOnline()) {
+    if (!isOnline() || isDemoSession()) {
       var env = localEnvelope(pantalla, esc);
       if (!env) {
         cb({ codigo: "SVC-0404", status: 404, mensajeUsuario: translateError(404), offline: true });
@@ -167,6 +202,15 @@
       }
       cb(null, env.data, env);
       return;
+    }
+
+    var cacheKey = requestCacheKey(method, path);
+    if (isCacheable(method)) {
+      var cachedByScenario = requestCache[cacheKey];
+      if (cachedByScenario && cachedByScenario[esc]) {
+        cb(null, cachedByScenario[esc].data, cachedByScenario[esc]);
+        return;
+      }
     }
 
     var xhr = new XMLHttpRequest();
@@ -182,9 +226,13 @@
       if (xhr.responseText) { try { body = JSON.parse(xhr.responseText); } catch (e) { body = null; } }
       if (xhr.status >= 200 && xhr.status < 300) {
         var env = toEnvelope(body, xhr.status);
-        if (pantalla && isCacheable(method)) {
+        if (!isCacheable(method)) {
+          clearCache();
+        } else if (pantalla) {
           cache[normalize(pantalla)] = cache[normalize(pantalla)] || {};
           cache[normalize(pantalla)][esc] = env;
+          requestCache[cacheKey] = requestCache[cacheKey] || {};
+          requestCache[cacheKey][esc] = env;
         }
         cb(null, env.data, env);
         return;
@@ -196,7 +244,7 @@
     xhr.send(options.body ? (esFormData ? options.body : JSON.stringify(options.body)) : null);
   }
 
-  function clearCache() { cache = {}; }
+  function clearCache() { cache = {}; requestCache = {}; }
 
   // Descargas binarias/CSV centralizadas. Mantiene las mismas cabeceras y
   // traducción de errores que request(), sin que las vistas usen XHR directo.
@@ -225,6 +273,7 @@
     setBaseUrl: setBaseUrl,
     getBaseUrl: getBaseUrl,
     isOnline: isOnline,
+    isDemoSession: isDemoSession,
     token: token,
     scenario: scenario,
     headers: headers,

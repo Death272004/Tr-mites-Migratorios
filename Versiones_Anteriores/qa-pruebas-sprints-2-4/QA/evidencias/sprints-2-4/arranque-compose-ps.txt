@@ -1,0 +1,4 @@
+NAME                    IMAGE                 COMMAND                  SERVICE    CREATED          STATUS                    PORTS
+tramitesqa-backend-1    tramitesqa-backend    "java -jar app.jar"      backend    39 seconds ago   Up 33 seconds (healthy)   0.0.0.0:8080->8080/tcp, [::]:8080->8080/tcp
+tramitesqa-db-1         postgres:16-alpine    "docker-entrypoint.s…"   db         39 seconds ago   Up 39 seconds (healthy)   127.0.0.1:5433->5432/tcp
+tramitesqa-frontend-1   tramitesqa-frontend   "/docker-entrypoint.…"   frontend   39 seconds ago   Up 22 seconds (healthy)   0.0.0.0:8081->80/tcp, [::]:8081->80/tcp

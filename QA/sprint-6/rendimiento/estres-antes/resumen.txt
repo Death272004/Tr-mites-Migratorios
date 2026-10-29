@@ -1,0 +1,14 @@
+01 Login cliente                           3353    67.5     77    111   0.00%
+02 Listar mis expedientes                  3336    28.5     40     66   0.00%
+03 Crear expediente                        3316     9.7     14     35   0.00%
+04 Adjuntar documento                      3297    11.5     17     53   0.00%
+05 Estado del expediente                   3282     5.6     10     38   0.00%
+06 Verificaciones (cliente)                3265     5.8     10     29   0.00%
+11 Login analista                          1679    67.2     77    116   0.00%
+12 Bandeja del despacho                    1671    27.8     38     65   0.00%
+13 Documentos del expediente               1660     5.8     10     27   0.00%
+14 Registrar verificación TE (simulada)    1653    11.0     16     53   0.00%
+15 Verificaciones del expediente           1645     7.5     12     51   0.00%
+16 Historial del expediente                1636     5.8      9     26   0.06%
+TOTAL 29793 muestras, error 0.00%
+operacion                                     n   media    p95    max    err%

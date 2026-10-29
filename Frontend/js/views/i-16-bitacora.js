@@ -90,7 +90,7 @@
         var hasta = filters.querySelector("#bitHasta");
         filtro.desde = desde ? desde.value : "";
         filtro.hasta = hasta ? hasta.value : "";
-        if (api && api.isOnline()) {
+        if (api && api.isOnline() && !api.isDemoSession()) {
           renderLoading();
           cargarReal(function (err) { if (err) { renderError(); return; } renderContent(); });
           return;
@@ -110,7 +110,7 @@
 
       var actions = layout.el("div", "toolbar__actions");
       actions.appendChild(button({ variant: "ghost", text: "Exportar CSV", onClick: function () {
-        if (!api || !api.isOnline()) {
+        if (!api || !api.isOnline() || api.isDemoSession()) {
           var local = layout.el("div", "app-alert app-alert--info");
           local.appendChild(layout.el("span", "app-alert__text", "La exportación real requiere conexión con el backend."));
           inner.appendChild(local);
@@ -171,7 +171,7 @@
     }
 
     function cargarReal(callback) {
-      if (!api || !api.isOnline()) { callback(); return; }
+      if (!api || !api.isOnline() || api.isDemoSession()) { callback(); return; }
       var query = ["pagina=0", "tamano=100"];
       if (filtro.usuario) query.push("actorId=" + encodeURIComponent(filtro.usuario));
       if (filtro.tipo) query.push("operacion=" + encodeURIComponent(filtro.tipo));
