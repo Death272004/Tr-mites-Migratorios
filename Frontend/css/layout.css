@@ -197,6 +197,7 @@
   align-items: center;
   gap: var(--space-2);
   padding: var(--space-2) var(--space-3);
+  min-height: 2.75rem;
   border-radius: var(--radius-md);
   color: var(--color-text);
   font-size: var(--font-size-sm);
@@ -266,6 +267,7 @@
 
 /* Botones base */
 .btn {
+  min-height: 2.75rem;
   padding: var(--space-2) var(--space-4);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
@@ -380,6 +382,7 @@
 .form-field__input,
 .form-field__select,
 .form-field__textarea {
+  min-height: 2.75rem;
   padding: var(--space-2) var(--space-3);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
@@ -1507,5 +1510,35 @@ fieldset.form-field .form-field__label {
 
   .app-content {
     padding: var(--space-4);
+  }
+
+  .app-header {
+    height: auto;
+    min-height: var(--layout-header-height);
+    padding: var(--space-3) var(--space-4);
+    flex-wrap: wrap;
+  }
+
+  .app-header__user {
+    width: 100%;
+    margin-left: 0;
+    padding-top: var(--space-2);
+    flex-wrap: wrap;
+  }
+
+  .app-header__role {
+    flex: 1 1 11rem;
+    justify-content: space-between;
+  }
+
+  .app-header__role-select,
+  .app-header__scenario-select {
+    min-height: 2.75rem;
+    max-width: 100%;
+  }
+
+  .app-header__logout,
+  .app-header__autofill {
+    min-height: 2.75rem;
   }
 }
