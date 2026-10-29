@@ -149,3 +149,8 @@ Incidencias abiertas con plan (responsable BE):
    real lo exige, cambiar a paginación por cursor o a un total aproximado.
 3. La tabla `sesion` crece con cada login (7 000+ filas en una corrida) y no hay limpieza de sesiones
    vencidas; programar una purga periódica en el Sprint 7.
+
+
+## Revalidación HU-28 de la rama integrada (2026-10-29)
+
+Consultar [informe de seguridad](seguridad/HU28-informe.md). Se corrigieron la pérdida del token del login interno y la exposición de tokens de recuperación en logs. La suite actual comprobada tiene 150 pruebas aprobadas sin omisiones; la cifra histórica 191 no corresponde al artefacto verificado. El informe incluye el escaneo autenticado por cinco roles y los hallazgos residuales abiertos.
