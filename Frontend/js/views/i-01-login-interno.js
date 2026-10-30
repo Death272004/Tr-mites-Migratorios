@@ -27,9 +27,32 @@
     ip: "10.0.0.24",
   };
 
+  // Con backend (Docker/nginx) el login es real: POST /auth/login con las cuentas
+  // ficticias que siembra DatosDemo (una por perfil del despacho, dominio demo.pa).
+  // El rol y los permisos los decide el backend, no el selector.
+  var DOMINIO_CORPORATIVO = "demo.pa";
+  var USUARIOS_BACKEND = [
+    { rol: "FUNCIONARIO", rolLabel: "Funcionario · recepción", usuario: "recepcion" },
+    { rol: "FUNCIONARIO", rolLabel: "Funcionario · abogado analista", usuario: "analista" },
+    { rol: "FUNCIONARIO", rolLabel: "Funcionario · resolutor", usuario: "resolutor" },
+    { rol: "SUPERVISOR", rolLabel: "Supervisor", usuario: "supervisor" },
+    { rol: "AUDITOR", rolLabel: "Auditor", usuario: "auditor" },
+    { rol: "ADMIN", rolLabel: "Administrador", usuario: "admin" },
+  ];
+
+  function online() {
+    return !!(global.tm.api && global.tm.api.isOnline());
+  }
+
   function fixtureData() {
     var d = global.tm.fixtures.data("I-01", "exito");
-    return d && d.usuarios ? d : FALLBACK;
+    d = d && d.usuarios ? d : FALLBACK;
+    if (!online()) return d;
+    return { usuarios: USUARIOS_BACKEND, mfa: d.mfa, estacion: d.estacion, ip: d.ip };
+  }
+
+  function correoCorporativo(u) {
+    return u.indexOf("@") >= 0 ? u : u + "@" + DOMINIO_CORPORATIVO;
   }
 
   function renderI01(container, opts) {
@@ -49,8 +72,8 @@
     var perfilWrap = field.fieldSelect({
       id: "perfilInterno",
       label: "Perfil de demostración",
-      options: datos.usuarios.map(function (u) { return { label: u.rolLabel, value: u.rol }; }),
-      value: datos.usuarios[0].rol,
+      options: datos.usuarios.map(function (u) { return { label: u.rolLabel, value: u.usuario }; }),
+      value: datos.usuarios[0].usuario,
       helpText: "En el MVP se elige el usuario de prueba; en producción lo provee el directorio institucional.",
     });
     form.appendChild(perfilWrap);
@@ -107,22 +130,32 @@
 
     var paso = 1;
     var perfil = datos.usuarios[0];
+    var sesionBackend = null; // respuesta de /auth/login, se entrega tras el segundo factor
     var loading = false;
 
     function selPerfil() {
       var sel = document.getElementById("perfilInterno");
-      return sel ? sel.value : datos.usuarios[0].rol;
+      return sel ? sel.value : datos.usuarios[0].usuario;
     }
 
-    function perfilPorRol(rol) {
+    function perfilPorUsuario(usuarioPerfil) {
       for (var i = 0; i < datos.usuarios.length; i++) {
-        if (datos.usuarios[i].rol === rol) return datos.usuarios[i];
+        if (datos.usuarios[i].usuario === usuarioPerfil) return datos.usuarios[i];
       }
       return datos.usuarios[0];
     }
 
+    var selectPerfil = perfilWrap.querySelector("select");
+    if (selectPerfil) {
+      selectPerfil.addEventListener("change", function () {
+        var input = document.getElementById("usuarioInterno");
+        if (input) input.value = perfilPorUsuario(selPerfil()).usuario;
+      });
+    }
+
     function toStep1() {
       paso = 1;
+      sesionBackend = null;
       mfaWrap.style.display = "none";
       btnVolver.style.display = "none";
       btnContinuar.textContent = "Continuar";
@@ -157,8 +190,23 @@
         if (!c) return setError("La contraseña es obligatoria.");
         if (!validatePass(c)) return setError("La contraseña no cumple con los requisitos mínimos.");
 
-        perfil = perfilPorRol(selPerfil());
+        perfil = perfilPorUsuario(selPerfil());
         setLoading(true);
+        if (online()) {
+          global.tm.api.request("POST", "/auth/login",
+            { pantalla: "I-01", body: { correo: correoCorporativo(u), contrasena: c } },
+            function (err, data) {
+              setLoading(false);
+              if (err && err.status !== 401) return setError(err.mensajeUsuario);
+              if (err) return registrarFallo();
+              if (!data || !data.token || data.rol === "SOLICITANTE") {
+                return setError("Esta cuenta no tiene acceso al módulo interno. Use el portal del cliente.");
+              }
+              sesionBackend = data;
+              toStep2();
+            });
+          return;
+        }
         setTimeout(function () {
           setLoading(false);
           if (u === perfil.usuario && c === perfil.clave) {
@@ -178,6 +226,16 @@
         setLoading(false);
         attempts = 0;
         blockedUntil = 0;
+        if (sesionBackend && opts.onInternalLoginSuccess) {
+          var cuenta = sesionBackend.usuario || {};
+          opts.onInternalLoginSuccess({
+            rol: sesionBackend.rol,
+            usuario: { id: cuenta.id, nombre: cuenta.nombre, correo: cuenta.correo, permisos: cuenta.permisos, estacion: datos.estacion, ip: datos.ip },
+            token: sesionBackend.token,
+            expiraEn: sesionBackend.expiraEn,
+          });
+          return;
+        }
         if (opts.onInternalLoginSuccess) {
           opts.onInternalLoginSuccess({
             rol: perfil.rol,

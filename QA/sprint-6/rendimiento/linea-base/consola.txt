@@ -1,0 +1,19 @@
+WARN StatusConsoleListener The use of package scanning to locate plugins is deprecated and will be removed in a future release
+WARN StatusConsoleListener The use of package scanning to locate plugins is deprecated and will be removed in a future release
+WARN StatusConsoleListener The use of package scanning to locate plugins is deprecated and will be removed in a future release
+WARN StatusConsoleListener The use of package scanning to locate plugins is deprecated and will be removed in a future release
+Creating summariser <summary>
+Created the tree successfully using carga-tramites.jmx
+Starting standalone test @ 2026 Oct 28 18:39:29 EST (1793230769097)
+Waiting for possible Shutdown/StopTestNow/HeapDump/ThreadDump message on port 4445
+summary +      3 in 00:00:01 =    2.5/s Avg:    62 Min:     6 Max:    90 Err:     0 (0.00%) Active: 3 Started: 3 Finished: 0
+summary +   1211 in 00:00:30 =   40.9/s Avg:    15 Min:     3 Max:    67 Err:     7 (0.58%) Active: 30 Started: 30 Finished: 0
+summary =   1214 in 00:00:31 =   39.4/s Avg:    15 Min:     3 Max:    90 Err:     7 (0.58%)
+summary +   1720 in 00:00:30 =   57.4/s Avg:    15 Min:     3 Max:    67 Err:     0 (0.00%) Active: 30 Started: 30 Finished: 0
+summary =   2934 in 00:01:01 =   48.3/s Avg:    15 Min:     3 Max:    90 Err:     7 (0.24%)
+summary +   1723 in 00:00:30 =   57.4/s Avg:    14 Min:     3 Max:    71 Err:     0 (0.00%) Active: 30 Started: 30 Finished: 0
+summary =   4657 in 00:01:31 =   51.3/s Avg:    15 Min:     3 Max:    90 Err:     7 (0.15%)
+summary +   1677 in 00:00:29 =   57.3/s Avg:    14 Min:     3 Max:    79 Err:     0 (0.00%) Active: 0 Started: 30 Finished: 30
+summary =   6334 in 00:02:00 =   52.8/s Avg:    14 Min:     3 Max:    90 Err:     7 (0.11%)
+Tidying up ...    @ 2026 Oct 28 18:41:29 EST (1793230889274)
+... end of run
