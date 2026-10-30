@@ -1,0 +1,297 @@
+{
+	"@programName": "ZAP",
+	"@version": "2.17.0",
+	"@generated": "Wed, 28 Oct 2026 23:57:05",
+	"created": "2026-10-28T23:57:05.605914890Z",
+	"insights":[
+		{
+			"level": "Info",
+			"reason": "Informational",
+			"site": "http://frontend",
+			"key": "insight.code.2xx",
+			"description": "Percentage of responses with status code 2xx",
+			"statistic": "98"
+		},
+		{
+			"level": "Info",
+			"reason": "Informational",
+			"site": "http://frontend",
+			"key": "insight.code.4xx",
+			"description": "Percentage of responses with status code 4xx",
+			"statistic": "1"
+		},
+		{
+			"level": "Info",
+			"reason": "Informational",
+			"site": "http://frontend",
+			"key": "insight.endpoint.ctype.application/javascript",
+			"description": "Percentage of endpoints with content type application/javascript",
+			"statistic": "96"
+		},
+		{
+			"level": "Info",
+			"reason": "Informational",
+			"site": "http://frontend",
+			"key": "insight.endpoint.ctype.text/css",
+			"description": "Percentage of endpoints with content type text/css",
+			"statistic": "1"
+		},
+		{
+			"level": "Info",
+			"reason": "Informational",
+			"site": "http://frontend",
+			"key": "insight.endpoint.ctype.text/html",
+			"description": "Percentage of endpoints with content type text/html",
+			"statistic": "2"
+		},
+		{
+			"level": "Info",
+			"reason": "Informational",
+			"site": "http://frontend",
+			"key": "insight.endpoint.method.GET",
+			"description": "Percentage of endpoints with method GET",
+			"statistic": "100"
+		},
+		{
+			"level": "Info",
+			"reason": "Informational",
+			"site": "http://frontend",
+			"key": "insight.endpoint.total",
+			"description": "Count of total endpoints",
+			"statistic": "205"
+		}
+	],
+	"site":[ 
+		{
+			"@name": "http://frontend",
+			"@host": "frontend",
+			"@port": "80",
+			"@ssl": "false",
+			"alerts": [ 
+				{
+					"pluginid": "2",
+					"alertRef": "2",
+					"alert": "Private IP Disclosure",
+					"name": "Private IP Disclosure",
+					"riskcode": "1",
+					"confidence": "2",
+					"riskdesc": "Low (Medium)",
+					"desc": "<p>A private IP (such as 10.x.x.x, 172.x.x.x, 192.168.x.x) or an Amazon EC2 private hostname (for example, ip-10-0-56-78) has been found in the HTTP response body. This information might be helpful for further attacks targeting internal systems.</p>",
+					"instances":[ 
+						{
+							"id": "14",
+							"uri": "http://frontend/js/fixtures/i-01-login-interno.js",
+							"nodeName": "http:\/\/frontend\/js\/fixtures\/i-01-login-interno.js",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "10.0.0.24",
+							"otherinfo": "10.0.0.24\n"
+						},
+						{
+							"id": "15",
+							"uri": "http://frontend/js/fixtures/i-16-bitacora.js",
+							"nodeName": "http:\/\/frontend\/js\/fixtures\/i-16-bitacora.js",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "10.0.0.24",
+							"otherinfo": "10.0.0.24\n10.0.0.10\n10.0.0.31\n10.0.0.99\n10.0.0.10\n10.0.0.12\n"
+						},
+						{
+							"id": "16",
+							"uri": "http://frontend/js/views/i-01-login-interno.js",
+							"nodeName": "http:\/\/frontend\/js\/views\/i-01-login-interno.js",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "10.0.0.24",
+							"otherinfo": "10.0.0.24\n"
+						}
+					],
+					"count": "3",
+					"systemic": false,
+					"solution": "<p>Remove the private IP address from the HTTP response body. For comments, use JSP/ASP/PHP comment instead of HTML/JavaScript comment which can be seen by client browsers.</p>",
+					"otherinfo": "<p>10.0.0.24</p><p></p>",
+					"reference": "<p>https://datatracker.ietf.org/doc/html/rfc1918</p>",
+					"cweid": "497",
+					"wascid": "13",
+					"sourceid": "185"
+				},
+				{
+					"pluginid": "10027",
+					"alertRef": "10027",
+					"alert": "Information Disclosure - Suspicious Comments",
+					"name": "Information Disclosure - Suspicious Comments",
+					"riskcode": "0",
+					"confidence": "2",
+					"riskdesc": "Informational (Medium)",
+					"desc": "<p>The response appears to contain suspicious comments which may help an attacker.</p>",
+					"instances":[ 
+						{
+							"id": "13",
+							"uri": "http://frontend/js/services/api.js?v=20261022b",
+							"nodeName": "http:\/\/frontend\/js\/services\/api.js (v)",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": " por su cuenta;\r\n * todo pasa por este m\u00F3dul",
+							"otherinfo": "The following pattern was used: \\bTODO\\b and was detected in likely comment: \"/**\r\n * api.js \u2014 m\u00F3dulo \u00FAnico de servicios HTTP (TASK-09.1, HU-09).\r\n *\r\n * Regla del proyecto (\u00A72.1): ninguna vista llama a `fe\", see evidence field for the suspicious comment/snippet."
+						},
+						{
+							"id": "12",
+							"uri": "http://frontend/js/utils/perms.js",
+							"nodeName": "http:\/\/frontend\/js\/utils\/perms.js",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "emo); en producci\u00F3n ADMIN (I-15)",
+							"otherinfo": "The following pattern was used: \\bADMIN\\b and was detected in likely comment: \"// FUNCIONARIO se modela como operador completo (demo); en producci\u00F3n ADMIN (I-15)\", see evidence field for the suspicious comment/snippet."
+						},
+						{
+							"id": "19",
+							"uri": "http://frontend/js/views/i-14-catalogos.js",
+							"nodeName": "http:\/\/frontend\/js\/views\/i-14-catalogos.js",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "cat\u00E1logo base (solo ADMIN). Toda modificaci\u00F3n",
+							"otherinfo": "The following pattern was used: \\bADMIN\\b and was detected in likely comment: \"/**\r\n * I-14 \u2014 Cat\u00E1logos: tr\u00E1mites, requisitos, tasas y vigencias (Fase F).\r\n * Administraci\u00F3n del cat\u00E1logo base (solo ADMIN). T\", see evidence field for the suspicious comment/snippet."
+						},
+						{
+							"id": "18",
+							"uri": "http://frontend/js/views/i-15-usuarios.js",
+							"nodeName": "http:\/\/frontend\/js\/views\/i-15-usuarios.js",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "os granulares (solo ADMIN). Confirmaci\u00F3n\r\n * ",
+							"otherinfo": "The following pattern was used: \\bADMIN\\b and was detected in likely comment: \"/**\r\n * I-15 \u2014 Usuarios, roles y permisos (Fase F).\r\n * Administraci\u00F3n de cuentas y permisos granulares (solo ADMIN). Confirmaci\", see evidence field for the suspicious comment/snippet."
+						},
+						{
+							"id": "17",
+							"uri": "http://frontend/js/views/p-21-subsanacion.js",
+							"nodeName": "http:\/\/frontend\/js\/views\/p-21-subsanacion.js",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "igatoria de atender todo.\r\n * Al reingresar,",
+							"otherinfo": "The following pattern was used: \\bTODO\\b and was detected in likely comment: \"/**\r\n * P-21 \u2014 Subsanaci\u00F3n (correcci\u00F3n del expediente).\r\n * Permite corregir el expediente en un SOLO reingreso que atienda TODA\", see evidence field for the suspicious comment/snippet."
+						}
+					],
+					"count": "5",
+					"systemic": false,
+					"solution": "<p>Remove all comments that return information that may help an attacker and fix any underlying problems they refer to.</p>",
+					"otherinfo": "<p>The following pattern was used: \\bTODO\\b and was detected in likely comment: \"/**</p><p> * api.js \u2014 m\u00F3dulo \u00FAnico de servicios HTTP (TASK-09.1, HU-09).</p><p> *</p><p> * Regla del proyecto (\u00A72.1): ninguna vista llama a `fe\", see evidence field for the suspicious comment/snippet.</p>",
+					"reference": "",
+					"cweid": "615",
+					"wascid": "13",
+					"sourceid": "74"
+				},
+				{
+					"pluginid": "10049",
+					"alertRef": "10049-1",
+					"alert": "Non-Storable Content",
+					"name": "Non-Storable Content",
+					"riskcode": "0",
+					"confidence": "2",
+					"riskdesc": "Informational (Medium)",
+					"desc": "<p>The response contents are not storable by caching components such as proxy servers. If the response does not contain sensitive, personal or user-specific information, it may benefit from being stored and cached, to improve performance.</p>",
+					"instances":[ 
+						{
+							"id": "4",
+							"uri": "http://frontend/",
+							"nodeName": "http:\/\/frontend\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "302",
+							"otherinfo": ""
+						}
+					],
+					"count": "1",
+					"systemic": false,
+					"solution": "<p>The content may be marked as storable by ensuring that the following conditions are satisfied:</p><p>The request method must be understood by the cache and defined as being cacheable (\"GET\", \"HEAD\", and \"POST\" are currently defined as cacheable)</p><p>The response status code must be understood by the cache (one of the 1XX, 2XX, 3XX, 4XX, or 5XX response classes are generally understood)</p><p>The \"no-store\" cache directive must not appear in the request or response header fields</p><p>For caching by \"shared\" caches such as \"proxy\" caches, the \"private\" response directive must not appear in the response</p><p>For caching by \"shared\" caches such as \"proxy\" caches, the \"Authorization\" header field must not appear in the request, unless the response explicitly allows it (using one of the \"must-revalidate\", \"public\", or \"s-maxage\" Cache-Control response directives)</p><p>In addition to the conditions above, at least one of the following conditions must also be satisfied by the response:</p><p>It must contain an \"Expires\" header field</p><p>It must contain a \"max-age\" response directive</p><p>For \"shared\" caches such as \"proxy\" caches, it must contain a \"s-maxage\" response directive</p><p>It must contain a \"Cache Control Extension\" that allows it to be cached</p><p>It must have a status code that is defined as cacheable by default (200, 203, 204, 206, 300, 301, 404, 405, 410, 414, 501).</p>",
+					"otherinfo": "",
+					"reference": "<p>https://datatracker.ietf.org/doc/html/rfc7234</p><p>https://datatracker.ietf.org/doc/html/rfc7231</p><p>https://www.w3.org/Protocols/rfc2616/rfc2616-sec13.html</p>",
+					"cweid": "524",
+					"wascid": "13",
+					"sourceid": "13"
+				},
+				{
+					"pluginid": "10049",
+					"alertRef": "10049-3",
+					"alert": "Storable and Cacheable Content",
+					"name": "Storable and Cacheable Content",
+					"riskcode": "0",
+					"confidence": "2",
+					"riskdesc": "Informational (Medium)",
+					"desc": "<p>The response contents are storable by caching components such as proxy servers, and may be retrieved directly from the cache, rather than from the origin server by the caching servers, in response to similar requests from other users. If the response data is sensitive, personal or user-specific, this may result in sensitive information being leaked. In some cases, this may even result in a user gaining complete control of the session of another user, depending on the configuration of the caching components in use in their environment. This is primarily an issue where \"shared\" caching servers such as \"proxy\" caches are configured on the local network. This configuration is typically found in corporate or educational environments, for instance.</p>",
+					"instances":[ 
+						{
+							"id": "5",
+							"uri": "http://frontend/css/base.css",
+							"nodeName": "http:\/\/frontend\/css\/base.css",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "",
+							"otherinfo": "In the absence of an explicitly specified caching lifetime directive in the response, a liberal lifetime heuristic of 1 year was assumed. This is permitted by rfc7234."
+						},
+						{
+							"id": "0",
+							"uri": "http://frontend/css/variables.css",
+							"nodeName": "http:\/\/frontend\/css\/variables.css",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "",
+							"otherinfo": "In the absence of an explicitly specified caching lifetime directive in the response, a liberal lifetime heuristic of 1 year was assumed. This is permitted by rfc7234."
+						},
+						{
+							"id": "3",
+							"uri": "http://frontend/html",
+							"nodeName": "http:\/\/frontend\/html",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "",
+							"otherinfo": "In the absence of an explicitly specified caching lifetime directive in the response, a liberal lifetime heuristic of 1 year was assumed. This is permitted by rfc7234."
+						},
+						{
+							"id": "1",
+							"uri": "http://frontend/robots.txt",
+							"nodeName": "http:\/\/frontend\/robots.txt",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "",
+							"otherinfo": "In the absence of an explicitly specified caching lifetime directive in the response, a liberal lifetime heuristic of 1 year was assumed. This is permitted by rfc7234."
+						},
+						{
+							"id": "2",
+							"uri": "http://frontend/sitemap.xml",
+							"nodeName": "http:\/\/frontend\/sitemap.xml",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "",
+							"otherinfo": "In the absence of an explicitly specified caching lifetime directive in the response, a liberal lifetime heuristic of 1 year was assumed. This is permitted by rfc7234."
+						}
+					],
+					"count": "5",
+					"systemic": true,
+					"solution": "<p>Validate that the response does not contain sensitive, personal or user-specific information. If it does, consider the use of the following HTTP response headers, to limit, or prevent the content being stored and retrieved from the cache by another user:</p><p>Cache-Control: no-cache, no-store, must-revalidate, private</p><p>Pragma: no-cache</p><p>Expires: 0</p><p>This configuration directs both HTTP 1.0 and HTTP 1.1 compliant caching servers to not store the response, and to not retrieve the response (without validation) from the cache, in response to a similar request.</p>",
+					"otherinfo": "<p>In the absence of an explicitly specified caching lifetime directive in the response, a liberal lifetime heuristic of 1 year was assumed. This is permitted by rfc7234.</p>",
+					"reference": "<p>https://datatracker.ietf.org/doc/html/rfc7234</p><p>https://datatracker.ietf.org/doc/html/rfc7231</p><p>https://www.w3.org/Protocols/rfc2616/rfc2616-sec13.html</p>",
+					"cweid": "524",
+					"wascid": "13",
+					"sourceid": "20"
+				}
+			]
+		}
+	],
+	"sequences":[
+	]
+
+}

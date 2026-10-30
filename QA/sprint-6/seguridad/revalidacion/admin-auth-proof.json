@@ -1,0 +1,19 @@
+{
+  "proofs": [
+    {
+      "phase": "before",
+      "status": 200,
+      "role": "ADMIN"
+    },
+    {
+      "phase": "after",
+      "status": 200,
+      "role": "ADMIN"
+    }
+  ],
+  "response_codes": {
+    "200": 5,
+    "0": 4,
+    "403": 28
+  }
+}

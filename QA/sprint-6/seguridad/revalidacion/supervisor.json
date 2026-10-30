@@ -1,0 +1,547 @@
+{
+	"@programName": "ZAP",
+	"@version": "2.17.0",
+	"@generated": "Thu, 29 Oct 2026 20:59:36",
+	"created": "2026-10-29T20:59:36.213096141Z",
+	"insights":[
+		{
+			"level": "Info",
+			"reason": "Informational",
+			"site": "http://frontend",
+			"key": "insight.code.2xx",
+			"description": "Percentage of responses with status code 2xx",
+			"statistic": "2"
+		},
+		{
+			"level": "Info",
+			"reason": "Informational",
+			"site": "http://frontend",
+			"key": "insight.code.3xx",
+			"description": "Percentage of responses with status code 3xx",
+			"statistic": "4"
+		},
+		{
+			"level": "Info",
+			"reason": "Informational",
+			"site": "http://frontend",
+			"key": "insight.code.4xx",
+			"description": "Percentage of responses with status code 4xx",
+			"statistic": "94"
+		},
+		{
+			"level": "Info",
+			"reason": "Informational",
+			"site": "http://frontend",
+			"key": "insight.endpoint.ctype.application/json",
+			"description": "Percentage of endpoints with content type application/json",
+			"statistic": "60"
+		},
+		{
+			"level": "Info",
+			"reason": "Informational",
+			"site": "http://frontend",
+			"key": "insight.endpoint.ctype.text/html",
+			"description": "Percentage of endpoints with content type text/html",
+			"statistic": "40"
+		},
+		{
+			"level": "Info",
+			"reason": "Informational",
+			"site": "http://frontend",
+			"key": "insight.endpoint.method.GET",
+			"description": "Percentage of endpoints with method GET",
+			"statistic": "100"
+		},
+		{
+			"level": "Info",
+			"reason": "Informational",
+			"site": "http://frontend",
+			"key": "insight.endpoint.total",
+			"description": "Count of total endpoints",
+			"statistic": "30"
+		}
+	],
+	"site":[ 
+		{
+			"@name": "http://frontend",
+			"@host": "frontend",
+			"@port": "80",
+			"@ssl": "false",
+			"alerts": [ 
+				{
+					"pluginid": "100001",
+					"alertRef": "100001",
+					"alert": "Unexpected Content-Type was returned",
+					"name": "Unexpected Content-Type was returned",
+					"riskcode": "1",
+					"confidence": "3",
+					"riskdesc": "Low (High)",
+					"desc": "<p>A Content-Type of text/html was returned by the server.</p><p>This is not one of the types expected to be returned by an API.</p><p>Raised by the 'Alert on Unexpected Content Types' script</p>",
+					"instances":[ 
+						{
+							"id": "7",
+							"uri": "http://frontend",
+							"nodeName": "http:\/\/frontend",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "text/html",
+							"otherinfo": ""
+						},
+						{
+							"id": "692",
+							"uri": "http://frontend/",
+							"nodeName": "http:\/\/frontend\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "text/html",
+							"otherinfo": ""
+						},
+						{
+							"id": "3",
+							"uri": "http://frontend/3743319409459503415",
+							"nodeName": "http:\/\/frontend\/3743319409459503415",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "text/html",
+							"otherinfo": ""
+						},
+						{
+							"id": "794",
+							"uri": "http://frontend/actuator/health",
+							"nodeName": "http:\/\/frontend\/actuator\/health",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "text/html",
+							"otherinfo": ""
+						},
+						{
+							"id": "8",
+							"uri": "http://frontend/api",
+							"nodeName": "http:\/\/frontend\/api",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "text/html",
+							"otherinfo": ""
+						},
+						{
+							"id": "505",
+							"uri": "http://frontend/computeMetadata/v1/",
+							"nodeName": "http:\/\/frontend\/computeMetadata\/v1\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "text/html",
+							"otherinfo": ""
+						},
+						{
+							"id": "691",
+							"uri": "http://frontend/html/index.html",
+							"nodeName": "http:\/\/frontend\/html\/index.html",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "text/html",
+							"otherinfo": ""
+						},
+						{
+							"id": "501",
+							"uri": "http://frontend/latest/meta-data/",
+							"nodeName": "http:\/\/frontend\/latest\/meta-data\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "text/html",
+							"otherinfo": ""
+						},
+						{
+							"id": "523",
+							"uri": "http://frontend/metadata/instance",
+							"nodeName": "http:\/\/frontend\/metadata\/instance",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "text/html",
+							"otherinfo": ""
+						},
+						{
+							"id": "525",
+							"uri": "http://frontend/metadata/v1",
+							"nodeName": "http:\/\/frontend\/metadata\/v1",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "text/html",
+							"otherinfo": ""
+						},
+						{
+							"id": "510",
+							"uri": "http://frontend/opc/v1/instance/",
+							"nodeName": "http:\/\/frontend\/opc\/v1\/instance\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "text/html",
+							"otherinfo": ""
+						},
+						{
+							"id": "514",
+							"uri": "http://frontend/opc/v2/instance/",
+							"nodeName": "http:\/\/frontend\/opc\/v2\/instance\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "text/html",
+							"otherinfo": ""
+						},
+						{
+							"id": "527",
+							"uri": "http://frontend/openstack/latest/meta_data.json",
+							"nodeName": "http:\/\/frontend\/openstack\/latest\/meta_data.json",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "text/html",
+							"otherinfo": ""
+						}
+					],
+					"count": "13",
+					"systemic": false,
+					"solution": "",
+					"otherinfo": "",
+					"reference": "",
+					"cweid": "-1",
+					"wascid": "-1",
+					"sourceid": "19"
+				},
+				{
+					"pluginid": "100000",
+					"alertRef": "100000-1",
+					"alert": "A Client Error response code was returned by the server",
+					"name": "A Client Error response code was returned by the server",
+					"riskcode": "0",
+					"confidence": "3",
+					"riskdesc": "Informational (High)",
+					"desc": "<p>A response code of 404 was returned by the server.</p><p>This may indicate that the application is failing to handle unexpected input correctly.</p><p>Raised by the 'Alert on HTTP Response Code Error' script</p>",
+					"instances":[ 
+						{
+							"id": "2",
+							"uri": "http://frontend/3743319409459503415",
+							"nodeName": "http:\/\/frontend\/3743319409459503415",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "404",
+							"otherinfo": ""
+						},
+						{
+							"id": "793",
+							"uri": "http://frontend/actuator/health",
+							"nodeName": "http:\/\/frontend\/actuator\/health",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "404",
+							"otherinfo": ""
+						},
+						{
+							"id": "694",
+							"uri": "http://frontend/api/",
+							"nodeName": "http:\/\/frontend\/api\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "403",
+							"otherinfo": ""
+						},
+						{
+							"id": "4",
+							"uri": "http://frontend/api/3225926409913077335",
+							"nodeName": "http:\/\/frontend\/api\/3225926409913077335",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "403",
+							"otherinfo": ""
+						},
+						{
+							"id": "9",
+							"uri": "http://frontend/api/catalogos",
+							"nodeName": "http:\/\/frontend\/api\/catalogos",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "403",
+							"otherinfo": ""
+						},
+						{
+							"id": "695",
+							"uri": "http://frontend/api/catalogos/",
+							"nodeName": "http:\/\/frontend\/api\/catalogos\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "403",
+							"otherinfo": ""
+						},
+						{
+							"id": "5",
+							"uri": "http://frontend/api/catalogos/5974185412843734688",
+							"nodeName": "http:\/\/frontend\/api\/catalogos\/5974185412843734688",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "403",
+							"otherinfo": ""
+						},
+						{
+							"id": "696",
+							"uri": "http://frontend/api/catalogos/tipos-documentales/",
+							"nodeName": "http:\/\/frontend\/api\/catalogos\/tipos-documentales\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "403",
+							"otherinfo": ""
+						},
+						{
+							"id": "698",
+							"uri": "http://frontend/api/catalogos/tipos-tramite/",
+							"nodeName": "http:\/\/frontend\/api\/catalogos\/tipos-tramite\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "403",
+							"otherinfo": ""
+						},
+						{
+							"id": "0",
+							"uri": "http://frontend/api/expedientes?estado=EN_PREPARACION&tipoTramite=tipoTramite&fechaDesde=fechaDesde&fechaHasta=fechaHasta&pagina=0&tamano=20",
+							"nodeName": "http:\/\/frontend\/api\/expedientes (estado,fechaDesde,fechaHasta,pagina,tamano,tipoTramite)",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "400",
+							"otherinfo": ""
+						},
+						{
+							"id": "697",
+							"uri": "http://frontend/api/expedientes/",
+							"nodeName": "http:\/\/frontend\/api\/expedientes\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "403",
+							"otherinfo": ""
+						},
+						{
+							"id": "700",
+							"uri": "http://frontend/api/perfil/",
+							"nodeName": "http:\/\/frontend\/api\/perfil\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "403",
+							"otherinfo": ""
+						},
+						{
+							"id": "10",
+							"uri": "http://frontend/api/verificaciones",
+							"nodeName": "http:\/\/frontend\/api\/verificaciones",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "403",
+							"otherinfo": ""
+						},
+						{
+							"id": "701",
+							"uri": "http://frontend/api/verificaciones/",
+							"nodeName": "http:\/\/frontend\/api\/verificaciones\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "403",
+							"otherinfo": ""
+						},
+						{
+							"id": "6",
+							"uri": "http://frontend/api/verificaciones/5418345264746438070",
+							"nodeName": "http:\/\/frontend\/api\/verificaciones\/5418345264746438070",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "403",
+							"otherinfo": ""
+						},
+						{
+							"id": "702",
+							"uri": "http://frontend/api/verificaciones/matriz/",
+							"nodeName": "http:\/\/frontend\/api\/verificaciones\/matriz\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "403",
+							"otherinfo": ""
+						},
+						{
+							"id": "504",
+							"uri": "http://frontend/computeMetadata/v1/",
+							"nodeName": "http:\/\/frontend\/computeMetadata\/v1\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "404",
+							"otherinfo": ""
+						},
+						{
+							"id": "500",
+							"uri": "http://frontend/latest/meta-data/",
+							"nodeName": "http:\/\/frontend\/latest\/meta-data\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "404",
+							"otherinfo": ""
+						},
+						{
+							"id": "522",
+							"uri": "http://frontend/metadata/instance",
+							"nodeName": "http:\/\/frontend\/metadata\/instance",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "404",
+							"otherinfo": ""
+						},
+						{
+							"id": "524",
+							"uri": "http://frontend/metadata/v1",
+							"nodeName": "http:\/\/frontend\/metadata\/v1",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "404",
+							"otherinfo": ""
+						},
+						{
+							"id": "509",
+							"uri": "http://frontend/opc/v1/instance/",
+							"nodeName": "http:\/\/frontend\/opc\/v1\/instance\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "404",
+							"otherinfo": ""
+						},
+						{
+							"id": "513",
+							"uri": "http://frontend/opc/v2/instance/",
+							"nodeName": "http:\/\/frontend\/opc\/v2\/instance\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "404",
+							"otherinfo": ""
+						},
+						{
+							"id": "526",
+							"uri": "http://frontend/openstack/latest/meta_data.json",
+							"nodeName": "http:\/\/frontend\/openstack\/latest\/meta_data.json",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "404",
+							"otherinfo": ""
+						}
+					],
+					"count": "23",
+					"systemic": false,
+					"solution": "",
+					"otherinfo": "",
+					"reference": "",
+					"cweid": "388",
+					"wascid": "20",
+					"sourceid": "11"
+				},
+				{
+					"pluginid": "10049",
+					"alertRef": "10049-1",
+					"alert": "Non-Storable Content",
+					"name": "Non-Storable Content",
+					"riskcode": "0",
+					"confidence": "2",
+					"riskdesc": "Informational (Medium)",
+					"desc": "<p>The response contents are not storable by caching components such as proxy servers. If the response does not contain sensitive, personal or user-specific information, it may benefit from being stored and cached, to improve performance.</p>",
+					"instances":[ 
+						{
+							"id": "228",
+							"uri": "http://frontend/api/catalogos/tipos-documentales",
+							"nodeName": "http:\/\/frontend\/api\/catalogos\/tipos-documentales",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "no-store",
+							"otherinfo": ""
+						},
+						{
+							"id": "215",
+							"uri": "http://frontend/api/catalogos/tipos-tramite",
+							"nodeName": "http:\/\/frontend\/api\/catalogos\/tipos-tramite",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "no-store",
+							"otherinfo": ""
+						},
+						{
+							"id": "212",
+							"uri": "http://frontend/api/expedientes?estado=EN_PREPARACION&tipoTramite=tipoTramite&fechaDesde=fechaDesde&fechaHasta=fechaHasta&pagina=0&tamano=20",
+							"nodeName": "http:\/\/frontend\/api\/expedientes (estado,fechaDesde,fechaHasta,pagina,tamano,tipoTramite)",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "no-store",
+							"otherinfo": ""
+						},
+						{
+							"id": "1",
+							"uri": "http://frontend/api/perfil",
+							"nodeName": "http:\/\/frontend\/api\/perfil",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "no-store",
+							"otherinfo": ""
+						},
+						{
+							"id": "216",
+							"uri": "http://frontend/api/verificaciones/matriz",
+							"nodeName": "http:\/\/frontend\/api\/verificaciones\/matriz",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "no-store",
+							"otherinfo": ""
+						}
+					],
+					"count": "5",
+					"systemic": false,
+					"solution": "<p>The content may be marked as storable by ensuring that the following conditions are satisfied:</p><p>The request method must be understood by the cache and defined as being cacheable (\"GET\", \"HEAD\", and \"POST\" are currently defined as cacheable)</p><p>The response status code must be understood by the cache (one of the 1XX, 2XX, 3XX, 4XX, or 5XX response classes are generally understood)</p><p>The \"no-store\" cache directive must not appear in the request or response header fields</p><p>For caching by \"shared\" caches such as \"proxy\" caches, the \"private\" response directive must not appear in the response</p><p>For caching by \"shared\" caches such as \"proxy\" caches, the \"Authorization\" header field must not appear in the request, unless the response explicitly allows it (using one of the \"must-revalidate\", \"public\", or \"s-maxage\" Cache-Control response directives)</p><p>In addition to the conditions above, at least one of the following conditions must also be satisfied by the response:</p><p>It must contain an \"Expires\" header field</p><p>It must contain a \"max-age\" response directive</p><p>For \"shared\" caches such as \"proxy\" caches, it must contain a \"s-maxage\" response directive</p><p>It must contain a \"Cache Control Extension\" that allows it to be cached</p><p>It must have a status code that is defined as cacheable by default (200, 203, 204, 206, 300, 301, 404, 405, 410, 414, 501).</p>",
+					"otherinfo": "",
+					"reference": "<p>https://datatracker.ietf.org/doc/html/rfc7234</p><p>https://datatracker.ietf.org/doc/html/rfc7231</p><p>https://www.w3.org/Protocols/rfc2616/rfc2616-sec13.html</p>",
+					"cweid": "524",
+					"wascid": "13",
+					"sourceid": "10"
+				}
+			]
+		}
+	],
+	"sequences":[
+	]
+
+}

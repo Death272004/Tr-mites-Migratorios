@@ -6,6 +6,9 @@ spring:
     url: ${DB_URL}
     username: ${DB_USER}
     password: ${DB_PASSWORD}
+    hikari:
+      # Reserva para auditoria REQUIRES_NEW; dimensionar junto con los hilos HTTP.
+      maximum-pool-size: ${DB_POOL_MAX:40}
   jpa:
     open-in-view: false
     hibernate:
@@ -23,6 +26,10 @@ spring:
 
 server:
   port: ${SERVER_PORT:8080}
+  tomcat:
+    threads:
+      # Evita que 200 solicitudes retengan las conexiones requeridas por auditoria.
+      max: ${HTTP_MAX_THREADS:32}
 
 management:
   endpoints:

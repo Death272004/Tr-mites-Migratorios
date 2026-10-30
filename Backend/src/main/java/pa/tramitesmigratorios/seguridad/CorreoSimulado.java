@@ -8,9 +8,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 /**
- * Correo simulado: con CORREO_SIMULADO=true escribe el mensaje en el registro del servidor en
- * lugar de enviarlo, para poder probar la recuperación en desarrollo local. Desactivado no
- * entrega nada, y el token nunca llega al registro.
+ * Correo simulado: registra solo que se solicitó un envío de prueba, sin destinatario ni
+ * token de recuperación. No entrega mensajes; un proveedor de correo debe implementar
+ * Correo para entregar enlaces de recuperación de forma privada.
  */
 @Component
 class CorreoSimulado implements Correo {
@@ -29,8 +29,7 @@ class CorreoSimulado implements Correo {
 			log.warn("No hay proveedor de correo configurado: el enlace de recuperación no se envió.");
 			return;
 		}
-		log.info("[CORREO SIMULADO] Recuperación de contraseña para {}: token {} (vence {})", destinatario, token,
-				expira);
+		log.info("[CORREO SIMULADO] Envío de recuperación simulado; no se entrega ningún enlace.");
 	}
 
 }

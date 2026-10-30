@@ -1,0 +1,21 @@
+{
+  "proofs": [
+    {
+      "phase": "before",
+      "status": 200,
+      "role": "FUNCIONARIO"
+    },
+    {
+      "phase": "after",
+      "status": 200,
+      "role": "FUNCIONARIO"
+    }
+  ],
+  "response_codes": {
+    "200": 36,
+    "400": 1524,
+    "0": 10,
+    "403": 55,
+    "500": 5
+  }
+}

@@ -160,7 +160,8 @@ paths:
       description: |
         Responde siempre lo mismo, exista o no la cuenta (CP-02). Si existe y está activa, genera
         un enlace temporal de una hora y anula los anteriores. El MVP no tiene proveedor de correo:
-        con `CORREO_SIMULADO=true` el token queda en el registro del servidor.
+        con `CORREO_SIMULADO=true` solo se registra un aviso genérico sin destinatarios ni tokens;
+        la entrega privada del enlace requiere un proveedor de correo.
       security: []
       requestBody:
         required: true

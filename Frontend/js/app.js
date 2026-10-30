@@ -126,7 +126,7 @@
     if (key === "interno-login") {
       showView(global.tm.views.i01.renderI01, {
         onInternalLoginSuccess: function (res) {
-          session.saveSession({ rol: res.rol, usuario: res.usuario }, {});
+          session.saveSession({ rol: res.rol, usuario: res.usuario }, res.token ? { token: res.token, expiraEn: res.expiraEn } : {});
           state.role = res.rol;
           state.user = res.usuario;
           navigate(INITIAL_ROUTE[state.role]);

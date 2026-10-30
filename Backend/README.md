@@ -57,7 +57,7 @@ curl -s http://localhost:8080/api/auth/registro -H "Content-Type: application/js
 
 La contraseña sigue la política del backend: 10 a 72 caracteres, con mayúscula, minúscula, número y símbolo, y sin el correo. El formulario de P-02 hoy acepta 8.
 
-No hay proveedor de correo. Con `CORREO_SIMULADO=true` (valor de `docker compose`) el token del enlace sale en el registro del backend: `docker compose logs backend | grep "CORREO SIMULADO"`. El enlace dura `RECUPERACION_MINUTOS` (60), sirve una vez, y al usarlo se cierran todas las sesiones de la cuenta.
+No hay proveedor de correo. Con `CORREO_SIMULADO=true` solo se registra un aviso genérico: no se entrega el enlace ni se muestran destinatarios o tokens en los logs. La recuperación real requiere implementar `Correo` con un proveedor que entregue el enlace de forma privada. El token dura `RECUPERACION_MINUTOS` (60), sirve una vez y, al usarlo, se cierran todas las sesiones de la cuenta. Las pruebas usan un buzón en memoria.
 
 ## Estados del expediente
 

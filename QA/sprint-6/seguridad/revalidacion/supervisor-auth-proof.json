@@ -1,0 +1,20 @@
+{
+  "proofs": [
+    {
+      "phase": "before",
+      "status": 200,
+      "role": "SUPERVISOR"
+    },
+    {
+      "phase": "after",
+      "status": 200,
+      "role": "SUPERVISOR"
+    }
+  ],
+  "response_codes": {
+    "200": 6,
+    "400": 695,
+    "0": 7,
+    "403": 52
+  }
+}

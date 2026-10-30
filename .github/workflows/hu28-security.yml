@@ -1,0 +1,43 @@
+name: HU28 - seguridad autenticada # create evidence directory before manual checks
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  security:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Levantar entorno aislado con datos ficticios
+        run: docker compose -p hu28validacion up -d --build --wait
+      - name: Descargar ZAP
+        run: docker pull ghcr.io/zaproxy/zaproxy:stable
+      - name: Validar controles manuales
+        run: python3 QA/sprint-6/seguridad/tools/manual-extra.py
+      - name: Escaneo activo y pasivo con prueba de sesión por rol
+        run: python3 QA/sprint-6/seguridad/tools/scan.py
+      - name: Comprobar autenticación y ausencia de alertas altas
+        run: |
+          python3 - <<'PY'
+          import json,pathlib
+          root=pathlib.Path('QA/sprint-6/seguridad/revalidacion')
+          for user in ['cliente','analista','supervisor','auditor','admin']:
+              proof=json.loads((root/(user+'-auth-proof.json')).read_text())
+              assert [x['status'] for x in proof['proofs']]==[200,200],user
+          for name in ['cliente','analista','supervisor','auditor','admin','frontend']:
+              report=json.loads((root/(name+'.json')).read_text())
+              high=[a['name'] for s in report.get('site',[]) for a in s.get('alerts',[]) if int(a.get('riskcode',0))>=3]
+              assert not high,(name,high)
+          print('PASS: five authenticated role scans, no high alerts in six reports')
+          PY
+      - name: Publicar evidencias
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hu28-security-evidence
+          path: QA/sprint-6/seguridad/revalidacion/
+          if-no-files-found: error
+      - name: Detener entorno
+        if: always()
+        run: docker compose -p hu28validacion down -v

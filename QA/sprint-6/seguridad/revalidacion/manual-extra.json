@@ -1,0 +1,203 @@
+{
+  "date": "2026-10-29T20:58:21.984576+00:00",
+  "tests": [
+    {
+      "name": "login cliente",
+      "method": "POST",
+      "path": "/api/auth/login",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "name": "login cliente2",
+      "method": "POST",
+      "path": "/api/auth/login",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "name": "login analista",
+      "method": "POST",
+      "path": "/api/auth/login",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "name": "login supervisor",
+      "method": "POST",
+      "path": "/api/auth/login",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "name": "login auditor",
+      "method": "POST",
+      "path": "/api/auth/login",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "name": "login admin",
+      "method": "POST",
+      "path": "/api/auth/login",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "name": "create synthetic case",
+      "method": "POST",
+      "path": "/api/expedientes",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "name": "IDOR denied ",
+      "method": "GET",
+      "path": "/api/expedientes/cb580222-787b-4e7e-8f3b-99461a54f66c",
+      "expected": 404,
+      "actual": 404
+    },
+    {
+      "name": "IDOR denied /documentos",
+      "method": "GET",
+      "path": "/api/expedientes/cb580222-787b-4e7e-8f3b-99461a54f66c/documentos",
+      "expected": 404,
+      "actual": 404
+    },
+    {
+      "name": "IDOR denied /historial",
+      "method": "GET",
+      "path": "/api/expedientes/cb580222-787b-4e7e-8f3b-99461a54f66c/historial",
+      "expected": 404,
+      "actual": 404
+    },
+    {
+      "name": "IDOR denied /observaciones",
+      "method": "GET",
+      "path": "/api/expedientes/cb580222-787b-4e7e-8f3b-99461a54f66c/observaciones",
+      "expected": 404,
+      "actual": 404
+    },
+    {
+      "name": "IDOR denied /verificaciones",
+      "method": "GET",
+      "path": "/api/expedientes/cb580222-787b-4e7e-8f3b-99461a54f66c/verificaciones",
+      "expected": 404,
+      "actual": 404
+    },
+    {
+      "name": "BOLA state denied",
+      "method": "PATCH",
+      "path": "/api/expedientes/cb580222-787b-4e7e-8f3b-99461a54f66c/estado",
+      "expected": 403,
+      "actual": 403
+    },
+    {
+      "name": "IDOR observation denied",
+      "method": "POST",
+      "path": "/api/expedientes/cb580222-787b-4e7e-8f3b-99461a54f66c/observaciones",
+      "expected": 404,
+      "actual": 404
+    },
+    {
+      "name": "XSS payload stored as text",
+      "method": "POST",
+      "path": "/api/expedientes/cb580222-787b-4e7e-8f3b-99461a54f66c/observaciones",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "name": "observation response JSON",
+      "method": "GET",
+      "path": "/api/expedientes/cb580222-787b-4e7e-8f3b-99461a54f66c/observaciones",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "name": "notices minimize text",
+      "method": "GET",
+      "path": "/api/notificaciones",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "name": "SQLi invalid enum",
+      "method": "GET",
+      "path": "/api/expedientes?estado=%27%20OR%201%3D1--",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "name": "malformed JSON",
+      "method": "POST",
+      "path": "/api/expedientes",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "name": "unauthenticated cross-origin state change",
+      "method": "PATCH",
+      "path": "/api/expedientes/cb580222-787b-4e7e-8f3b-99461a54f66c/estado",
+      "expected": 401,
+      "actual": 401
+    },
+    {
+      "name": "cookie cannot substitute bearer",
+      "method": "GET",
+      "path": "/api/perfil",
+      "expected": 401,
+      "actual": 401
+    },
+    {
+      "name": "failed login 1",
+      "method": "POST",
+      "path": "/api/auth/login",
+      "expected": 401,
+      "actual": 401
+    },
+    {
+      "name": "failed login 2",
+      "method": "POST",
+      "path": "/api/auth/login",
+      "expected": 401,
+      "actual": 401
+    },
+    {
+      "name": "failed login 3",
+      "method": "POST",
+      "path": "/api/auth/login",
+      "expected": 401,
+      "actual": 401
+    },
+    {
+      "name": "failed login 4",
+      "method": "POST",
+      "path": "/api/auth/login",
+      "expected": 401,
+      "actual": 401
+    },
+    {
+      "name": "failed login 5",
+      "method": "POST",
+      "path": "/api/auth/login",
+      "expected": 401,
+      "actual": 401
+    },
+    {
+      "name": "failed login 6",
+      "method": "POST",
+      "path": "/api/auth/login",
+      "expected": 401,
+      "actual": 401
+    },
+    {
+      "name": "blocked account rejects correct password",
+      "method": "POST",
+      "path": "/api/auth/login",
+      "expected": 401,
+      "actual": 401
+    }
+  ],
+  "log_redaction": "No session tokens, test account emails or XSS marker in backend logs",
+  "xss_limit": "Stored JSON checked; browser execution must be checked separately."
+}
