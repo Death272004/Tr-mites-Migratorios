@@ -1,0 +1,11 @@
+{
+  "meta": {
+    "pantalla": "P-01",
+    "titulo": "Inicio de sesión",
+    "escenario": "carga",
+    "esquema": "hu-08/v1",
+    "nota": "Estado de carga: la vista muestra spinner/esqueleto mientras responde el servicio."
+  },
+  "data": null,
+  "error": null
+}
