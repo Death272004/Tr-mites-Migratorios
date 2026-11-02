@@ -9,7 +9,7 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Proyecto-Universitario-0B1B2B?style=for-the-badge" alt="Proyecto universitario">
   <img src="https://img.shields.io/badge/Ingeniería%20de%20Software%20III-2026-F28C28?style=for-the-badge" alt="Ingeniería de Software III">
-  <img src="https://img.shields.io/badge/MVP-en%20desarrollo-56C596?style=for-the-badge" alt="MVP en desarrollo">
+  <img src="https://img.shields.io/badge/Sprint%206-completado-56C596?style=for-the-badge" alt="Sprint 6 completado">
   <img src="https://img.shields.io/badge/Java-17-F28C28?style=for-the-badge&logo=openjdk&logoColor=white" alt="Java 17">
   <img src="https://img.shields.io/badge/Docker-Compose-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker Compose">
   <img src="https://img.shields.io/badge/QA-JMeter%20%2B%20ZAP-8B5CF6?style=for-the-badge" alt="QA con JMeter y ZAP">
@@ -37,10 +37,16 @@
 Este repositorio contiene el proyecto integrador de **Ingeniería de Software III**. La solución se construye como un MVP: primero demostramos el flujo principal de forma segura y trazable, y después dejamos preparadas las bases para futuras integraciones.
 
 <p>
-  <img src="https://img.shields.io/badge/Estado-MVP%20en%20desarrollo-56C596?style=flat-square" alt="MVP en desarrollo">
+  <img src="https://img.shields.io/badge/Estado-Sprint%206%20completado-56C596?style=flat-square" alt="Sprint 6 completado">
   <img src="https://img.shields.io/badge/Datos-Ficticios-F28C28?style=flat-square" alt="Datos ficticios">
   <img src="https://img.shields.io/badge/Arquitectura-Interoperable-2496ED?style=flat-square" alt="Arquitectura interoperable">
 </p>
+
+## 📌 Estado actual
+
+El proyecto cerró el **Sprint 6 – Review #2** con un MVP funcional y demostrable. El flujo principal de acceso, expedientes, documentos, verificaciones y trazabilidad está implementado con datos ficticios y servicios simulados.
+
+También quedaron documentadas las validaciones de calidad, seguridad, rendimiento y usabilidad mediante pruebas automatizadas, OWASP ZAP, Apache JMeter y evidencias de QA. `main` y `DevOps` contienen la misma versión estable del proyecto; las ramas temporales de integración fueron archivadas en `Versiones_Anteriores`.
 
 ## 🧭 El problema que estamos resolviendo
 
