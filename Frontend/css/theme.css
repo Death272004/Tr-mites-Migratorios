@@ -2044,6 +2044,39 @@ html.theme-dark .table tbody tr:hover td {
   color: #f2f7fb !important;
 }
 
+html.theme-dark .stepper__item {
+  background: #16222d;
+  border-color: #38566c;
+  color: #dce8f1;
+}
+
+html.theme-dark .stepper__item.is-current {
+  background: #1d4664;
+  border-color: #6aa9d6;
+  color: #ffffff;
+}
+
+html.theme-dark .stepper__item.is-done {
+  background: #214638;
+  border-color: #5eaf83;
+  color: #e6f7ed;
+}
+
+html.theme-dark .stepper__item.is-pending {
+  background: #16222d;
+  color: #dce8f1;
+}
+
+html.theme-dark .stepper__bullet {
+  background: #263d4e;
+  color: #f2f7fb;
+}
+
+html.theme-dark .stepper__label,
+html.theme-dark .stepper__subtitle {
+  color: inherit !important;
+}
+
 html.theme-dark .btn--primary {
   background: #2167a8;
   border-color: #2167a8;

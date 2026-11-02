@@ -40,6 +40,7 @@
   }
 
   function renderP28(container) {
+    layout.clear(container);
     var current = settings.get();
     var inner = layout.el("div", "app-content__inner settings-page");
     inner.appendChild(layout.pageHeader("Configuración", "Personaliza la forma en que utilizas el portal."));
