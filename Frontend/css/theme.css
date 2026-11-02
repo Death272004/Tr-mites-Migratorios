@@ -288,7 +288,7 @@ body {
 }
 
 .form-field__group {
-  gap: 18px;
+  gap: 8px;
 }
 
 .wizard-grid,
@@ -1400,21 +1400,46 @@ body {
   border-bottom: 1px solid #cfd8e2;
 }
 
-/* Navegación superior: grupos cortos y controles de sesión separados. */
-.app-shell > .app-nav--top {
+/* Cabecera única: marca, navegación y contexto en una sola línea. */
+.app-header {
   position: relative;
   z-index: 20;
-  flex: 0 0 auto;
   display: flex;
   align-items: center;
-  justify-content: center;
-  width: 100%;
-  min-height: 58px;
-  padding: 6px clamp(18px, 4vw, 56px);
-  background: #ffffff;
-  border-top: 1px solid #e3e8ee;
-  border-bottom: 1px solid #d6dee7;
-  box-shadow: 0 3px 12px rgba(16, 42, 67, 0.06);
+  gap: 18px;
+  min-height: 82px;
+  padding: 10px clamp(18px, 3vw, 42px);
+  background: #102f49;
+  border-bottom: 3px solid #e69a28;
+}
+
+.app-header__brand {
+  flex: 0 0 auto;
+  min-width: 202px;
+}
+
+.app-header__brand .app-header__title,
+.app-header__brand .app-header__subtitle {
+  color: #ffffff;
+}
+
+.app-header__brand .app-header__subtitle {
+  color: #b8cbd9;
+}
+
+.app-header > .app-nav--top {
+  position: relative;
+  z-index: 20;
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: auto;
+  min-height: 42px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
   overflow: visible;
 }
 
@@ -1432,11 +1457,11 @@ body {
   align-items: center;
   gap: 9px;
   min-height: 42px;
-  padding: 8px 15px;
+  padding: 8px 10px;
   border: 0;
   border-bottom: 2px solid transparent;
   background: transparent;
-  color: #24384b;
+  color: #e6f0f7;
   font: inherit;
   font-size: 0.9rem;
   font-weight: 700;
@@ -1447,7 +1472,7 @@ body {
 .app-nav__group-trigger:focus-visible,
 .app-nav__group.is-open .app-nav__group-trigger,
 .app-nav__group.is-current .app-nav__group-trigger {
-  color: #155b91;
+  color: #ffffff;
   border-bottom-color: #e69a28;
   outline: none;
 }
@@ -1515,62 +1540,88 @@ body {
   width: 100%;
 }
 
-.app-contextbar {
+.app-header > .app-contextbar {
+  flex: 0 1 auto;
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 14px;
-  min-height: 58px;
-  padding: 8px clamp(18px, 4vw, 56px);
-  background: #f7f9fb;
-  border-bottom: 1px solid #d6dee7;
+  gap: 8px;
+  min-height: 42px;
+  max-width: 52%;
+  padding: 0;
+  background: transparent;
+  border: 0;
 }
 
-.app-contextbar .app-header__user-name {
-  margin-right: 2px;
-  color: #263b4e;
-  font-weight: 700;
+.app-header > .app-contextbar .app-header__user-name {
+  display: none;
 }
 
-.app-contextbar .app-header__badge {
-  background: #e8f0f6;
-  border: 1px solid #c6d5e1;
-  color: #155b91;
+.app-header > .app-contextbar .app-header__badge {
+  max-width: 104px;
+  padding: 7px 10px;
+  overflow: hidden;
+  background: #1d4564;
+  border: 1px solid #52728d;
+  color: #e8f3fa;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.app-contextbar .app-header__role,
-.app-contextbar .app-header__scenario-select {
-  color: #53677a;
+.app-header > .app-contextbar .app-header__role {
+  gap: 5px;
+  color: #b8cbd9;
+  white-space: nowrap;
 }
 
-.app-contextbar .app-header__role select,
-.app-contextbar .app-header__role-select,
-.app-contextbar .app-header__scenario-select {
-  min-height: 36px;
-  border: 1px solid #c5d1dc;
+.app-header > .app-contextbar .app-header__role > span {
+  display: none;
+}
+
+.app-header > .app-contextbar .app-header__role select,
+.app-header > .app-contextbar .app-header__role-select,
+.app-header > .app-contextbar .app-header__scenario-select {
+  width: 86px;
+  min-height: 34px;
+  padding: 5px 7px;
+  border: 1px solid #6c879d;
   border-radius: 5px;
-  background: #ffffff;
-  color: #263b4e;
+  background: #173b57;
+  color: #ffffff;
 }
 
-.app-contextbar .app-header__autofill,
-.app-contextbar .app-header__logout {
-  min-height: 36px;
-  border: 1px solid #aebfce;
+.app-header > .app-contextbar .app-header__autofill,
+.app-header > .app-contextbar .app-header__logout {
+  min-height: 34px;
+  padding: 7px 10px;
+  border: 1px solid #6c879d;
   border-radius: 5px;
-  background: #ffffff;
-  color: #155b91;
+  background: transparent;
+  color: #ffffff;
 }
 
-.app-contextbar .app-header__autofill:hover,
-.app-contextbar .app-header__logout:hover {
-  background: #eaf3f9;
-  border-color: #155b91;
-  color: #155b91;
+.app-header > .app-contextbar .app-header__autofill {
+  padding-inline: 8px;
+  font-size: 0.78rem;
+}
+
+.app-header > .app-contextbar .app-header__logout {
+  padding-inline: 8px;
+}
+
+.app-header > .app-contextbar .app-header__autofill:hover,
+.app-header > .app-contextbar .app-header__logout:hover {
+  background: #e69a28;
+  border-color: #e69a28;
+  color: #102f49;
 }
 
 @media (max-width: 820px) {
-  .app-shell > .app-nav--top {
+  .app-header {
+    flex-wrap: wrap;
+  }
+
+  .app-header > .app-nav--top {
     justify-content: flex-start;
     overflow-x: auto;
     padding-inline: 12px;
@@ -1581,7 +1632,8 @@ body {
     padding-inline: 12px;
   }
 
-  .app-contextbar {
+  .app-header > .app-contextbar {
+    max-width: 100%;
     justify-content: flex-start;
     overflow-x: auto;
     white-space: nowrap;
@@ -1599,7 +1651,8 @@ body {
     box-shadow: 0 3px 12px rgba(16, 42, 67, 0.06) !important;
   }
 
-  .app-shell > .app-nav--top {
+  .app-header > .app-nav--top {
+    flex-basis: 100%;
     align-items: stretch;
     min-height: 52px;
   }
