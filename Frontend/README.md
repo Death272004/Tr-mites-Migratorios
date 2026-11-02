@@ -19,6 +19,9 @@ Frontend/
 │   └── variables.css
 ├── html/                   ← punto de entrada
 │   └── index.html
+├── docs/                   ← documentación e informes del frontend
+│   ├── analisis/           ← alcance, roles, pantallas y planificación
+│   └── informes/           ← avances, estado y reportes de sprint
 └── js/
     ├── app.js              ← arranque (hash routing + layout)
     ├── components/         ← componentes reutilizables
