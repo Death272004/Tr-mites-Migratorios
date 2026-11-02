@@ -474,6 +474,38 @@ body {
   margin-top: 30px;
 }
 
+.profile-consent-card {
+  padding: 28px 30px 30px;
+}
+
+.profile-consent-card .wizard-section-title {
+  margin: 0 0 22px;
+  padding: 0;
+}
+
+.profile-consent-card .detail-row {
+  margin-top: 8px;
+  border: 1px solid var(--theme-line);
+  border-radius: 6px;
+  background: #ffffff;
+}
+
+.profile-consent-card .app-alert {
+  margin-top: 22px;
+}
+
+.profile-consent-card > .detail-row__value {
+  display: block;
+  margin-top: 22px;
+  color: var(--theme-muted);
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+.profile-consent-card .detail-actions {
+  padding: 0;
+}
+
 @media (max-width: 1024px) {
   .app-header {
     padding: 15px 22px;

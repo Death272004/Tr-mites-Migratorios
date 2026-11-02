@@ -298,7 +298,7 @@
     var cargando = true;
     var error = null;
 
-    var consentWrap = layout.el("div", "detail-card");
+    var consentWrap = layout.el("section", "detail-card profile-consent-card");
 
     function render() {
       layout.clear(consentWrap);
