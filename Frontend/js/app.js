@@ -172,6 +172,10 @@
       showView(global.tm.views.p05.renderP05, { onNavigate: navigate });
       return;
     }
+    if (key === "p-28") {
+      showView(global.tm.views.p28.renderP28, { onNavigate: navigate });
+      return;
+    }
     if (key === "p-06") {
       showView(global.tm.views.p06.renderP06, {
         onNueva: function () { navigate("#/solicitud/tramite"); },

@@ -36,7 +36,10 @@
     },
     {
       title: "Cuenta",
-      items: [{ label: "Mi perfil", route: "#/perfil" }],
+      items: [
+        { label: "Mi perfil", route: "#/perfil" },
+        { label: "Configuración", route: "#/cuenta/configuracion" },
+      ],
     },
   ];
 

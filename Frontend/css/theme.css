@@ -1710,3 +1710,177 @@ body {
     min-width: 0;
   }
 }
+
+/* Configuración: secciones abiertas y filas de preferencias, sin tarjetas. */
+.settings-page {
+  max-width: 900px;
+}
+
+.settings-section {
+  padding: 0 0 26px;
+  border-bottom: 1px solid #cfd8e2;
+}
+
+.settings-section + .settings-section {
+  margin-top: 30px;
+}
+
+.settings-section h2 {
+  margin: 0 0 8px;
+  color: var(--theme-navy);
+  font-size: 1.05rem;
+}
+
+.settings-section__intro {
+  margin: 0 0 10px;
+  color: var(--theme-muted);
+}
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+  min-height: 66px;
+  padding: 14px 0;
+  border-top: 1px solid #d6dee7;
+}
+
+.settings-row__copy {
+  display: grid;
+  gap: 4px;
+}
+
+.settings-row__copy strong {
+  color: #263b4e;
+}
+
+.settings-row__copy span {
+  color: var(--theme-muted);
+  font-size: 0.88rem;
+}
+
+.settings-control {
+  min-width: 145px;
+  min-height: 38px;
+  padding: 7px 10px;
+  border: 1px solid #b9c9d7;
+  border-radius: 5px;
+  background: #ffffff;
+  color: #263b4e;
+}
+
+.settings-switch {
+  position: relative;
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.settings-switch input {
+  position: absolute;
+  opacity: 0;
+}
+
+.settings-switch__track {
+  width: 42px;
+  height: 24px;
+  border-radius: 999px;
+  background: #aebdca;
+  transition: background 160ms ease;
+}
+
+.settings-switch__track::after {
+  display: block;
+  width: 18px;
+  height: 18px;
+  margin: 3px;
+  border-radius: 50%;
+  background: #ffffff;
+  content: "";
+  transition: transform 160ms ease;
+}
+
+.settings-switch input:checked + .settings-switch__track {
+  background: var(--theme-blue);
+}
+
+.settings-switch input:checked + .settings-switch__track::after {
+  transform: translateX(18px);
+}
+
+.settings-switch input:focus-visible + .settings-switch__track {
+  outline: 3px solid rgba(33, 103, 168, 0.25);
+}
+
+.settings-reset {
+  margin-top: 18px;
+  min-height: 38px;
+  padding: 8px 13px;
+  border: 1px solid #aebfce;
+  border-radius: 5px;
+  background: transparent;
+  color: #155b91;
+  cursor: pointer;
+}
+
+.settings-reset:hover {
+  background: #eaf3f9;
+}
+
+html[data-text-size="grande"] { font-size: 108%; }
+html[data-text-size="muy-grande"] { font-size: 116%; }
+
+html.theme-high-contrast body {
+  color: #101820;
+}
+
+html.theme-high-contrast .settings-row,
+html.theme-high-contrast .settings-section {
+  border-color: #7b8b99;
+}
+
+/* Modo oscuro de demostración, aplicado a todo el portal. */
+html.theme-dark body,
+html.theme-dark .app-content {
+  background: #101b26;
+  color: #e5edf4;
+}
+
+html.theme-dark .app-content__inner,
+html.theme-dark .settings-section,
+html.theme-dark .detail-row,
+html.theme-dark .settings-row__copy strong {
+  color: #e5edf4;
+}
+
+html.theme-dark .app-page-header__title,
+html.theme-dark .settings-section h2 {
+  color: #f2f7fb;
+}
+
+html.theme-dark .app-page-header__subtitle,
+html.theme-dark .settings-section__intro,
+html.theme-dark .settings-row__copy span {
+  color: #afc2d1;
+}
+
+html.theme-dark .settings-control,
+html.theme-dark .settings-row select,
+html.theme-dark .form-field__input,
+html.theme-dark .form-field__select,
+html.theme-dark .form-field__textarea {
+  background: #1b2c3b;
+  border-color: #587287;
+  color: #f2f7fb;
+}
+
+html.theme-dark .settings-reset {
+  border-color: #7190a5;
+  color: #d9ebf7;
+}
+
+html.theme-dark .settings-reset:hover {
+  background: #203e55;
+}
