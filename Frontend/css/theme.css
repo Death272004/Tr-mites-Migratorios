@@ -2097,3 +2097,94 @@ html.theme-dark .app-content button:not(.settings-reset):hover {
   background: #29465c;
   color: #ffffff;
 }
+
+/* Auditoría de lectura: más aire y líneas controladas en todas las vistas. */
+.app-content {
+  padding: clamp(30px, 4vw, 54px) clamp(22px, 5vw, 72px);
+}
+
+.app-content__inner {
+  width: min(1040px, 100%);
+  line-height: 1.58;
+}
+
+.app-content__inner > * + * {
+  margin-top: 42px;
+}
+
+.app-page-header {
+  max-width: 82ch;
+  margin-bottom: 38px;
+}
+
+.app-page-header__subtitle,
+.app-content__inner p,
+.app-content__inner li,
+.form-field__help,
+.seguimiento-note,
+.resultado-doc__text,
+.settings-section__intro {
+  max-width: 76ch;
+}
+
+.app-page-header__title {
+  margin-bottom: 10px;
+}
+
+.form-field {
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.form-field__help,
+.form-field__error {
+  margin-top: 2px;
+  line-height: 1.5;
+}
+
+.wizard-grid {
+  column-gap: 28px;
+  row-gap: 30px;
+}
+
+.wizard-section {
+  margin-bottom: 34px;
+}
+
+.wizard-section-title {
+  margin-top: 26px;
+  margin-bottom: 18px;
+  line-height: 1.4;
+}
+
+.stepper {
+  margin: 8px 0 22px;
+  padding: 10px 0 18px;
+}
+
+.stepper__list {
+  gap: 14px;
+}
+
+.seguimiento-summary,
+.resultado-doc,
+.obs-card,
+.subsana-item,
+.dependent-card,
+.edicto-item,
+.ficha,
+.file-upload,
+.signature,
+.qr-box,
+.app-empty {
+  padding-top: 28px;
+  padding-bottom: 28px;
+}
+
+.table-wrapper {
+  margin-top: 18px;
+}
+
+html.theme-dark .app-content {
+  color: #e5edf4;
+}
