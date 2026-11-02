@@ -30,8 +30,21 @@
   function renderHeaderUser(container, { user, role, scenario, onRoleChange, onScenarioChange, onLogout, onAutofill }) {
     clear(container);
 
-    container.appendChild(el("span", "app-header__user-name", user?.nombre ?? "No autenticado"));
-    container.appendChild(el("span", "app-header__badge", ROLE_LABELS[role] ?? role));
+    container.className = "app-contextbar";
+    const contextTrigger = el("button", "app-context-trigger", "Sesión");
+    contextTrigger.type = "button";
+    contextTrigger.setAttribute("aria-expanded", "false");
+    contextTrigger.setAttribute("aria-haspopup", "true");
+    contextTrigger.appendChild(el("span", "app-context-trigger__chevron", "⌄"));
+
+    const contextMenu = el("div", "app-context-menu");
+    contextMenu.hidden = true;
+    contextMenu.setAttribute("role", "menu");
+    container.appendChild(contextTrigger);
+    container.appendChild(contextMenu);
+
+    contextMenu.appendChild(el("span", "app-header__user-name", user?.nombre ?? "No autenticado"));
+    contextMenu.appendChild(el("span", "app-header__badge", ROLE_LABELS[role] ?? role));
 
     const roleWrap = el("label", "app-header__role");
     roleWrap.appendChild(el("span", null, "Rol (demo)"));
@@ -45,7 +58,7 @@
     }
     select.addEventListener("change", (event) => onRoleChange?.(event.target.value));
     roleWrap.appendChild(select);
-    container.appendChild(roleWrap);
+    contextMenu.appendChild(roleWrap);
 
     // Selector de escenarios (X-Scenario) — HU-09 / TASK-09.4.
     const scenarioWrap = el("label", "app-header__role");
@@ -60,7 +73,7 @@
     }
     scenarioSelect.addEventListener("change", (event) => onScenarioChange?.(event.target.value));
     scenarioWrap.appendChild(scenarioSelect);
-    container.appendChild(scenarioWrap);
+    contextMenu.appendChild(scenarioWrap);
 
     // Botón de autorrellenado (solo demo): completa los campos de la pantalla
     // actual para agilizar las pruebas. No envía ni persiste datos.
@@ -74,13 +87,41 @@
         autofill.textContent = n ? `Rellenado (${n})` : "Sin campos";
         setTimeout(() => { autofill.textContent = "Autorrellenar"; }, 1400);
       });
-      container.appendChild(autofill);
+      contextMenu.appendChild(autofill);
     }
 
     const logout = el("button", "app-header__logout", "Salir");
     logout.type = "button";
     logout.addEventListener("click", () => onLogout?.());
-    container.appendChild(logout);
+    contextMenu.appendChild(logout);
+
+    const closeContext = () => {
+      contextMenu.hidden = true;
+      contextTrigger.setAttribute("aria-expanded", "false");
+      container.classList.remove("is-open");
+    };
+    contextTrigger.addEventListener("click", (event) => {
+      event.stopPropagation();
+      const open = contextTrigger.getAttribute("aria-expanded") === "true";
+      closeContext();
+      if (!open) {
+        contextMenu.hidden = false;
+        contextTrigger.setAttribute("aria-expanded", "true");
+        container.classList.add("is-open");
+      }
+    });
+    if (container._outsideContextHandler) {
+      document.removeEventListener("click", container._outsideContextHandler);
+      document.removeEventListener("keydown", container._escapeContextHandler);
+    }
+    container._outsideContextHandler = (event) => {
+      if (!container.contains(event.target)) closeContext();
+    };
+    container._escapeContextHandler = (event) => {
+      if (event.key === "Escape") closeContext();
+    };
+    document.addEventListener("click", container._outsideContextHandler);
+    document.addEventListener("keydown", container._escapeContextHandler);
   }
 
   function renderNav(container, { role, currentRoute }) {
