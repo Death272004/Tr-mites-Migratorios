@@ -1,21 +1,18 @@
-/*
- * theme.css — nueva identidad visual del portal.
- * No cambia la lógica ni las rutas: solo define composición, ritmo y estilo.
- */
+/* Identidad visual v2 — portal institucional de trámites migratorios. */
 
 :root {
-  --theme-ink: #172033;
-  --theme-muted: #657084;
-  --theme-blue: #1758a6;
-  --theme-blue-dark: #0f3d78;
-  --theme-blue-soft: #eaf2fc;
-  --theme-teal: #087f7a;
-  --theme-amber: #d87819;
-  --theme-line: #d9e1ec;
-  --theme-surface: #ffffff;
-  --theme-canvas: #f4f7fb;
-  --theme-radius: 14px;
-  --theme-shadow: 0 10px 28px rgba(24, 46, 82, 0.08);
+  --theme-ink: #172334;
+  --theme-muted: #657287;
+  --theme-navy: #102a43;
+  --theme-navy-2: #173b5c;
+  --theme-blue: #2167a8;
+  --theme-amber: #d88926;
+  --theme-amber-soft: #fff3df;
+  --theme-canvas: #f4f1ec;
+  --theme-paper: #fffdf9;
+  --theme-line: #d9d4cd;
+  --theme-radius: 9px;
+  --theme-shadow: 0 8px 22px rgba(27, 42, 58, 0.08);
 }
 
 html,
@@ -25,43 +22,39 @@ body {
 }
 
 body {
-  background-image:
-    linear-gradient(180deg, #ffffff 0, var(--theme-canvas) 260px);
+  background-image: none;
 }
 
 .app-shell {
   min-height: 100vh;
-  background: transparent;
+  background: var(--theme-canvas);
 }
 
-/* Encabezado: institucional, compacto y sin decoraciones automáticas. */
+/* Nueva barra: sólida, oscura y claramente diferente al diseño anterior. */
 .app-header {
-  min-height: 76px;
+  min-height: 82px;
   height: auto;
-  padding: 0 28px;
+  padding: 16px 30px;
   gap: 24px;
-  background: rgba(255, 255, 255, 0.97);
-  border-bottom: 1px solid var(--theme-line);
-  box-shadow: 0 2px 10px rgba(24, 46, 82, 0.05);
-  color: var(--theme-ink);
+  background: var(--theme-navy);
+  border: 0;
+  box-shadow: 0 3px 0 rgba(216, 137, 38, 0.9);
+  color: #ffffff;
   backdrop-filter: none;
 }
 
 .app-header__brand {
-  gap: 12px;
-  flex: 0 0 auto;
+  gap: 13px;
 }
 
 .app-header__logo {
-  width: 42px;
-  height: 42px;
-  display: grid;
-  place-items: center;
+  width: 48px;
+  height: 48px;
   overflow: hidden;
-  border: 1px solid #cbd9ea;
-  border-radius: 12px;
-  background: #f5f9ff;
-  box-shadow: 0 4px 10px rgba(24, 46, 82, 0.08);
+  border: 2px solid rgba(255, 255, 255, 0.82);
+  border-radius: 10px;
+  background: #ffffff;
+  box-shadow: none;
 }
 
 .app-header__logo::before,
@@ -70,51 +63,57 @@ body {
 }
 
 .app-header__logo img {
-  width: 34px;
-  height: 34px;
+  width: 40px;
+  height: 40px;
   object-fit: contain;
 }
 
 .app-header__titles {
-  gap: 2px;
+  gap: 3px;
 }
 
 .app-header__title {
-  color: var(--theme-ink);
-  font-size: 1rem;
-  letter-spacing: -0.01em;
+  color: #ffffff;
+  font-size: 1.04rem;
+  letter-spacing: 0;
 }
 
 .app-header__subtitle,
 .app-header__user-name,
 .app-header__role {
-  color: var(--theme-muted);
+  color: #cbd9e8;
 }
 
 .app-header__user {
-  gap: 12px;
+  gap: 10px;
   flex-wrap: wrap;
   justify-content: flex-end;
 }
 
 .app-header__badge {
   padding: 7px 12px;
-  border: 1px solid #c9d9ee;
-  border-radius: 999px;
-  background: var(--theme-blue-soft);
-  color: var(--theme-blue-dark);
-  font-weight: 600;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 6px;
+  background: var(--theme-navy-2);
+  color: #ffffff;
+  font-weight: 700;
 }
 
 .app-header__role {
-  gap: 8px;
+  gap: 7px;
 }
 
 .app-header__role-select,
 .app-header__scenario-select {
   min-height: 38px;
-  border: 1px solid #c7d3e2;
-  border-radius: 8px;
+  border: 1px solid #63809e;
+  border-radius: 6px;
+  background: #183a59;
+  color: #ffffff;
+}
+
+.app-header__role-select option,
+.app-header__scenario-select option {
   background: #ffffff;
   color: var(--theme-ink);
 }
@@ -123,72 +122,74 @@ body {
 .app-header__logout {
   min-height: 38px;
   padding: 8px 14px;
-  border: 1px solid #b9cae0;
-  border-radius: 8px;
-  background: #ffffff;
-  color: var(--theme-blue-dark);
-  font-weight: 600;
+  border: 1px solid rgba(255, 255, 255, 0.38);
+  border-radius: 6px;
+  background: transparent;
+  color: #ffffff;
+  font-weight: 700;
 }
 
 .app-header__autofill:hover,
 .app-header__logout:hover {
-  background: var(--theme-blue-soft);
-  border-color: #8eadd2;
+  border-color: var(--theme-amber);
+  background: var(--theme-amber);
+  color: #1d2a39;
 }
 
-/* Navegación: estructura de portal, no una pared de tarjetas. */
+/* Barra lateral oscura con grupos legibles. */
 .app-body {
-  background: transparent;
+  background: var(--theme-canvas);
 }
 
 .app-nav {
-  width: var(--layout-sidebar-width);
-  padding: 24px 16px;
-  background: #ffffff;
-  border-right: 1px solid var(--theme-line);
+  width: 278px;
+  padding: 28px 18px;
+  background: var(--theme-navy);
+  border-right: 0;
 }
 
 .app-nav__group + .app-nav__group {
-  margin-top: 28px;
+  margin-top: 30px;
 }
 
 .app-nav__group-title {
-  margin: 0 8px 10px;
-  color: #758196;
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.11em;
+  margin: 0 10px 11px;
+  color: #90a9c0;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
 }
 
 .app-nav__list {
-  gap: 4px;
+  gap: 3px;
 }
 
 .app-nav__link {
-  min-height: 42px;
-  padding: 10px 12px;
+  min-height: 44px;
+  padding: 11px 13px;
   border-left: 3px solid transparent;
-  border-radius: 8px;
-  color: #3f4b5e;
+  border-radius: 6px;
+  color: #d8e4ef;
   font-size: 0.9rem;
 }
 
 .app-nav__link:hover {
-  background: #f3f7fc;
-  color: var(--theme-blue-dark);
+  background: var(--theme-navy-2);
+  color: #ffffff;
   text-decoration: none;
 }
 
 .app-nav__link[aria-current="page"] {
-  border-left-color: var(--theme-blue);
-  background: var(--theme-blue-soft);
-  color: var(--theme-blue-dark);
+  border-left-color: var(--theme-amber);
+  background: #1c4568;
+  color: #ffffff;
   box-shadow: none;
 }
 
-/* Contenido y jerarquía. */
+/* Lienzo claro, con una composición editorial y no de plantilla. */
 .app-content {
-  padding: 36px clamp(24px, 4vw, 64px);
+  padding: 38px clamp(24px, 4vw, 68px);
+  background: var(--theme-canvas);
 }
 
 .app-content__inner {
@@ -196,14 +197,15 @@ body {
 }
 
 .app-page-header {
-  margin-bottom: 28px;
-  padding-bottom: 18px;
+  margin-bottom: 30px;
+  padding: 0 0 20px 18px;
   border-bottom: 1px solid var(--theme-line);
+  border-left: 5px solid var(--theme-amber);
 }
 
 .app-page-header__title {
-  color: var(--theme-ink);
-  font-size: clamp(1.45rem, 2vw, 2rem);
+  color: var(--theme-navy);
+  font-size: clamp(1.5rem, 2.2vw, 2.15rem);
   letter-spacing: -0.025em;
 }
 
@@ -213,10 +215,10 @@ body {
 }
 
 .app-content__inner > * + * {
-  margin-top: 28px;
+  margin-top: 30px;
 }
 
-/* Superficies: solo contenedores que realmente agrupan información. */
+/* Las superficies no parecen tarjetas flotantes repetidas. */
 .card,
 .auth-card,
 .detail-card,
@@ -225,46 +227,54 @@ body {
 .tramite-card {
   border: 1px solid var(--theme-line);
   border-radius: var(--theme-radius);
-  background: var(--theme-surface);
+  background: var(--theme-paper);
   box-shadow: var(--theme-shadow);
 }
 
 .card,
 .auth-card,
 .wizard-body {
-  padding: 28px;
+  padding: 30px;
 }
 
 .detail-card > form.detail-card {
-  padding: 24px;
+  padding: 26px;
   border: 0;
   border-radius: 0;
   box-shadow: none;
 }
 
 .detail-row {
-  min-height: 56px;
-  padding: 16px 24px;
+  min-height: 58px;
+  padding: 17px 26px;
   border-bottom-color: var(--theme-line);
 }
 
-/* Formularios con aire y jerarquía. */
+.detail-row__label {
+  color: #6b7788;
+}
+
+.detail-row__value {
+  color: var(--theme-navy);
+}
+
+/* Formularios: más aire, campos claros y separaciones visibles. */
 .form-field {
-  gap: 9px;
+  gap: 10px;
 }
 
 .form-field__label {
-  color: #344156;
-  font-weight: 600;
+  color: #334257;
+  font-weight: 700;
 }
 
 .form-field__input,
 .form-field__select,
 .form-field__textarea {
-  min-height: 44px;
-  padding: 11px 13px;
-  border: 1px solid #c8d4e3;
-  border-radius: 8px;
+  min-height: 46px;
+  padding: 12px 14px;
+  border: 1px solid #c6c0b7;
+  border-radius: 6px;
   background: #ffffff;
   transition: border-color 160ms ease, box-shadow 160ms ease;
 }
@@ -273,59 +283,68 @@ body {
 .form-field__select:focus,
 .form-field__textarea:focus {
   border-color: var(--theme-blue);
-  box-shadow: 0 0 0 3px rgba(23, 88, 166, 0.12);
+  box-shadow: 0 0 0 3px rgba(33, 103, 168, 0.13);
   outline: none;
 }
 
 .form-field__group {
-  gap: 16px;
+  gap: 18px;
 }
 
 .wizard-grid,
 .tramite-grid {
-  gap: 24px;
+  gap: 26px;
 }
 
 .wizard-section-title {
-  margin-bottom: 18px;
-  color: #58667a;
-  font-size: 0.85rem;
-  letter-spacing: 0.08em;
+  margin-bottom: 20px;
+  color: #59677a;
+  font-size: 0.84rem;
+  letter-spacing: 0.1em;
 }
 
 .wizard-section {
-  margin-bottom: 28px;
+  margin-bottom: 30px;
 }
 
-/* Acciones: una sola prioridad visual. */
+.wizard-summary {
+  margin-bottom: 24px;
+  padding: 16px 18px;
+  border-left: 4px solid var(--theme-blue);
+  border-radius: 5px;
+  background: #eaf2fa;
+}
+
+/* Una jerarquía de acciones más firme. */
 .btn {
-  min-height: 42px;
-  padding: 10px 17px;
-  border-radius: 8px;
-  font-weight: 600;
+  min-height: 44px;
+  padding: 11px 18px;
+  border-radius: 6px;
+  font-weight: 700;
 }
 
 .btn--primary {
+  border-color: var(--theme-navy);
+  background: var(--theme-navy);
+}
+
+.btn--primary:hover {
   border-color: var(--theme-blue);
   background: var(--theme-blue);
 }
 
-.btn--primary:hover {
-  background: var(--theme-blue-dark);
-}
-
 .detail-actions,
 .auth-actions {
-  gap: 12px;
-  margin-top: 20px;
+  gap: 14px;
+  margin-top: 24px;
 }
 
 .toolbar {
-  margin-bottom: 24px;
+  margin-bottom: 26px;
 }
 
 .toolbar__actions {
-  gap: 10px;
+  gap: 12px;
 }
 
 .table-wrapper {
@@ -334,23 +353,42 @@ body {
 
 .table th,
 .table td {
-  padding: 14px 16px;
+  padding: 15px 17px;
 }
 
 .table thead {
-  background: #f4f7fb;
-  color: #42516a;
+  background: #e9eef3;
+  color: #34465d;
+}
+
+.table tbody tr:hover {
+  background: #fff7e9;
+}
+
+.badge--info {
+  background: #e8f0f8;
+  color: #173b5c;
+}
+
+.badge--warning {
+  background: var(--theme-amber-soft);
+  color: #99570f;
 }
 
 .app-footer {
-  padding: 16px 28px;
-  background: #ffffff;
-  border-top-color: var(--theme-line);
+  padding: 16px 30px;
+  background: var(--theme-navy);
+  border-top: 0;
+  color: #b8c8d8;
+}
+
+.app-footer__legal {
+  color: #d7e1ea;
 }
 
 @media (max-width: 1024px) {
   .app-header {
-    padding: 14px 20px;
+    padding: 15px 22px;
   }
 
   .app-header__user {
@@ -358,7 +396,7 @@ body {
   }
 
   .app-content {
-    padding: 28px 24px;
+    padding: 30px 24px;
   }
 }
 
@@ -373,7 +411,7 @@ body {
   }
 
   .app-nav {
-    padding: 20px 14px;
+    padding: 22px 14px;
   }
 
   .app-content {
@@ -383,6 +421,6 @@ body {
   .card,
   .auth-card,
   .wizard-body {
-    padding: 20px;
+    padding: 22px;
   }
 }
