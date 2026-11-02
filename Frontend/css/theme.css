@@ -1,0 +1,388 @@
+/*
+ * theme.css — nueva identidad visual del portal.
+ * No cambia la lógica ni las rutas: solo define composición, ritmo y estilo.
+ */
+
+:root {
+  --theme-ink: #172033;
+  --theme-muted: #657084;
+  --theme-blue: #1758a6;
+  --theme-blue-dark: #0f3d78;
+  --theme-blue-soft: #eaf2fc;
+  --theme-teal: #087f7a;
+  --theme-amber: #d87819;
+  --theme-line: #d9e1ec;
+  --theme-surface: #ffffff;
+  --theme-canvas: #f4f7fb;
+  --theme-radius: 14px;
+  --theme-shadow: 0 10px 28px rgba(24, 46, 82, 0.08);
+}
+
+html,
+body {
+  background: var(--theme-canvas);
+  color: var(--theme-ink);
+}
+
+body {
+  background-image:
+    linear-gradient(180deg, #ffffff 0, var(--theme-canvas) 260px);
+}
+
+.app-shell {
+  min-height: 100vh;
+  background: transparent;
+}
+
+/* Encabezado: institucional, compacto y sin decoraciones automáticas. */
+.app-header {
+  min-height: 76px;
+  height: auto;
+  padding: 0 28px;
+  gap: 24px;
+  background: rgba(255, 255, 255, 0.97);
+  border-bottom: 1px solid var(--theme-line);
+  box-shadow: 0 2px 10px rgba(24, 46, 82, 0.05);
+  color: var(--theme-ink);
+  backdrop-filter: none;
+}
+
+.app-header__brand {
+  gap: 12px;
+  flex: 0 0 auto;
+}
+
+.app-header__logo {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid #cbd9ea;
+  border-radius: 12px;
+  background: #f5f9ff;
+  box-shadow: 0 4px 10px rgba(24, 46, 82, 0.08);
+}
+
+.app-header__logo::before,
+.app-header__logo::after {
+  display: none;
+}
+
+.app-header__logo img {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+}
+
+.app-header__titles {
+  gap: 2px;
+}
+
+.app-header__title {
+  color: var(--theme-ink);
+  font-size: 1rem;
+  letter-spacing: -0.01em;
+}
+
+.app-header__subtitle,
+.app-header__user-name,
+.app-header__role {
+  color: var(--theme-muted);
+}
+
+.app-header__user {
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.app-header__badge {
+  padding: 7px 12px;
+  border: 1px solid #c9d9ee;
+  border-radius: 999px;
+  background: var(--theme-blue-soft);
+  color: var(--theme-blue-dark);
+  font-weight: 600;
+}
+
+.app-header__role {
+  gap: 8px;
+}
+
+.app-header__role-select,
+.app-header__scenario-select {
+  min-height: 38px;
+  border: 1px solid #c7d3e2;
+  border-radius: 8px;
+  background: #ffffff;
+  color: var(--theme-ink);
+}
+
+.app-header__autofill,
+.app-header__logout {
+  min-height: 38px;
+  padding: 8px 14px;
+  border: 1px solid #b9cae0;
+  border-radius: 8px;
+  background: #ffffff;
+  color: var(--theme-blue-dark);
+  font-weight: 600;
+}
+
+.app-header__autofill:hover,
+.app-header__logout:hover {
+  background: var(--theme-blue-soft);
+  border-color: #8eadd2;
+}
+
+/* Navegación: estructura de portal, no una pared de tarjetas. */
+.app-body {
+  background: transparent;
+}
+
+.app-nav {
+  width: var(--layout-sidebar-width);
+  padding: 24px 16px;
+  background: #ffffff;
+  border-right: 1px solid var(--theme-line);
+}
+
+.app-nav__group + .app-nav__group {
+  margin-top: 28px;
+}
+
+.app-nav__group-title {
+  margin: 0 8px 10px;
+  color: #758196;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.11em;
+}
+
+.app-nav__list {
+  gap: 4px;
+}
+
+.app-nav__link {
+  min-height: 42px;
+  padding: 10px 12px;
+  border-left: 3px solid transparent;
+  border-radius: 8px;
+  color: #3f4b5e;
+  font-size: 0.9rem;
+}
+
+.app-nav__link:hover {
+  background: #f3f7fc;
+  color: var(--theme-blue-dark);
+  text-decoration: none;
+}
+
+.app-nav__link[aria-current="page"] {
+  border-left-color: var(--theme-blue);
+  background: var(--theme-blue-soft);
+  color: var(--theme-blue-dark);
+  box-shadow: none;
+}
+
+/* Contenido y jerarquía. */
+.app-content {
+  padding: 36px clamp(24px, 4vw, 64px);
+}
+
+.app-content__inner {
+  width: min(1180px, 100%);
+}
+
+.app-page-header {
+  margin-bottom: 28px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--theme-line);
+}
+
+.app-page-header__title {
+  color: var(--theme-ink);
+  font-size: clamp(1.45rem, 2vw, 2rem);
+  letter-spacing: -0.025em;
+}
+
+.app-page-header__subtitle {
+  margin-top: 8px;
+  color: var(--theme-muted);
+}
+
+.app-content__inner > * + * {
+  margin-top: 28px;
+}
+
+/* Superficies: solo contenedores que realmente agrupan información. */
+.card,
+.auth-card,
+.detail-card,
+.wizard-body,
+.table-wrapper,
+.tramite-card {
+  border: 1px solid var(--theme-line);
+  border-radius: var(--theme-radius);
+  background: var(--theme-surface);
+  box-shadow: var(--theme-shadow);
+}
+
+.card,
+.auth-card,
+.wizard-body {
+  padding: 28px;
+}
+
+.detail-card > form.detail-card {
+  padding: 24px;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.detail-row {
+  min-height: 56px;
+  padding: 16px 24px;
+  border-bottom-color: var(--theme-line);
+}
+
+/* Formularios con aire y jerarquía. */
+.form-field {
+  gap: 9px;
+}
+
+.form-field__label {
+  color: #344156;
+  font-weight: 600;
+}
+
+.form-field__input,
+.form-field__select,
+.form-field__textarea {
+  min-height: 44px;
+  padding: 11px 13px;
+  border: 1px solid #c8d4e3;
+  border-radius: 8px;
+  background: #ffffff;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.form-field__input:focus,
+.form-field__select:focus,
+.form-field__textarea:focus {
+  border-color: var(--theme-blue);
+  box-shadow: 0 0 0 3px rgba(23, 88, 166, 0.12);
+  outline: none;
+}
+
+.form-field__group {
+  gap: 16px;
+}
+
+.wizard-grid,
+.tramite-grid {
+  gap: 24px;
+}
+
+.wizard-section-title {
+  margin-bottom: 18px;
+  color: #58667a;
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+}
+
+.wizard-section {
+  margin-bottom: 28px;
+}
+
+/* Acciones: una sola prioridad visual. */
+.btn {
+  min-height: 42px;
+  padding: 10px 17px;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+.btn--primary {
+  border-color: var(--theme-blue);
+  background: var(--theme-blue);
+}
+
+.btn--primary:hover {
+  background: var(--theme-blue-dark);
+}
+
+.detail-actions,
+.auth-actions {
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.toolbar {
+  margin-bottom: 24px;
+}
+
+.toolbar__actions {
+  gap: 10px;
+}
+
+.table-wrapper {
+  overflow: hidden;
+}
+
+.table th,
+.table td {
+  padding: 14px 16px;
+}
+
+.table thead {
+  background: #f4f7fb;
+  color: #42516a;
+}
+
+.app-footer {
+  padding: 16px 28px;
+  background: #ffffff;
+  border-top-color: var(--theme-line);
+}
+
+@media (max-width: 1024px) {
+  .app-header {
+    padding: 14px 20px;
+  }
+
+  .app-header__user {
+    gap: 8px;
+  }
+
+  .app-content {
+    padding: 28px 24px;
+  }
+}
+
+@media (max-width: 768px) {
+  .app-header {
+    gap: 14px;
+  }
+
+  .app-header__user {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .app-nav {
+    padding: 20px 14px;
+  }
+
+  .app-content {
+    padding: 24px 16px;
+  }
+
+  .card,
+  .auth-card,
+  .wizard-body {
+    padding: 20px;
+  }
+}
