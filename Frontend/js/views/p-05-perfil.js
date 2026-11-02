@@ -64,8 +64,16 @@
       perfilActual = perfil;
       layout.clear(perfilWrap);
 
-      var card = layout.el("div", "detail-card");
-      card.appendChild(layout.el("h3", "wizard-section-title", "Datos de la cuenta"));
+      var card = layout.el("section", "profile-card");
+      var heading = layout.el("div", "profile-card__heading");
+      heading.appendChild(layout.el("span", "profile-card__mark", "◆"));
+      var headingCopy = layout.el("div", "profile-card__heading-copy");
+      headingCopy.appendChild(layout.el("h3", null, "Datos de la cuenta"));
+      headingCopy.appendChild(layout.el("p", null, "Información principal de la persona solicitante"));
+      heading.appendChild(headingCopy);
+      card.appendChild(heading);
+
+      var facts = layout.el("div", "profile-card__facts");
 
       var filas = [
         { label: "Nombres y apellidos", value: perfil.nombre },
@@ -78,15 +86,18 @@
         var row = layout.el("div", "detail-row");
         row.appendChild(layout.el("span", "detail-row__label", filas[i].label));
         row.appendChild(layout.el("span", "detail-row__value", filas[i].value));
-        card.appendChild(row);
+        facts.appendChild(row);
       }
 
+      card.appendChild(facts);
+
       // Correo: solo lectura (el backend no soporta cambio de correo en este alcance).
-      var notaCorreo = layout.el("p", "form-field__help", "El cambio de correo electrónico estará disponible en una entrega posterior.");
+      var notaCorreo = layout.el("p", "profile-card__note", "El cambio de correo electrónico estará disponible en una entrega posterior.");
       card.appendChild(notaCorreo);
 
       // Datos de contacto editables (PATCH /api/perfil).
-      var form = layout.el("form", "detail-card");
+      card.appendChild(layout.el("h3", "profile-card__section-title", "Preferencias de contacto"));
+      var form = layout.el("form", "profile-form");
       form.noValidate = true;
 
       var tel = field.fieldText({ id: "telefono", label: "Teléfono (código país + número)", value: perfil.telefono || "", placeholder: "+507 6000-0000" });
@@ -198,10 +209,16 @@
   // ----- Cambio de contraseña (PUT /api/auth/contrasena) -----
   function renderCambioContrasena(wrap, getPerfil) {
     layout.clear(wrap);
-    var card = layout.el("div", "detail-card");
-    card.appendChild(layout.el("h3", "wizard-section-title", "Cambiar contraseña"));
+    var card = layout.el("section", "profile-card profile-password-card");
+    var heading = layout.el("div", "profile-card__heading profile-card__heading--secondary");
+    heading.appendChild(layout.el("span", "profile-card__mark", "•"));
+    var headingCopy = layout.el("div", "profile-card__heading-copy");
+    headingCopy.appendChild(layout.el("h3", null, "Cambiar contraseña"));
+    headingCopy.appendChild(layout.el("p", null, "Actualiza la clave de acceso de tu cuenta"));
+    heading.appendChild(headingCopy);
+    card.appendChild(heading);
 
-    var form = layout.el("form", "detail-card");
+    var form = layout.el("form", "profile-form");
     form.noValidate = true;
 
     var actual = field.fieldPassword({ id: "contrasenaActual", label: "Contraseña actual", required: true, toggle: true });
