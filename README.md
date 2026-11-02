@@ -280,6 +280,10 @@ La rama se integra mediante Pull Request después de verificar que el proyecto c
 | Integrante | Responsabilidad principal |
 | --- | --- |
 | Richard Rodríguez | Product Owner |
+| Daniela Anaya | |
+| Edwin Cisnero | |
+| Leonardo Liang | |
+| Javier Pravia | |
 
 <p>
   <img src="https://img.shields.io/badge/Scrum-Coordinar-0B1B2B?style=flat-square" alt="Scrum">
