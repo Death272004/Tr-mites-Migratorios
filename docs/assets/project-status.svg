@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="150" viewBox="0 0 1200 150" role="img" aria-labelledby="title desc">
   <title id="title">Estado del proyecto</title>
-  <desc id="desc">MVP en desarrollo con trazabilidad, seguridad y pruebas.</desc>
+  <desc id="desc">Sprint 6 completado con trazabilidad, seguridad y pruebas.</desc>
   <defs>
     <linearGradient id="bg" x1="0" x2="1">
       <stop offset="0" stop-color="#0b1b2b"/>
@@ -22,14 +22,14 @@
     <g transform="translate(735 34)">
       <rect width="140" height="80" rx="14" fill="#102f47" stroke="#3a6b84"/>
       <circle class="pulse" cx="28" cy="28" r="8" fill="#56c596" filter="url(#glow)"/>
-      <text x="48" y="34" fill="#f4f7fb" font-size="15" font-weight="700">MVP activo</text>
+      <text x="48" y="34" fill="#f4f7fb" font-size="15" font-weight="700">Sprint 6</text>
       <rect x="20" y="51" width="98" height="8" rx="4" fill="#35617b"/>
       <rect x="20" y="51" width="73" height="8" rx="4" fill="#f28c28"/>
     </g>
     <g transform="translate(895 34)">
       <rect width="140" height="80" rx="14" fill="#102f47" stroke="#3a6b84"/>
       <circle cx="28" cy="28" r="8" fill="#a78bfa"/>
-      <text x="48" y="34" fill="#f4f7fb" font-size="15" font-weight="700">QA activo</text>
+      <text x="48" y="34" fill="#f4f7fb" font-size="15" font-weight="700">QA validado</text>
       <rect x="20" y="51" width="98" height="8" rx="4" fill="#35617b"/>
       <rect x="20" y="51" width="84" height="8" rx="4" fill="#a78bfa"/>
     </g>
