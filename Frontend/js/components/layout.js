@@ -86,22 +86,78 @@
   function renderNav(container, { role, currentRoute }) {
     clear(container);
 
+    const groups = [];
+    const closeMenus = () => {
+      groups.forEach(({ trigger, menu, groupEl }) => {
+        trigger.setAttribute("aria-expanded", "false");
+        menu.hidden = true;
+        groupEl.classList.remove("is-open");
+      });
+    };
+
     for (const group of getNavForRole(role)) {
       const groupEl = el("div", "app-nav__group");
-      groupEl.appendChild(el("p", "app-nav__group-title", group.title));
+      const trigger = el("button", "app-nav__group-trigger");
+      trigger.type = "button";
+      trigger.setAttribute("aria-expanded", "false");
+      trigger.setAttribute("aria-haspopup", "true");
+      trigger.appendChild(el("span", null, group.title));
+      trigger.appendChild(el("span", "app-nav__chevron", "⌄"));
 
-      const list = el("ul", "app-nav__list");
+      const menu = el("ul", "app-nav__dropdown");
+      menu.hidden = true;
+      menu.setAttribute("role", "menu");
+      let hasCurrent = false;
       for (const item of group.items) {
         const li = el("li");
+        li.setAttribute("role", "none");
         const link = el("a", "app-nav__link", item.label);
         link.href = item.route;
-        if (item.route === currentRoute) link.setAttribute("aria-current", "page");
+        link.setAttribute("role", "menuitem");
+        if (item.route === currentRoute) {
+          link.setAttribute("aria-current", "page");
+          hasCurrent = true;
+        }
         li.appendChild(link);
-        list.appendChild(li);
+        menu.appendChild(li);
       }
-      groupEl.appendChild(list);
+      if (hasCurrent) groupEl.classList.add("is-current");
+      trigger.addEventListener("click", (event) => {
+        event.stopPropagation();
+        const open = trigger.getAttribute("aria-expanded") === "true";
+        closeMenus();
+        if (!open) {
+          trigger.setAttribute("aria-expanded", "true");
+          menu.hidden = false;
+          groupEl.classList.add("is-open");
+        }
+      });
+      groupEl.appendChild(trigger);
+      groupEl.appendChild(menu);
       container.appendChild(groupEl);
+      groups.push({ trigger, menu, groupEl });
     }
+
+    if (container._linkMenuHandler) {
+      container.removeEventListener("click", container._linkMenuHandler);
+    }
+    container._linkMenuHandler = (event) => {
+      if (event.target.closest("a")) closeMenus();
+    };
+    container.addEventListener("click", container._linkMenuHandler);
+
+    if (container._outsideMenuHandler) {
+      document.removeEventListener("click", container._outsideMenuHandler);
+      document.removeEventListener("keydown", container._escapeMenuHandler);
+    }
+    container._outsideMenuHandler = (event) => {
+      if (!container.contains(event.target)) closeMenus();
+    };
+    container._escapeMenuHandler = (event) => {
+      if (event.key === "Escape") closeMenus();
+    };
+    document.addEventListener("click", container._outsideMenuHandler);
+    document.addEventListener("keydown", container._escapeMenuHandler);
   }
 
   function pageHeader(title, subtitle) {
