@@ -1,7 +1,7 @@
 # 🧭 Frontend · Trámites Migratorios
 
 <p align="center">
-  <img src="../docs/assets/project-status.svg" alt="Estado del frontend y del proyecto" width="100%">
+  <img src="../recursos-proyecto/assets/project-status.svg" alt="Estado del frontend y del proyecto" width="100%">
 </p>
 
 <p align="center">

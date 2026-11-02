@@ -44,7 +44,7 @@ ambiente y si es sensible.
 Las pruebas usan datos ficticios. Antes de publicar logs, capturas o informes se
 deben retirar tokens, contraseñas, correos reales, documentos y cualquier dato
 personal. La ubicación y el formato de las evidencias están definidos en
-[`docs/evidencias/README.md`](evidencias/README.md).
+[`recursos-proyecto/evidencias/README.md`](evidencias/README.md).
 
 ## Aprobación
 
