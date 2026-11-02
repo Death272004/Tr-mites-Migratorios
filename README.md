@@ -336,10 +336,10 @@ La rama se integra mediante Pull Request después de verificar que el proyecto c
 
 ## Estado actual
 
-El proyecto se encuentra en la etapa de refinamiento del MVP. El foco actual es cerrar el recorrido completo del abogado, demostrar las verificaciones simuladas y presentar evidencias de calidad, seguridad, trazabilidad y DevOps para el Sprint 6.
+El proyecto cerró el Sprint 6 – Review #2 con el recorrido principal del abogado implementado, verificaciones simuladas y evidencias de calidad, seguridad, trazabilidad y DevOps documentadas.
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Próximo%20objetivo-Review%20%232-56C596?style=for-the-badge" alt="Próximo objetivo: Review 2">
+  <img src="https://img.shields.io/badge/Estado-Sprint%206%20completado-56C596?style=for-the-badge" alt="Estado: Sprint 6 completado">
 </p>
 
 ---
