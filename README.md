@@ -265,7 +265,7 @@ git push -u origin feature/nombre-de-la-tarea
 
 La rama se integra mediante Pull Request después de verificar que el proyecto compile, las pruebas pasen y la documentación esté actualizada. `main` se reserva para una versión estable y demostrable.
 
-## 👥 Equipo y responsabilidades
+## 👥 Primer Equipo y responsabilidades
 
 | Integrante | Responsabilidad principal |
 | --- | --- |
@@ -274,6 +274,16 @@ La rama se integra mediante Pull Request después de verificar que el proyecto c
 | Jonathan Gómez | Frontend e interfaces |
 | Vivian Paris | QA y seguridad |
 | Richard Rodríguez | Documentación y coordinación técnica |
+
+## 👥 Segundo equipo y responsabilidades
+
+| Integrante | Responsabilidad principal |
+| --- | --- |
+| Kenneth Carter | |
+| Edgar Rosario | |
+| Jonathan Gómez | |
+| Vivian Paris | |
+| Richard Rodríguez | Product Owner |
 
 <p>
   <img src="https://img.shields.io/badge/Scrum-Coordinar-0B1B2B?style=flat-square" alt="Scrum">
