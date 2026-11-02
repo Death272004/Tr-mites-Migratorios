@@ -35,7 +35,7 @@
     contextTrigger.type = "button";
     contextTrigger.setAttribute("aria-expanded", "false");
     contextTrigger.setAttribute("aria-haspopup", "true");
-    contextTrigger.appendChild(el("span", "app-context-trigger__chevron", "⌄"));
+    contextTrigger.appendChild(el("span", "app-context-trigger__chevron"));
 
     const contextMenu = el("div", "app-context-menu");
     contextMenu.hidden = true;
@@ -143,7 +143,7 @@
       trigger.setAttribute("aria-expanded", "false");
       trigger.setAttribute("aria-haspopup", "true");
       trigger.appendChild(el("span", null, group.title));
-      trigger.appendChild(el("span", "app-nav__chevron", "⌄"));
+      trigger.appendChild(el("span", "app-nav__chevron"));
 
       const menu = el("ul", "app-nav__dropdown");
       menu.hidden = true;

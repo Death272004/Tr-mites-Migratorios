@@ -1478,14 +1478,17 @@ body {
 }
 
 .app-nav__chevron {
-  color: #75889a;
-  font-size: 1rem;
-  line-height: 1;
+  width: 7px;
+  height: 7px;
+  margin-top: -4px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(45deg);
   transition: transform 160ms ease;
 }
 
 .app-nav__group.is-open .app-nav__chevron {
-  transform: rotate(180deg);
+  transform: rotate(225deg);
 }
 
 .app-nav--top .app-nav__dropdown {
@@ -1577,13 +1580,17 @@ body {
 }
 
 .app-context-trigger__chevron {
-  font-size: 1rem;
-  line-height: 1;
+  width: 7px;
+  height: 7px;
+  margin-top: -4px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(45deg);
   transition: transform 160ms ease;
 }
 
 .app-contextbar.is-open .app-context-trigger__chevron {
-  transform: rotate(180deg);
+  transform: rotate(225deg);
 }
 
 .app-context-menu {
