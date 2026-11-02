@@ -18,7 +18,7 @@
   });
 
   function canAccess(route, role) {
-    const publicPortal = [LOGIN_ROUTE, "#/registro", "#/recuperar-clave", "#/identidad/otp"];
+    const publicPortal = [LOGIN_ROUTE, "#/registro", "#/recuperar-clave", "#/identidad/otp", "#/cuenta/configuracion"];
     if (publicPortal.includes(route)) return true;
 
     if (route.startsWith("#/interno/")) {
@@ -98,7 +98,7 @@
           : LOGIN_ROUTE;
     }
 
-    const publicPortal = [LOGIN_ROUTE, INTERNAL_LOGIN_ROUTE, "#/registro", "#/recuperar-clave", "#/identidad/otp", ERRORS.FORBIDDEN, ERRORS.NOT_FOUND, ERRORS.SERVER];
+    const publicPortal = [LOGIN_ROUTE, INTERNAL_LOGIN_ROUTE, "#/registro", "#/recuperar-clave", "#/identidad/otp", "#/cuenta/configuracion", ERRORS.FORBIDDEN, ERRORS.NOT_FOUND, ERRORS.SERVER];
     const needsAuth =
       (!publicPortal.includes(route) && !isInternalRole(role)) ||
       (route.startsWith("#/interno/") && route !== INTERNAL_LOGIN_ROUTE);
