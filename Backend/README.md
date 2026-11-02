@@ -1,6 +1,6 @@
 # Backend
 
-Servidor Java 17 con Spring Boot y PostgreSQL. El contrato de la API está en [`docs/openapi.yaml`](docs/openapi.yaml), la matriz de autorización en [`docs/matriz-autorizacion.md`](docs/matriz-autorizacion.md) y el estándar de errores en [`docs/estandar-errores.md`](docs/estandar-errores.md). Sus cambios se registran en [`docs/CHANGELOG-api.md`](docs/CHANGELOG-api.md). Cómo levantarlo y probarlo: [README de la raíz](../README.md).
+Servidor Java 17 con Spring Boot y PostgreSQL. El contrato ejecutable de la API se conserva en [`docs/openapi.yaml`](docs/openapi.yaml) porque las pruebas de contrato lo leen desde esa ruta. La documentación técnica complementaria se mantiene en la rama `Documentacion`, dentro de `Backend/docs`. Cómo levantarlo y probarlo: [README de la raíz](../README.md).
 
 ## Qué hay implementado
 
