@@ -544,3 +544,287 @@ body {
     padding: 22px;
   }
 }
+
+/* Componentes internos: misma identidad, sin glass ni tarjetas repetidas. */
+.seguimiento-summary,
+.obs-card,
+.subsana-item,
+.resultado-doc,
+.modal,
+.faq-item,
+.dependent-card,
+.ficha,
+.checklist__item,
+.file-upload,
+.signature,
+.qr-box,
+.edicto-item {
+  border: 1px solid var(--theme-line);
+  border-radius: 7px;
+  background: var(--theme-paper);
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  transform: none;
+}
+
+.seguimiento-summary {
+  max-width: 920px;
+  gap: 22px 28px;
+  margin-bottom: 28px;
+  padding: 22px 26px;
+}
+
+.seguimiento-summary__item {
+  gap: 7px;
+  padding-right: 20px;
+  border-right: 1px solid var(--theme-line);
+}
+
+.seguimiento-summary__item:last-child {
+  border-right: 0;
+}
+
+.seguimiento-summary__label {
+  color: var(--theme-muted);
+  letter-spacing: 0.08em;
+}
+
+.seguimiento-summary__value {
+  color: var(--theme-navy);
+  font-size: 1.02rem;
+}
+
+.seguimiento-block {
+  max-width: 920px;
+  margin-bottom: 30px;
+}
+
+.seguimiento-block__title {
+  margin-bottom: 14px;
+  color: var(--theme-navy);
+}
+
+.seguimiento-action {
+  max-width: 920px;
+  margin-bottom: 26px;
+  padding: 17px 20px;
+  border: 1px solid #c8d7e5;
+  border-left: 4px solid var(--theme-blue);
+  border-radius: 6px;
+  background: #edf4fa;
+}
+
+.seguimiento-note {
+  margin-top: 18px;
+}
+
+.obs-list,
+.subsana-form {
+  max-width: 920px;
+  gap: 20px;
+}
+
+.obs-card.is-unread {
+  border-left: 5px solid var(--theme-blue);
+}
+
+.obs-card__head {
+  padding: 17px 22px;
+  background: #e9eef3;
+  border-bottom: 1px solid var(--theme-line);
+}
+
+.obs-card__body {
+  gap: 16px;
+  padding: 21px 22px;
+}
+
+.obs-card__actions {
+  gap: 10px;
+  padding: 0 22px 20px;
+}
+
+.obs-item {
+  gap: 12px;
+  padding: 13px 15px;
+  border: 1px solid var(--theme-line);
+  border-radius: 6px;
+  background: #faf8f4;
+}
+
+.subsana-item {
+  gap: 17px;
+  padding: 23px 25px;
+}
+
+.subsana-item__meta {
+  gap: 20px;
+}
+
+.resultado-doc {
+  max-width: 920px;
+  gap: 17px;
+  padding: 25px;
+}
+
+.resultado-doc__actions {
+  gap: 11px;
+  padding-top: 7px;
+  border-top: 1px solid var(--theme-line);
+}
+
+.edictos-list,
+.edicto-list {
+  gap: 12px;
+}
+
+.edicto-item {
+  padding: 17px 20px;
+}
+
+.edicto-item__text {
+  margin-top: 9px;
+}
+
+.faq-item {
+  margin-bottom: 12px;
+  padding: 17px 20px;
+}
+
+.faq-item__a {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--theme-line);
+}
+
+.ficha {
+  margin-top: 18px;
+  padding: 20px;
+  border: 1px solid var(--theme-line);
+  border-radius: 7px;
+  background: #faf8f4;
+}
+
+.ficha__list {
+  gap: 11px;
+}
+
+.file-upload {
+  padding: 17px 20px;
+  background: #faf8f4;
+}
+
+.signature {
+  padding: 13px;
+}
+
+.signature__canvas {
+  height: 190px;
+  border-color: #b9c4d0;
+}
+
+.checklist {
+  gap: 12px;
+}
+
+.checklist__item {
+  gap: 14px;
+  padding: 15px 17px;
+}
+
+.dependent-list {
+  gap: 18px;
+}
+
+.dependent-card {
+  padding: 21px;
+}
+
+.qr-box {
+  gap: 10px;
+  padding: 20px;
+}
+
+.progress {
+  height: 9px;
+  margin: 16px 0;
+  background: #e3e8ed;
+}
+
+.progress__bar,
+.report-bar__fill {
+  background: var(--theme-blue);
+}
+
+.report-bars {
+  gap: 17px;
+}
+
+.report-bar {
+  grid-template-columns: minmax(180px, 240px) 1fr 64px;
+  gap: 14px;
+}
+
+.report-bar__track {
+  height: 9px;
+  background: #e3e8ed;
+}
+
+.stepper {
+  padding: 18px 0 24px;
+}
+
+.stepper__list {
+  gap: 10px;
+}
+
+.stepper__item {
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 6px;
+  background: #ffffff;
+}
+
+.stepper__item.is-current {
+  border-color: var(--theme-blue);
+  background: #eaf2fa;
+}
+
+.timeline__list {
+  gap: 18px;
+}
+
+.timeline__item {
+  gap: 14px;
+}
+
+.timeline__body {
+  padding: 16px 18px;
+  border: 1px solid var(--theme-line);
+  border-radius: 7px;
+  background: var(--theme-paper);
+}
+
+.modal-backdrop {
+  background: rgba(16, 42, 67, 0.58);
+}
+
+.modal {
+  width: min(600px, 100%);
+}
+
+.modal__header,
+.modal__body,
+.modal__footer {
+  padding-left: 25px;
+  padding-right: 25px;
+}
+
+.app-empty {
+  gap: 14px;
+  padding: 58px 28px;
+  border: 1px dashed #b8c4d1;
+  border-radius: 7px;
+  background: var(--theme-paper);
+}
