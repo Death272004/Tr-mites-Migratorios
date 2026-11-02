@@ -1848,6 +1848,10 @@ html.theme-dark .app-content {
   color: #e5edf4;
 }
 
+html.theme-dark body {
+  background-image: none;
+}
+
 html.theme-dark .app-shell,
 html.theme-dark .app-body {
   background: #101b26;
@@ -1932,13 +1936,40 @@ html.theme-dark .detail-card,
 html.theme-dark .wizard-body,
 html.theme-dark .table-wrapper,
 html.theme-dark .modal {
-  background: #162838;
+  background: transparent;
   border-color: #38566c;
   color: #e5edf4;
+}
+
+html.theme-dark .wizard-body {
+  border-color: #38566c;
+}
+
+html.theme-dark .wizard-summary,
+html.theme-dark .form-field--check,
+html.theme-dark .table thead {
+  background: #16222d;
+  border-color: #38566c;
+  color: #dce8f1;
 }
 
 html.theme-dark .btn--primary {
   background: #2167a8;
   border-color: #2167a8;
+  color: #ffffff;
+}
+
+html.theme-dark .form-field__toggle,
+html.theme-dark .app-content .btn:not(.btn--primary):not(.btn--danger),
+html.theme-dark .app-content button:not(.settings-reset) {
+  background: #1b2c3b;
+  border-color: #587287;
+  color: #e5edf4;
+}
+
+html.theme-dark .form-field__toggle:hover,
+html.theme-dark .app-content .btn:not(.btn--primary):not(.btn--danger):hover,
+html.theme-dark .app-content button:not(.settings-reset):hover {
+  background: #29465c;
   color: #ffffff;
 }
