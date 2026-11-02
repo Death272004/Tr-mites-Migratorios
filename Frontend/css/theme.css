@@ -1848,6 +1848,19 @@ html.theme-dark .app-content {
   color: #e5edf4;
 }
 
+html.theme-dark .app-shell,
+html.theme-dark .app-body {
+  background: #101b26;
+}
+
+html.theme-dark .app-body {
+  flex: 1 1 auto;
+}
+
+html.theme-dark .app-content {
+  min-height: 100%;
+}
+
 html.theme-dark .app-content__inner,
 html.theme-dark .settings-section,
 html.theme-dark .detail-row,
@@ -1864,6 +1877,28 @@ html.theme-dark .app-page-header__subtitle,
 html.theme-dark .settings-section__intro,
 html.theme-dark .settings-row__copy span {
   color: #afc2d1;
+}
+
+html.theme-dark .form-field__label,
+html.theme-dark .form-field__help,
+html.theme-dark .auth-links,
+html.theme-dark .auth-links a,
+html.theme-dark .auth-link,
+html.theme-dark .app-content label,
+html.theme-dark .app-content legend,
+html.theme-dark .app-content p,
+html.theme-dark .app-content li,
+html.theme-dark .app-content dt,
+html.theme-dark .app-content dd {
+  color: #dce8f1;
+}
+
+html.theme-dark .app-content a {
+  color: #8fc5ee;
+}
+
+html.theme-dark .app-content a:hover {
+  color: #c1e2fa;
 }
 
 html.theme-dark .settings-control,
@@ -1883,4 +1918,27 @@ html.theme-dark .settings-reset {
 
 html.theme-dark .settings-reset:hover {
   background: #203e55;
+}
+
+html.theme-dark .app-footer {
+  background: #0b1722;
+  border-top-color: #29445a;
+  color: #afc2d1;
+}
+
+html.theme-dark .auth-card,
+html.theme-dark .card,
+html.theme-dark .detail-card,
+html.theme-dark .wizard-body,
+html.theme-dark .table-wrapper,
+html.theme-dark .modal {
+  background: #162838;
+  border-color: #38566c;
+  color: #e5edf4;
+}
+
+html.theme-dark .btn--primary {
+  background: #2167a8;
+  border-color: #2167a8;
+  color: #ffffff;
 }
