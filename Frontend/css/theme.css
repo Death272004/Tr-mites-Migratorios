@@ -1955,11 +1955,21 @@ html.theme-dark .obs-item {
 
 html.theme-dark .settings-control,
 html.theme-dark .settings-row select,
+html.theme-dark .toolbar__demo select,
 html.theme-dark .form-field__input,
 html.theme-dark .form-field__select,
 html.theme-dark .form-field__textarea {
   background: #1b2c3b;
   border-color: #587287;
+  color: #f2f7fb;
+}
+
+html.theme-dark .toolbar__demo {
+  color: #dce8f1 !important;
+}
+
+html.theme-dark .toolbar__demo select option {
+  background: #1b2c3b;
   color: #f2f7fb;
 }
 
