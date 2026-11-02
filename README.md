@@ -279,10 +279,6 @@ La rama se integra mediante Pull Request después de verificar que el proyecto c
 
 | Integrante | Responsabilidad principal |
 | --- | --- |
-| Kenneth Carter | |
-| Edgar Rosario | |
-| Jonathan Gómez | |
-| Vivian Paris | |
 | Richard Rodríguez | Product Owner |
 
 <p>
