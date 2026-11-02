@@ -57,6 +57,7 @@
   }
 
   function render() {
+    if (global.tm.settings) global.tm.settings.apply();
     var authed = session.isAuthenticated();
     var resolved = router.resolveRoute(state.route, state.role, authed);
     if (resolved !== state.route) {

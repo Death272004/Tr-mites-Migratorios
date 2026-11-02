@@ -1848,6 +1848,20 @@ html.theme-dark .app-content {
   color: #e5edf4;
 }
 
+html.theme-dark {
+  --theme-ink: #e5edf4;
+  --theme-muted: #afc2d1;
+  --theme-canvas: #101b26;
+  --theme-paper: #16222d;
+  --theme-line: #38566c;
+  --color-text: #e5edf4;
+  --color-text-muted: #afc2d1;
+  --color-bg: #101b26;
+  --color-surface: #16222d;
+  --color-surface-alt: #1b2c3b;
+  --color-border: #38566c;
+}
+
 html.theme-dark body {
   background-image: none;
 }
@@ -1903,6 +1917,40 @@ html.theme-dark .app-content a {
 
 html.theme-dark .app-content a:hover {
   color: #c1e2fa;
+}
+
+html.theme-dark .app-content h1,
+html.theme-dark .app-content h2,
+html.theme-dark .app-content h3,
+html.theme-dark .app-content h4,
+html.theme-dark .app-content h5,
+html.theme-dark .app-content h6,
+html.theme-dark .form-field__label,
+html.theme-dark .wizard-section-title,
+html.theme-dark .detail-row__label,
+html.theme-dark .detail-row__value,
+html.theme-dark .checklist__meta,
+html.theme-dark .table,
+html.theme-dark .table th,
+html.theme-dark .table td,
+html.theme-dark .toolbar__demo,
+html.theme-dark .timeline__body,
+html.theme-dark .timeline__meta,
+html.theme-dark .form-field__help,
+html.theme-dark .form-field__error {
+  color: #dce8f1 !important;
+}
+
+html.theme-dark .badge--info,
+html.theme-dark .badge--success,
+html.theme-dark .badge--warning,
+html.theme-dark .badge--danger,
+html.theme-dark .app-alert,
+html.theme-dark .wizard-summary,
+html.theme-dark .obs-item {
+  color: #e5edf4;
+  background: #162b3b;
+  border-color: #52728d;
 }
 
 html.theme-dark .settings-control,
