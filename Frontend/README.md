@@ -19,9 +19,6 @@ Frontend/
 │   └── variables.css
 ├── html/                   ← punto de entrada
 │   └── index.html
-├── docs/                   ← documentación e informes del frontend
-│   ├── analisis/           ← alcance, roles, pantallas y planificación
-│   └── informes/           ← avances, estado y reportes de sprint
 └── js/
     ├── app.js              ← arranque (hash routing + layout)
     ├── components/         ← componentes reutilizables
@@ -41,6 +38,8 @@ Frontend/
     │   └── router.js
     └── views/              ← vistas por pantalla (P-01…P-27 e I-01…I-19)
 ```
+
+La documentación general del proyecto se mantiene en `Documentacion/` y las evidencias de calidad en `QA/`. Este módulo conserva únicamente la información mínima necesaria para ejecutar y entender el frontend.
 
 ## Convenciones
 
