@@ -994,3 +994,115 @@ body {
   backdrop-filter: blur(22px) saturate(130%);
   -webkit-backdrop-filter: blur(22px) saturate(130%);
 }
+
+/* Variante final limpia: el vidrio queda solo como detalle, no como textura dominante. */
+body {
+  background: #f4f6f9;
+  background-image: none;
+}
+
+.app-content {
+  background: #f4f6f9;
+}
+
+.app-content::before,
+.app-content::after {
+  display: none;
+}
+
+.app-header {
+  background: #102a43;
+  border-bottom: 0;
+  box-shadow: 0 3px 0 var(--theme-amber), 0 5px 16px rgba(16, 42, 67, 0.12);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.app-nav {
+  background: #102a43;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.card,
+.auth-card,
+.detail-card,
+.wizard-body,
+.table-wrapper,
+.tramite-card,
+.seguimiento-summary,
+.obs-card,
+.subsana-item,
+.resultado-doc,
+.modal,
+.faq-item,
+.dependent-card,
+.ficha,
+.file-upload,
+.signature,
+.qr-box,
+.edicto-item,
+.app-empty {
+  border-color: #d8e0e8;
+  background: #ffffff;
+  box-shadow: 0 7px 20px rgba(27, 42, 58, 0.07);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.card:hover,
+.auth-card:hover,
+.wizard-body:hover,
+.subsana-item:hover,
+.resultado-doc:hover,
+.faq-item:hover,
+.dependent-card:hover,
+.edicto-item:hover {
+  border-color: #c1d0df;
+  box-shadow: 0 10px 24px rgba(27, 42, 58, 0.1);
+  transform: translateY(-1px);
+}
+
+.detail-card > form.detail-card,
+.profile-form,
+.profile-card__facts,
+.detail-row,
+.profile-card__note,
+.profile-card__section-title,
+.obs-card__body,
+.obs-card__actions {
+  background: #ffffff;
+}
+
+.form-field__input,
+.form-field__select,
+.form-field__textarea,
+.form-field__toggle,
+.toolbar__demo select {
+  border-color: #c6d1dd;
+  background: #ffffff;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.form-field__input:focus,
+.form-field__select:focus,
+.form-field__textarea:focus,
+.toolbar__demo select:focus {
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(33, 103, 168, 0.13);
+}
+
+.table thead,
+.obs-card__head {
+  background: #eef2f6;
+}
+
+.app-footer {
+  background: #102a43;
+  border-top: 0;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
