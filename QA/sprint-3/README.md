@@ -1,5 +1,5 @@
 # QA – Sprint 3: Review y flujo principal
-
+<p align="center">\n  <img src="../../recursos-proyecto/assets/readme-hero.svg" alt="Sistema Interoperable de Trámites Migratorios" width="100%">\n</p>\n\n
 ## Objetivo
 
 Validar el incremento presentado en el Review: navegación real, expedientes, documentos, permisos, estados y trazabilidad de las acciones.

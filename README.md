@@ -1,4 +1,4 @@
-<p align="center">
+<p align="center">\n  <img src="recursos-proyecto/assets/readme-hero.svg" alt="Sistema Interoperable de Trámites Migratorios" width="100%">\n</p>\n\n<p align="center">
   <img src="recursos-proyecto/assets/readme-banner-v2.svg" alt="Plataforma Interoperable de Trámites Migratorios" width="100%">
 </p>
 
@@ -15,27 +15,27 @@
 > Rama que reúne las decisiones, entregables y evidencias necesarias para entender el proyecto sin depender del código fuente.
 
 <p align="center">
-  <a href="Documentacion/documentos-base/">📚 Documentos base</a> ·
+  <a href="Documentacion/documentos-base/"> Documentos base</a> ·
   <a href="Documentacion/sprint-6/">Sprint 6</a> ·
   <a href="Documentacion/Documentacion individual/">Trabajo individual</a>
 </p>
 
 <img src="recursos-proyecto/assets/section-divider.svg" alt="Separador" width="100%">
 
-## 🧭 Propósito de esta rama
+##  Propósito de esta rama
 
 Documentación conserva el contexto funcional y técnico del sistema: problema, alcance, historias de usuario, criterios de aceptación, decisiones de arquitectura, QA, presupuesto, facturas y presentaciones.
 
 Su objetivo es facilitar la trazabilidad del trabajo entre sprints y permitir que otro equipo pueda continuar el proyecto sin perder decisiones importantes.
 
-## 🗂️ Organización
+##  Organización
 
 - `Documentacion/documentos-base/`: documentos generales y material de referencia.
 - `Documentacion/sprint-0/` a `Documentacion/sprint-6/`: entregables de cada sprint.
 - `Documentacion/Documentacion individual/`: aportes y documentos por integrante.
 - `Documentacion/README.md`: índice de la documentación técnica.
 
-## 📌 Criterio de trabajo
+##  Criterio de trabajo
 
 Cada entrega debe explicar qué se hizo, por qué se hizo, qué evidencia lo respalda y qué queda pendiente. Las referencias técnicas deben distinguir entre funcionalidades implementadas, datos ficticios y servicios simulados.
 

@@ -1,5 +1,5 @@
 # Evidencias DevOps
-
+<p align="center">\n  <img src="../../recursos-proyecto/assets/readme-hero.svg" alt="Sistema Interoperable de Trámites Migratorios" width="100%">\n</p>\n\n
 Aquí se registran verificaciones de infraestructura, instalación limpia, pipelines, construcción de imágenes y comprobaciones de salud del entorno.
 
 Cada evidencia debe indicar fecha, commit probado, entorno, comandos utilizados, resultado esperado, resultado obtenido, incidencias y responsable. También debe indicar que se usaron datos ficticios.

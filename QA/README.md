@@ -1,5 +1,5 @@
-# 🧪 QA · Calidad, seguridad y rendimiento
-
+#  QA · Calidad, seguridad y rendimiento
+<p align="center">\n  <img src="../recursos-proyecto/assets/readme-hero.svg" alt="Sistema Interoperable de Trámites Migratorios" width="100%">\n</p>\n\n
 <p align="center">
   <img src="../recursos-proyecto/assets/project-status.svg" alt="Estado del proyecto" width="100%">
 </p>

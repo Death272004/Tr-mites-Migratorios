@@ -1,5 +1,5 @@
 # Sprint 5 · Entregables
-
+<p align="center">\n  <img src="../../recursos-proyecto/assets/readme-hero.svg" alt="Sistema Interoperable de Trámites Migratorios" width="100%">\n</p>\n\n
 Sprint de refinamiento del MVP, mejora de historias de usuario, triple restricción, indicadores QA y presupuesto consultor.
 
 ## Archivos
