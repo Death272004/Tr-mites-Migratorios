@@ -124,7 +124,7 @@
 
     var linkPortal = layout.el("div", "auth-links");
     var link = layout.el("a", "auth-link", "Volver al portal del cliente");
-    link.href = "#/login";
+    link.href = "/login";
     linkPortal.appendChild(link);
     form.appendChild(linkPortal);
 

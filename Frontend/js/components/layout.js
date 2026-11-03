@@ -67,7 +67,7 @@
 
     const goTo = (route, text) => {
       const link = el("a", "app-context-menu__link", text);
-      link.href = route;
+      link.href = global.tm.router.toPath(route);
       link.setAttribute("role", "menuitem");
       link.addEventListener("click", () => onNavigate?.(route));
       return link;
@@ -152,7 +152,7 @@
         const li = el("li");
         li.setAttribute("role", "none");
         const link = el("a", "app-nav__link", item.label);
-        link.href = item.route;
+        link.href = global.tm.router.toPath(item.route);
         link.setAttribute("role", "menuitem");
         if (item.route === currentRoute) {
           link.setAttribute("aria-current", "page");

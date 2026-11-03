@@ -23,11 +23,15 @@
     btn.type = "button";
     btn.textContent = kind === "forbidden" ? "Ir a mi inicio" : "Volver al inicio";
     btn.addEventListener("click", () => {
+      const go = (route) => {
+        window.history.pushState({}, "", global.tm.router.toPath(route));
+        window.dispatchEvent(new PopStateEvent("popstate"));
+      };
       if (kind === "forbidden") {
         const role = global.tm.session.getSession()?.datos.rol;
-        window.location.hash = global.tm.roles.INITIAL_ROUTE[role] ?? "#/mis-tramites";
+        go(global.tm.roles.INITIAL_ROUTE[role] ?? "#/mis-tramites");
       } else {
-        window.location.hash = global.tm.session.isAuthenticated() ? "#/mis-tramites" : "#/login";
+        go(global.tm.session.isAuthenticated() ? "#/mis-tramites" : "#/login");
       }
     });
     card.appendChild(btn);

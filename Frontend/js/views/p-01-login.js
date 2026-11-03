@@ -50,13 +50,13 @@
 
     var links = layout.el("div", "auth-links");
     var linkRecuperar = layout.el("a", "auth-link", "¿Olvidó su contraseña?");
-    linkRecuperar.href = "#/recuperar-clave";
+    linkRecuperar.href = "/recuperar-clave";
     linkRecuperar.addEventListener("click", function (ev) {
       ev.preventDefault();
       if (opts.onGoToRecuperar) opts.onGoToRecuperar();
     });
     var linkRegistro = layout.el("a", "auth-link", "Crear cuenta");
-    linkRegistro.href = "#/registro";
+    linkRegistro.href = "/registro";
     linkRegistro.addEventListener("click", function (ev) {
       ev.preventDefault();
       if (opts.onGoToRegistro) opts.onGoToRegistro();

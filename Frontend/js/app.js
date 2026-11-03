@@ -26,7 +26,7 @@
   var state = {
     user: (sess && sess.datos && sess.datos.usuario) || { nombre: "No autenticado", correo: "" },
     role: (sess && sess.datos && sess.datos.rol) || DEFAULT_ROLE,
-    route: window.location.hash || INITIAL_ROUTE[(sess && sess.datos && sess.datos.rol) || DEFAULT_ROLE],
+    route: router.fromLocation() || INITIAL_ROUTE[(sess && sess.datos && sess.datos.rol) || DEFAULT_ROLE],
   };
 
   var els = {
@@ -38,11 +38,14 @@
   };
 
   function navigate(route) {
-    if (window.location.hash === route) {
-      state.route = route;
+    var canonical = router.normalizeRoute(route);
+    if (router.fromLocation() === canonical) {
+      state.route = canonical;
       render();
     } else {
-      window.location.hash = route;
+      window.history.pushState({}, "", router.toPath(canonical) + window.location.search);
+      state.route = canonical;
+      render();
     }
   }
 
@@ -52,7 +55,7 @@
     var resolved = router.resolveRoute(state.route, state.role, authed);
     if (resolved !== state.route) {
       state.route = resolved;
-      window.location.hash = resolved;
+      window.history.replaceState({}, "", router.toPath(resolved) + window.location.search);
       return;
     }
 
@@ -233,10 +236,16 @@
     layout.renderView(els.content, { route: state.route, role: state.role });
   }
 
-  window.addEventListener("hashchange", function () {
-    state.route = window.location.hash || INITIAL_ROUTE[state.role];
+  function syncRouteFromLocation() {
+    var route = router.fromLocation();
+    if (!route) return;
+    state.route = route;
     render();
-  });
+  }
+
+  window.addEventListener("popstate", syncRouteFromLocation);
+  // Compatibilidad temporal con enlaces antiguos que todavía traigan #/ruta.
+  window.addEventListener("hashchange", syncRouteFromLocation);
 
   if (els.navToggle) {
     els.navToggle.addEventListener("click", function () {
@@ -261,6 +270,10 @@
     els.navToggle?.setAttribute("aria-expanded", "false");
   });
 
-  if (!window.location.hash) window.location.hash = INITIAL_ROUTE[state.role];
+  var initialRoute = router.fromLocation() || INITIAL_ROUTE[state.role];
+  if (router.fromLocation() !== initialRoute || window.location.hash) {
+    window.history.replaceState({}, "", router.toPath(initialRoute) + window.location.search);
+  }
+  state.route = initialRoute;
   render();
 })(window);

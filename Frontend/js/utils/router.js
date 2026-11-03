@@ -17,6 +17,26 @@
     SERVER: "#/error/500",
   });
 
+  // El inventario interno conserva el formato hash para comparar permisos y
+  // vistas, pero la URL visible usa rutas limpias mediante History API.
+  function normalizeRoute(route) {
+    if (!route) return null;
+    if (route.startsWith("#/")) return route;
+    if (route.startsWith("/")) return "#" + route.replace(/\/+$/, "");
+    return "#/" + route.replace(/^\/+/, "").replace(/\/+$/, "");
+  }
+
+  function toPath(route) {
+    const normalized = normalizeRoute(route);
+    return normalized ? normalized.slice(1) : "/";
+  }
+
+  function fromLocation() {
+    if (window.location.hash.startsWith("#/")) return normalizeRoute(window.location.hash);
+    if (window.location.pathname === "/" || window.location.pathname === "/html/index.html") return null;
+    return normalizeRoute(window.location.pathname);
+  }
+
   function canAccess(route, role) {
     const publicPortal = [LOGIN_ROUTE, "#/registro", "#/recuperar-clave", "#/identidad/otp", "#/cuenta/configuracion"];
     if (publicPortal.includes(route)) return true;
@@ -88,7 +108,7 @@
   }
 
   function resolveRoute(inputRoute, role, isAuthenticated) {
-    let route = inputRoute && inputRoute.startsWith("#/") ? inputRoute : null;
+    let route = normalizeRoute(inputRoute);
 
     if (!route) {
       route = isAuthenticated
@@ -150,5 +170,14 @@
     return !!map[route];
   }
 
-  global.tm.router = { getViewKey, resolveRoute, ERRORS, LOGIN_ROUTE, INTERNAL_LOGIN_ROUTE };
+  global.tm.router = {
+    getViewKey,
+    resolveRoute,
+    normalizeRoute,
+    toPath,
+    fromLocation,
+    ERRORS,
+    LOGIN_ROUTE,
+    INTERNAL_LOGIN_ROUTE,
+  };
 })(window);
