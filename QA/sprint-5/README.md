@@ -1,8 +1,4 @@
 # Evidencia QA — Sprint 5
-<p align="center">
-  <img src="../../recursos-proyecto/assets/readme-hero.svg" alt="Sistema Interoperable de Trámites Migratorios" width="100%">
-</p>
-
 
 **Rol:** QA
 **Alcance:** TT-167, TT-172 y TT-176
