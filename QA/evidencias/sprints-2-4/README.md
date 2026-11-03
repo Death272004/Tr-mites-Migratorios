@@ -1,9 +1,5 @@
 # Evidencias de QA · Sprints 2 a 4
 
-<p align="center">
-  <img src="../../../recursos-proyecto/assets/readme-hero.svg" alt="Sistema Interoperable de Trámites Migratorios" width="100%">
-</p>
-
 
 **Fecha de ejecución:** 2026-10-18 · **Ejecutó:** Edgar Rosario (cubriendo las tareas de QA asignadas a Vivian Paris) · **Rama:** `qa/pruebas-sprints-2-4`
 

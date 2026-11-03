@@ -1,9 +1,5 @@
 # QA – Sprint 4: Indicadores, seguridad y rendimiento
 
-<p align="center">
-  <img src="../../recursos-proyecto/assets/readme-hero.svg" alt="Sistema Interoperable de Trámites Migratorios" width="100%">
-</p>
-
 
 ## Objetivo
 

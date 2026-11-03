@@ -1,9 +1,5 @@
 #  Recursos del proyecto · Trámites Migratorios
 
-<p align="center">
-  <img src="assets/readme-hero.svg" alt="Sistema Interoperable de Trámites Migratorios" width="100%">
-</p>
-
 
 <p align="center">
   <img src="assets/readme-app-status.svg" alt="Estado del proyecto" width="100%">

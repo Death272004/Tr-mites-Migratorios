@@ -1,9 +1,5 @@
 # Sprint 4 - Mejora de Historias + Triple Restricción + Indicadores QA
 
-<p align="center">
-  <img src="../../recursos-proyecto/assets/readme-hero.svg" alt="Sistema Interoperable de Trámites Migratorios" width="100%">
-</p>
-
 
 El Sprint 4 inicia la gestión avanzada del proyecto. La presentación tiene una duración máxima de 6 minutos y debe participar al menos el 50% + 1 de los integrantes.
 

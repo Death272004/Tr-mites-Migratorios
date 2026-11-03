@@ -1,9 +1,5 @@
 # Sprint 6 · Evidencias de calidad (BE)
 
-<p align="center">
-  <img src="../../recursos-proyecto/assets/readme-hero.svg" alt="Sistema Interoperable de Trámites Migratorios" width="100%">
-</p>
-
 
 Fecha de ejecución: 2026-10-28 · Responsable: Edgar Rosario (BE) · Entorno: `docker compose up --build` local
 (PostgreSQL 16, backend Spring Boot, nginx), solo usuarios ficticios `@demo.pa`.

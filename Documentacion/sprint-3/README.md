@@ -1,9 +1,5 @@
 # Sprint 3 - PARCIAL 1 (Formato Review)
 
-<p align="center">
-  <img src="../../recursos-proyecto/assets/readme-hero.svg" alt="Sistema Interoperable de Trámites Migratorios" width="100%">
-</p>
-
 
 El Sprint 3 es una evaluación formal tipo Sprint Review, con duración máxima de 8 minutos. El equipo presenta el incremento del producto, evidencia técnica y la respuesta a la pregunta cuestionadora del cliente. Debe hablar al menos el 50% + 1 de los integrantes.
 

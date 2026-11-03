@@ -1,9 +1,5 @@
 # Sprint 2 - Video de Presentación del Software
 
-<p align="center">
-  <img src="../../recursos-proyecto/assets/readme-hero.svg" alt="Sistema Interoperable de Trámites Migratorios" width="100%">
-</p>
-
 
 El Sprint 2 se entrega en formato de video, con una duración máxima de 10 minutos. El equipo debe demostrar avances reales, coherencia con la arquitectura y cómo las pantallas responden a la pregunta cuestionadora del cliente. Debe aparecer hablando al menos el 50% + 1 de los integrantes.
 
