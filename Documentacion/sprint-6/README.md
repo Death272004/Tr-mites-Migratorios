@@ -1,8 +1,4 @@
 # Sprint 6 · Review #2
-<p align="center">
-  <img src="../../recursos-proyecto/assets/readme-hero.svg" alt="Sistema Interoperable de Trámites Migratorios" width="100%">
-</p>
-
 
 Entregables del Review #2: demostración del MVP funcional, métricas de calidad, trazabilidad, seguridad, rendimiento, usabilidad, DevOps y presupuesto final.
 

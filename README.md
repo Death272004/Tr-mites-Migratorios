@@ -1,8 +1,4 @@
 <p align="center">
-  <img src="recursos-proyecto/assets/readme-hero.svg" alt="Sistema Interoperable de Trámites Migratorios" width="100%">
-</p>
-
-<p align="center">
   <img src="recursos-proyecto/assets/readme-app-cover.svg" alt="Plataforma Interoperable de Trámites Migratorios" width="100%">
 </p>
 
@@ -24,7 +20,7 @@
   <a href="Documentacion/">Documentación</a>
 </p>
 
-<img src="recursos-proyecto/assets/section-divider.svg" alt="Separador" width="100%">
+<img src="recursos-proyecto/assets/readme-divider-animated.svg" alt="Separador" width="100%">
 
 ##  Propósito de esta rama
 
@@ -59,5 +55,5 @@ docker compose up --build
 Después se puede abrir el frontend en `http://localhost:8081/html/index.html` según la configuración local del entorno.
 
 <p align="center">
-  <img src="recursos-proyecto/assets/project-status.svg" alt="Estado del proyecto" width="100%">
+  <img src="recursos-proyecto/assets/readme-app-status.svg" alt="Estado del proyecto" width="100%">
 </p>
