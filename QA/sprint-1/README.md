@@ -1,8 +1,4 @@
 # QA – Sprint 1: Avance de desarrollo y correcciones
-<p align="center">
-  <img src="../../recursos-proyecto/assets/readme-hero.svg" alt="Sistema Interoperable de Trámites Migratorios" width="100%">
-</p>
-
 
 ## Objetivo
 

@@ -1,8 +1,4 @@
 # QA – Sprint 3: Review y flujo principal
-<p align="center">
-  <img src="../../recursos-proyecto/assets/readme-hero.svg" alt="Sistema Interoperable de Trámites Migratorios" width="100%">
-</p>
-
 
 ## Objetivo
 

@@ -1,8 +1,4 @@
 # QA – Sprint 0: Análisis de problema
-<p align="center">
-  <img src="../../recursos-proyecto/assets/readme-hero.svg" alt="Sistema Interoperable de Trámites Migratorios" width="100%">
-</p>
-
 
 ## Objetivo
 
