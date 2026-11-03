@@ -360,5 +360,10 @@
   }
 
   global.tm.views = global.tm.views || {};
-  global.tm.views.p07 = { renderP07: renderP07, CATALOGO: CATALOGO, REQUISITOS_ART_28: REQUISITOS_ART_28 };
+  global.tm.views.p07 = {
+    renderP07: renderP07,
+    CATALOGO: CATALOGO,
+    REQUISITOS_ART_28: REQUISITOS_ART_28,
+    catalogoDesdeApi: catalogoDesdeApi,
+  };
 })(window);

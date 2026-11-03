@@ -105,7 +105,7 @@
 
     var links = layout.el("div", "auth-links");
     var linkLogin = layout.el("a", "auth-link", "Ya tengo cuenta. Iniciar sesión");
-    linkLogin.href = "#/login";
+    linkLogin.href = "/login";
     linkLogin.addEventListener("click", function (ev) {
       ev.preventDefault();
       if (opts.onGoToLogin) opts.onGoToLogin();

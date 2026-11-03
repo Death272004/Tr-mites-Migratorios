@@ -13,6 +13,7 @@
   var table = global.tm.ui.table;
   var confirmModal = global.tm.ui.confirmModal;
   var perms = global.tm.perms;
+  var api = global.tm.api;
 
   var FALLBACK = { version: "—", vigencia: "—", categorias: [], verificacionesDisponibles: [], tramites: [] };
 
@@ -26,6 +27,35 @@
 
   function totalTasas(tasas) {
     return (tasas || []).map(function (t) { return t.concepto + ": " + t.monto; }).join(" · ");
+  }
+
+  function catalogoDesdeApi(tramites, documentales) {
+    var categorias = [];
+    var vistos = {};
+    (tramites || []).forEach(function (t) {
+      var categoria = String(t.codigo || "").split("_")[0] || "Sin categoría";
+      if (!vistos[categoria]) { vistos[categoria] = true; categorias.push(categoria); }
+    });
+    return {
+      version: "Base de datos",
+      vigencia: "Vigente",
+      categorias: categorias,
+      verificacionesDisponibles: [],
+      tramites: (tramites || []).map(function (t) {
+        return {
+          codigo: t.codigo,
+          nombre: t.nombre,
+          categoria: String(t.codigo || "").split("_")[0] || "Sin categoría",
+          requisitos: (t.requisitos || []).map(function (r) { return r.nombre; }),
+          vigenciaDias: "No registrado",
+          estadoLegal: "Activo",
+          plazo: "No registrado",
+          verificaciones: [],
+          tasas: [],
+        };
+      }),
+      documentales: documentales || [],
+    };
   }
 
   function renderI14(container, opts) {
@@ -75,7 +105,7 @@
         { label: "Código" }, { label: "Trámite" }, { label: "Categoría" }, { label: "Requisitos" }, { label: "Vigencia" }, { label: "Tasas" }, { label: "" },
       ], rows: rows, emptyText: "No hay trámites en el catálogo." }));
 
-      var t = tramites[seleccion];
+      var t = tramites[seleccion] || { codigo: "—", nombre: "Sin selección", requisitos: [], verificaciones: [], tasas: [], categoria: "—", estadoLegal: "—", vigenciaDias: "—", plazo: "—" };
       var form = layout.el("fieldset", "wizard-section");
       form.appendChild(layout.el("legend", "wizard-section-title", "Editar trámite " + t.codigo + " — " + t.nombre));
       var grid = layout.el("div", "wizard-grid");
@@ -169,6 +199,21 @@
     }
 
     function show(state) {
+      if (api && api.isOnline()) {
+        renderLoading();
+        api.request("GET", "/catalogos/tipos-tramite", { pantalla: "I-14" }, function (err, tramitesApi) {
+          if (err) { renderError(); return; }
+          api.request("GET", "/catalogos/tipos-documentales", { pantalla: "I-14" }, function (errDocs, docsApi) {
+            if (errDocs) { renderError(); return; }
+            d = catalogoDesdeApi(tramitesApi, docsApi);
+            tramites = d.tramites.map(function (t) { return JSON.parse(JSON.stringify(t)); });
+            version = d.version;
+            seleccion = 0;
+            renderContent();
+          });
+        });
+        return;
+      }
       global.tm.fixtures.setScenario(state);
       if (state === "carga") { renderLoading(); setTimeout(renderContent, 700); return; }
       if (state === "error") { renderError(); return; }

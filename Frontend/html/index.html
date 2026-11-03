@@ -5,11 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Producto de gestión de expedientes migratorios para bufetes de abogados (Panamá, Ley 81 de 2019).">
   <title>Gestión de Expedientes Migratorios | Bufete</title>
+  <link rel="icon" type="image/png" href="/assets/logo-interoperable.png?v=20261103-favicon">
 
   <link rel="stylesheet" href="../css/variables.css?v=20261102-glass">
   <link rel="stylesheet" href="../css/base.css?v=20261102-glass">
   <link rel="stylesheet" href="../css/layout.css?v=20261102-spacing">
-  <link rel="stylesheet" href="../css/theme.css?v=20261102-mobile-drawer-3">
+  <link rel="stylesheet" href="../css/theme.css?v=20261103-unified-canvas">
 </head>
 <body>
   <a class="skip-link" href="#contenido">Saltar al contenido principal</a>
@@ -49,14 +50,14 @@
     </div>
 
     <footer class="app-footer" role="contentinfo">
-      <span>Sistema de gestión de expedientes migratorios · Demo con datos ficticios</span>
+      <span>Sistema de gestión de expedientes migratorios · Entorno conectado al backend</span>
       <span class="app-footer__legal">Ley 81 de 2019 · sin datos reales ni credenciales</span>
     </footer>
   </div>
 
   <script src="../js/utils/roles.js"></script>
   <script src="../js/utils/nav.js?v=20261102-settings"></script>
-  <script src="../js/utils/router.js?v=20261102-settings"></script>
+  <script src="../js/utils/router.js?v=20261103-clean-routes-403-fix"></script>
   <script src="../js/utils/data.js"></script>
   <script src="../js/utils/draft.js"></script>
   <script src="../js/utils/expediente.js"></script>
@@ -65,24 +66,24 @@
   <script src="../js/utils/settings.js?v=20261102-settings"></script>
   <script src="../js/utils/validacion.js"></script>
 
-  <script src="../js/components/layout.js?v=20261102-mobile-drawer-3"></script>
+  <script src="../js/components/layout.js?v=20261103-profile-icon"></script>
   <script src="../js/components/button.js"></script>
-  <script src="../js/components/field.js?v=20261028b"></script>
+  <script src="../js/components/field.js"></script>
   <script src="../js/components/table.js"></script>
   <script src="../js/components/stepper.js"></script>
   <script src="../js/components/timeline.js"></script>
   <script src="../js/components/modal.js"></script>
-  <script src="../js/components/errors.js"></script>
+  <script src="../js/components/errors.js?v=20261103-clear-error-state"></script>
   <script src="../js/components/verified-field.js"></script>
   <script src="../js/components/file-upload.js"></script>
   <script src="../js/components/signature.js"></script>
 
   <script src="../js/utils/wizard.js"></script>
 
-  <script src="../js/services/session.js?v=20261028b"></script>
-  <script src="../js/services/api.js?v=20261028b"></script>
+  <script src="../js/services/session.js?v=20261103-auth-session"></script>
+  <script src="../js/services/api.js?v=20261022b"></script>
   <script src="../js/services/api-bootstrap.js"></script>
-  <script src="../js/utils/perms.js?v=20261028b"></script>
+  <script src="../js/utils/perms.js"></script>
 
   <script src="../js/fixtures/p-06-mis-tramites.js"></script>
   <script src="../js/fixtures/p-06-mis-tramites.carga.js"></script>
@@ -137,7 +138,7 @@
   <script src="../js/fixtures/p-18-reserva-cita.vacio.js"></script>
   <script src="../js/fixtures/p-18-reserva-cita.error.js"></script>
 
-  <script src="../js/fixtures/i-01-login-interno.js?v=20261028b"></script>
+  <script src="../js/fixtures/i-01-login-interno.js"></script>
   <script src="../js/fixtures/i-02-tablero.js"></script>
   <script src="../js/fixtures/i-02-tablero.carga.js"></script>
   <script src="../js/fixtures/i-02-tablero.vacio.js"></script>
@@ -194,7 +195,7 @@
   <script src="../js/fixtures/i-15-usuarios.carga.js"></script>
   <script src="../js/fixtures/i-15-usuarios.vacio.js"></script>
   <script src="../js/fixtures/i-15-usuarios.error.js"></script>
-  <script src="../js/fixtures/i-16-bitacora.js?v=20261028b"></script>
+  <script src="../js/fixtures/i-16-bitacora.js"></script>
   <script src="../js/fixtures/i-16-bitacora.carga.js"></script>
   <script src="../js/fixtures/i-16-bitacora.vacio.js"></script>
   <script src="../js/fixtures/i-16-bitacora.error.js"></script>
@@ -216,7 +217,7 @@
   <script src="../js/views/p-03-otp.js"></script>
   <script src="../js/views/p-04-recuperar.js"></script>
   <script src="../js/views/p-05-perfil.js"></script>
-  <script src="../js/views/p-28-configuracion.js?v=20261102-independent-screen"></script>
+  <script src="../js/views/p-28-configuracion.js?v=20261103-portal-settings"></script>
   <script src="../js/views/p-06-mis-tramites.js"></script>
   <script src="../js/views/p-07-nueva-solicitud.js"></script>
   <script src="../js/views/p-08-titularidad.js"></script>
@@ -231,8 +232,8 @@
   <script src="../js/views/p-17-resumen.js"></script>
   <script src="../js/views/p-18-cita.js"></script>
   <script src="../js/views/p-19-estado-tramite.js"></script>
-  <script src="../js/views/p-20-observaciones.js"></script>
-  <script src="../js/views/p-21-subsanacion.js?v=20261028b"></script>
+  <script src="../js/views/p-20-observaciones.js?v=20261103-observaciones"></script>
+  <script src="../js/views/p-21-subsanacion.js"></script>
   <script src="../js/views/p-22-resultados.js"></script>
   <script src="../js/views/p-23-historial-pagos.js"></script>
   <script src="../js/views/p-24-edictos.js"></script>
@@ -240,7 +241,7 @@
   <script src="../js/views/p-26-naturalizacion.js"></script>
   <script src="../js/views/p-27-ayuda.js"></script>
 
-  <script src="../js/views/i-01-login-interno.js?v=20261028b"></script>
+  <script src="../js/views/i-01-login-interno.js"></script>
   <script src="../js/views/i-02-tablero.js?v=20261022b"></script>
   <script src="../js/views/i-03-recepcion.js?v=20261022b"></script>
   <script src="../js/views/i-04-completitud.js?v=20261022b"></script>
@@ -253,13 +254,13 @@
   <script src="../js/views/i-11-notificacion.js"></script>
   <script src="../js/views/i-12-entrega.js"></script>
   <script src="../js/views/i-13-archivo.js"></script>
-  <script src="../js/views/i-14-catalogos.js?v=20261028b"></script>
-  <script src="../js/views/i-15-usuarios.js?v=20261028b"></script>
-  <script src="../js/views/i-16-bitacora.js?v=20261028b"></script>
+  <script src="../js/views/i-14-catalogos.js"></script>
+  <script src="../js/views/i-15-usuarios.js"></script>
+  <script src="../js/views/i-16-bitacora.js?v=20261022b"></script>
   <script src="../js/views/i-17-reportes.js"></script>
   <script src="../js/views/i-18-conexiones.js"></script>
   <script src="../js/views/i-19-consentimientos.js?v=20261022b"></script>
 
-  <script src="../js/app.js?v=20261102-mobile-drawer"></script>
+  <script src="../js/app.js?v=20261103-clean-routes-403-fix"></script>
 </body>
 </html>
