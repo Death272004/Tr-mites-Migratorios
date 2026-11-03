@@ -52,6 +52,9 @@
   function render() {
     if (global.tm.settings) global.tm.settings.apply();
     var authed = session.isAuthenticated();
+    // Los selectores de escenario y las ayudas de demostración solo deben
+    // existir en modo offline. El backend sigue siendo la fuente de verdad.
+    document.documentElement.classList.toggle("app-online", !!(global.tm.api && global.tm.api.isOnline()));
     var resolved = router.resolveRoute(state.route, state.role, authed);
     if (resolved !== state.route) {
       state.route = resolved;

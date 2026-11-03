@@ -1931,6 +1931,12 @@ body {
 html[data-text-size="grande"] { font-size: 108%; }
 html[data-text-size="muy-grande"] { font-size: 116%; }
 
+/* En Docker los datos llegan del backend; los controles de escenarios son
+   exclusivamente para el modo offline con fixtures. */
+html.app-online .toolbar__demo {
+  display: none !important;
+}
+
 html.theme-high-contrast body {
   color: #101820;
 }
