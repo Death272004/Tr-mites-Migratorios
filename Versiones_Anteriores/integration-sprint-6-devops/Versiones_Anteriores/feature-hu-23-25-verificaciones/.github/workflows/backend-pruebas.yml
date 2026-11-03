@@ -1,0 +1,64 @@
+# Pruebas del Backend (unitarias e integración con Testcontainers/PostgreSQL).
+# Los reportes de Surefire quedan como artefacto de cada ejecución para usarlos de evidencia.
+name: Backend - pruebas
+
+on:
+  pull_request:
+    paths:
+      - "Backend/**"
+      - ".github/workflows/backend-pruebas.yml"
+  push:
+    branches: [main, Backend]
+    paths:
+      - "Backend/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  pruebas:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: Backend
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: maven
+
+      - name: Ejecutar pruebas
+        run: ./mvnw -B -ntp verify
+
+      - name: Resumen de pruebas
+        if: always()
+        run: |
+          {
+            echo "## Resultado de pruebas del Backend"
+            echo
+            echo "| Clase | Pruebas | Fallos | Errores | Omitidas |"
+            echo "| --- | --- | --- | --- | --- |"
+            for f in target/surefire-reports/TEST-*.xml; do
+              [ -f "$f" ] || continue
+              linea=$(grep -m1 -o '<testsuite [^>]*>' "$f")
+              nombre=$(echo "$linea" | sed -n 's/.* name="\([^"]*\)".*/\1/p' | sed 's/.*\.//')
+              t=$(echo "$linea" | sed -n 's/.* tests="\([0-9]*\)".*/\1/p')
+              fl=$(echo "$linea" | sed -n 's/.* failures="\([0-9]*\)".*/\1/p')
+              er=$(echo "$linea" | sed -n 's/.* errors="\([0-9]*\)".*/\1/p')
+              sk=$(echo "$linea" | sed -n 's/.* skipped="\([0-9]*\)".*/\1/p')
+              echo "| $nombre | $t | $fl | $er | $sk |"
+            done
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Guardar reportes
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reportes-pruebas-backend
+          path: Backend/target/surefire-reports/
+          retention-days: 30

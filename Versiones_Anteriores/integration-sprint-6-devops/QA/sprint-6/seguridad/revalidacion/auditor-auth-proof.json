@@ -1,0 +1,21 @@
+{
+  "proofs": [
+    {
+      "phase": "before",
+      "status": 200,
+      "role": "AUDITOR"
+    },
+    {
+      "phase": "after",
+      "status": 200,
+      "role": "AUDITOR"
+    }
+  ],
+  "response_codes": {
+    "200": 38,
+    "400": 2556,
+    "0": 12,
+    "403": 81,
+    "500": 2
+  }
+}

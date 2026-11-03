@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 150" role="img" aria-labelledby="title">
+  <title id="title">Tecnologías del proyecto</title>
+  <defs>
+    <linearGradient id="line" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#F28C28"/><stop offset=".5" stop-color="#56C596"/><stop offset="1" stop-color="#5EA9D2"/></linearGradient>
+    <style>
+      .dot { animation: blink 2.5s ease-in-out infinite; }
+      .dot:nth-of-type(2) { animation-delay:.35s; }
+      .dot:nth-of-type(3) { animation-delay:.7s; }
+      .dot:nth-of-type(4) { animation-delay:1.05s; }
+      .dot:nth-of-type(5) { animation-delay:1.4s; }
+      @keyframes blink { 0%,100% { opacity:.55; } 50% { opacity:1; } }
+    </style>
+  </defs>
+  <rect width="1400" height="150" rx="24" fill="#0B1B2B"/>
+  <path d="M90 75 H1310" stroke="#27465E" stroke-width="3"/>
+  <path d="M90 75 H1310" stroke="url(#line)" stroke-width="3" stroke-dasharray="8 18"/>
+  <g font-family="Arial, sans-serif" text-anchor="middle">
+    <g class="dot"><circle cx="150" cy="75" r="30" fill="#F28C28"/><text x="150" y="84" font-size="26" font-weight="700" fill="#0B1B2B">J</text><text x="150" y="132" font-size="16" fill="#DCE6ED">Java</text></g>
+    <g class="dot"><circle cx="400" cy="75" r="30" fill="#56C596"/><text x="400" y="84" font-size="24" font-weight="700" fill="#0B1B2B">SB</text><text x="400" y="132" font-size="16" fill="#DCE6ED">Spring Boot</text></g>
+    <g class="dot"><circle cx="650" cy="75" r="30" fill="#5EA9D2"/><text x="650" y="84" font-size="24" font-weight="700" fill="#0B1B2B">PG</text><text x="650" y="132" font-size="16" fill="#DCE6ED">PostgreSQL</text></g>
+    <g class="dot"><circle cx="900" cy="75" r="30" fill="#F28C28"/><text x="900" y="84" font-size="23" font-weight="700" fill="#0B1B2B">DK</text><text x="900" y="132" font-size="16" fill="#DCE6ED">Docker</text></g>
+    <g class="dot"><circle cx="1150" cy="75" r="30" fill="#56C596"/><text x="1150" y="84" font-size="23" font-weight="700" fill="#0B1B2B">QA</text><text x="1150" y="132" font-size="16" fill="#DCE6ED">JMeter · ZAP</text></g>
+  </g>
+</svg>

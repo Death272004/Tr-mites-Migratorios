@@ -1,0 +1,7 @@
+2026-10-18T19:26:01.418Z  INFO 1 --- [tramites-migratorios-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "1 - esquema inicial"
+2026-10-18T19:26:01.468Z  INFO 1 --- [tramites-migratorios-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "2 - modelo de datos"
+2026-10-18T19:26:01.663Z  INFO 1 --- [tramites-migratorios-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "3 - datos semilla catalogos"
+2026-10-18T19:26:01.677Z  INFO 1 --- [tramites-migratorios-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "4 - cuenta registro recuperacion perfil"
+2026-10-18T19:26:01.707Z  INFO 1 --- [tramites-migratorios-backend] [           main] o.f.core.internal.command.DbMigrate      : Successfully applied 4 migrations to schema "public", now at version v4 (execution time 00:
+2026-10-18T19:26:05.505Z  INFO 1 --- [tramites-migratorios-backend] [           main] p.t.BackendApplication                   : Started BackendApplication in 7.775 seconds (process running for 8.33)
+2026-10-18T19:26:06.231Z  INFO 1 --- [tramites-migratorios-backend] [           main] p.t.seguridad.DatosDemo                  : Usuarios de demostración creados (un usuario por rol, dominio demo.pa).

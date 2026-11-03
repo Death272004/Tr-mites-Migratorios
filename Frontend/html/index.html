@@ -6,9 +6,10 @@
   <meta name="description" content="Producto de gestión de expedientes migratorios para bufetes de abogados (Panamá, Ley 81 de 2019).">
   <title>Gestión de Expedientes Migratorios | Bufete</title>
 
-  <link rel="stylesheet" href="../css/variables.css">
-  <link rel="stylesheet" href="../css/base.css">
-  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/variables.css?v=20261102-glass">
+  <link rel="stylesheet" href="../css/base.css?v=20261102-glass">
+  <link rel="stylesheet" href="../css/layout.css?v=20261102-spacing">
+  <link rel="stylesheet" href="../css/theme.css?v=20261102-mobile-drawer-3">
 </head>
 <body>
   <a class="skip-link" href="#contenido">Saltar al contenido principal</a>
@@ -21,19 +22,24 @@
       </button>
 
       <div class="app-header__brand">
-        <span class="app-header__logo" aria-hidden="true">TM</span>
+        <span class="app-header__logo" aria-hidden="true">
+          <img src="../assets/logo-interoperable.png" alt="">
+        </span>
         <div class="app-header__titles">
           <strong class="app-header__title">Trámites Migratorios</strong>
           <span class="app-header__subtitle" id="app-context">Portal del cliente</span>
         </div>
       </div>
 
-      <div class="app-header__user" id="app-user"><!-- usuario + rol + salir --></div>
+      <nav class="app-nav app-nav--top" id="app-nav" aria-label="Menú principal"><!-- menú por rol --></nav>
+
+      <div class="app-contextbar" id="app-user" aria-label="Contexto de la sesión"><!-- usuario + rol + salir --></div>
+
     </header>
 
-    <div class="app-body">
-      <nav class="app-nav" id="app-nav" aria-label="Menú principal"><!-- menú por rol --></nav>
+    <p class="sr-only" id="app-announcer" role="status" aria-live="polite" aria-atomic="true"></p>
 
+    <div class="app-body">
       <main class="app-content" id="contenido" tabindex="-1">
         <div class="app-loading" role="status" aria-live="polite">
           <span class="spinner" aria-hidden="true"></span>
@@ -49,16 +55,17 @@
   </div>
 
   <script src="../js/utils/roles.js"></script>
-  <script src="../js/utils/nav.js?v=20261028a"></script>
-  <script src="../js/utils/router.js"></script>
+  <script src="../js/utils/nav.js?v=20261102-settings"></script>
+  <script src="../js/utils/router.js?v=20261102-settings"></script>
   <script src="../js/utils/data.js"></script>
   <script src="../js/utils/draft.js"></script>
   <script src="../js/utils/expediente.js"></script>
   <script src="../js/utils/fixtures.js"></script>
-  <script src="../js/utils/autofill.js"></script>
+  <script src="../js/utils/autofill.js?v=20261102-glass"></script>
+  <script src="../js/utils/settings.js?v=20261102-settings"></script>
   <script src="../js/utils/validacion.js"></script>
 
-  <script src="../js/components/layout.js"></script>
+  <script src="../js/components/layout.js?v=20261102-mobile-drawer-3"></script>
   <script src="../js/components/button.js"></script>
   <script src="../js/components/field.js"></script>
   <script src="../js/components/table.js"></script>
@@ -209,6 +216,7 @@
   <script src="../js/views/p-03-otp.js"></script>
   <script src="../js/views/p-04-recuperar.js"></script>
   <script src="../js/views/p-05-perfil.js"></script>
+  <script src="../js/views/p-28-configuracion.js?v=20261102-independent-screen"></script>
   <script src="../js/views/p-06-mis-tramites.js"></script>
   <script src="../js/views/p-07-nueva-solicitud.js"></script>
   <script src="../js/views/p-08-titularidad.js"></script>
@@ -232,16 +240,16 @@
   <script src="../js/views/p-26-naturalizacion.js"></script>
   <script src="../js/views/p-27-ayuda.js"></script>
 
-  <script src="../js/views/i-01-login-interno.js?v=20261028a"></script>
+  <script src="../js/views/i-01-login-interno.js"></script>
   <script src="../js/views/i-02-tablero.js?v=20261022b"></script>
   <script src="../js/views/i-03-recepcion.js?v=20261022b"></script>
   <script src="../js/views/i-04-completitud.js?v=20261022b"></script>
   <script src="../js/views/i-05-asignacion.js"></script>
   <script src="../js/views/i-06-analisis.js?v=20261022b"></script>
   <script src="../js/views/i-07-verificaciones.js"></script>
-  <script src="../js/views/i-08-observaciones.js?v=20261028a"></script>
+  <script src="../js/views/i-08-observaciones.js?v=20261022b"></script>
   <script src="../js/views/i-09-edictos.js"></script>
-  <script src="../js/views/i-10-resolucion.js?v=20261028a"></script>
+  <script src="../js/views/i-10-resolucion.js?v=20261022b"></script>
   <script src="../js/views/i-11-notificacion.js"></script>
   <script src="../js/views/i-12-entrega.js"></script>
   <script src="../js/views/i-13-archivo.js"></script>
@@ -252,6 +260,6 @@
   <script src="../js/views/i-18-conexiones.js"></script>
   <script src="../js/views/i-19-consentimientos.js?v=20261022b"></script>
 
-  <script src="../js/app.js?v=20261028a"></script>
+  <script src="../js/app.js?v=20261102-mobile-drawer"></script>
 </body>
 </html>

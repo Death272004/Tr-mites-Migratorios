@@ -18,7 +18,7 @@
   });
 
   function canAccess(route, role) {
-    const publicPortal = [LOGIN_ROUTE, "#/registro", "#/recuperar-clave", "#/identidad/otp"];
+    const publicPortal = [LOGIN_ROUTE, "#/registro", "#/recuperar-clave", "#/identidad/otp", "#/cuenta/configuracion"];
     if (publicPortal.includes(route)) return true;
 
     if (route.startsWith("#/interno/")) {
@@ -31,6 +31,7 @@
       route.startsWith("#/seguimiento/") ||
       route.startsWith("#/servicios/") ||
       route === "#/perfil" ||
+      route === "#/cuenta/configuracion" ||
       route === "#/mis-tramites"
     ) {
       return role === ROLES.SOLICITANTE;
@@ -77,6 +78,7 @@
       "#/servicios/naturalizacion": "p-26",
       "#/servicios/ayuda": "p-27",
       "#/perfil": "p-05",
+      "#/cuenta/configuracion": "p-28",
     };
     if (map[route]) return map[route];
     if (route === ERRORS.FORBIDDEN) return "error/403";
@@ -96,7 +98,7 @@
           : LOGIN_ROUTE;
     }
 
-    const publicPortal = [LOGIN_ROUTE, INTERNAL_LOGIN_ROUTE, "#/registro", "#/recuperar-clave", "#/identidad/otp", ERRORS.FORBIDDEN, ERRORS.NOT_FOUND, ERRORS.SERVER];
+    const publicPortal = [LOGIN_ROUTE, INTERNAL_LOGIN_ROUTE, "#/registro", "#/recuperar-clave", "#/identidad/otp", "#/cuenta/configuracion", ERRORS.FORBIDDEN, ERRORS.NOT_FOUND, ERRORS.SERVER];
     const needsAuth =
       (!publicPortal.includes(route) && !isInternalRole(role)) ||
       (route.startsWith("#/interno/") && route !== INTERNAL_LOGIN_ROUTE);
@@ -115,7 +117,8 @@
       route.startsWith("#/seguimiento/") ||
       route.startsWith("#/servicios/") ||
       route === "#/mis-tramites" ||
-      route === "#/perfil";
+      route === "#/perfil" ||
+      route === "#/cuenta/configuracion";
 
     if (isInner) {
       if (!findNavItem(role, route)) return ERRORS.NOT_FOUND;
@@ -142,7 +145,7 @@
       "#/solicitud/cita": 1, "#/seguimiento/estado": 1, "#/seguimiento/observaciones": 1,
       "#/seguimiento/subsanacion": 1, "#/seguimiento/resultados": 1, "#/seguimiento/pagos": 1,
       "#/seguimiento/edictos": 1, "#/servicios/certificaciones": 1, "#/servicios/naturalizacion": 1,
-      "#/servicios/ayuda": 1, "#/perfil": 1,
+      "#/servicios/ayuda": 1, "#/perfil": 1, "#/cuenta/configuracion": 1,
     };
     return !!map[route];
   }

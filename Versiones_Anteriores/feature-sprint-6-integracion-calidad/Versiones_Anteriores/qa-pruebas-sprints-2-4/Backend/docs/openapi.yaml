@@ -1,0 +1,2152 @@
+openapi: 3.0.3
+
+info:
+  title: Sistema Interoperable para la Gestión de Trámites Migratorios en Panamá
+  version: 0.4.0
+  description: |
+    Contrato de la API REST del producto (HU-07).
+
+    Fuente de las definiciones: `Documentacion/05-backlog-siete-sprints.md` (backlog maestro),
+    `Documentacion/03-plan-de-desarrollo.md` (§3.4 a §3.7), `Documentacion/06-roles-y-accesos.md`
+    y `Documentacion/07-marco-legal-y-matriz-fuentes-verificacion.md`.
+
+    Todo cambio a este contrato se registra primero en `CHANGELOG-api.md`.
+  license:
+    name: Uso académico
+    url: https://github.com/Death272004/Tr-mites-Migratorios
+
+servers:
+  - url: http://localhost:8080
+    description: Entorno local (Docker)
+
+tags:
+  - name: Autenticación
+    description: Inicio y cierre de sesión, cambio y recuperación de contraseña, y registro de cuenta (HU-12).
+  - name: Perfil
+    description: Datos de la cuenta del usuario de la sesión (P-05).
+  - name: Expedientes
+    description: Registro, consulta y seguimiento de expedientes (HU-15, HU-16).
+  - name: Documentos
+    description: Carga y descarga protegida de documentos (HU-17).
+  - name: Estados
+    description: Transiciones de estado e historial (HU-19, HU-21).
+  - name: Observaciones
+    description: Observaciones del despacho y respuesta del cliente (HU-20).
+  - name: Verificaciones
+    description: Verificación documental en modo manual asistido o simulado (HU-24, HU-26).
+  - name: Consentimientos
+    description: Consentimiento informado del titular (HU-18b).
+  - name: Solicitudes ARCO
+    description: Derechos ARCO desde el portal del cliente (HU-18c).
+  - name: Notificaciones
+    description: Avisos del expediente (HU-18).
+  - name: Auditoría
+    description: Bitácora de operaciones, solo lectura para el auditor (HU-22).
+  - name: Catálogos
+    description: Tipos de trámite, requisitos y tipos documentales (TASK-15.2, TASK-17.1).
+  - name: Fuentes simuladas
+    description: Fuentes de verificación simuladas de TE, CSS, Registro Público y SNM (HU-08).
+
+security:
+  - bearerAuth: []
+
+paths:
+  # ---------- Autenticación (HU-12) ----------
+  /api/auth/login:
+    post:
+      tags: [Autenticación]
+      operationId: iniciarSesion
+      summary: Iniciar sesión
+      description: |
+        Valida las credenciales y devuelve un token con expiración. El fallo responde siempre con
+        un mensaje genérico que no revela si la cuenta existe; tras varios intentos fallidos la
+        cuenta queda bloqueada temporalmente (CP-01, CP-02).
+      security: []
+      x-roles: [SOLICITANTE, FUNCIONARIO, SUPERVISOR, AUDITOR, ADMIN]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginSolicitud"
+      responses:
+        "200":
+          description: Sesión iniciada.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginRespuesta"
+        "400":
+          $ref: "#/components/responses/EntradaInvalida"
+        "401":
+          $ref: "#/components/responses/NoAutenticado"
+        "500":
+          $ref: "#/components/responses/ErrorInterno"
+
+  /api/auth/logout:
+    post:
+      tags: [Autenticación]
+      operationId: cerrarSesion
+      summary: Cerrar sesión
+      description: Invalida el token o la sesión actual.
+      x-roles: [SOLICITANTE, FUNCIONARIO, SUPERVISOR, AUDITOR, ADMIN]
+      responses:
+        "204":
+          description: Sesión cerrada.
+        "401":
+          $ref: "#/components/responses/NoAutenticado"
+        "500":
+          $ref: "#/components/responses/ErrorInterno"
+
+  /api/auth/contrasena:
+    put:
+      tags: [Autenticación]
+      operationId: cambiarContrasena
+      summary: Cambiar la contraseña
+      description: Exige la contraseña actual y aplica la política de complejidad.
+      x-roles: [SOLICITANTE, FUNCIONARIO, SUPERVISOR, AUDITOR, ADMIN]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CambioContrasenaSolicitud"
+      responses:
+        "204":
+          description: Contraseña actualizada.
+        "400":
+          $ref: "#/components/responses/EntradaInvalida"
+        "401":
+          $ref: "#/components/responses/NoAutenticado"
+        "500":
+          $ref: "#/components/responses/ErrorInterno"
+
+  /api/auth/registro:
+    post:
+      tags: [Autenticación]
+      operationId: registrarCuenta
+      summary: Registrar una cuenta del portal (P-02)
+      description: |
+        Crea una cuenta `SOLICITANTE` activa. El rol no se elige: el registro público nunca crea
+        cuentas del personal. Exige aceptar los términos y la autorización de tratamiento de datos
+        (Ley 81), y guarda la fecha y la IP de esa aceptación. El conflicto trae el código
+        `CORREO_YA_REGISTRADO` o `DOCUMENTO_YA_REGISTRADO`.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegistroSolicitud"
+      responses:
+        "201":
+          description: Cuenta creada.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Usuario"
+        "400":
+          $ref: "#/components/responses/EntradaInvalida"
+        "409":
+          $ref: "#/components/responses/Conflicto"
+        "500":
+          $ref: "#/components/responses/ErrorInterno"
+
+  /api/auth/recuperacion:
+    post:
+      tags: [Autenticación]
+      operationId: solicitarRecuperacion
+      summary: Solicitar el enlace de recuperación de contraseña (P-04)
+      description: |
+        Responde siempre lo mismo, exista o no la cuenta (CP-02). Si existe y está activa, genera
+        un enlace temporal de una hora y anula los anteriores. El MVP no tiene proveedor de correo:
+        con `CORREO_SIMULADO=true` el token queda en el registro del servidor.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RecuperacionSolicitud"
+      responses:
+        "202":
+          description: Solicitud recibida. No indica si la cuenta existe.
+        "400":
+          $ref: "#/components/responses/EntradaInvalida"
+        "500":
+          $ref: "#/components/responses/ErrorInterno"
+
+  /api/auth/recuperacion/confirmacion:
+    post:
+      tags: [Autenticación]
+      operationId: confirmarRecuperacion
+      summary: Cambiar la contraseña con el enlace de recuperación (P-04)
+      description: |
+        El token sirve una sola vez. Al cambiar la contraseña se cierran todas las sesiones de la
+        cuenta y se levanta el bloqueo por intentos. Si el enlace no existe, venció o ya se usó,
+        responde 400 con el código `ENLACE_INVALIDO`.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RecuperacionConfirmacion"
+      responses:
+        "204":
+          description: Contraseña actualizada.
+        "400":
+          $ref: "#/components/responses/EntradaInvalida"
+        "500":
+          $ref: "#/components/responses/ErrorInterno"
+
+  # ---------- Perfil (P-05) ----------
+  /api/perfil:
+    get:
+      tags: [Perfil]
+      operationId: consultarPerfil
+      summary: Consultar el perfil propio
+      x-roles: [SOLICITANTE, FUNCIONARIO, SUPERVISOR, AUDITOR, ADMIN]
+      responses:
+        "200":
+          description: Perfil del usuario de la sesión.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Perfil"
+        "401":
+          $ref: "#/components/responses/NoAutenticado"
+        "500":
+          $ref: "#/components/responses/ErrorInterno"
+    patch:
+      tags: [Perfil]
+      operationId: actualizarPerfil
+      summary: Actualizar los datos de contacto del perfil propio
+      description: Solo cambia los campos enviados. Nombre, documento y correo no se editan aquí.
+      x-roles: [SOLICITANTE, FUNCIONARIO, SUPERVISOR, AUDITOR, ADMIN]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PerfilCambio"
+      responses:
+        "200":
+          description: Perfil actualizado.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Perfil"
+        "400":
+          $ref: "#/components/responses/EntradaInvalida"
+        "401":
+          $ref: "#/components/responses/NoAutenticado"
+        "500":
+          $ref: "#/components/responses/ErrorInterno"
+
+  # ---------- Expedientes (HU-15, HU-16) ----------
+  /api/expedientes:
+    get:
+      tags: [Expedientes]
+      operationId: listarExpedientes
+      summary: Consultar los expedientes accesibles
+      description: |
+        Devuelve solo los expedientes accesibles según rol y titularidad: el solicitante ve los
+        suyos; funcionario y supervisor, los de su ámbito; el auditor, en lectura. Proyección
+        mínima de datos. Las consultas sensibles quedan en auditoría.
+      x-roles: [SOLICITANTE, FUNCIONARIO, SUPERVISOR, AUDITOR]
+      parameters:
+        - name: estado
+          in: query
+          schema:
+            $ref: "#/components/schemas/EstadoExpediente"
+        - name: tipoTramite
+          in: query
+          schema:
+            type: string
+        - name: fechaDesde
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: fechaHasta
+          in: query
+          schema:
+            type: string
+            format: date
+        - $ref: "#/components/parameters/Pagina"
+        - $ref: "#/components/parameters/Tamano"
+      responses:
+        "200":
+          description: Página de expedientes.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginaExpedientes"
+        "400":
+          $ref: "#/components/responses/EntradaInvalida"
+        "401":
+          $ref: "#/components/responses/NoAutenticado"
+        "403":
+          $ref: "#/components/responses/SinPermiso"
+        "500":
+          $ref: "#/components/responses/ErrorInterno"
+    post:
+      tags: [Expedientes]
+      operationId: crearExpediente
+      summary: Crear un expediente
+      description: |
+        Crea el expediente con identificador único, solicitante autenticado, tipo de trámite,
+        fecha de creación y estado inicial (`RECIBIDO`). Los campos se validan en
+        el servidor. Un usuario no puede crear expedientes a nombre de otro (CP-03), salvo el
+        `SOLICITANTE` con representación acreditada (P-08). Genera evento de auditoría.
+      x-roles: [SOLICITANTE]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ExpedienteNuevo"
+      responses:
+        "201":
+          description: Expediente creado.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Expediente"
+        "400":
+          $ref: "#/components/responses/EntradaInvalida"
+        "401":
+          $ref: "#/components/responses/NoAutenticado"
+        "403":
+          $ref: "#/components/responses/SinPermiso"
+        "500":
+          $ref: "#/components/responses/ErrorInterno"
+
+  /api/expedientes/{id}:
+    get:
+      tags: [Expedientes]
+      operationId: obtenerExpediente
+      summary: Consultar el detalle de un expediente
+      description: Verifica el acceso; un expediente ajeno responde 404 o 403 sin datos (CP-03).
+      x-roles: [SOLICITANTE, FUNCIONARIO, SUPERVISOR, AUDITOR]
+      parameters:
+        - $ref: "#/components/parameters/ExpedienteId"
+      responses:
+        "200":
+          description: Detalle del expediente.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Expediente"
+        "401":
+          $ref: "#/components/responses/NoAutenticado"
+        "403":
+          $ref: "#/components/responses/SinPermiso"
+        "404":
+          $ref: "#/components/responses/NoEncontrado"
+        "500":
+          $ref: "#/components/responses/ErrorInterno"
+
+  # ---------- Documentos (HU-17) ----------
+  /api/expedientes/{id}/documentos:
+    get:
+      tags: [Documentos]
+      operationId: listarDocumentos
+      summary: Consultar los documentos de un expediente
+      description: Devuelve los metadatos de los documentos; el auditor solo accede a metadatos.
+      x-roles: [SOLICITANTE, FUNCIONARIO, SUPERVISOR, AUDITOR]
+      parameters:
+        - $ref: "#/components/parameters/ExpedienteId"
+      responses:
+        "200":
+          description: Documentos del expediente.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Documento"
+        "401":
+          $ref: "#/components/responses/NoAutenticado"
+        "403":
+          $ref: "#/components/responses/SinPermiso"
+        "404":
+          $ref: "#/components/responses/NoEncontrado"
+        "500":
+          $ref: "#/components/responses/ErrorInterno"
+    post:
+      tags: [Documentos]
+      operationId: adjuntarDocumento
+      summary: Adjuntar un documento
+      description: |
+        Valida tipo MIME, tamaño máximo y contenido, y rechaza con mensaje seguro (CP-05). Si ya
+        existe un documento válido del mismo tipo documental, la respuesta lo avisa con
+        `avisoDuplicado`. Genera evento de auditoría.
+      x-roles: [SOLICITANTE, FUNCIONARIO]
+      parameters:
+        - $ref: "#/components/parameters/ExpedienteId"
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [archivo, tipoDocumental]
+              properties:
+                archivo:
+                  type: string
+                  format: binary
+                tipoDocumental:
+                  type: string
+                  description: Código del catálogo de tipos documentales.
+      responses:
+        "201":
+          description: Documento registrado.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Documento"
+        "400":
+          $ref: "#/components/responses/EntradaInvalida"
+        "401":
+          $ref: "#/components/responses/NoAutenticado"
+        "403":
+          $ref: "#/components/responses/SinPermiso"
+        "404":
+          $ref: "#/components/responses/NoEncontrado"
+        "500":
+          $ref: "#/components/responses/ErrorInterno"
+
+  /api/expedientes/{id}/documentos/{documentoId}/contenido:
+    get:
+      tags: [Documentos]
+      operationId: descargarDocumento
+      summary: Descargar un documento
+      description: Verifica el permiso y registra la descarga en auditoría (CP-12).
+      x-roles: [SOLICITANTE, FUNCIONARIO, SUPERVISOR]
+      parameters:
+        - $ref: "#/components/parameters/ExpedienteId"
+        - name: documentoId
+          in: path
+          required: true
+          description: Identificador del documento.
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Contenido del archivo.
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        "401":
+          $ref: "#/components/responses/NoAutenticado"
+        "403":
+          $ref: "#/components/responses/SinPermiso"
+        "404":
+          $ref: "#/components/responses/NoEncontrado"
+        "500":
+          $ref: "#/components/responses/ErrorInterno"
+
+  # ---------- Estados e historial (HU-19, HU-21) ----------
+  /api/expedientes/{id}/estado:
+    patch:
+      tags: [Estados]
+      operationId: cambiarEstado
+      summary: Solicitar un cambio de estado
+      description: |
+        Aplica la matriz de transiciones permitidas por tipo de trámite. Una transición no
+        permitida responde 409 o 403 y conserva el estado original (CP-04). No se llega a
+        `EN_RESOLUCION` ni a `RESUELTO` sin verificaciones respondidas y requisitos completos.
+        `RESUELTO` exige el campo `resultado`. Registra estado anterior, nuevo, autor, fecha y
+        motivo. El permiso depende del estado de destino: `OBSERVAR` para `RECIBIDO`,
+        `CON_OBSERVACIONES`, `EN_ANALISIS` y `ADMITIDO`; `RESOLVER` para `EN_RESOLUCION` y
+        `RESUELTO`; `NOTIFICAR` para `NOTIFICADO`, `ENTREGADO` y `ARCHIVADO`.
+      x-roles: [FUNCIONARIO]
+      parameters:
+        - $ref: "#/components/parameters/ExpedienteId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CambioEstadoSolicitud"
+      responses:
+        "200":
+          description: Estado actualizado.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Expediente"
+        "400":
+          $ref: "#/components/responses/EntradaInvalida"
+        "401":
+          $ref: "#/components/responses/NoAutenticado"
+        "403":
+          $ref: "#/components/responses/SinPermiso"
+        "404":
+          $ref: "#/components/responses/NoEncontrado"
+        "409":
+          $ref: "#/components/responses/Conflicto"
+        "500":
+          $ref: "#/components/responses/ErrorInterno"
+
+  /api/expedientes/{id}/historial:
+    get:
+      tags: [Estados]
+      operationId: consultarHistorial
+      summary: Consultar el historial de estados
+      description: |
+        Devuelve los eventos en orden, con autor, fecha, cambio y motivo. Exige permiso
+        específico de lectura; no revela eventos no autorizados (CP-09).
+      x-roles: [SOLICITANTE, FUNCIONARIO, SUPERVISOR, AUDITOR]
+      parameters:
+        - $ref: "#/components/parameters/ExpedienteId"
+      responses:
+        "200":
+          description: Historial del expediente.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/HistorialEstado"
+        "401":
+          $ref: "#/components/responses/NoAutenticado"
+        "403":
+          $ref: "#/components/responses/SinPermiso"
+        "404":
+          $ref: "#/components/responses/NoEncontrado"
+        "500":
+          $ref: "#/components/responses/ErrorInterno"
+
+  # ---------- Observaciones (HU-20) ----------
+  /api/expedientes/{id}/observaciones:
+    get:
+      tags: [Observaciones]
+      operationId: listarObservaciones
+      summary: Consultar las observaciones de un expediente
+      description: El solicitante consulta solo las de sus expedientes; el funcionario, las de su ámbito.
+      x-roles: [SOLICITANTE, FUNCIONARIO, SUPERVISOR, AUDITOR]
+      parameters:
+        - $ref: "#/components/parameters/ExpedienteId"
+      responses:
+        "200":
+          description: Hilo de observaciones.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Observacion"
+        "401":
+          $ref: "#/components/responses/NoAutenticado"
+        "403":
+          $ref: "#/components/responses/SinPermiso"
+        "404":
+          $ref: "#/components/responses/NoEncontrado"
+        "500":
+          $ref: "#/components/responses/ErrorInterno"
+    post:
+      tags: [Observaciones]
+      operationId: registrarObservacion
+      summary: Registrar una observación o su respuesta
+      description: |
+        El funcionario registra observaciones en expedientes de su ámbito y el solicitante
+        responde en los suyos. Una observación no equivale a decisión final ni cambia el estado
+        automáticamente. Genera evento de auditoría.
+      x-roles: [SOLICITANTE, FUNCIONARIO]
+      parameters:
+        - $ref: "#/components/parameters/ExpedienteId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ObservacionNueva"
+      responses:
+        "201":
+          description: Observación registrada.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Observacion"
+        "400":
+          $ref: "#/components/responses/EntradaInvalida"
+        "401":
+          $ref: "#/components/responses/NoAutenticado"
+        "403":
+          $ref: "#/components/responses/SinPermiso"
+        "404":
+          $ref: "#/components/responses/NoEncontrado"
+        "500":
+          $ref: "#/components/responses/ErrorInterno"
+
+  # ---------- Verificaciones (HU-24, HU-26) ----------
+  /api/expedientes/{id}/verificaciones:
+    get:
+      tags: [Verificaciones]
+      operationId: listarVerificaciones
+      summary: Consultar las verificaciones de un expediente
+      description: |
+        Acceso restringido y con minimización: solo el resultado de la verificación. El
+        solicitante recibe únicamente el estado agregado.
+      x-roles: [SOLICITANTE, FUNCIONARIO, SUPERVISOR, AUDITOR]
+      parameters:
+        - $ref: "#/components/parameters/ExpedienteId"
+      responses:
+        "200":
+          description: Verificaciones del expediente.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Verificacion"
+        "401":
+          $ref: "#/components/responses/NoAutenticado"
+        "403":
+          $ref: "#/components/responses/SinPermiso"
+        "404":
+          $ref: "#/components/responses/NoEncontrado"
+        "500":
+          $ref: "#/components/responses/ErrorInterno"
+    post:
+      tags: [Verificaciones]
+      operationId: registrarVerificacion
+      summary: Registrar una verificación
+      description: |
+        En modo manual asistido registra el resultado con fuente, fecha y responsable. Valida
+        finalidad, consentimiento del titular y el permiso `verificar` antes de aceptar. Produce
+        la misma entidad que el modo simulado. Genera evento de auditoría.
+      x-roles: [FUNCIONARIO]
+      parameters:
+        - $ref: "#/components/parameters/ExpedienteId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VerificacionNueva"
+      responses:
+        "201":
+          description: Verificación registrada.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Verificacion"
+        "400":
+          $ref: "#/components/responses/EntradaInvalida"
+        "401":
+          $ref: "#/components/responses/NoAutenticado"
+        "403":
+          $ref: "#/components/responses/SinPermiso"
+        "404":
+          $ref: "#/components/responses/NoEncontrado"
+        "409":
+          $ref: "#/components/responses/Conflicto"
+        "500":
+          $ref: "#/components/responses/ErrorInterno"
+
+  # ---------- Consentimientos (HU-18b) ----------
+  /api/consentimientos:
+    get:
+      tags: [Consentimientos]
+      operationId: listarConsentimientos
+      summary: Consultar consentimientos
+      description: El titular ve los suyos; el personal autorizado, los del cliente o expediente que atiende.
+      x-roles: [SOLICITANTE, FUNCIONARIO, AUDITOR]
+      parameters:
+        - name: titularId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: estado
+          in: query
+          schema:
+            $ref: "#/components/schemas/EstadoConsentimiento"
+      responses:
+        "200":
+          description: Consentimientos accesibles.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Consentimiento"
+        "401":
+          $ref: "#/components/responses/NoAutenticado"
+        "403":
+          $ref: "#/components/responses/SinPermiso"
+        "500":
+          $ref: "#/components/responses/ErrorInterno"
+    post:
+      tags: [Consentimientos]
+      operationId: registrarConsentimiento
+      summary: Registrar el consentimiento informado
+      description: |
+        Registra titular, responsable, finalidad, alcance, base legal, fecha, vigencia y estado.
+        Los datos sensibles exigen consentimiento expreso. Genera evento de auditoría.
+      x-roles: [SOLICITANTE, FUNCIONARIO]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConsentimientoNuevo"
+      responses:
+        "201":
+          description: Consentimiento registrado.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Consentimiento"
+        "400":
+          $ref: "#/components/responses/EntradaInvalida"
+        "401":
+          $ref: "#/components/responses/NoAutenticado"
+        "403":
+          $ref: "#/components/responses/SinPermiso"
+        "500":
+          $ref: "#/components/responses/ErrorInterno"
+
+  /api/consentimientos/{consentimientoId}:
+    patch:
+      tags: [Consentimientos]
+      operationId: revocarConsentimiento
+      summary: Revocar un consentimiento
+      description: |
+        Deja el consentimiento en `REVOCADO`, conserva la evidencia histórica y notifica al
+        despacho. Genera evento de auditoría.
+      x-roles: [SOLICITANTE, FUNCIONARIO]
+      parameters:
+        - name: consentimientoId
+          in: path
+          required: true
+          description: Identificador del consentimiento.
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Consentimiento revocado.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Consentimiento"
+        "401":
+          $ref: "#/components/responses/NoAutenticado"
+        "403":
+          $ref: "#/components/responses/SinPermiso"
+        "404":
+          $ref: "#/components/responses/NoEncontrado"
+        "409":
+          $ref: "#/components/responses/Conflicto"
+        "500":
+          $ref: "#/components/responses/ErrorInterno"
+
+  # ---------- Solicitudes ARCO (HU-18c) ----------
+  /api/solicitudes-arco:
+    get:
+      tags: [Solicitudes ARCO]
+      operationId: listarSolicitudesArco
+      summary: Consultar solicitudes ARCO
+      description: El cliente solo consulta las suyas; el despacho ve su bandeja de atención.
+      x-roles: [SOLICITANTE, FUNCIONARIO, AUDITOR]
+      parameters:
+        - name: estado
+          in: query
+          schema:
+            $ref: "#/components/schemas/EstadoSolicitudArco"
+        - name: fueraDePlazo
+          in: query
+          schema:
+            type: boolean
+      responses:
+        "200":
+          description: Solicitudes accesibles.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SolicitudArco"
+        "401":
+          $ref: "#/components/responses/NoAutenticado"
+        "403":
+          $ref: "#/components/responses/SinPermiso"
+        "500":
+          $ref: "#/components/responses/ErrorInterno"
+    post:
+      tags: [Solicitudes ARCO]
+      operationId: registrarSolicitudArco
+      summary: Registrar una solicitud ARCO
+      description: Crea la solicitud con estado inicial `RECIBIDA`. Genera evento de auditoría.
+      x-roles: [SOLICITANTE]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SolicitudArcoNueva"
+      responses:
+        "201":
+          description: Solicitud registrada.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SolicitudArco"
+        "400":
+          $ref: "#/components/responses/EntradaInvalida"
+        "401":
+          $ref: "#/components/responses/NoAutenticado"
+        "403":
+          $ref: "#/components/responses/SinPermiso"
+        "500":
+          $ref: "#/components/responses/ErrorInterno"
+
+  /api/solicitudes-arco/{solicitudId}:
+    parameters:
+      - name: solicitudId
+        in: path
+        required: true
+        description: Identificador de la solicitud ARCO.
+        schema:
+          type: string
+          format: uuid
+    get:
+      tags: [Solicitudes ARCO]
+      operationId: obtenerSolicitudArco
+      summary: Consultar una solicitud ARCO
+      description: Acceso restringido al titular y al personal autorizado.
+      x-roles: [SOLICITANTE, FUNCIONARIO, AUDITOR]
+      responses:
+        "200":
+          description: Detalle de la solicitud.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SolicitudArco"
+        "401":
+          $ref: "#/components/responses/NoAutenticado"
+        "403":
+          $ref: "#/components/responses/SinPermiso"
+        "404":
+          $ref: "#/components/responses/NoEncontrado"
+        "500":
+          $ref: "#/components/responses/ErrorInterno"
+    patch:
+      tags: [Solicitudes ARCO]
+      operationId: atenderSolicitudArco
+      summary: Atender una solicitud ARCO
+      description: |
+        Cambia el estado (`RECIBIDA → EN_ATENCION → ATENDIDA` o `RECHAZADA` con motivo) y asigna
+        responsable. Cada cambio genera evento de auditoría.
+      x-roles: [FUNCIONARIO]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AtencionSolicitudArco"
+      responses:
+        "200":
+          description: Solicitud actualizada.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SolicitudArco"
+        "400":
+          $ref: "#/components/responses/EntradaInvalida"
+        "401":
+          $ref: "#/components/responses/NoAutenticado"
+        "403":
+          $ref: "#/components/responses/SinPermiso"
+        "404":
+          $ref: "#/components/responses/NoEncontrado"
+        "409":
+          $ref: "#/components/responses/Conflicto"
+        "500":
+          $ref: "#/components/responses/ErrorInterno"
+
+  # ---------- Notificaciones (HU-18) ----------
+  /api/notificaciones:
+    get:
+      tags: [Notificaciones]
+      operationId: listarNotificaciones
+      summary: Consultar mis notificaciones
+      description: Lista las notificaciones del usuario autenticado con fecha, tipo y estado de lectura.
+      x-roles: [SOLICITANTE, FUNCIONARIO]
+      parameters:
+        - name: leida
+          in: query
+          schema:
+            type: boolean
+        - $ref: "#/components/parameters/Pagina"
+        - $ref: "#/components/parameters/Tamano"
+      responses:
+        "200":
+          description: Página de notificaciones.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginaNotificaciones"
+        "401":
+          $ref: "#/components/responses/NoAutenticado"
+        "500":
+          $ref: "#/components/responses/ErrorInterno"
+
+  /api/notificaciones/{notificacionId}/leida:
+    put:
+      tags: [Notificaciones]
+      operationId: marcarNotificacionLeida
+      summary: Marcar una notificación como leída
+      description: Actualiza el estado de lectura sin duplicar eventos.
+      x-roles: [SOLICITANTE, FUNCIONARIO]
+      parameters:
+        - name: notificacionId
+          in: path
+          required: true
+          description: Identificador de la notificación.
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "204":
+          description: Notificación marcada como leída.
+        "401":
+          $ref: "#/components/responses/NoAutenticado"
+        "404":
+          $ref: "#/components/responses/NoEncontrado"
+        "500":
+          $ref: "#/components/responses/ErrorInterno"
+
+  # ---------- Auditoría (HU-22) ----------
+  /api/auditoria/eventos:
+    get:
+      tags: [Auditoría]
+      operationId: consultarAuditoria
+      summary: Consultar la bitácora de auditoría
+      description: Solo lectura. Los registros no se modifican ni eliminan por la API.
+      x-roles: [AUDITOR]
+      parameters:
+        - $ref: "#/components/parameters/FechaDesde"
+        - $ref: "#/components/parameters/FechaHasta"
+        - $ref: "#/components/parameters/ActorId"
+        - $ref: "#/components/parameters/Operacion"
+        - $ref: "#/components/parameters/Recurso"
+        - $ref: "#/components/parameters/Pagina"
+        - $ref: "#/components/parameters/Tamano"
+      responses:
+        "200":
+          description: Página de eventos.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginaEventosAuditoria"
+        "400":
+          $ref: "#/components/responses/EntradaInvalida"
+        "401":
+          $ref: "#/components/responses/NoAutenticado"
+        "403":
+          $ref: "#/components/responses/SinPermiso"
+        "500":
+          $ref: "#/components/responses/ErrorInterno"
+
+  /api/auditoria/eventos/exportacion:
+    get:
+      tags: [Auditoría]
+      operationId: exportarAuditoria
+      summary: Exportar la bitácora a CSV
+      description: Aplica los mismos filtros que la consulta. La exportación queda auditada.
+      x-roles: [AUDITOR]
+      parameters:
+        - $ref: "#/components/parameters/FechaDesde"
+        - $ref: "#/components/parameters/FechaHasta"
+        - $ref: "#/components/parameters/ActorId"
+        - $ref: "#/components/parameters/Operacion"
+        - $ref: "#/components/parameters/Recurso"
+      responses:
+        "200":
+          description: Archivo CSV con los eventos.
+          content:
+            text/csv:
+              schema:
+                type: string
+        "400":
+          $ref: "#/components/responses/EntradaInvalida"
+        "401":
+          $ref: "#/components/responses/NoAutenticado"
+        "403":
+          $ref: "#/components/responses/SinPermiso"
+        "500":
+          $ref: "#/components/responses/ErrorInterno"
+
+  # ---------- Catálogos (TASK-15.2, TASK-17.1) ----------
+  /api/catalogos/tipos-tramite:
+    get:
+      tags: [Catálogos]
+      operationId: listarTiposTramite
+      summary: Consultar los tipos de trámite con sus requisitos
+      description: Tipos de trámite activos y los documentos que cada uno exige o admite.
+      x-roles: [SOLICITANTE, FUNCIONARIO, SUPERVISOR, AUDITOR, ADMIN]
+      responses:
+        "200":
+          description: Tipos de trámite activos.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TipoTramite"
+        "401":
+          $ref: "#/components/responses/NoAutenticado"
+        "500":
+          $ref: "#/components/responses/ErrorInterno"
+
+  /api/catalogos/tipos-documentales:
+    get:
+      tags: [Catálogos]
+      operationId: listarTiposDocumentales
+      summary: Consultar los tipos documentales y los límites de los archivos
+      description: Incluye los tipos MIME permitidos y el tamaño máximo, para validar en el cliente antes de enviar.
+      x-roles: [SOLICITANTE, FUNCIONARIO, SUPERVISOR, AUDITOR, ADMIN]
+      responses:
+        "200":
+          description: Tipos documentales.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TipoDocumental"
+        "401":
+          $ref: "#/components/responses/NoAutenticado"
+        "500":
+          $ref: "#/components/responses/ErrorInterno"
+
+  # ---------- Fuentes de verificación simuladas (HU-08) ----------
+  /api/mock/te/personas/{tipoDoc}/{numero}:
+    get:
+      tags: [Fuentes simuladas]
+      operationId: mockTePersona
+      summary: Tribunal Electoral simulado — verificación de identidad
+      description: Datos ficticios. Representa una futura integración sujeta a convenio.
+      x-roles: [FUNCIONARIO]
+      parameters:
+        - name: tipoDoc
+          in: path
+          required: true
+          description: Tipo de documento de identidad.
+          schema:
+            type: string
+        - name: numero
+          in: path
+          required: true
+          description: Número del documento.
+          schema:
+            type: string
+        - $ref: "#/components/parameters/Escenario"
+        - $ref: "#/components/parameters/EscenarioConsulta"
+      responses:
+        "200":
+          description: Resultado simulado (escenarios `OK`, `DATOS_INCOMPLETOS`, `LLENO`).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MockTePersona"
+        "401":
+          $ref: "#/components/responses/NoAutenticado"
+        "404":
+          $ref: "#/components/responses/SinResultado"
+        "429":
+          $ref: "#/components/responses/LimiteExcedido"
+        "500":
+          $ref: "#/components/responses/ErrorInterno"
+        "504":
+          $ref: "#/components/responses/TiempoAgotado"
+
+  /api/mock/css/afiliaciones/{idPersona}:
+    get:
+      tags: [Fuentes simuladas]
+      operationId: mockCssAfiliacion
+      summary: Caja de Seguro Social simulada — condición de afiliado
+      description: Datos ficticios. Representa una futura integración sujeta a convenio.
+      x-roles: [FUNCIONARIO]
+      parameters:
+        - $ref: "#/components/parameters/IdPersona"
+        - $ref: "#/components/parameters/Escenario"
+        - $ref: "#/components/parameters/EscenarioConsulta"
+      responses:
+        "200":
+          description: Resultado simulado (escenarios `OK`, `DATOS_INCOMPLETOS`, `LLENO`).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MockCssAfiliacion"
+        "401":
+          $ref: "#/components/responses/NoAutenticado"
+        "404":
+          $ref: "#/components/responses/SinResultado"
+        "429":
+          $ref: "#/components/responses/LimiteExcedido"
+        "500":
+          $ref: "#/components/responses/ErrorInterno"
+        "504":
+          $ref: "#/components/responses/TiempoAgotado"
+
+  /api/mock/registro/consultas/{idPersona}:
+    get:
+      tags: [Fuentes simuladas]
+      operationId: mockRegistroConsulta
+      summary: Registro Público simulado — información registral
+      description: Datos ficticios. Representa una futura integración sujeta a convenio.
+      x-roles: [FUNCIONARIO]
+      parameters:
+        - $ref: "#/components/parameters/IdPersona"
+        - $ref: "#/components/parameters/Escenario"
+        - $ref: "#/components/parameters/EscenarioConsulta"
+      responses:
+        "200":
+          description: Resultado simulado (escenarios `OK`, `DATOS_INCOMPLETOS`, `LLENO`).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MockRegistroConsulta"
+        "401":
+          $ref: "#/components/responses/NoAutenticado"
+        "404":
+          $ref: "#/components/responses/SinResultado"
+        "429":
+          $ref: "#/components/responses/LimiteExcedido"
+        "500":
+          $ref: "#/components/responses/ErrorInterno"
+        "504":
+          $ref: "#/components/responses/TiempoAgotado"
+
+  /api/mock/snm/expedientes/{numero}:
+    get:
+      tags: [Fuentes simuladas]
+      operationId: mockSnmExpediente
+      summary: SNM simulado — estado de un expediente en el sistema oficial
+      description: |
+        Datos ficticios. Es coherente con los expedientes creados en la plataforma o explica su
+        desfase en la respuesta.
+      x-roles: [FUNCIONARIO]
+      parameters:
+        - name: numero
+          in: path
+          required: true
+          description: Número del expediente.
+          schema:
+            type: string
+        - $ref: "#/components/parameters/Escenario"
+        - $ref: "#/components/parameters/EscenarioConsulta"
+      responses:
+        "200":
+          description: Resultado simulado (escenarios `OK`, `DATOS_INCOMPLETOS`, `LLENO`).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MockSnmExpediente"
+        "401":
+          $ref: "#/components/responses/NoAutenticado"
+        "404":
+          $ref: "#/components/responses/SinResultado"
+        "429":
+          $ref: "#/components/responses/LimiteExcedido"
+        "500":
+          $ref: "#/components/responses/ErrorInterno"
+        "504":
+          $ref: "#/components/responses/TiempoAgotado"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: Token devuelto por `POST /api/auth/login`, con expiración definida.
+
+  parameters:
+    ExpedienteId:
+      name: id
+      in: path
+      required: true
+      description: Identificador del expediente.
+      schema:
+        type: string
+        format: uuid
+    Pagina:
+      name: pagina
+      in: query
+      description: Número de página, desde 0.
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+    Tamano:
+      name: tamano
+      in: query
+      description: Elementos por página.
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+    Escenario:
+      name: X-Scenario
+      in: header
+      description: Fuerza el comportamiento de una fuente simulada (HU-08). También se acepta `?scenario=`.
+      schema:
+        $ref: "#/components/schemas/EscenarioMock"
+
+    EscenarioConsulta:
+      name: scenario
+      in: query
+      description: Alternativa al encabezado `X-Scenario`.
+      schema:
+        $ref: "#/components/schemas/EscenarioMock"
+    IdPersona:
+      name: idPersona
+      in: path
+      required: true
+      description: Identificador ficticio de la persona.
+      schema:
+        type: string
+    FechaDesde:
+      name: fechaDesde
+      in: query
+      schema:
+        type: string
+        format: date
+    FechaHasta:
+      name: fechaHasta
+      in: query
+      schema:
+        type: string
+        format: date
+    ActorId:
+      name: actorId
+      in: query
+      schema:
+        type: string
+        format: uuid
+    Operacion:
+      name: operacion
+      in: query
+      schema:
+        type: string
+    Recurso:
+      name: recurso
+      in: query
+      schema:
+        type: string
+
+  responses:
+    EntradaInvalida:
+      description: Entrada inválida; incluye el detalle por campo.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    NoAutenticado:
+      description: Falta la credencial o no es válida.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    SinPermiso:
+      description: El usuario autenticado no tiene permiso para la operación.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    NoEncontrado:
+      description: El recurso no existe o no debe revelarse al usuario.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    Conflicto:
+      description: Conflicto con el estado actual del recurso.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    ErrorInterno:
+      description: Fallo interno o de una dependencia. No incluye trazas ni datos personales.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+
+    SinResultado:
+      description: La fuente simulada no tiene resultado para la consulta (escenario `SIN_RESULTADO`).
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    LimiteExcedido:
+      description: Límite de consultas excedido (escenario `RATE_LIMIT`).
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    TiempoAgotado:
+      description: La fuente simulada no respondió a tiempo (escenario `TIMEOUT`).
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+
+  schemas:
+    # ---------- Enumerados ----------
+    Rol:
+      type: string
+      description: Roles técnicos del sistema (HU-13, `06-roles-y-accesos.md` §6.3.1).
+      enum: [SOLICITANTE, FUNCIONARIO, SUPERVISOR, AUDITOR, ADMIN]
+
+    EstadoCuenta:
+      type: string
+      enum: [ACTIVA, BLOQUEADA, DESHABILITADA]
+
+    TipoDocumento:
+      type: string
+      description: Documento de identidad del cliente (P-02).
+      enum: [PASAPORTE, CEDULA_E, CARNE]
+
+    IdiomaNotificacion:
+      type: string
+      enum: [ES, EN]
+
+    MedioNotificacion:
+      type: string
+      enum: [CORREO, SMS, PUSH]
+
+    Permiso:
+      type: string
+      description: |
+        Permisos del sistema, los mismos del Frontend (`js/utils/perms.js`). `SOLICITANTE` tiene
+        `PORTAL`; `SUPERVISOR`, `CONSULTAR` y `REPORTAR`; `AUDITOR`, `CONSULTAR`, `AUDITAR` y
+        `REPORTAR`; `ADMIN`, `CONSULTAR` y `ADMINISTRAR`. Al `FUNCIONARIO` se le asignan por
+        función entre `CONSULTAR`, `VERIFICAR`, `OBSERVAR`, `RESOLVER` y `NOTIFICAR`.
+      enum: [PORTAL, CONSULTAR, VERIFICAR, OBSERVAR, RESOLVER, NOTIFICAR, REPORTAR, AUDITAR, ADMINISTRAR]
+
+    EstadoExpediente:
+      type: string
+      description: |
+        Cadena de `Pantallas_y_Datos_Migracion.md`, la que muestra el Frontend: EN PREPARACIÓN →
+        RECIBIDO → [CON OBSERVACIONES] → EN ANÁLISIS → ADMITIDO → EN RESOLUCIÓN → RESUELTO →
+        NOTIFICADO → ENTREGADO → ARCHIVADO. El resultado de `RESUELTO` va en `resultado`.
+      enum:
+        - EN_PREPARACION
+        - RECIBIDO
+        - CON_OBSERVACIONES
+        - EN_ANALISIS
+        - ADMITIDO
+        - EN_RESOLUCION
+        - RESUELTO
+        - NOTIFICADO
+        - ENTREGADO
+        - ARCHIVADO
+
+    ResultadoExpediente:
+      type: string
+      description: Resultado de la resolución del expediente.
+      enum: [APROBADA, NEGADA]
+
+    FuenteVerificacion:
+      type: string
+      description: Fuentes de la matriz de `07-marco-legal-y-matriz-fuentes-verificacion.md` §4.
+      enum: [TE, CSS, REGISTRO_PUBLICO, SNM, DOCUMENTO_EXTERIOR]
+
+    ModoVerificacion:
+      type: string
+      enum: [MANUAL_ASISTIDO, SIMULADO]
+
+    EstadoVerificacion:
+      type: string
+      description: |
+        Estados propios de la verificación, independientes del estado del expediente (HU-24).
+        `EN_ATENCION` aplica al modo manual asistido y `ENVIADA` al modo simulado.
+        Un `ERROR_TECNICO` nunca equivale a un resultado negativo.
+      enum:
+        - PENDIENTE
+        - EN_ATENCION
+        - ENVIADA
+        - RESPONDIDA
+        - SIN_RESULTADO
+        - ERROR_TECNICO
+        - REINTENTO_PROGRAMADO
+
+    EstadoConsentimiento:
+      type: string
+      enum: [VIGENTE, REVOCADO]
+
+    TipoSolicitudArco:
+      type: string
+      description: Tipos de la HU-18c.
+      enum: [ACCESO, RECTIFICACION, CANCELACION, OPOSICION]
+
+    EstadoSolicitudArco:
+      type: string
+      enum: [RECIBIDA, EN_ATENCION, ATENDIDA, RECHAZADA]
+
+    TipoNotificacion:
+      type: string
+      description: Eventos mínimos de la HU-18.
+      enum:
+        - PENDIENTE_DOCUMENTOS
+        - OBSERVACION
+        - RESULTADO_VERIFICACION
+        - DECISION_FINAL
+        - SOLICITUD_ARCO
+        - CONSENTIMIENTO_REVOCADO
+
+    EscenarioMock:
+      type: string
+      description: Escenarios de las fuentes simuladas (backlog §5.6).
+      enum:
+        - OK
+        - SIN_RESULTADO
+        - ERROR_TECNICO
+        - TIMEOUT
+        - RATE_LIMIT
+        - DATOS_INCOMPLETOS
+        - LLENO
+
+    # ---------- Transversales ----------
+    Error:
+      type: object
+      description: Cuerpo de error uniforme (HU-14). Nunca incluye datos personales ni trazas.
+      required: [codigo, mensaje, correlacionId]
+      properties:
+        codigo:
+          type: string
+          description: Código estable del error.
+          example: ENTRADA_INVALIDA
+        mensaje:
+          type: string
+          description: Mensaje seguro para mostrar al usuario.
+        correlacionId:
+          type: string
+          description: Identificador que aparece también en los registros del servidor.
+        errores:
+          type: array
+          description: Detalle por campo cuando el código HTTP es 400.
+          items:
+            $ref: "#/components/schemas/ErrorDeCampo"
+
+    ErrorDeCampo:
+      type: object
+      required: [campo, mensaje]
+      properties:
+        campo:
+          type: string
+        mensaje:
+          type: string
+
+    Paginacion:
+      type: object
+      required: [pagina, tamano, totalElementos, totalPaginas]
+      properties:
+        pagina:
+          type: integer
+        tamano:
+          type: integer
+        totalElementos:
+          type: integer
+        totalPaginas:
+          type: integer
+
+    # ---------- Entidades (plan de desarrollo §3.4) ----------
+    Usuario:
+      type: object
+      required: [id, nombre, correo, rol, estadoCuenta]
+      properties:
+        id:
+          type: string
+          format: uuid
+        nombre:
+          type: string
+        correo:
+          type: string
+          format: email
+        rol:
+          $ref: "#/components/schemas/Rol"
+        permisos:
+          type: array
+          items:
+            $ref: "#/components/schemas/Permiso"
+        estadoCuenta:
+          $ref: "#/components/schemas/EstadoCuenta"
+
+    Expediente:
+      type: object
+      required: [id, solicitanteId, tipoTramite, estado, fechaCreacion, fechaActualizacion]
+      properties:
+        id:
+          type: string
+          format: uuid
+        numero:
+          type: string
+          description: Número legible del expediente, único.
+          example: EXP-2026-000001
+        solicitanteId:
+          type: string
+          format: uuid
+          description: Usuario titular del expediente.
+        tipoTramite:
+          type: string
+          description: Código del tipo de trámite, tomado del catálogo.
+        estado:
+          $ref: "#/components/schemas/EstadoExpediente"
+        resultado:
+          allOf:
+            - $ref: "#/components/schemas/ResultadoExpediente"
+          description: Solo tiene valor desde que el expediente llega a `RESUELTO`.
+        fechaCreacion:
+          type: string
+          format: date-time
+        fechaActualizacion:
+          type: string
+          format: date-time
+        version:
+          type: integer
+          description: Versión para el control de concurrencia optimista (HU-19).
+
+    Documento:
+      type: object
+      description: Metadatos del documento. El archivo nunca se expone con un enlace público.
+      required: [id, expedienteId, tipoDocumental, fechaCarga, estadoRevision]
+      properties:
+        id:
+          type: string
+          format: uuid
+        expedienteId:
+          type: string
+          format: uuid
+        tipoDocumental:
+          type: string
+          description: Código del catálogo de tipos documentales (TASK-17.1).
+        nombreArchivo:
+          type: string
+        tipoMime:
+          type: string
+        tamanoBytes:
+          type: integer
+        fechaCarga:
+          type: string
+          format: date-time
+        estadoRevision:
+          type: string
+          enum: [PENDIENTE, VALIDO, RECHAZADO]
+        avisoDuplicado:
+          type: boolean
+          description: Verdadero si ya existía un documento válido del mismo tipo documental (HU-17).
+
+    HistorialEstado:
+      type: object
+      required: [estadoNuevo, usuarioId, fecha]
+      properties:
+        estadoAnterior:
+          $ref: "#/components/schemas/EstadoExpediente"
+        estadoNuevo:
+          $ref: "#/components/schemas/EstadoExpediente"
+        usuarioId:
+          type: string
+          format: uuid
+        fecha:
+          type: string
+          format: date-time
+        motivo:
+          type: string
+
+    Observacion:
+      type: object
+      required: [id, expedienteId, autorId, fecha, texto]
+      properties:
+        id:
+          type: string
+          format: uuid
+        expedienteId:
+          type: string
+          format: uuid
+        autorId:
+          type: string
+          format: uuid
+        fecha:
+          type: string
+          format: date-time
+        texto:
+          type: string
+
+    Verificacion:
+      type: object
+      description: |
+        Solo guarda el resultado mínimo: fuente, fecha, resultado y responsable.
+        Nunca una copia del dato institucional.
+      required: [id, expedienteId, fuente, tipoVerificacion, modo, estado, fechaSolicitud]
+      properties:
+        id:
+          type: string
+          format: uuid
+        expedienteId:
+          type: string
+          format: uuid
+        fuente:
+          $ref: "#/components/schemas/FuenteVerificacion"
+        tipoVerificacion:
+          type: string
+        modo:
+          $ref: "#/components/schemas/ModoVerificacion"
+        estado:
+          $ref: "#/components/schemas/EstadoVerificacion"
+        finalidad:
+          type: string
+        fechaSolicitud:
+          type: string
+          format: date-time
+        fechaResultado:
+          type: string
+          format: date-time
+        resultadoMinimo:
+          type: string
+          description: Por ejemplo, "coincide" o "no coincide".
+        referenciaOrigen:
+          type: string
+          description: Referencia de la consulta o de correlación técnica.
+        responsableId:
+          type: string
+          format: uuid
+          description: Persona del despacho que realizó el cotejo (modo manual asistido).
+        nota:
+          type: string
+
+    Consentimiento:
+      type: object
+      required: [id, titularId, responsable, finalidad, alcance, baseLegal, fecha, estado, expreso]
+      properties:
+        id:
+          type: string
+          format: uuid
+        titularId:
+          type: string
+          format: uuid
+        responsable:
+          type: string
+          description: Despacho responsable del tratamiento.
+        finalidad:
+          type: string
+          description: Una finalidad por consentimiento (el trámite concreto).
+        alcance:
+          type: string
+          description: Categorías de datos y documentos cubiertos.
+        baseLegal:
+          type: string
+        fecha:
+          type: string
+          format: date-time
+        vigenciaHasta:
+          type: string
+          format: date
+        estado:
+          $ref: "#/components/schemas/EstadoConsentimiento"
+        expreso:
+          type: boolean
+          description: Verdadero cuando cubre datos sensibles (salud, antecedentes penales).
+        fechaRevocacion:
+          type: string
+          format: date-time
+
+    SolicitudArco:
+      type: object
+      required: [id, titularId, tipo, fechaCreacion, estado, fueraDePlazo]
+      properties:
+        id:
+          type: string
+          format: uuid
+        titularId:
+          type: string
+          format: uuid
+        tipo:
+          $ref: "#/components/schemas/TipoSolicitudArco"
+        descripcion:
+          type: string
+        fechaCreacion:
+          type: string
+          format: date-time
+        estado:
+          $ref: "#/components/schemas/EstadoSolicitudArco"
+        responsableId:
+          type: string
+          format: uuid
+        plazoAtencion:
+          type: string
+          format: date
+        fueraDePlazo:
+          type: boolean
+          description: Alerta de vencimiento; no altera el estado de atención.
+        motivoRechazo:
+          type: string
+
+    Notificacion:
+      type: object
+      description: No incluye datos confidenciales ni personales innecesarios.
+      required: [id, destinatarioId, tipo, fecha, leida]
+      properties:
+        id:
+          type: string
+          format: uuid
+        destinatarioId:
+          type: string
+          format: uuid
+        expedienteId:
+          type: string
+          format: uuid
+        tipo:
+          $ref: "#/components/schemas/TipoNotificacion"
+        mensaje:
+          type: string
+        fecha:
+          type: string
+          format: date-time
+        leida:
+          type: boolean
+
+    EventoAuditoria:
+      type: object
+      description: Registro inmutable; solo el rol AUDITOR lo consulta.
+      required: [id, actorId, operacion, recurso, fecha, resultado, correlacionId]
+      properties:
+        id:
+          type: string
+          format: uuid
+        actorId:
+          type: string
+          format: uuid
+        operacion:
+          type: string
+        recurso:
+          type: string
+        fecha:
+          type: string
+          format: date-time
+        resultado:
+          type: string
+        correlacionId:
+          type: string
+
+    # ---------- Solicitudes y respuestas ----------
+    LoginSolicitud:
+      type: object
+      required: [correo, contrasena]
+      properties:
+        correo:
+          type: string
+          format: email
+        contrasena:
+          type: string
+          format: password
+
+    LoginRespuesta:
+      type: object
+      required: [token, expiraEn, rol, usuario]
+      properties:
+        token:
+          type: string
+        expiraEn:
+          type: integer
+          description: Segundos hasta la expiración del token.
+          example: 3600
+        rol:
+          $ref: "#/components/schemas/Rol"
+        usuario:
+          $ref: "#/components/schemas/Usuario"
+
+    CambioContrasenaSolicitud:
+      type: object
+      required: [contrasenaActual, contrasenaNueva]
+      properties:
+        contrasenaActual:
+          type: string
+          format: password
+        contrasenaNueva:
+          type: string
+          format: password
+          description: Debe cumplir la política de complejidad.
+
+    RegistroSolicitud:
+      type: object
+      required:
+        - tipoDocumento
+        - numeroDocumento
+        - nombre
+        - nacionalidad
+        - correo
+        - telefono
+        - paisResidencia
+        - contrasena
+        - aceptaTratamientoDatos
+      properties:
+        tipoDocumento:
+          $ref: "#/components/schemas/TipoDocumento"
+        numeroDocumento:
+          type: string
+          pattern: "^[A-Za-z0-9-]{4,40}$"
+          description: Único junto con el tipo; se guarda en mayúsculas.
+        nombre:
+          type: string
+          maxLength: 120
+          description: Nombres y apellidos, como en el documento.
+        nacionalidad:
+          type: string
+          pattern: "^[A-Z]{2}$"
+          description: Código de país de dos letras.
+          example: CO
+        correo:
+          type: string
+          format: email
+          maxLength: 160
+          description: Único; es el usuario de la cuenta.
+        telefono:
+          type: string
+          pattern: "^\\+?[0-9][0-9 ()-]{6,28}$"
+          example: "+507 6000-0000"
+        paisResidencia:
+          type: string
+          pattern: "^[A-Z]{2}$"
+          example: PA
+        contrasena:
+          type: string
+          format: password
+          description: |
+            Política de complejidad: de 10 a 72 caracteres, con mayúscula, minúscula, número y
+            símbolo, y sin la parte local del correo.
+        aceptaTratamientoDatos:
+          type: boolean
+          description: Debe ser `true` (términos y autorización de tratamiento de datos, Ley 81).
+
+    RecuperacionSolicitud:
+      type: object
+      required: [correo]
+      properties:
+        correo:
+          type: string
+          format: email
+
+    RecuperacionConfirmacion:
+      type: object
+      required: [token, contrasenaNueva]
+      properties:
+        token:
+          type: string
+          description: Token del enlace de recuperación.
+        contrasenaNueva:
+          type: string
+          format: password
+          description: Debe cumplir la política de complejidad y ser distinta de la actual.
+
+    Perfil:
+      type: object
+      required: [id, nombre, correo, rol, idiomaNotificacion, medioNotificacion]
+      description: |
+        Los datos del documento, la nacionalidad, la residencia y el teléfono solo vienen en las
+        cuentas creadas por el registro del portal.
+      properties:
+        id:
+          type: string
+          format: uuid
+        nombre:
+          type: string
+        correo:
+          type: string
+          format: email
+        rol:
+          $ref: "#/components/schemas/Rol"
+        tipoDocumento:
+          $ref: "#/components/schemas/TipoDocumento"
+        numeroDocumento:
+          type: string
+        nacionalidad:
+          type: string
+        paisResidencia:
+          type: string
+        telefono:
+          type: string
+        idiomaNotificacion:
+          $ref: "#/components/schemas/IdiomaNotificacion"
+        medioNotificacion:
+          $ref: "#/components/schemas/MedioNotificacion"
+
+    PerfilCambio:
+      type: object
+      properties:
+        telefono:
+          type: string
+          pattern: "^\\+?[0-9][0-9 ()-]{6,28}$"
+        idiomaNotificacion:
+          $ref: "#/components/schemas/IdiomaNotificacion"
+        medioNotificacion:
+          $ref: "#/components/schemas/MedioNotificacion"
+
+    ExpedienteNuevo:
+      type: object
+      required: [tipoTramite]
+      properties:
+        tipoTramite:
+          type: string
+          description: Código del tipo de trámite, validado contra el catálogo.
+        titularId:
+          type: string
+          format: uuid
+          description: |
+            Solo para el `SOLICITANTE` con representación acreditada (P-08). Si se omite, el
+            titular es el usuario autenticado.
+
+    PaginaExpedientes:
+      type: object
+      required: [contenido, paginacion]
+      properties:
+        contenido:
+          type: array
+          items:
+            $ref: "#/components/schemas/Expediente"
+        paginacion:
+          $ref: "#/components/schemas/Paginacion"
+
+    CambioEstadoSolicitud:
+      type: object
+      required: [estadoNuevo, motivo, version]
+      properties:
+        estadoNuevo:
+          $ref: "#/components/schemas/EstadoExpediente"
+        resultado:
+          allOf:
+            - $ref: "#/components/schemas/ResultadoExpediente"
+          description: Obligatorio cuando `estadoNuevo` es `RESUELTO`; se ignora en los demás.
+        motivo:
+          type: string
+        version:
+          type: integer
+          description: Versión del expediente leída por el cliente (control de concurrencia).
+
+    ObservacionNueva:
+      type: object
+      required: [texto]
+      properties:
+        texto:
+          type: string
+
+    VerificacionNueva:
+      type: object
+      required: [fuente, tipoVerificacion, modo, finalidad]
+      properties:
+        fuente:
+          $ref: "#/components/schemas/FuenteVerificacion"
+        tipoVerificacion:
+          type: string
+        modo:
+          $ref: "#/components/schemas/ModoVerificacion"
+        finalidad:
+          type: string
+        fechaResultado:
+          type: string
+          format: date-time
+          description: Obligatoria en modo manual asistido.
+        resultadoMinimo:
+          type: string
+          description: Obligatorio en modo manual asistido.
+        referenciaOrigen:
+          type: string
+        nota:
+          type: string
+
+    ConsentimientoNuevo:
+      type: object
+      required: [titularId, finalidad, alcance, baseLegal, expreso]
+      properties:
+        titularId:
+          type: string
+          format: uuid
+        finalidad:
+          type: string
+        alcance:
+          type: string
+        baseLegal:
+          type: string
+        vigenciaHasta:
+          type: string
+          format: date
+        expreso:
+          type: boolean
+
+    SolicitudArcoNueva:
+      type: object
+      required: [tipo, descripcion]
+      properties:
+        tipo:
+          $ref: "#/components/schemas/TipoSolicitudArco"
+        descripcion:
+          type: string
+
+    AtencionSolicitudArco:
+      type: object
+      required: [estado]
+      properties:
+        estado:
+          $ref: "#/components/schemas/EstadoSolicitudArco"
+        responsableId:
+          type: string
+          format: uuid
+        motivoRechazo:
+          type: string
+          description: Obligatorio cuando el estado es `RECHAZADA`.
+
+    PaginaNotificaciones:
+      type: object
+      required: [contenido, paginacion]
+      properties:
+        contenido:
+          type: array
+          items:
+            $ref: "#/components/schemas/Notificacion"
+        paginacion:
+          $ref: "#/components/schemas/Paginacion"
+
+    PaginaEventosAuditoria:
+      type: object
+      required: [contenido, paginacion]
+      properties:
+        contenido:
+          type: array
+          items:
+            $ref: "#/components/schemas/EventoAuditoria"
+        paginacion:
+          $ref: "#/components/schemas/Paginacion"
+
+    # ---------- Catálogos ----------
+    TipoTramite:
+      type: object
+      required: [codigo, nombre, requisitos]
+      properties:
+        codigo:
+          type: string
+        nombre:
+          type: string
+        requisitos:
+          type: array
+          items:
+            $ref: "#/components/schemas/RequisitoTramite"
+
+    RequisitoTramite:
+      type: object
+      required: [tipoDocumental, nombre, obligatorio, sensible]
+      properties:
+        tipoDocumental:
+          type: string
+          description: Código del tipo documental.
+        nombre:
+          type: string
+        obligatorio:
+          type: boolean
+        sensible:
+          type: boolean
+          description: Dato sensible; adjuntarlo exige consentimiento expreso vigente (HU-18b).
+
+    TipoDocumental:
+      type: object
+      required: [codigo, nombre, sensible, tiposMimePermitidos, tamanoMaximoBytes]
+      properties:
+        codigo:
+          type: string
+        nombre:
+          type: string
+        sensible:
+          type: boolean
+        tiposMimePermitidos:
+          type: array
+          items:
+            type: string
+        tamanoMaximoBytes:
+          type: integer
+
+    # ---------- Fuentes simuladas (datos ficticios) ----------
+    MockTePersona:
+      type: object
+      description: Respuesta ficticia. En `DATOS_INCOMPLETOS` faltan campos.
+      properties:
+        tipoDocumento:
+          type: string
+        numeroDocumento:
+          type: string
+        nombres:
+          type: string
+        apellidos:
+          type: string
+        fechaNacimiento:
+          type: string
+          format: date
+        referencia:
+          type: string
+          description: Referencia de la consulta simulada.
+
+    MockCssAfiliacion:
+      type: object
+      description: Respuesta ficticia. En `DATOS_INCOMPLETOS` faltan campos.
+      properties:
+        idPersona:
+          type: string
+        afiliado:
+          type: boolean
+        numeroAsegurado:
+          type: string
+        cuotasRegistradas:
+          type: integer
+        fechaFicha:
+          type: string
+          format: date
+        referencia:
+          type: string
+
+    MockRegistroConsulta:
+      type: object
+      description: Respuesta ficticia. En `DATOS_INCOMPLETOS` faltan campos.
+      properties:
+        idPersona:
+          type: string
+        registros:
+          type: array
+          items:
+            type: object
+            properties:
+              tipo:
+                type: string
+                description: Por ejemplo, sociedad, representación legal o finca.
+              folio:
+                type: string
+              descripcion:
+                type: string
+        referencia:
+          type: string
+
+    MockSnmExpediente:
+      type: object
+      description: Respuesta ficticia. En `DATOS_INCOMPLETOS` faltan campos.
+      properties:
+        numero:
+          type: string
+        estado:
+          type: string
+        fechaActualizacion:
+          type: string
+          format: date-time
+        desfase:
+          type: string
+          description: Explicación cuando el estado no coincide con el de la plataforma.
+        referencia:
+          type: string

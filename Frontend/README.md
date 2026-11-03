@@ -1,15 +1,41 @@
-# Frontend (HTML + CSS + JavaScript puro)
+# 🧭 Frontend · Trámites Migratorios
+
+<p align="center">
+  <img src="../recursos-proyecto/assets/project-status.svg" alt="Estado del frontend y del proyecto" width="100%">
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/46%20pantallas-implementadas-56C596?style=for-the-badge" alt="46 pantallas implementadas">
+  <img src="https://img.shields.io/badge/HTML-CSS-JavaScript-F28C28?style=for-the-badge&logo=javascript&logoColor=white" alt="HTML CSS JavaScript">
+  <img src="https://img.shields.io/badge/Nginx-Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Nginx y Docker">
+  <img src="https://img.shields.io/badge/QA-Usabilidad%20y%20accesibilidad-8B5CF6?style=for-the-badge" alt="QA de usabilidad y accesibilidad">
+</p>
+
+<p align="center">
+  <a href="#-qué-resuelve">🎯 Qué resuelve</a> ·
+  <a href="#-estructura">🧱 Estructura</a> ·
+  <a href="#-ejecución-rápida">▶ Ejecución</a> ·
+  <a href="#-rutas-principales">🗺️ Rutas</a>
+</p>
+
+<p align="center"><strong>Portal del cliente + módulo interno del bufete</strong><br>Expedientes · documentos · verificaciones · trazabilidad</p>
 
 **Proyecto:** Sistema Interoperable para la Gestión de Trámites Migratorios en Panamá (producto para bufetes de abogados). Enfoque a Ley 81 de 2019 y Decreto Ejecutivo 285 de 2021.
 
-## Alcance
+## 🎯 Qué resuelve
 
 Este frontend construye el **portal del cliente del bufete (P-01…P-27)** y el **módulo interno del despacho (I-01…I-18, más I-19 añadida por HU-18b)** — total 46 pantallas. Implementación con HTML, CSS y JavaScript puro, sin frameworks.
 
-- **Sprint 1:** portal completo funcionando con **fixtures locales** del mismo esquema JSON que los mocks (HU-08).
-- **Sprint 2+:** conexión al backend real (Java) vía módulo único de servicios HTTP.
+| Área | Resultado |
+| --- | --- |
+| Portal del cliente | Registro, solicitudes, documentos, pagos y seguimiento. |
+| Módulo del despacho | Expedientes, verificaciones, observaciones, resolución y auditoría. |
+| Integración | Cliente HTTP único con backend Java y modo offline con fixtures. |
+| Calidad | Estados de carga, éxito, vacío y error en las vistas principales. |
 
-## Estructura de carpetas
+> El MVP utiliza datos ficticios y servicios simulados. No consulta APIs reales de instituciones públicas.
+
+## 🧱 Estructura
 
 ```
 Frontend/
@@ -39,7 +65,9 @@ Frontend/
     └── views/              ← vistas por pantalla (P-01…P-27 e I-01…I-19)
 ```
 
-## Convenciones
+La documentación general del proyecto se mantiene en `Documentacion/` y las evidencias de calidad en `QA/`. Este módulo conserva únicamente la información mínima necesaria para ejecutar y entender el frontend.
+
+## ⚙️ Convenciones de la interfaz
 
 - Enrutado por **hash** (`#/ruta`). Guards por rol: `SOLICITANTE`, `FUNCIONARIO`, `SUPERVISOR`, `AUDITOR`, `ADMIN`.
 - **Cuatro estados** obligatorios por pantalla: carga, éxito, vacío, error con reintento.
@@ -49,9 +77,21 @@ Frontend/
 - Minimización de datos: solo lo requerido por trámite.
 - Mensajes de error en lenguaje no técnico y **sin datos personales**.
 
-## Cómo ejecutar (local, sin servidor)
+## ▶ Ejecución rápida
 
-Simplemente abre `html/index.html` con un navegador moderno (doble clic):
+### Opción recomendada: Docker
+
+Desde la raíz del repositorio:
+
+```bash
+docker compose up --build
+```
+
+Luego abre `http://localhost:8081/html/index.html#/login`.
+
+### Opción offline
+
+También puedes abrir `html/index.html` directamente en un navegador moderno. En este modo se utilizan fixtures locales y no se conecta al backend.
 
 ```text
 file:///C:/Users/Jonathan/Desktop/Repo/Tr-mites-Migratorios/Frontend/html/index.html
@@ -62,7 +102,7 @@ file:///C:/Users/Jonathan/Desktop/Repo/Tr-mites-Migratorios/Frontend/html/index.
 > por lo que toda la lógica se expone en el espacio de nombres `window.tm`
 > (`tm.roles`, `tm.nav`, `tm.router`, `tm.layout`, `tm.ui`, `tm.session`, `tm.views`).
 
-## Navegación (rutas principales)
+## 🗺️ Rutas principales
 
 | Ruta | Descripción |
 |---|---|
@@ -77,7 +117,7 @@ file:///C:/Users/Jonathan/Desktop/Repo/Tr-mites-Migratorios/Frontend/html/index.
 | `#/interno/consentimientos` | Consentimientos del titular (I-19) |
 | `#/error/403`, `#/error/404`, `#/error/500` | Vistas globales |
 
-## Estado del avance (rama `Frontend`)
+## 📈 Estado del avance
 
 - **Fase A (HU-01):** armazón, router con guards, vistas globales, componentes base. ✔
 - **Fase B (HU-02, P-01…P-05):** acceso y cuenta (login, registro, OTP, recuperación, perfil) + gestor de sesión. ✔
