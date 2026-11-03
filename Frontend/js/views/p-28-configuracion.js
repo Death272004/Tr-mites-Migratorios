@@ -1,4 +1,4 @@
-/** P-28 — Configuración de la cuenta. Preferencias locales de demostración. */
+/** P-28 — Configuración de la cuenta. Preferencias locales del portal. */
 (function (global) {
   "use strict";
   var layout = global.tm.layout;
@@ -47,7 +47,7 @@
 
     var appearance = layout.el("section", "settings-section");
     appearance.appendChild(layout.el("h2", null, "Apariencia y accesibilidad"));
-    appearance.appendChild(layout.el("p", "settings-section__intro", "Estos cambios se guardan en este navegador y solo afectan tu experiencia de demostración."));
+    appearance.appendChild(layout.el("p", "settings-section__intro", "Estos cambios se guardan en este navegador y solo afectan tu experiencia en el portal."));
     appearance.appendChild(optionRow("Modo de color", "Elige entre una interfaz clara u oscura.", selectControl("Modo de color", current.tema, [
       { value: "claro", label: "Modo claro" }, { value: "oscuro", label: "Modo oscuro" },
     ], function (value) { current.tema = value; settings.save(current); })));
@@ -60,7 +60,7 @@
     var notifications = layout.el("section", "settings-section");
     notifications.appendChild(layout.el("h2", null, "Avisos y sesión"));
     notifications.appendChild(optionRow("Avisos del trámite", "Recibir avisos cuando cambie el estado de un expediente.", switchControl("Avisos del trámite", current.notificaciones, function (value) { current.notificaciones = value; settings.save(current); })));
-    notifications.appendChild(optionRow("Recordar esta sesión", "Mantener la sesión de demostración en este dispositivo.", switchControl("Recordar esta sesión", current.recordarSesion, function (value) { current.recordarSesion = value; settings.save(current); })));
+    notifications.appendChild(optionRow("Recordar esta sesión", "Mantener tu sesión iniciada en este dispositivo.", switchControl("Recordar esta sesión", current.recordarSesion, function (value) { current.recordarSesion = value; settings.save(current); })));
     var reset = layout.el("button", "settings-reset", "Restablecer preferencias");
     reset.type = "button";
     reset.addEventListener("click", function () { settings.reset(); renderP28(container); });
