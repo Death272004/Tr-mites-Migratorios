@@ -1,4 +1,9 @@
-# 🧰 Recursos del proyecto · Trámites Migratorios
+#  Recursos del proyecto · Trámites Migratorios
+
+<p align="center">
+  <img src="assets/readme-hero.svg" alt="Sistema Interoperable de Trámites Migratorios" width="100%">
+</p>
+
 
 <p align="center">
   <img src="assets/project-status.svg" alt="Estado del proyecto" width="100%">
@@ -11,21 +16,21 @@
 </p>
 
 <p align="center">
-  <a href="#-propósito">🎯 Propósito</a> ·
-  <a href="#-contenido">📦 Contenido</a> ·
-  <a href="#-uso">▶ Uso</a> ·
-  <a href="#-reglas">🔐 Reglas</a>
+  <a href="#-propósito"> Propósito</a> ·
+  <a href="#-contenido"> Contenido</a> ·
+  <a href="#-uso"> Uso</a> ·
+  <a href="#-reglas"> Reglas</a>
 </p>
 
 <p align="center"><strong>Convenciones, evidencias, assets y referencias comunes del repositorio</strong><br>Un solo lugar para los recursos que apoyan al equipo completo</p>
 
-## 🎯 Propósito
+##  Propósito
 
 Esta carpeta reúne los recursos generales que no pertenecen exclusivamente al frontend, backend, QA o DevOps. Su objetivo es mantener el repositorio ordenado y facilitar que cualquier integrante encuentre las convenciones, evidencias y elementos visuales compartidos del proyecto.
 
 > El contenido acompaña al producto académico y utiliza únicamente información ficticia o de demostración. No contiene credenciales, secretos ni datos reales de instituciones públicas.
 
-## 📦 Contenido
+##  Contenido
 
 | Recurso | Qué contiene |
 | --- | --- |
@@ -34,7 +39,7 @@ Esta carpeta reúne los recursos generales que no pertenecen exclusivamente al f
 | `CONVENCIONES-GIT.md` | Reglas para ramas, commits, pull requests y trabajo colaborativo. |
 | `ENTORNOS-Y-SECRETOS.md` | Configuración de entornos, variables y prácticas para no exponer secretos. |
 
-## ▶ Uso
+##  Uso
 
 Los README de la raíz, Frontend, Backend y DevOps reutilizan los assets de `assets/`. Las evidencias se consultan para respaldar las entregas de cada Sprint y relacionar actividades, pruebas y resultados.
 
@@ -45,7 +50,7 @@ Para añadir una evidencia:
 3. Incluye enlaces a archivos del repositorio, sin pegar secretos ni datos personales.
 4. Verifica que las rutas relativas funcionen desde la carpeta `recursos-proyecto`.
 
-## 🔐 Reglas de mantenimiento
+##  Reglas de mantenimiento
 
 - Este directorio contiene recursos compartidos; no reemplaza las carpetas funcionales del producto.
 - Las pruebas y evidencias de QA se documentan aquí solo cuando son referencias generales del proyecto; los artefactos ejecutables permanecen en `QA/`.
@@ -53,7 +58,7 @@ Para añadir una evidencia:
 - No se deben subir tokens, contraseñas, archivos `.env` reales ni información personal.
 - Si se renombra esta carpeta, deben actualizarse los enlaces de los README que consumen sus assets.
 
-## 🧭 Relación con el repositorio
+##  Relación con el repositorio
 
 ```text
 recursos-proyecto/

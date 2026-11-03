@@ -1,4 +1,9 @@
-# 🧭 Frontend · Trámites Migratorios
+#  Frontend · Trámites Migratorios
+
+<p align="center">
+  <img src="../recursos-proyecto/assets/readme-hero.svg" alt="Sistema Interoperable de Trámites Migratorios" width="100%">
+</p>
+
 
 <p align="center">
   <img src="../recursos-proyecto/assets/readme-banner-v2.svg" alt="Banner de la Plataforma Interoperable de Trámites Migratorios" width="100%">
@@ -20,17 +25,17 @@
 </p>
 
 <p align="center">
-  <a href="#-qué-resuelve">🎯 Qué resuelve</a> ·
-  <a href="#-estructura">🧱 Estructura</a> ·
-  <a href="#-ejecución-rápida">▶ Ejecución</a> ·
-  <a href="#-rutas-principales">🗺️ Rutas</a>
+  <a href="#-qué-resuelve"> Qué resuelve</a> ·
+  <a href="#-estructura"> Estructura</a> ·
+  <a href="#-ejecución-rápida"> Ejecución</a> ·
+  <a href="#-rutas-principales"> Rutas</a>
 </p>
 
 <p align="center"><strong>Portal del cliente + módulo interno del bufete</strong><br>Expedientes · documentos · verificaciones · trazabilidad</p>
 
 **Proyecto:** Sistema Interoperable para la Gestión de Trámites Migratorios en Panamá (producto para bufetes de abogados). Enfoque a Ley 81 de 2019 y Decreto Ejecutivo 285 de 2021.
 
-## 🧩 Responsabilidad de esta rama
+##  Responsabilidad de esta rama
 
 Frontend contiene la experiencia que utilizan el cliente y el personal del bufete. Su función es presentar el flujo de trámites de forma clara, responsive y consistente, y consumir el contrato del backend cuando el entorno está conectado.
 
@@ -44,7 +49,7 @@ Frontend contiene la experiencia que utilizan el cliente y el personal del bufet
 
 <img src="../recursos-proyecto/assets/section-divider.svg" alt="Separador visual" width="100%">
 
-## 🎯 Qué resuelve
+##  Qué resuelve
 
 Este frontend construye el **portal del cliente del bufete (P-01…P-27)** y el **módulo interno del despacho (I-01…I-18, más I-19 añadida por HU-18b)** — total 46 pantallas. Implementación con HTML, CSS y JavaScript puro, sin frameworks.
 
@@ -57,7 +62,7 @@ Este frontend construye el **portal del cliente del bufete (P-01…P-27)** y el 
 
 > El MVP utiliza datos ficticios y servicios simulados. No consulta APIs reales de instituciones públicas.
 
-## 🧱 Estructura
+##  Estructura
 
 ```
 Frontend/
@@ -89,7 +94,7 @@ Frontend/
 
 La documentación general del proyecto se mantiene en `Documentacion/` y las evidencias de calidad en `QA/`. Este módulo conserva únicamente la información mínima necesaria para ejecutar y entender el frontend.
 
-## ⚙️ Convenciones de la interfaz
+##  Convenciones de la interfaz
 
 - Enrutado por **hash** (`#/ruta`). Guards por rol: `SOLICITANTE`, `FUNCIONARIO`, `SUPERVISOR`, `AUDITOR`, `ADMIN`.
 - **Cuatro estados** obligatorios por pantalla: carga, éxito, vacío, error con reintento.
@@ -99,7 +104,7 @@ La documentación general del proyecto se mantiene en `Documentacion/` y las evi
 - Minimización de datos: solo lo requerido por trámite.
 - Mensajes de error en lenguaje no técnico y **sin datos personales**.
 
-## ▶ Ejecución rápida
+##  Ejecución rápida
 
 ### Opción recomendada: Docker
 
@@ -124,7 +129,7 @@ file:///C:/Users/Jonathan/Desktop/Repo/Tr-mites-Migratorios/Frontend/html/index.
 > por lo que toda la lógica se expone en el espacio de nombres `window.tm`
 > (`tm.roles`, `tm.nav`, `tm.router`, `tm.layout`, `tm.ui`, `tm.session`, `tm.views`).
 
-## 🗺️ Rutas principales
+##  Rutas principales
 
 | Ruta | Descripción |
 |---|---|
@@ -139,19 +144,19 @@ file:///C:/Users/Jonathan/Desktop/Repo/Tr-mites-Migratorios/Frontend/html/index.
 | `#/interno/consentimientos` | Consentimientos del titular (I-19) |
 | `#/error/403`, `#/error/404`, `#/error/500` | Vistas globales |
 
-## 📈 Estado del avance
+##  Estado del avance
 
-- **Fase A (HU-01):** armazón, router con guards, vistas globales, componentes base. ✔
-- **Fase B (HU-02, P-01…P-05):** acceso y cuenta (login, registro, OTP, recuperación, perfil) + gestor de sesión. ✔
-- **Fase C (HU-03, P-06…P-18):** bandeja + asistente de solicitud + fixtures y 4 estados. ✔
-- **Fase D (HU-04, P-19…P-27):** seguimiento y servicios. ✔
-- **Módulo interno (Fases E–F, I-01…I-18):** operación y administración del despacho. ✔
-- **HU-09 (integración fixtures → mocks):** módulo único de servicios HTTP `tm.api`, cabecera `X-Scenario` y selector global de escenarios. ✔
-- **HU-18b (consentimiento informado):** pantalla interna **I-19** (`#/interno/consentimientos`, ver/revocar) y sección de consentimiento en **P-05**. ✔
-- **HU-18c (derechos ARCO):** formulario dedicado en **P-27** (acceso, rectificación, cancelación y oposición) con plazos de la Ley 81 y seguimiento de solicitudes. ✔
-- **HU-13 / TASK-13.5 (permisos de interfaz):** módulo `tm.perms` (`js/utils/perms.js`) con la matriz mock rol × permiso; las acciones internas se muestran u ocultan según el permiso del rol (con aviso "Sin permiso «…»" cuando no aplica). ✔
-- **TASK-21.2 (línea de tiempo):** componente reutilizable `js/components/timeline.js` usado por **P-19** (etapas del trámite) e **I-06** (historial del expediente, se actualiza al guardar dictamen); acepta `done`/`active`/`estado`. ✔
-- **TASK-12.5 (conexión de acceso al backend):** P-01/P-02/P-04/P-05 usan `/api/auth/*` y `/api/perfil`; `js/services/api-bootstrap.js` fija la base por origen (`/api` en http/https, offline con demo inline en `file://`) y `js/utils/validacion.js` replica la política de contraseña. ✔
+- **Fase A (HU-01):** armazón, router con guards, vistas globales, componentes base.
+- **Fase B (HU-02, P-01…P-05):** acceso y cuenta (login, registro, OTP, recuperación, perfil) + gestor de sesión.
+- **Fase C (HU-03, P-06…P-18):** bandeja + asistente de solicitud + fixtures y 4 estados.
+- **Fase D (HU-04, P-19…P-27):** seguimiento y servicios.
+- **Módulo interno (Fases E–F, I-01…I-18):** operación y administración del despacho.
+- **HU-09 (integración fixtures → mocks):** módulo único de servicios HTTP `tm.api`, cabecera `X-Scenario` y selector global de escenarios.
+- **HU-18b (consentimiento informado):** pantalla interna **I-19** (`#/interno/consentimientos`, ver/revocar) y sección de consentimiento en **P-05**.
+- **HU-18c (derechos ARCO):** formulario dedicado en **P-27** (acceso, rectificación, cancelación y oposición) con plazos de la Ley 81 y seguimiento de solicitudes.
+- **HU-13 / TASK-13.5 (permisos de interfaz):** módulo `tm.perms` (`js/utils/perms.js`) con la matriz mock rol × permiso; las acciones internas se muestran u ocultan según el permiso del rol (con aviso "Sin permiso «…»" cuando no aplica).
+- **TASK-21.2 (línea de tiempo):** componente reutilizable `js/components/timeline.js` usado por **P-19** (etapas del trámite) e **I-06** (historial del expediente, se actualiza al guardar dictamen); acepta `done`/`active`/`estado`.
+- **TASK-12.5 (conexión de acceso al backend):** P-01/P-02/P-04/P-05 usan `/api/auth/*` y `/api/perfil`; `js/services/api-bootstrap.js` fija la base por origen (`/api` en http/https, offline con demo inline en `file://`) y `js/utils/validacion.js` replica la política de contraseña.
 - **Inventario completo:** 46/46 pantallas (P-01…P-27 + I-01…I-19), todas con vista, fixtures y ruta.
  - **Pendiente (Sprint 2+):** Docker del frontend hecho en la rama `integracion/frontend-backend` (`Frontend/Dockerfile` + `build: ./Frontend`); validación real de permisos por rol en el servidor (backend).
  - **Sprint 3:** P-05, P-06, P-07, P-14, P-17, P-19, P-20, P-27 e I-02/I-03/I-06/I-19 consumen los contratos reales del backend cuando la aplicación se sirve por HTTP; se conserva el modo offline con fixtures para pruebas locales.

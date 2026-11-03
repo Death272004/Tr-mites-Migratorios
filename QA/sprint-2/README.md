@@ -1,5 +1,10 @@
 # QA – Sprint 2: Entorno, autorización y errores
 
+<p align="center">
+  <img src="../../recursos-proyecto/assets/readme-hero.svg" alt="Sistema Interoperable de Trámites Migratorios" width="100%">
+</p>
+
+
 ## Objetivo
 
 Comprobar que el entorno se puede levantar de forma reproducible y que el acceso por rol, la autenticación y el manejo de errores no exponen información sensible.

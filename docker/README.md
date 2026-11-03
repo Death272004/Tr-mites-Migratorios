@@ -1,4 +1,9 @@
-# 🐳 Docker · Plataforma Interoperable
+#  Docker · Plataforma Interoperable
+
+<p align="center">
+  <img src="../recursos-proyecto/assets/readme-hero.svg" alt="Sistema Interoperable de Trámites Migratorios" width="100%">
+</p>
+
 
 <p align="center">
   <img src="../recursos-proyecto/assets/project-status.svg" alt="Estado del proyecto" width="100%">
@@ -11,21 +16,21 @@
 </p>
 
 <p align="center">
-  <a href="#-qué-hace">🎯 Qué hace</a> ·
-  <a href="#-rutas-principales">🗺️ Rutas</a> ·
-  <a href="#-ejecución">▶ Ejecución</a> ·
-  <a href="#-alcance">🔐 Alcance</a>
+  <a href="#-qué-hace"> Qué hace</a> ·
+  <a href="#-rutas-principales"> Rutas</a> ·
+  <a href="#-ejecución"> Ejecución</a> ·
+  <a href="#-alcance"> Alcance</a>
 </p>
 
 <p align="center"><strong>Puerta de entrada del frontend y la API</strong><br>Contenido estático · proxy interno · cabeceras de seguridad · healthcheck</p>
 
-## 🎯 Qué hace
+##  Qué hace
 
 Esta carpeta contiene la configuración de **Nginx** utilizada por el contenedor del frontend. Nginx sirve las pantallas HTML, CSS y JavaScript, redirige las solicitudes de la API hacia el backend y aplica controles básicos de seguridad al entorno local.
 
 El archivo principal es [`nginx.conf`](nginx.conf).
 
-## 🗺️ Rutas principales
+##  Rutas principales
 
 | Ruta | Función |
 | --- | --- |
@@ -35,13 +40,13 @@ El archivo principal es [`nginx.conf`](nginx.conf).
 | `/salud` | Devuelve `ok` para comprobar que Nginx está disponible. |
 | Otros archivos | Se sirven como recursos estáticos; las rutas inexistentes devuelven `404`. |
 
-## 🛡️ Seguridad aplicada
+##  Seguridad aplicada
 
 La configuración incluye Content Security Policy, protección contra iframes, prevención de MIME sniffing, política de referencias, permisos del navegador y aislamiento entre orígenes. También oculta la versión de Nginx y limita el tamaño de carga a 16 MB.
 
 El proxy mantiene frontend y backend bajo el mismo origen. De esta manera, el navegador utiliza `/api` sin exponer puertos internos ni depender de CORS para la demostración local.
 
-## ▶ Ejecución
+##  Ejecución
 
 Desde la raíz del repositorio:
 
@@ -63,7 +68,7 @@ curl http://localhost:8081/salud
 
 El resultado esperado es `ok`.
 
-## 🔐 Alcance
+##  Alcance
 
 - La configuración está pensada para el MVP académico y el entorno local.
 - El backend y las instituciones externas utilizan datos ficticios y servicios simulados.

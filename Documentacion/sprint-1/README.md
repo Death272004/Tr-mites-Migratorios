@@ -1,5 +1,10 @@
 # Sprint 1 - PRESENCIAL - Avance de Desarrollo y Correcciones
 
+<p align="center">
+  <img src="../../recursos-proyecto/assets/readme-hero.svg" alt="Sistema Interoperable de Trámites Migratorios" width="100%">
+</p>
+
+
 El Sprint 1 marca el primer avance real de construcción del software. La presentación tiene una duración máxima de 5 minutos y debe hablar al menos el 50% + 1 de los integrantes.
 
 ## Daily Scrum

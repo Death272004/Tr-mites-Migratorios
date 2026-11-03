@@ -1,4 +1,9 @@
-# 📚 Documentación · Trámites Migratorios
+#  Documentación · Trámites Migratorios
+
+<p align="center">
+  <img src="../recursos-proyecto/assets/readme-hero.svg" alt="Sistema Interoperable de Trámites Migratorios" width="100%">
+</p>
+
 
 <p align="center">
   <img src="../recursos-proyecto/assets/readme-banner-v2.svg" alt="Plataforma Interoperable de Trámites Migratorios" width="100%">
@@ -11,17 +16,17 @@
 </p>
 
 <p align="center">
-  <a href="#-qué-encontrarás">🎯 Qué encontrarás</a> ·
-  <a href="#-documentos-base">🧱 Documentos base</a> ·
-  <a href="#-entregables-por-sprint">🚀 Sprints</a> ·
-  <a href="#-criterio-del-proyecto">🔐 Criterio</a>
+  <a href="#-qué-encontrarás"> Qué encontrarás</a> ·
+  <a href="#-documentos-base"> Documentos base</a> ·
+  <a href="#-entregables-por-sprint"> Sprints</a> ·
+  <a href="#-criterio-del-proyecto"> Criterio</a>
 </p>
 
 <p align="center"><strong>Arquitectura · desarrollo · QA · DevOps · trazabilidad</strong><br>El registro técnico que acompaña la evolución del MVP</p>
 
 ---
 
-## 🎯 Qué encontrarás
+##  Qué encontrarás
 
 Este directorio reúne la documentación del **Sistema Interoperable para la Gestión de Trámites Migratorios en Panamá**, desarrollado como un MVP académico para organizar expedientes, documentos, verificaciones y trazabilidad en un bufete de abogados.
 
@@ -37,7 +42,7 @@ Las **instituciones se abordan como fuentes externas de verificación** (fuentes
 
 Alcance importante: cualquier convenio o integración automática dependerá de permisos, convenios, interfaces disponibles y validaciones jurídicas correspondientes. Por ello, el producto (MVP) debe poder funcionar con datos ficticios y fuentes de verificación simuladas, sin asumir acceso directo a bases de datos gubernamentales.
 
-## 🧱 Documentos base
+##  Documentos base
 
 | # | Documento | Archivo |
 | --- | --------- | ------- |
@@ -49,7 +54,7 @@ Alcance importante: cualquier convenio o integración automática dependerá de 
 | 6 | Roles y accesos | [06-roles-y-accesos.md](documentos-base/06-roles-y-accesos.md) |
 | 7 | Marco legal y matriz de fuentes de verificación (HU-06) | [07-marco-legal-y-matriz-fuentes-verificacion.md](documentos-base/07-marco-legal-y-matriz-fuentes-verificacion.md) |
 
-## 🚀 Entregables por Sprint
+##  Entregables por Sprint
 
 | Sprint | Contenido |
 | --- | --- |
@@ -61,7 +66,7 @@ Alcance importante: cualquier convenio o integración automática dependerá de 
 | [Sprint 5](sprint-5/README.md) | Refinamiento del MVP, presupuesto y presentación. |
 | [Sprint 6](sprint-6/README.md) | Review #2, documento del cierre y presentación técnica. |
 
-## 🧩 Documentos por rama de trabajo
+##  Documentos por rama de trabajo
 
 Derivados del backlog maestro (`documentos-base/05-backlog-siete-sprints.md`), cada documento explica a una rama **qué tiene que hacer** (historias y tareas por sprint) y **con qué hacerlo** (herramientas obligatorias y complementarias):
 
@@ -75,7 +80,7 @@ Derivados del backlog maestro (`documentos-base/05-backlog-siete-sprints.md`), c
 
 > **Inventario oficial de pantallas adoptado: 45** (portal P-01…P-27 + módulo interno I-01…I-18), según `Pantallas_y_Datos_Migracion.md`; el cambio está registrado en el registro de cambios del backlog (`documentos-base/05-backlog-siete-sprints.md`) y el documento `documentos-base/06-roles-y-accesos.md`.
 
-## 🔐 Criterio del proyecto
+##  Criterio del proyecto
 
 - El MVP trabaja con datos ficticios y servicios simulados.
 - No se declaran conexiones reales con Tribunal Electoral, CSS o Registro Público.
@@ -84,7 +89,7 @@ Derivados del backlog maestro (`documentos-base/05-backlog-siete-sprints.md`), c
 - La documentación de QA conserva las evidencias reproducibles de pruebas funcionales, seguridad, rendimiento y usabilidad.
 - Las presentaciones y documentos de cada Sprint se conservan junto con su README para facilitar la revisión académica.
 
-## 📖 Diferencia entre los documentos
+##  Diferencia entre los documentos
 
 | Documento | Qué define |
 | --------- | ---------- |
