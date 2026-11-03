@@ -1576,10 +1576,23 @@ body {
 }
 
 .app-profile-icon {
-  width: 18px;
-  height: 18px;
-  flex: 0 0 18px;
+  width: 22px;
+  height: 22px;
+  flex: 0 0 22px;
+  box-sizing: border-box;
+  padding: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.14);
   color: currentColor;
+}
+
+.app-context-trigger:hover .app-profile-icon,
+.app-contextbar.is-open .app-profile-icon,
+.app-context-trigger:focus-visible .app-profile-icon {
+  border-color: currentColor;
+  background: rgba(255, 255, 255, 0.82);
+  color: #173b57;
 }
 
 .app-context-trigger__label {
@@ -1648,8 +1661,10 @@ body {
   padding: 6px;
   flex: 0 0 34px;
   border-radius: 50%;
+  box-sizing: border-box;
   color: var(--theme-blue);
   background: color-mix(in srgb, var(--theme-blue) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--theme-blue) 32%, var(--theme-line));
 }
 
 .app-context-menu__identity-text {
@@ -1683,13 +1698,27 @@ body {
   cursor: pointer;
 }
 
+.app-context-menu .app-header__logout {
+  border-color: #e2a4a0;
+  background: #fff5f4;
+  color: #b42318;
+  font-weight: 700;
+  text-align: left;
+}
+
 .app-context-menu__link:hover,
-.app-context-menu__link:focus-visible,
-.app-context-menu .app-header__logout:hover,
-.app-context-menu .app-header__logout:focus-visible {
+.app-context-menu__link:focus-visible {
   background: color-mix(in srgb, var(--theme-blue) 12%, transparent);
   border-color: var(--theme-blue);
   color: var(--theme-blue);
+  outline: none;
+}
+
+.app-context-menu .app-header__logout:hover,
+.app-context-menu .app-header__logout:focus-visible {
+  background: #fee4e2;
+  border-color: #d92d20;
+  color: #912018;
   outline: none;
 }
 
@@ -1709,8 +1738,7 @@ body {
   color: #263b4e;
 }
 
-.app-context-menu .app-header__autofill,
-.app-context-menu .app-header__logout {
+.app-context-menu .app-header__autofill {
   min-height: 36px;
   padding: 8px 11px;
   border: 1px solid #aebfce;
@@ -1719,8 +1747,7 @@ body {
   color: #155b91;
 }
 
-.app-context-menu .app-header__autofill:hover,
-.app-context-menu .app-header__logout:hover {
+.app-context-menu .app-header__autofill:hover {
   background: #eaf3f9;
   border-color: #155b91;
   color: #155b91;
@@ -1932,13 +1959,25 @@ html.theme-dark .app-context-menu .app-header__logout {
   border-color: #38566c;
 }
 
+html.theme-dark .app-context-menu .app-header__logout {
+  background: #351d25;
+  border-color: #8e4650;
+  color: #ffaaa5;
+}
+
 html.theme-dark .app-context-menu__link:hover,
 html.theme-dark .app-context-menu__link:focus-visible,
-html.theme-dark .app-context-menu .app-header__logout:hover,
-html.theme-dark .app-context-menu .app-header__logout:focus-visible {
+html.theme-dark .app-context-menu__link:focus-visible {
   background: #203e55;
   border-color: #8fc5ee;
   color: #ffffff;
+}
+
+html.theme-dark .app-context-menu .app-header__logout:hover,
+html.theme-dark .app-context-menu .app-header__logout:focus-visible {
+  background: #54252d;
+  border-color: #ff8a80;
+  color: #ffd6d2;
 }
 
 html.theme-dark {
