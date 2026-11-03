@@ -1,4 +1,8 @@
-<p align="center">\n  <img src="recursos-proyecto/assets/readme-hero.svg" alt="Sistema Interoperable de Trámites Migratorios" width="100%">\n</p>\n\n<p align="center">
+<p align="center">
+  <img src="recursos-proyecto/assets/readme-hero.svg" alt="Sistema Interoperable de Trámites Migratorios" width="100%">
+</p>
+
+<p align="center">
   <img src="recursos-proyecto/assets/readme-app-cover.svg" alt="Plataforma Interoperable de Trámites Migratorios" width="100%">
 </p>
 
