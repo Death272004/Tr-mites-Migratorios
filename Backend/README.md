@@ -63,19 +63,15 @@ El contrato ejecutable de la API se conserva en [`docs/openapi.yaml`](docs/opena
 
 El modelo de datos está en `src/main/resources/db/migration` (Flyway).
 
-##  Usuarios de demostración
+##  Cuentas iniciales del equipo
 
-La migración Flyway `V7__usuarios_iniciales.sql` crea 10 cuentas de desarrollo con permisos y una representación de prueba. Todos usan la contraseña común `Demo-Tramites-2026` únicamente en el entorno local; en la base solo se guarda su hash. El cargador Java `DatosDemo` queda desactivado por defecto (`DEMO_USUARIOS=false`) para que la fuente de estas cuentas sea SQL.
+La migración Flyway `V7__usuarios_iniciales.sql` dejó las cuentas semilla y `V8__cuentas_integrantes_equipo.sql` las reemplaza por las 9 cuentas del equipo. Las contraseñas iniciales siguen el formato `nombre.apellido` únicamente para la prueba local; en la base solo se guarda su hash BCrypt. El cargador Java `DatosDemo` queda desactivado por defecto (`DEMO_USUARIOS=false`).
 
 | Correo | Rol | Permisos |
 | --- | --- | --- |
-| `cliente@demo.pa`, `cliente2@demo.pa`, `abogado@demo.pa`, `demo@bufete.test` | SOLICITANTE | PORTAL |
-| `abogado@demo.pa` | SOLICITANTE | PORTAL, con representación acreditada de `cliente@demo.pa` |
-| `recepcion@demo.pa`, `analista@demo.pa` | FUNCIONARIO | CONSULTAR, VERIFICAR, OBSERVAR |
-| `resolutor@demo.pa` | FUNCIONARIO | CONSULTAR, VERIFICAR, RESOLVER, NOTIFICAR |
-| `supervisor@demo.pa` | SUPERVISOR | CONSULTAR, REPORTAR |
-| `auditor@demo.pa` | AUDITOR | CONSULTAR, AUDITAR, REPORTAR |
-| `admin@demo.pa` | ADMIN | CONSULTAR, ADMINISTRAR |
+| `kenneth.carter@tr-utp.com` | ADMIN | CONSULTAR, ADMINISTRAR |
+| `richard.rodriguez@tr-utp.com`, `edgar.rosario@tr-utp.com`, `jonathan.gomez@tr-utp.com`, `vivian.paris@tr-utp.com` | SOLICITANTE | PORTAL |
+| `daniela.anaya@tr-utp.com`, `edwin.cisnero@tr-utp.com`, `leonardo.liang@tr-utp.com`, `javier.pravia@tr-utp.com` | SOLICITANTE | PORTAL |
 
 Los permisos son los mismos nueve del frontend (`js/utils/perms.js`) y llegan en `usuario.permisos` al iniciar sesión. Los del FUNCIONARIO se asignan por cuenta; los demás roles llevan siempre los de su rol.
 
@@ -115,7 +111,7 @@ La cadena es la de `Pantallas_y_Datos_Migracion.md`, la misma que muestra el fro
 
 ```bash
 curl -s http://localhost:8080/api/auth/login -H "Content-Type: application/json" \
-  -d '{"correo":"cliente@demo.pa","contrasena":"Demo-Tramites-2026"}'
+  -d '{"correo":"kenneth.carter@tr-utp.com","contrasena":"kenneth.carter"}'
 # Las demás llamadas llevan el token:  -H "Authorization: Bearer <token>"
 ```
 
