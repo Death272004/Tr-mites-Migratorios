@@ -1,5 +1,5 @@
-# 🚀 DevOps · Plataforma Interoperable
-
+#  DevOps · Plataforma Interoperable
+<p align="center">\n  <img src="../recursos-proyecto/assets/readme-hero.svg" alt="Sistema Interoperable de Trámites Migratorios" width="100%">\n</p>\n\n
 <p align="center">
   <img src="../recursos-proyecto/assets/project-status.svg" alt="Estado del proyecto" width="100%">
 </p>
@@ -12,21 +12,21 @@
 </p>
 
 <p align="center">
-  <a href="#-propósito">🎯 Propósito</a> ·
-  <a href="#-ejecución-rápida">▶ Ejecución</a> ·
-  <a href="#-archivos-operativos">🧰 Archivos</a> ·
-  <a href="#-documentación">📚 Documentación</a>
+  <a href="#-propósito"> Propósito</a> ·
+  <a href="#-ejecución-rápida"> Ejecución</a> ·
+  <a href="#-archivos-operativos"> Archivos</a> ·
+  <a href="#-documentación"> Documentación</a>
 </p>
 
 <p align="center"><strong>Entornos reproducibles, integración continua y despliegue local</strong><br>Backend Java · PostgreSQL · Frontend Nginx · datos ficticios</p>
 
-## 🎯 Propósito
+##  Propósito
 
 DevOps mantiene el entorno técnico para que el equipo pueda levantar, probar y demostrar la plataforma de forma reproducible. La configuración utiliza Docker Compose, un backend Java/Spring Boot, PostgreSQL y un frontend servido por Nginx.
 
 > El proyecto es académico: utiliza datos ficticios y servicios simulados. No se conectan APIs institucionales reales.
 
-## ▶ Ejecución rápida
+##  Ejecución rápida
 
 Desde la raíz del repositorio:
 
@@ -55,7 +55,7 @@ docker compose down -v
 docker compose up --build
 ```
 
-## 🧰 Archivos operativos
+##  Archivos operativos
 
 | Archivo | Función |
 | --- | --- |
@@ -64,7 +64,7 @@ docker compose up --build
 | `../docker/nginx.conf` | Proxy `/api` y cabeceras de seguridad. |
 | `.env.example` | Variables de demostración, cuando estén disponibles. |
 
-## 🔁 Flujo DevOps
+##  Flujo DevOps
 
 ```mermaid
 flowchart LR
@@ -75,7 +75,7 @@ flowchart LR
     E --> F[Entorno demostrable]
 ```
 
-## 📚 Documentación
+##  Documentación
 
 La documentación técnica y las evidencias de esta responsabilidad se encuentran en la rama [`Documentacion`](https://github.com/Death272004/Tr-mites-Migratorios/tree/Documentacion/DevOps):
 
@@ -86,7 +86,7 @@ La documentación técnica y las evidencias de esta responsabilidad se encuentra
 - Evidencias de ejecución, CI y validaciones técnicas.
 - Marco legal y análisis del problema.
 
-## ✅ Definition of Done
+##  Definition of Done
 
 - El entorno levanta con `docker compose up --build`.
 - Backend y frontend permanecen saludables.

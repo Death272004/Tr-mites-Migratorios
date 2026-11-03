@@ -1,5 +1,5 @@
-# ⚙️ Backend · Trámites Migratorios
-
+#  Backend · Trámites Migratorios
+<p align="center">\n  <img src="../recursos-proyecto/assets/readme-hero.svg" alt="Sistema Interoperable de Trámites Migratorios" width="100%">\n</p>\n\n
 <p align="center">
   <img src="../recursos-proyecto/assets/project-status.svg" alt="Estado del backend y del proyecto" width="100%">
 </p>
@@ -12,23 +12,23 @@
 </p>
 
 <p align="center">
-  <a href="#-qué-hace">🎯 Qué hace</a> ·
-  <a href="#-ejecución-rápida">▶ Ejecución</a> ·
-  <a href="#-módulos">🧩 Módulos</a> ·
-  <a href="#-fuentes-simuladas">🔌 Fuentes simuladas</a>
+  <a href="#-qué-hace"> Qué hace</a> ·
+  <a href="#-ejecución-rápida"> Ejecución</a> ·
+  <a href="#-módulos"> Módulos</a> ·
+  <a href="#-fuentes-simuladas"> Fuentes simuladas</a>
 </p>
 
 <p align="center"><strong>API central del sistema interoperable</strong><br>Expedientes · documentos · verificaciones · auditoría · privacidad</p>
 
 Servidor Java 17 con Spring Boot y PostgreSQL para el sistema de gestión de trámites migratorios de un bufete.
 
-## 🎯 Qué hace
+##  Qué hace
 
 El backend concentra las reglas de negocio, la seguridad, la trazabilidad y la persistencia del MVP. Expone una API REST consumida por el frontend y representa las instituciones externas mediante fuentes simuladas.
 
 > El proyecto utiliza datos ficticios y servicios simulados. No consulta APIs reales del Tribunal Electoral, la CSS ni el Registro Público.
 
-## ▶ Ejecución rápida
+##  Ejecución rápida
 
 Desde la raíz del repositorio:
 
@@ -46,7 +46,7 @@ curl http://localhost:8080/actuator/health
 
 El contrato ejecutable de la API se conserva en [`docs/openapi.yaml`](docs/openapi.yaml), porque las pruebas de contrato lo leen desde esa ruta. La documentación técnica complementaria se mantiene en la rama `Documentacion`, dentro de `Backend/docs`.
 
-## 🧩 Módulos
+##  Módulos
 
 | Paquete | Contenido | Historias |
 | --- | --- | --- |
@@ -63,7 +63,7 @@ El contrato ejecutable de la API se conserva en [`docs/openapi.yaml`](docs/opena
 
 El modelo de datos está en `src/main/resources/db/migration` (Flyway).
 
-## 👤 Usuarios de demostración
+##  Usuarios de demostración
 
 Con `docker compose up` se crea un usuario ficticio por rol. Todos usan la contraseña de `DEMO_CONTRASENA` (por defecto `Demo-Tramites-2026`, solo para desarrollo local).
 
@@ -79,7 +79,7 @@ Con `docker compose up` se crea un usuario ficticio por rol. Todos usan la contr
 
 Los permisos son los mismos nueve del frontend (`js/utils/perms.js`) y llegan en `usuario.permisos` al iniciar sesión. Los del FUNCIONARIO se asignan por cuenta; los demás roles llevan siempre los de su rol.
 
-## 🔐 Cuenta del portal
+##  Cuenta del portal
 
 Servicios para las pantallas de acceso y cuenta (TASK-12.5). Los tres primeros son públicos; el perfil es siempre el del usuario de la sesión.
 
@@ -103,7 +103,7 @@ La contraseña sigue la política del backend: 10 a 72 caracteres, con mayúscul
 
 No hay proveedor de correo. Con `CORREO_SIMULADO=true` solo se registra un aviso genérico: no se entrega el enlace ni se muestran destinatarios o tokens en los logs. La recuperación real requiere implementar `Correo` con un proveedor que entregue el enlace de forma privada. El token dura `RECUPERACION_MINUTOS` (60), sirve una vez y, al usarlo, se cierran todas las sesiones de la cuenta. Las pruebas usan un buzón en memoria.
 
-## 🔄 Estados del expediente
+##  Estados del expediente
 
 La cadena es la de `Pantallas_y_Datos_Migracion.md`, la misma que muestra el frontend. Cada cambio exige el permiso de su etapa:
 
@@ -121,7 +121,7 @@ curl -s http://localhost:8080/api/auth/login -H "Content-Type: application/json"
 
 Desde el frontend (puerto 8081) la API responde en la misma dirección, bajo `/api/`.
 
-## 🔌 Fuentes simuladas
+##  Fuentes simuladas
 
 `GET /api/mock/te/personas/{tipoDoc}/{numero}`, `/api/mock/css/afiliaciones/{idPersona}`, `/api/mock/registro/consultas/{idPersona}` y `/api/mock/snm/expedientes/{numero}`, solo para el rol FUNCIONARIO. Los datos ficticios salen de `src/main/resources/fixtures/fuentes-simuladas.json` (personas `P-0001` a `P-0003`).
 
@@ -139,11 +139,11 @@ El encabezado `X-Scenario` (o `?scenario=`) fuerza el comportamiento:
 
 `MOCK_LATENCIA_MS` agrega una espera a cada respuesta. El modo de producción es la verificación manual asistida; los simuladores representan integraciones futuras, sujetas a convenio.
 
-### 🧪 Verificaciones del expediente (Sprint 5)
+###  Verificaciones del expediente (Sprint 5)
 
 `/api/expedientes/{id}/verificaciones` registra verificaciones en modo manual asistido o las envía a las fuentes simuladas a través de adaptadores (`verificacion/adaptadores`). El mismo `X-Scenario` fuerza el comportamiento de la fuente en modo simulado. Un fallo técnico programa un reintento con espera exponencial; agotado el tope queda en `ERROR_TECNICO` y se coteja a mano. Timeout y reintentos por fuente en `app.verificaciones.fuentes.*`; `VERIFICACION_REINTENTOS_AUTOMATICOS=false` apaga los reintentos programados. La matriz de fuentes y los detalles de los adaptadores están documentados en la rama `Documentacion`.
 
-## 🧠 Decisiones tomadas que el PO debe confirmar
+##  Decisiones tomadas que el PO debe confirmar
 
 - **Registro sin verificación de correo:** la cuenta nace `ACTIVA`, porque el código de P-03 sigue simulado en el frontend. Por eso el registro sí informa cuando el correo o el documento ya existen.
 - **Perfil:** nombre, documento y correo son de solo lectura. Faltan el cambio de correo con código, la dirección de notificación y la regla de no repetir las últimas tres contraseñas (P-04).

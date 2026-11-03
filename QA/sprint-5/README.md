@@ -1,7 +1,7 @@
 # Evidencia QA — Sprint 5
-
-**Rol:** QA  
-**Alcance:** TT-167, TT-172 y TT-176  
+<p align="center">\n  <img src="../../recursos-proyecto/assets/readme-hero.svg" alt="Sistema Interoperable de Trámites Migratorios" width="100%">\n</p>\n\n
+**Rol:** QA
+**Alcance:** TT-167, TT-172 y TT-176
 **Fecha de validación:** 25 de octubre de 2026
 
 ## Resultado

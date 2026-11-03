@@ -1,17 +1,17 @@
 # Sprint 6 · Evidencias de calidad (BE)
-
+<p align="center">\n  <img src="../../recursos-proyecto/assets/readme-hero.svg" alt="Sistema Interoperable de Trámites Migratorios" width="100%">\n</p>\n\n
 Fecha de ejecución: 2026-10-28 · Responsable: Edgar Rosario (BE) · Entorno: `docker compose up --build` local
 (PostgreSQL 16, backend Spring Boot, nginx), solo usuarios ficticios `@demo.pa`.
 Rama: `feature/sprint-6-integracion-calidad`.
 
 | Tarea | Resultado |
 | --- | --- |
-| Integración FE↔BE (I-01) | Login interno real contra `POST /api/auth/login`; 6 cuentas internas × todas sus pantallas sin errores de API |
+| Integración FEBE (I-01) | Login interno real contra `POST /api/auth/login`; 6 cuentas internas × todas sus pantallas sin errores de API |
 | TASK-27.1 (TT-181) | 52 pruebas unitarias nuevas de dominio; suite completa 191/191; cobertura ≥ 92 % en módulos críticos |
 | TASK-28.4 (TT-188) | ZAP: 0 críticos/altos; 2 medios y 7 bajos corregidos en nginx; re-escaneo sin medios |
 | TASK-29.4 (TT-193) | Cuello de botella en la bandeja de expedientes corregido con índice (V6): consulta 10,4 ms → 0,10 ms |
 
-## 1. Integración frontend ↔ backend
+## 1. Integración frontend  backend
 
 Antes: el login institucional (I-01) validaba contra un fixture y guardaba un token `demo.*`; desde el
 commit 6e5874b todas las vistas internas detectaban la sesión demo y mostraban datos de fixtures.
