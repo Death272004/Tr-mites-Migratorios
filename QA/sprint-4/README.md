@@ -1,5 +1,5 @@
 # QA – Sprint 4: Indicadores, seguridad y rendimiento
-
+<p align="center">\n  <img src="../../recursos-proyecto/assets/readme-hero.svg" alt="Sistema Interoperable de Trámites Migratorios" width="100%">\n</p>\n\n
 ## Objetivo
 
 Aplicar indicadores de calidad y reunir evidencia técnica de seguridad, rendimiento, funcionalidad y trazabilidad para el proyecto.
