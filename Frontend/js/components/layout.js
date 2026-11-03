@@ -111,7 +111,7 @@
     document.addEventListener("keydown", container._escapeContextHandler);
   }
 
-  function renderNav(container, { role, currentRoute }) {
+  function renderNav(container, { role, currentRoute, onNavigate }) {
     clear(container);
 
     const groups = [];
@@ -154,6 +154,10 @@
         const link = el("a", "app-nav__link", item.label);
         link.href = global.tm.router.toPath(item.route);
         link.setAttribute("role", "menuitem");
+        link.addEventListener("click", (event) => {
+          event.preventDefault();
+          onNavigate?.(item.route);
+        });
         if (item.route === currentRoute) {
           link.setAttribute("aria-current", "page");
           hasCurrent = true;
