@@ -1,5 +1,5 @@
 # Evidencias de validación
-
+<p align="center">\n  <img src="../assets/readme-hero.svg" alt="Sistema Interoperable de Trámites Migratorios" width="100%">\n</p>\n\n
 Esta carpeta conserva evidencias pequeñas, reproducibles y revisables del
 proyecto. No debe convertirse en un depósito de archivos temporales.
 
