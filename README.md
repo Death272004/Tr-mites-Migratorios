@@ -294,7 +294,7 @@ La rama se integra mediante Pull Request después de verificar que el proyecto c
   <img src="https://img.shields.io/badge/Documentación-Trazar-F28C28?style=flat-square" alt="Documentación">
 </p>
 
-<img src="docs/assets/section-divider.svg" alt="Separador visual" width="100%">
+<img src="recursos-proyecto/assets/section-divider.svg" alt="Separador visual" width="100%">
 
 ## 📚 Documentación útil
 
