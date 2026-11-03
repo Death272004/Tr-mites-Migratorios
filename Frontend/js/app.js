@@ -72,6 +72,8 @@
       onLogout: function () {
         function fin() {
           session.clearSession();
+          state.role = DEFAULT_ROLE;
+          state.user = { nombre: "No autenticado", correo: "" };
           // Todos los perfiles regresan al login general del portal.
           // El rol se resolverá nuevamente después de autenticarse.
           navigate(router.LOGIN_ROUTE);

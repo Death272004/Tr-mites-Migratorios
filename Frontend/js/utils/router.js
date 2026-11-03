@@ -46,12 +46,13 @@
       return isInternalRole(role);
     }
 
+    // Son pantallas generales de cuenta y no dependen del tipo de usuario.
+    if (route === "#/perfil" || route === "#/cuenta/configuracion") return true;
+
     if (
       route.startsWith("#/solicitud/") ||
       route.startsWith("#/seguimiento/") ||
       route.startsWith("#/servicios/") ||
-      route === "#/perfil" ||
-      route === "#/cuenta/configuracion" ||
       route === "#/mis-tramites"
     ) {
       return role === ROLES.SOLICITANTE;
@@ -120,7 +121,8 @@
 
     const publicPortal = [LOGIN_ROUTE, INTERNAL_LOGIN_ROUTE, "#/registro", "#/recuperar-clave", "#/identidad/otp", "#/cuenta/configuracion", ERRORS.FORBIDDEN, ERRORS.NOT_FOUND, ERRORS.SERVER];
     const needsAuth =
-      (!publicPortal.includes(route) && !isInternalRole(role)) ||
+      (route === "#/perfil" && !isAuthenticated) ||
+      (!publicPortal.includes(route) && !isInternalRole(role) && !isAuthenticated) ||
       (route.startsWith("#/interno/") && route !== INTERNAL_LOGIN_ROUTE);
 
     if (needsAuth && !isAuthenticated) {
@@ -136,9 +138,7 @@
       route.startsWith("#/solicitud/") ||
       route.startsWith("#/seguimiento/") ||
       route.startsWith("#/servicios/") ||
-      route === "#/mis-tramites" ||
-      route === "#/perfil" ||
-      route === "#/cuenta/configuracion";
+      route === "#/mis-tramites";
 
     if (isInner) {
       if (!findNavItem(role, route)) return ERRORS.FORBIDDEN;

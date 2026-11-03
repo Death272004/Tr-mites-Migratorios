@@ -4,7 +4,7 @@
 (function (global) {
   "use strict";
 
-  const { el, pageHeader } = global.tm.layout;
+  const { el, clear, pageHeader } = global.tm.layout;
 
   function panel(kind, title, hint) {
     const card = el("div", "card app-error-state");
@@ -39,14 +39,17 @@
   }
 
   function renderForbidden(container) {
+    clear(container);
     container.appendChild(panel("forbidden", "403 — Sin acceso", "Permiso denegado"));
   }
 
   function renderNotFound(container) {
+    clear(container);
     container.appendChild(panel("not-found", "404 — Página no encontrada", "Ruta desconocida"));
   }
 
   function renderServerError(container) {
+    clear(container);
     container.appendChild(panel("server", "500 — Error interno", "Algo salió mal"));
   }
 
