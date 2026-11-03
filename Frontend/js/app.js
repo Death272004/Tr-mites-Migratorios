@@ -11,16 +11,10 @@
   var router = global.tm.router;
   var errors = global.tm.ui.errors;
   var session = global.tm.session;
-  var fixtures = global.tm.fixtures;
-
-  // Último aplicador de estado (4 estados) de la vista montada; lo usa el
-  // selector de escenarios global de la cabecera (HU-09 / TASK-09.4).
-  var currentShow = null;
   var lastRenderedRoute = null;
 
   function showView(renderFn, opts) {
     renderFn(els.content, opts);
-    currentShow = typeof opts.onDemoState === "function" ? opts.onDemoState : null;
   }
 
   var DEFAULT_ROLE = roles.DEFAULT_ROLE;
@@ -30,7 +24,7 @@
   var sess = session.getSession();
 
   var state = {
-    user: (sess && sess.datos && sess.datos.usuario) || { nombre: "María Demo", correo: "cliente@demo.pa" },
+    user: (sess && sess.datos && sess.datos.usuario) || { nombre: "No autenticado", correo: "" },
     role: (sess && sess.datos && sess.datos.rol) || DEFAULT_ROLE,
     route: window.location.hash || INITIAL_ROUTE[(sess && sess.datos && sess.datos.rol) || DEFAULT_ROLE],
   };
@@ -74,21 +68,6 @@
     layout.renderHeaderUser(els.user, {
       user: authed ? state.user : { nombre: "No autenticado" },
       role: state.role,
-      scenario: fixtures.scenario() || "exito",
-      onRoleChange: function (role) {
-        state.role = role;
-        if (authed) session.updateSessionRole(role);
-        navigate(INITIAL_ROUTE[role]);
-      },
-      onScenarioChange: function (scenario) {
-        fixtures.setScenario(scenario);
-        if (typeof currentShow === "function") currentShow(scenario);
-        else render();
-      },
-      onAutofill: function () {
-        if (global.tm.autofill) return global.tm.autofill.fill(els.content);
-        return null;
-      },
       onLogout: function () {
         var role = state.role;
         function fin() {
@@ -117,8 +96,6 @@
     }
 
     var key = router.getViewKey(state.route);
-
-    currentShow = null;
 
     if (key === "error/403") { errors.renderForbidden(els.content); return; }
     if (key === "error/404") { errors.renderNotFound(els.content); return; }

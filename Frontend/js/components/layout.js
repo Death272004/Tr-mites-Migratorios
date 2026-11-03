@@ -6,7 +6,7 @@
 (function (global) {
   "use strict";
 
-  const { ROLE_LABELS, ROLE_CONTEXT, ROLES } = global.tm.roles;
+  const { ROLE_LABELS, ROLE_CONTEXT } = global.tm.roles;
   const { getNavForRole, findNavItem } = global.tm.nav;
 
   function el(tag, className, text) {
@@ -20,14 +20,7 @@
     while (node.firstChild) node.removeChild(node.firstChild);
   }
 
-  const SCENARIOS = [
-    { value: "exito", label: "Éxito" },
-    { value: "carga", label: "Cargando" },
-    { value: "vacio", label: "Sin datos" },
-    { value: "error", label: "Error" }
-  ];
-
-  function renderHeaderUser(container, { user, role, scenario, onRoleChange, onScenarioChange, onLogout, onAutofill }) {
+  function renderHeaderUser(container, { user, role, onLogout }) {
     clear(container);
 
     container.className = "app-contextbar";
@@ -45,50 +38,6 @@
 
     contextMenu.appendChild(el("span", "app-header__user-name", user?.nombre ?? "No autenticado"));
     contextMenu.appendChild(el("span", "app-header__badge", ROLE_LABELS[role] ?? role));
-
-    const roleWrap = el("label", "app-header__role");
-    roleWrap.appendChild(el("span", null, "Rol (demo)"));
-    const select = el("select", "app-header__role-select");
-    select.setAttribute("aria-label", "Selector de rol para demostración");
-    for (const value of Object.values(ROLES)) {
-      const option = el("option", null, ROLE_LABELS[value]);
-      option.value = value;
-      if (value === role) option.selected = true;
-      select.appendChild(option);
-    }
-    select.addEventListener("change", (event) => onRoleChange?.(event.target.value));
-    roleWrap.appendChild(select);
-    contextMenu.appendChild(roleWrap);
-
-    // Selector de escenarios (X-Scenario) — HU-09 / TASK-09.4.
-    const scenarioWrap = el("label", "app-header__role");
-    scenarioWrap.appendChild(el("span", null, "Escenario (demo)"));
-    const scenarioSelect = el("select", "app-header__scenario-select");
-    scenarioSelect.setAttribute("aria-label", "Selector de escenario de demostración");
-    for (const item of SCENARIOS) {
-      const option = el("option", null, item.label);
-      option.value = item.value;
-      if (item.value === scenario) option.selected = true;
-      scenarioSelect.appendChild(option);
-    }
-    scenarioSelect.addEventListener("change", (event) => onScenarioChange?.(event.target.value));
-    scenarioWrap.appendChild(scenarioSelect);
-    contextMenu.appendChild(scenarioWrap);
-
-    // Botón de autorrellenado (solo demo): completa los campos de la pantalla
-    // actual para agilizar las pruebas. No envía ni persiste datos.
-    if (onAutofill) {
-      const autofill = el("button", "app-header__autofill", "Autorrellenar");
-      autofill.type = "button";
-      autofill.title = "Completa los campos de esta pantalla con datos de prueba";
-      autofill.addEventListener("click", () => {
-        const res = onAutofill();
-        const n = res && res.count ? res.count : 0;
-        autofill.textContent = n ? `Rellenado (${n})` : "Sin campos";
-        setTimeout(() => { autofill.textContent = "Autorrellenar"; }, 1400);
-      });
-      contextMenu.appendChild(autofill);
-    }
 
     const logout = el("button", "app-header__logout", "Salir");
     logout.type = "button";

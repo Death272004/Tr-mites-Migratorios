@@ -20,6 +20,12 @@
         var raw = stores[i].getItem(STORAGE_KEY);
         if (!raw) continue;
         var parsed = JSON.parse(raw);
+        // Las sesiones demo antiguas no son válidas para el backend real.
+        // Se descartan para evitar que una cuenta ficticia reaparezca al abrir la app.
+        if (parsed && typeof parsed.token === "string" && parsed.token.indexOf("demo.") === 0) {
+          stores[i].removeItem(STORAGE_KEY);
+          continue;
+        }
         if (parsed && typeof parsed === "object" && parsed.token && parsed.datos) return parsed;
         stores[i].removeItem(STORAGE_KEY);
       }
