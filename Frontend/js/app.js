@@ -91,7 +91,7 @@
       },
     });
 
-    layout.renderNav(els.nav, { role: state.role, currentRoute: state.route });
+    layout.renderNav(els.nav, { role: state.role, currentRoute: state.route, onNavigate: navigate });
 
     if (routeChanged) {
       var routeTitle = els.nav.querySelector('[aria-current="page"]');
