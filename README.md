@@ -277,23 +277,6 @@ git push -u origin feature/nombre-de-la-tarea
 
 La rama se integra mediante Pull Request después de verificar que el proyecto compile, las pruebas pasen y la documentación esté actualizada. `main` se reserva para una versión estable y demostrable.
 
-## 👥 Equipo y responsabilidades
-
-| Integrante | Responsabilidad principal |
-| --- | --- |
-| Kenneth Carter | Scrum Master, DevOps e integración del entorno |
-| Edgar Rosario | Backend y servicios |
-| Jonathan Gómez | Frontend e interfaces |
-| Vivian Paris | QA y seguridad |
-| Richard Rodríguez | Documentación y coordinación técnica |
-
-<p>
-  <img src="https://img.shields.io/badge/Scrum-Coordinar-0B1B2B?style=flat-square" alt="Scrum">
-  <img src="https://img.shields.io/badge/DevOps-Integrar-2496ED?style=flat-square" alt="DevOps">
-  <img src="https://img.shields.io/badge/QA-Verificar-8B5CF6?style=flat-square" alt="QA">
-  <img src="https://img.shields.io/badge/Documentación-Trazar-F28C28?style=flat-square" alt="Documentación">
-</p>
-
 <img src="recursos-proyecto/assets/section-divider.svg" alt="Separador visual" width="100%">
 
 ## 📚 Documentación útil
