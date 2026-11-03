@@ -34,7 +34,17 @@
 
 <img src="docs/assets/section-divider.svg" alt="Separador visual" width="100%">
 
-Este repositorio contiene el proyecto integrador de **Ingeniería de Software III**. La solución se construye como un MVP: primero demostramos el flujo principal de forma segura y trazable, y después dejamos preparadas las bases para futuras integraciones.
+Esta rama contiene el **frontend** del proyecto integrador de Ingeniería de Software III. Aquí se construyen las pantallas, la navegación, los formularios, los estados visuales y la conexión del cliente con el backend.
+
+## 🧩 Responsabilidad de esta rama
+
+- Portal del cliente y módulo interno del bufete.
+- Navegación por rutas hash, roles y menú responsive.
+- Formularios, validaciones, estados de carga/éxito/vacío/error y accesibilidad básica.
+- Modo offline con fixtures y cliente HTTP preparado para consumir `Backend`.
+- Diseño visual, modo oscuro, configuración y adaptación para teléfonos.
+
+> **Alcance académico:** las pantallas utilizan datos ficticios y servicios simulados; no consultan APIs gubernamentales reales.
 
 <p>
   <img src="https://img.shields.io/badge/Estado-MVP%20en%20desarrollo-56C596?style=flat-square" alt="MVP en desarrollo">
@@ -264,23 +274,6 @@ git push -u origin feature/nombre-de-la-tarea
 ```
 
 La rama se integra mediante Pull Request después de verificar que el proyecto compile, las pruebas pasen y la documentación esté actualizada. `main` se reserva para una versión estable y demostrable.
-
-## 👥 Equipo y responsabilidades
-
-| Integrante | Responsabilidad principal |
-| --- | --- |
-| Kenneth Carter | Scrum Master, DevOps e integración del entorno |
-| Edgar Rosario | Backend y servicios |
-| Jonathan Gómez | Frontend e interfaces |
-| Vivian Paris | QA y seguridad |
-| Richard Rodríguez | Documentación y coordinación técnica |
-
-<p>
-  <img src="https://img.shields.io/badge/Scrum-Coordinar-0B1B2B?style=flat-square" alt="Scrum">
-  <img src="https://img.shields.io/badge/DevOps-Integrar-2496ED?style=flat-square" alt="DevOps">
-  <img src="https://img.shields.io/badge/QA-Verificar-8B5CF6?style=flat-square" alt="QA">
-  <img src="https://img.shields.io/badge/Documentación-Trazar-F28C28?style=flat-square" alt="Documentación">
-</p>
 
 <img src="docs/assets/section-divider.svg" alt="Separador visual" width="100%">
 
