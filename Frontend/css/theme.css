@@ -8,7 +8,7 @@
   --theme-blue: #2167a8;
   --theme-amber: #d88926;
   --theme-amber-soft: #fff3df;
-  --theme-canvas: #f4f1ec;
+  --theme-canvas: #f4f6f9;
   --theme-paper: #fffdf9;
   --theme-line: #d9d4cd;
   --theme-radius: 9px;
@@ -138,7 +138,7 @@ body {
 
 /* Barra lateral oscura con grupos legibles. */
 .app-body {
-  background: var(--theme-canvas);
+  background: #f4f6f9;
 }
 
 .app-nav {
