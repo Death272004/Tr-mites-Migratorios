@@ -20,7 +20,7 @@
 </p>
 
 <p align="center">
-  <img src="docs/assets/project-status.svg" alt="Estado del MVP, QA y trazabilidad" width="100%">
+  <img src="docs/assets/readme-app-status.svg" alt="Estado del MVP, QA y trazabilidad" width="100%">
 </p>
 
 > Una plataforma académica para que un bufete pueda organizar expedientes migratorios, consultar documentos y dar seguimiento a verificaciones desde un solo lugar.
@@ -36,7 +36,7 @@
   <sub>Construido con trazabilidad · datos ficticios · integración simulada · trabajo colaborativo</sub>
 </p>
 
-<img src="docs/assets/section-divider.svg" alt="Separador visual" width="100%">
+<img src="docs/assets/readme-divider-animated.svg" alt="Separador visual" width="100%">
 
 Esta rama contiene el **frontend** del proyecto integrador de Ingeniería de Software III. Aquí se construyen las pantallas, la navegación, los formularios, los estados visuales y la conexión del cliente con el backend.
 
@@ -71,7 +71,7 @@ Nuestra propuesta centraliza el expediente del cliente y organiza el flujo del a
 
 > **Importante:** el sistema utiliza datos ficticios y servicios simulados. No consulta APIs reales del Tribunal Electoral, la CSS ni el Registro Público.
 
-<img src="docs/assets/section-divider.svg" alt="Separador visual" width="100%">
+<img src="docs/assets/readme-divider-animated.svg" alt="Separador visual" width="100%">
 
 ##  Qué incluye el MVP
 
@@ -112,7 +112,7 @@ flowchart LR
     J --> K[Seguimiento y auditoría]
 ```
 
-<img src="docs/assets/section-divider.svg" alt="Separador visual" width="100%">
+<img src="docs/assets/readme-divider-animated.svg" alt="Separador visual" width="100%">
 
 ##  Arquitectura del proyecto
 
@@ -142,7 +142,7 @@ Tr-mites-Migratorios/
 | Seguridad | OWASP ZAP, roles y datos ficticios |
 | Trabajo en equipo | GitHub y TeamTrack |
 
-<img src="docs/assets/section-divider.svg" alt="Separador visual" width="100%">
+<img src="docs/assets/readme-divider-animated.svg" alt="Separador visual" width="100%">
 
 ##  Ejecutar el proyecto
 
@@ -244,7 +244,7 @@ Pruebas de calidad y seguridad:
 
 </details>
 
-<img src="docs/assets/section-divider.svg" alt="Separador visual" width="100%">
+<img src="docs/assets/readme-divider-animated.svg" alt="Separador visual" width="100%">
 
 ##  Cómo trabajamos con Git
 
@@ -279,7 +279,7 @@ git push -u origin feature/nombre-de-la-tarea
 
 La rama se integra mediante Pull Request después de verificar que el proyecto compile, las pruebas pasen y la documentación esté actualizada. `main` se reserva para una versión estable y demostrable.
 
-<img src="docs/assets/section-divider.svg" alt="Separador visual" width="100%">
+<img src="docs/assets/readme-divider-animated.svg" alt="Separador visual" width="100%">
 
 ##  Documentación útil
 

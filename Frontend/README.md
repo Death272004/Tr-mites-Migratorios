@@ -14,7 +14,7 @@
 </p>
 
 <p align="center">
-  <img src="../recursos-proyecto/assets/project-status.svg" alt="Estado del frontend y del proyecto" width="100%">
+  <img src="../recursos-proyecto/assets/readme-app-status.svg" alt="Estado del frontend y del proyecto" width="100%">
 </p>
 
 <p align="center">
@@ -47,7 +47,7 @@ Frontend contiene la experiencia que utilizan el cliente y el personal del bufet
 
 > **Alcance académico:** la información visible en esta rama es ficticia y se utiliza únicamente para probar y demostrar el producto.
 
-<img src="../recursos-proyecto/assets/section-divider.svg" alt="Separador visual" width="100%">
+<img src="../recursos-proyecto/assets/readme-divider-animated.svg" alt="Separador visual" width="100%">
 
 ##  Qué resuelve
 

@@ -6,7 +6,7 @@
 
 
 <p align="center">
-  <img src="../recursos-proyecto/assets/project-status.svg" alt="Estado del backend y del proyecto" width="100%">
+  <img src="../recursos-proyecto/assets/readme-app-status.svg" alt="Estado del backend y del proyecto" width="100%">
 </p>
 
 <p align="center">
