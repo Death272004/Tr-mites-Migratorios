@@ -11,11 +11,36 @@
   var field = global.tm.ui.field;
   var button = global.tm.ui.button;
   var table = global.tm.ui.table;
+  var api = global.tm.api;
 
   var FALLBACK = { periodo: "—", lineaBase: "—", metaReduccion: "—", tiemposPorEtapa: [], motivosDemora: [], volumenPorTramite: [], verificaciones: [], cumplimientoPlazos: [] };
 
   function datos() {
     return global.tm.fixtures.data("I-17", "exito") || FALLBACK;
+  }
+
+  function datosDesdeExpedientes(respuesta) {
+    var items = Array.isArray(respuesta) ? respuesta : ((respuesta && respuesta.contenido) || []);
+    var volumen = {};
+    var estados = {};
+    items.forEach(function (e) {
+      var tipo = e.tipoTramite || "Sin tipo";
+      var estado = e.estado || "Sin estado";
+      volumen[tipo] = (volumen[tipo] || 0) + 1;
+      estados[estado] = (estados[estado] || 0) + 1;
+    });
+    return {
+      periodo: "Expedientes disponibles",
+      lineaBase: "No calculable con los datos actuales",
+      metaReduccion: "No definida",
+      tiemposPorEtapa: [],
+      motivosDemora: [],
+      volumenPorTramite: Object.keys(volumen).map(function (k) { return { tramite: k, cantidad: volumen[k] }; }),
+      verificaciones: [],
+      cumplimientoPlazos: [],
+      estados: Object.keys(estados).map(function (k) { return { estado: k, cantidad: estados[k] }; }),
+      total: items.length,
+    };
   }
 
   function bars(items, labelKey, valueKey, max) {
@@ -103,6 +128,12 @@
       bVol.appendChild(bars(d.volumenPorTramite, "tramite", "cantidad", maxVol));
       inner.appendChild(bVol);
 
+      var bEstados = block("Expedientes por estado");
+      var estados = d.estados || [];
+      var maxEstado = Math.max.apply(null, estados.map(function (m) { return m.cantidad; }).concat([1]));
+      bEstados.appendChild(bars(estados, "estado", "cantidad", maxEstado));
+      inner.appendChild(bEstados);
+
       var bVer = block("Verificaciones externas (volumen y éxito)");
       bVer.appendChild(table({ headers: [
         { label: "Institución" }, { label: "Volumen" }, { label: "Tasa de éxito" },
@@ -162,6 +193,16 @@
     }
 
     function show(state) {
+      if (api && api.isOnline()) {
+        renderLoading();
+        api.request("GET", "/expedientes?pagina=0&tamano=100", { pantalla: "I-17" }, function (err, respuesta) {
+          if (err) { renderError(); return; }
+          d = datosDesdeExpedientes(respuesta);
+          periodo = d.periodo;
+          renderContent();
+        });
+        return;
+      }
       global.tm.fixtures.setScenario(state);
       if (state === "carga") { renderLoading(); setTimeout(renderContent, 700); return; }
       if (state === "error") { renderError(); return; }
