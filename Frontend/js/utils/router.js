@@ -17,8 +17,28 @@
     SERVER: "#/error/500",
   });
 
+  // El inventario interno conserva el formato hash para comparar permisos y
+  // vistas, pero la URL visible usa rutas limpias mediante History API.
+  function normalizeRoute(route) {
+    if (!route) return null;
+    if (route.startsWith("#/")) return route;
+    if (route.startsWith("/")) return "#" + route.replace(/\/+$/, "");
+    return "#/" + route.replace(/^\/+/, "").replace(/\/+$/, "");
+  }
+
+  function toPath(route) {
+    const normalized = normalizeRoute(route);
+    return normalized ? normalized.slice(1) : "/";
+  }
+
+  function fromLocation() {
+    if (window.location.hash.startsWith("#/")) return normalizeRoute(window.location.hash);
+    if (window.location.pathname === "/" || window.location.pathname === "/html/index.html") return null;
+    return normalizeRoute(window.location.pathname);
+  }
+
   function canAccess(route, role) {
-    const publicPortal = [LOGIN_ROUTE, "#/registro", "#/recuperar-clave", "#/identidad/otp"];
+    const publicPortal = [LOGIN_ROUTE, "#/registro", "#/recuperar-clave", "#/identidad/otp", "#/cuenta/configuracion"];
     if (publicPortal.includes(route)) return true;
 
     if (route.startsWith("#/interno/")) {
@@ -26,11 +46,13 @@
       return isInternalRole(role);
     }
 
+    // Son pantallas generales de cuenta y no dependen del tipo de usuario.
+    if (route === "#/perfil" || route === "#/cuenta/configuracion") return true;
+
     if (
       route.startsWith("#/solicitud/") ||
       route.startsWith("#/seguimiento/") ||
       route.startsWith("#/servicios/") ||
-      route === "#/perfil" ||
       route === "#/mis-tramites"
     ) {
       return role === ROLES.SOLICITANTE;
@@ -77,6 +99,7 @@
       "#/servicios/naturalizacion": "p-26",
       "#/servicios/ayuda": "p-27",
       "#/perfil": "p-05",
+      "#/cuenta/configuracion": "p-28",
     };
     if (map[route]) return map[route];
     if (route === ERRORS.FORBIDDEN) return "error/403";
@@ -86,7 +109,7 @@
   }
 
   function resolveRoute(inputRoute, role, isAuthenticated) {
-    let route = inputRoute && inputRoute.startsWith("#/") ? inputRoute : null;
+    let route = normalizeRoute(inputRoute);
 
     if (!route) {
       route = isAuthenticated
@@ -96,13 +119,17 @@
           : LOGIN_ROUTE;
     }
 
-    const publicPortal = [LOGIN_ROUTE, INTERNAL_LOGIN_ROUTE, "#/registro", "#/recuperar-clave", "#/identidad/otp", ERRORS.FORBIDDEN, ERRORS.NOT_FOUND, ERRORS.SERVER];
+    const publicPortal = [LOGIN_ROUTE, INTERNAL_LOGIN_ROUTE, "#/registro", "#/recuperar-clave", "#/identidad/otp", "#/cuenta/configuracion", ERRORS.FORBIDDEN, ERRORS.NOT_FOUND, ERRORS.SERVER];
     const needsAuth =
-      (!publicPortal.includes(route) && !isInternalRole(role)) ||
+      (route === "#/perfil" && !isAuthenticated) ||
+      (!publicPortal.includes(route) && !isInternalRole(role) && !isAuthenticated) ||
       (route.startsWith("#/interno/") && route !== INTERNAL_LOGIN_ROUTE);
 
     if (needsAuth && !isAuthenticated) {
-      route = isInternalRole(role) ? INTERNAL_LOGIN_ROUTE : LOGIN_ROUTE;
+      // La URL solicitada determina el acceso correcto. Sin una sesión aún
+      // no existe un rol fiable para decidir entre el portal y el módulo
+      // institucional.
+      route = route.startsWith("#/interno/") ? INTERNAL_LOGIN_ROUTE : LOGIN_ROUTE;
     }
 
     if (!canAccess(route, role)) {
@@ -114,16 +141,15 @@
       route.startsWith("#/solicitud/") ||
       route.startsWith("#/seguimiento/") ||
       route.startsWith("#/servicios/") ||
-      route === "#/mis-tramites" ||
-      route === "#/perfil";
+      route === "#/mis-tramites";
 
     if (isInner) {
-      if (!findNavItem(role, route)) return ERRORS.NOT_FOUND;
+      if (!findNavItem(role, route)) return ERRORS.FORBIDDEN;
     } else if (isPortalRoute) {
       if (route.startsWith("#/solicitud/")) {
         if (!mapHas(route)) return ERRORS.NOT_FOUND;
       } else if (!findNavItem(role, route)) {
-        return ERRORS.NOT_FOUND;
+        return ERRORS.FORBIDDEN;
       }
     } else if (!publicPortal.includes(route) && !mapHas(route)) {
       return ERRORS.NOT_FOUND;
@@ -142,10 +168,19 @@
       "#/solicitud/cita": 1, "#/seguimiento/estado": 1, "#/seguimiento/observaciones": 1,
       "#/seguimiento/subsanacion": 1, "#/seguimiento/resultados": 1, "#/seguimiento/pagos": 1,
       "#/seguimiento/edictos": 1, "#/servicios/certificaciones": 1, "#/servicios/naturalizacion": 1,
-      "#/servicios/ayuda": 1, "#/perfil": 1,
+      "#/servicios/ayuda": 1, "#/perfil": 1, "#/cuenta/configuracion": 1,
     };
     return !!map[route];
   }
 
-  global.tm.router = { getViewKey, resolveRoute, ERRORS, LOGIN_ROUTE, INTERNAL_LOGIN_ROUTE };
+  global.tm.router = {
+    getViewKey,
+    resolveRoute,
+    normalizeRoute,
+    toPath,
+    fromLocation,
+    ERRORS,
+    LOGIN_ROUTE,
+    INTERNAL_LOGIN_ROUTE,
+  };
 })(window);

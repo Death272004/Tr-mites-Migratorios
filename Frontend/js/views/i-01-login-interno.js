@@ -1,6 +1,7 @@
 /**
  * I-01 — Login institucional con MFA (Fase E).
- * Autentica al personal del despacho con segundo factor obligatorio (simulado).
+ * Autentica al personal del despacho. El MFA queda simulado únicamente en modo
+ * offline; con backend la sesión la emite directamente la API institucional.
  * Reglas: timeout de sesión, bitácora de intentos (HU-05), mensaje genérico de
  * fallo (CP-02), sin credenciales ni secretos en el cliente (CP-01).
  * Script clásico: expone `tm.views.i01.renderI01`.
@@ -27,17 +28,15 @@
     ip: "10.0.0.24",
   };
 
-  // Con backend (Docker/nginx) el login es real: POST /auth/login con las cuentas
-  // ficticias que siembra DatosDemo (una por perfil del despacho, dominio demo.pa).
-  // El rol y los permisos los decide el backend, no el selector.
-  var DOMINIO_CORPORATIVO = "demo.pa";
+  // Con backend (Docker/nginx) el login es real: POST /auth/login con las
+  // cuentas vigentes del equipo. El rol y los permisos los decide el backend.
+  var DOMINIO_CORPORATIVO = "tr-utp.com";
   var USUARIOS_BACKEND = [
-    { rol: "FUNCIONARIO", rolLabel: "Funcionario · recepción", usuario: "recepcion" },
-    { rol: "FUNCIONARIO", rolLabel: "Funcionario · abogado analista", usuario: "analista" },
-    { rol: "FUNCIONARIO", rolLabel: "Funcionario · resolutor", usuario: "resolutor" },
-    { rol: "SUPERVISOR", rolLabel: "Supervisor", usuario: "supervisor" },
-    { rol: "AUDITOR", rolLabel: "Auditor", usuario: "auditor" },
-    { rol: "ADMIN", rolLabel: "Administrador", usuario: "admin" },
+    { rol: "ADMIN", rolLabel: "Administrador · Kenneth Carter", usuario: "kenneth.carter@tr-utp.com" },
+    { rol: "SUPERVISOR", rolLabel: "Supervisor · Richard Rodriguez", usuario: "richard.rodriguez@tr-utp.com" },
+    { rol: "FUNCIONARIO", rolLabel: "Funcionario · Edgar Rosario", usuario: "edgar.rosario@tr-utp.com" },
+    { rol: "FUNCIONARIO", rolLabel: "Funcionario · Jonathan Gomez", usuario: "jonathan.gomez@tr-utp.com" },
+    { rol: "AUDITOR", rolLabel: "Auditor · Vivian Paris", usuario: "vivian.paris@tr-utp.com" },
   ];
 
   function online() {
@@ -71,16 +70,16 @@
 
     var perfilWrap = field.fieldSelect({
       id: "perfilInterno",
-      label: "Perfil de demostración",
+      label: online() ? "Cuenta institucional" : "Perfil de demostración",
       options: datos.usuarios.map(function (u) { return { label: u.rolLabel, value: u.usuario }; }),
       value: datos.usuarios[0].usuario,
-      helpText: "En el MVP se elige el usuario de prueba; en producción lo provee el directorio institucional.",
+      helpText: online() ? "Seleccione una cuenta autorizada del despacho." : "En modo offline se usa un perfil de prueba.",
     });
     form.appendChild(perfilWrap);
 
     var usuario = field.fieldText({
       id: "usuarioInterno",
-      label: "Usuario corporativo",
+      label: online() ? "Correo institucional" : "Usuario corporativo",
       value: datos.usuarios[0].usuario,
       required: true,
       helpText: "Directorio institucional del despacho",
@@ -124,13 +123,13 @@
 
     var linkPortal = layout.el("div", "auth-links");
     var link = layout.el("a", "auth-link", "Volver al portal del cliente");
-    link.href = "#/login";
+    link.href = "/login";
     linkPortal.appendChild(link);
     form.appendChild(linkPortal);
 
     var paso = 1;
     var perfil = datos.usuarios[0];
-    var sesionBackend = null; // respuesta de /auth/login, se entrega tras el segundo factor
+    var sesionBackend = null; // respuesta de /auth/login
     var loading = false;
 
     function selPerfil() {
@@ -188,7 +187,9 @@
       if (paso === 1) {
         if (!u) return setError("El usuario corporativo es obligatorio.");
         if (!c) return setError("La contraseña es obligatoria.");
-        if (!validatePass(c)) return setError("La contraseña no cumple con los requisitos mínimos.");
+        // Las cuentas iniciales del proyecto usan nombre.apellido; la política
+        // de cambio de contraseña se aplica al cambiarla, no al iniciar sesión.
+        if (!online() && !validatePass(c)) return setError("La contraseña no cumple con los requisitos mínimos.");
 
         perfil = perfilPorUsuario(selPerfil());
         setLoading(true);
@@ -203,7 +204,9 @@
                 return setError("Esta cuenta no tiene acceso al módulo interno. Use el portal del cliente.");
               }
               sesionBackend = data;
-              toStep2();
+              // El backend actual no expone un desafío MFA; no simulamos un
+              // segundo paso cuando la sesión real ya fue validada.
+              finalizarSesionBackend();
             });
           return;
         }
@@ -226,16 +229,7 @@
         setLoading(false);
         attempts = 0;
         blockedUntil = 0;
-        if (sesionBackend && opts.onInternalLoginSuccess) {
-          var cuenta = sesionBackend.usuario || {};
-          opts.onInternalLoginSuccess({
-            rol: sesionBackend.rol,
-            usuario: { id: cuenta.id, nombre: cuenta.nombre, correo: cuenta.correo, permisos: cuenta.permisos, estacion: datos.estacion, ip: datos.ip },
-            token: sesionBackend.token,
-            expiraEn: sesionBackend.expiraEn,
-          });
-          return;
-        }
+        if (sesionBackend) { finalizarSesionBackend(); return; }
         if (opts.onInternalLoginSuccess) {
           opts.onInternalLoginSuccess({
             rol: perfil.rol,
@@ -271,6 +265,16 @@
       loading = state;
       btnContinuar.disabled = state;
       btnContinuar.textContent = state ? "Verificando…" : (paso === 2 ? "Verificar e ingresar" : "Continuar");
+    }
+    function finalizarSesionBackend() {
+      if (!sesionBackend || !opts.onInternalLoginSuccess) return;
+      var cuenta = sesionBackend.usuario || {};
+      opts.onInternalLoginSuccess({
+        rol: sesionBackend.rol,
+        usuario: { id: cuenta.id, nombre: cuenta.nombre, correo: cuenta.correo, permisos: cuenta.permisos, estacion: datos.estacion, ip: datos.ip },
+        token: sesionBackend.token,
+        expiraEn: sesionBackend.expiraEn,
+      });
     }
     function validatePass(p) {
       return /^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$/.test(p);

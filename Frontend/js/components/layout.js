@@ -6,7 +6,7 @@
 (function (global) {
   "use strict";
 
-  const { ROLE_LABELS, ROLE_CONTEXT, ROLES } = global.tm.roles;
+  const { ROLE_LABELS, ROLE_CONTEXT } = global.tm.roles;
   const { getNavForRole, findNavItem } = global.tm.nav;
 
   function el(tag, className, text) {
@@ -20,88 +20,188 @@
     while (node.firstChild) node.removeChild(node.firstChild);
   }
 
-  const SCENARIOS = [
-    { value: "exito", label: "Éxito" },
-    { value: "carga", label: "Cargando" },
-    { value: "vacio", label: "Sin datos" },
-    { value: "error", label: "Error" }
-  ];
-
-  function renderHeaderUser(container, { user, role, scenario, onRoleChange, onScenarioChange, onLogout, onAutofill }) {
-    clear(container);
-
-    container.appendChild(el("span", "app-header__user-name", user?.nombre ?? "No autenticado"));
-    container.appendChild(el("span", "app-header__badge", ROLE_LABELS[role] ?? role));
-
-    const roleWrap = el("label", "app-header__role");
-    roleWrap.appendChild(el("span", null, "Rol (demo)"));
-    const select = el("select", "app-header__role-select");
-    select.setAttribute("aria-label", "Selector de rol para demostración");
-    for (const value of Object.values(ROLES)) {
-      const option = el("option", null, ROLE_LABELS[value]);
-      option.value = value;
-      if (value === role) option.selected = true;
-      select.appendChild(option);
-    }
-    select.addEventListener("change", (event) => onRoleChange?.(event.target.value));
-    roleWrap.appendChild(select);
-    container.appendChild(roleWrap);
-
-    // Selector de escenarios (X-Scenario) — HU-09 / TASK-09.4.
-    const scenarioWrap = el("label", "app-header__role");
-    scenarioWrap.appendChild(el("span", null, "Escenario (demo)"));
-    const scenarioSelect = el("select", "app-header__scenario-select");
-    scenarioSelect.setAttribute("aria-label", "Selector de escenario de demostración");
-    for (const item of SCENARIOS) {
-      const option = el("option", null, item.label);
-      option.value = item.value;
-      if (item.value === scenario) option.selected = true;
-      scenarioSelect.appendChild(option);
-    }
-    scenarioSelect.addEventListener("change", (event) => onScenarioChange?.(event.target.value));
-    scenarioWrap.appendChild(scenarioSelect);
-    container.appendChild(scenarioWrap);
-
-    // Botón de autorrellenado (solo demo): completa los campos de la pantalla
-    // actual para agilizar las pruebas. No envía ni persiste datos.
-    if (onAutofill) {
-      const autofill = el("button", "app-header__autofill", "Autorrellenar");
-      autofill.type = "button";
-      autofill.title = "Completa los campos de esta pantalla con datos de prueba";
-      autofill.addEventListener("click", () => {
-        const res = onAutofill();
-        const n = res && res.count ? res.count : 0;
-        autofill.textContent = n ? `Rellenado (${n})` : "Sin campos";
-        setTimeout(() => { autofill.textContent = "Autorrellenar"; }, 1400);
-      });
-      container.appendChild(autofill);
-    }
-
-    const logout = el("button", "app-header__logout", "Salir");
-    logout.type = "button";
-    logout.addEventListener("click", () => onLogout?.());
-    container.appendChild(logout);
+  function profileIcon(className) {
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("class", className || "app-profile-icon");
+    svg.setAttribute("viewBox", "0 0 24 24");
+    svg.setAttribute("aria-hidden", "true");
+    svg.setAttribute("focusable", "false");
+    const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    circle.setAttribute("cx", "12"); circle.setAttribute("cy", "8"); circle.setAttribute("r", "3.2");
+    circle.setAttribute("fill", "none");
+    circle.setAttribute("stroke", "currentColor");
+    circle.setAttribute("stroke-width", "1.8");
+    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    path.setAttribute("d", "M4.8 20c.8-3.5 3.2-5.4 7.2-5.4s6.4 1.9 7.2 5.4");
+    path.setAttribute("fill", "none"); path.setAttribute("stroke", "currentColor"); path.setAttribute("stroke-width", "1.8");
+    path.setAttribute("stroke-linecap", "round");
+    svg.appendChild(circle); svg.appendChild(path);
+    return svg;
   }
 
-  function renderNav(container, { role, currentRoute }) {
+  function renderHeaderUser(container, { user, role, authenticated, onNavigate, onLogout }) {
     clear(container);
+
+    container.className = "app-contextbar";
+    const contextTrigger = el("button", "app-context-trigger");
+    contextTrigger.type = "button";
+    contextTrigger.setAttribute("aria-expanded", "false");
+    contextTrigger.setAttribute("aria-haspopup", "true");
+    contextTrigger.appendChild(profileIcon("app-profile-icon"));
+    contextTrigger.appendChild(el("span", "app-context-trigger__label", "Sesión"));
+    contextTrigger.appendChild(el("span", "app-context-trigger__chevron"));
+
+    const contextMenu = el("div", "app-context-menu");
+    contextMenu.hidden = true;
+    contextMenu.setAttribute("role", "menu");
+    container.appendChild(contextTrigger);
+    container.appendChild(contextMenu);
+
+    const identity = el("div", "app-context-menu__identity");
+    identity.appendChild(profileIcon("app-context-menu__profile-icon"));
+    const identityText = el("div", "app-context-menu__identity-text");
+    identityText.appendChild(el("span", "app-header__user-name", user?.nombre ?? "No autenticado"));
+    identityText.appendChild(el("span", "app-header__badge", ROLE_LABELS[role] ?? role));
+    identity.appendChild(identityText);
+    contextMenu.appendChild(identity);
+
+    const goTo = (route, text) => {
+      const link = el("a", "app-context-menu__link", text);
+      link.href = global.tm.router.toPath(route);
+      link.setAttribute("role", "menuitem");
+      link.addEventListener("click", () => onNavigate?.(route));
+      return link;
+    };
+    if (authenticated) contextMenu.appendChild(goTo("#/perfil", "Mi perfil"));
+    contextMenu.appendChild(goTo("#/cuenta/configuracion", "Configuración"));
+
+    if (authenticated) {
+      const logout = el("button", "app-header__logout", "Salir");
+      logout.type = "button";
+      logout.addEventListener("click", () => onLogout?.());
+      contextMenu.appendChild(logout);
+    }
+
+    const closeContext = () => {
+      contextMenu.hidden = true;
+      contextTrigger.setAttribute("aria-expanded", "false");
+      container.classList.remove("is-open");
+    };
+    contextTrigger.addEventListener("click", (event) => {
+      event.stopPropagation();
+      const open = contextTrigger.getAttribute("aria-expanded") === "true";
+      closeContext();
+      if (!open) {
+        contextMenu.hidden = false;
+        contextTrigger.setAttribute("aria-expanded", "true");
+        container.classList.add("is-open");
+      }
+    });
+    if (container._outsideContextHandler) {
+      document.removeEventListener("click", container._outsideContextHandler);
+      document.removeEventListener("keydown", container._escapeContextHandler);
+    }
+    container._outsideContextHandler = (event) => {
+      if (!container.contains(event.target)) closeContext();
+    };
+    container._escapeContextHandler = (event) => {
+      if (event.key === "Escape") closeContext();
+    };
+    document.addEventListener("click", container._outsideContextHandler);
+    document.addEventListener("keydown", container._escapeContextHandler);
+  }
+
+  function renderNav(container, { role, currentRoute, onNavigate }) {
+    clear(container);
+
+    const groups = [];
+    const closeMenus = () => {
+      groups.forEach(({ trigger, menu, groupEl }) => {
+        trigger.setAttribute("aria-expanded", "false");
+        menu.hidden = true;
+        groupEl.classList.remove("is-open");
+      });
+    };
+
+    const closeButton = el("button", "app-nav__close", "Cerrar menú");
+    closeButton.type = "button";
+    closeButton.setAttribute("aria-label", "Cerrar menú");
+    closeButton.appendChild(el("span", "app-nav__close-icon", "×"));
+    closeButton.addEventListener("click", () => {
+      container.classList.remove("is-open");
+      const toggle = document.getElementById("nav-toggle");
+      toggle?.setAttribute("aria-expanded", "false");
+      closeMenus();
+    });
+    container.appendChild(closeButton);
 
     for (const group of getNavForRole(role)) {
       const groupEl = el("div", "app-nav__group");
-      groupEl.appendChild(el("p", "app-nav__group-title", group.title));
+      const trigger = el("button", "app-nav__group-trigger");
+      trigger.type = "button";
+      trigger.setAttribute("aria-expanded", "false");
+      trigger.setAttribute("aria-haspopup", "true");
+      trigger.appendChild(el("span", null, group.title));
+      trigger.appendChild(el("span", "app-nav__chevron"));
 
-      const list = el("ul", "app-nav__list");
+      const menu = el("ul", "app-nav__dropdown");
+      menu.hidden = true;
+      menu.setAttribute("role", "menu");
+      let hasCurrent = false;
       for (const item of group.items) {
         const li = el("li");
+        li.setAttribute("role", "none");
         const link = el("a", "app-nav__link", item.label);
-        link.href = item.route;
-        if (item.route === currentRoute) link.setAttribute("aria-current", "page");
+        link.href = global.tm.router.toPath(item.route);
+        link.setAttribute("role", "menuitem");
+        link.addEventListener("click", (event) => {
+          event.preventDefault();
+          onNavigate?.(item.route);
+        });
+        if (item.route === currentRoute) {
+          link.setAttribute("aria-current", "page");
+          hasCurrent = true;
+        }
         li.appendChild(link);
-        list.appendChild(li);
+        menu.appendChild(li);
       }
-      groupEl.appendChild(list);
+      if (hasCurrent) groupEl.classList.add("is-current");
+      trigger.addEventListener("click", (event) => {
+        event.stopPropagation();
+        const open = trigger.getAttribute("aria-expanded") === "true";
+        closeMenus();
+        if (!open) {
+          trigger.setAttribute("aria-expanded", "true");
+          menu.hidden = false;
+          groupEl.classList.add("is-open");
+        }
+      });
+      groupEl.appendChild(trigger);
+      groupEl.appendChild(menu);
       container.appendChild(groupEl);
+      groups.push({ trigger, menu, groupEl });
     }
+
+    if (container._linkMenuHandler) {
+      container.removeEventListener("click", container._linkMenuHandler);
+    }
+    container._linkMenuHandler = (event) => {
+      if (event.target.closest("a")) closeMenus();
+    };
+    container.addEventListener("click", container._linkMenuHandler);
+
+    if (container._outsideMenuHandler) {
+      document.removeEventListener("click", container._outsideMenuHandler);
+      document.removeEventListener("keydown", container._escapeMenuHandler);
+    }
+    container._outsideMenuHandler = (event) => {
+      if (!container.contains(event.target)) closeMenus();
+    };
+    container._escapeMenuHandler = (event) => {
+      if (event.key === "Escape") closeMenus();
+    };
+    document.addEventListener("click", container._outsideMenuHandler);
+    document.addEventListener("keydown", container._escapeMenuHandler);
   }
 
   function pageHeader(title, subtitle) {

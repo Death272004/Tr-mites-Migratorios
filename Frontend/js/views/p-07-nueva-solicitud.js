@@ -116,6 +116,10 @@
   }
 
   function renderForm(container, opts) {
+    // Reemplaza el estado de carga antes de pintar el formulario final.
+    // Sin esta limpieza, el spinner y el encabezado de carga quedaban arriba
+    // del formulario después de resolver el catálogo.
+    layout.clear(container);
     var inner = layout.el("div", "app-content__inner");
     inner.appendChild(layout.pageHeader("Nueva solicitud", "Paso 1 de 11 · Seleccione el trámite a realizar"));
 
@@ -356,5 +360,10 @@
   }
 
   global.tm.views = global.tm.views || {};
-  global.tm.views.p07 = { renderP07: renderP07, CATALOGO: CATALOGO, REQUISITOS_ART_28: REQUISITOS_ART_28 };
+  global.tm.views.p07 = {
+    renderP07: renderP07,
+    CATALOGO: CATALOGO,
+    REQUISITOS_ART_28: REQUISITOS_ART_28,
+    catalogoDesdeApi: catalogoDesdeApi,
+  };
 })(window);

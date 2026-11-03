@@ -11,16 +11,10 @@
   var router = global.tm.router;
   var errors = global.tm.ui.errors;
   var session = global.tm.session;
-  var fixtures = global.tm.fixtures;
-
-  // Último aplicador de estado (4 estados) de la vista montada; lo usa el
-  // selector de escenarios global de la cabecera (HU-09 / TASK-09.4).
-  var currentShow = null;
   var lastRenderedRoute = null;
 
   function showView(renderFn, opts) {
     renderFn(els.content, opts);
-    currentShow = typeof opts.onDemoState === "function" ? opts.onDemoState : null;
   }
 
   var DEFAULT_ROLE = roles.DEFAULT_ROLE;
@@ -30,9 +24,9 @@
   var sess = session.getSession();
 
   var state = {
-    user: (sess && sess.datos && sess.datos.usuario) || { nombre: "María Demo", correo: "cliente@demo.pa" },
+    user: (sess && sess.datos && sess.datos.usuario) || { nombre: "No autenticado", correo: "" },
     role: (sess && sess.datos && sess.datos.rol) || DEFAULT_ROLE,
-    route: window.location.hash || INITIAL_ROUTE[(sess && sess.datos && sess.datos.rol) || DEFAULT_ROLE],
+    route: router.fromLocation() || INITIAL_ROUTE[(sess && sess.datos && sess.datos.rol) || DEFAULT_ROLE],
   };
 
   var els = {
@@ -43,26 +37,31 @@
     navToggle: document.getElementById("nav-toggle"),
   };
 
-  function loginRoute(role) {
-    return isInternalRole(role) ? router.INTERNAL_LOGIN_ROUTE : router.LOGIN_ROUTE;
-  }
-
   function navigate(route) {
-    if (window.location.hash === route) {
-      state.route = route;
+    var canonical = router.normalizeRoute(route);
+    if (router.fromLocation() === canonical) {
+      state.route = canonical;
       render();
     } else {
-      window.location.hash = route;
+      window.history.pushState({}, "", router.toPath(canonical) + window.location.search);
+      state.route = canonical;
+      render();
     }
   }
 
   function render() {
+    if (global.tm.settings) global.tm.settings.apply();
     var authed = session.isAuthenticated();
+    // Los selectores de escenario y las ayudas de demostración solo deben
+    // existir en modo offline. El backend sigue siendo la fuente de verdad.
+    document.documentElement.classList.toggle("app-online", !!(global.tm.api && global.tm.api.isOnline()));
     var resolved = router.resolveRoute(state.route, state.role, authed);
     if (resolved !== state.route) {
       state.route = resolved;
-      window.location.hash = resolved;
-      return;
+      window.history.replaceState({}, "", router.toPath(resolved) + window.location.search);
+      // `replaceState` no dispara `popstate`. Continuamos este mismo render
+      // para que una ruta protegida abierta sin sesión muestre el login de
+      // inmediato, en lugar de dejar el contenido vacío hasta recargar.
     }
 
     var routeChanged = lastRenderedRoute !== state.route;
@@ -73,26 +72,16 @@
     layout.renderHeaderUser(els.user, {
       user: authed ? state.user : { nombre: "No autenticado" },
       role: state.role,
-      scenario: fixtures.scenario() || "exito",
-      onRoleChange: function (role) {
-        state.role = role;
-        if (authed) session.updateSessionRole(role);
-        navigate(INITIAL_ROUTE[role]);
-      },
-      onScenarioChange: function (scenario) {
-        fixtures.setScenario(scenario);
-        if (typeof currentShow === "function") currentShow(scenario);
-        else render();
-      },
-      onAutofill: function () {
-        if (global.tm.autofill) return global.tm.autofill.fill(els.content);
-        return null;
-      },
+      authenticated: authed,
+      onNavigate: navigate,
       onLogout: function () {
-        var role = state.role;
         function fin() {
           session.clearSession();
-          navigate(loginRoute(role));
+          state.role = DEFAULT_ROLE;
+          state.user = { nombre: "No autenticado", correo: "" };
+          // Todos los perfiles regresan al login general del portal.
+          // El rol se resolverá nuevamente después de autenticarse.
+          navigate(router.LOGIN_ROUTE);
         }
         if (global.tm.api.isOnline() && session.getToken()) {
           global.tm.api.request("POST", "/auth/logout", { pantalla: "P-01" }, function () { fin(); });
@@ -102,7 +91,7 @@
       },
     });
 
-    layout.renderNav(els.nav, { role: state.role, currentRoute: state.route });
+    layout.renderNav(els.nav, { role: state.role, currentRoute: state.route, onNavigate: navigate });
 
     if (routeChanged) {
       var routeTitle = els.nav.querySelector('[aria-current="page"]');
@@ -117,8 +106,6 @@
 
     var key = router.getViewKey(state.route);
 
-    currentShow = null;
-
     if (key === "error/403") { errors.renderForbidden(els.content); return; }
     if (key === "error/404") { errors.renderNotFound(els.content); return; }
     if (key === "error/500") { errors.renderServerError(els.content); return; }
@@ -126,7 +113,9 @@
     if (key === "interno-login") {
       showView(global.tm.views.i01.renderI01, {
         onInternalLoginSuccess: function (res) {
-          session.saveSession({ rol: res.rol, usuario: res.usuario }, res.token ? { token: res.token, expiraEn: res.expiraEn } : {});
+          session.saveSession({ rol: res.rol, usuario: res.usuario }, Object.assign({}, res.token ? { token: res.token, expiraEn: res.expiraEn } : {}, {
+            recordar: !!(global.tm.settings && global.tm.settings.get().recordarSesion),
+          }));
           state.role = res.rol;
           state.user = res.usuario;
           navigate(INITIAL_ROUTE[state.role]);
@@ -137,7 +126,11 @@
     if (key === "login") {
       showView(global.tm.views.p01.renderP01, {
         onLoginSuccess: function (res) {
-          session.saveSession({ rol: res.rol, usuario: res.usuario }, { token: res.token, expiraEn: res.expiraEn });
+          session.saveSession({ rol: res.rol, usuario: res.usuario }, {
+            token: res.token,
+            expiraEn: res.expiraEn,
+            recordar: !!(global.tm.settings && global.tm.settings.get().recordarSesion),
+          });
           state.role = res.rol;
           state.user = res.usuario;
           navigate(INITIAL_ROUTE[state.role]);
@@ -170,6 +163,10 @@
     }
     if (key === "p-05") {
       showView(global.tm.views.p05.renderP05, { onNavigate: navigate });
+      return;
+    }
+    if (key === "p-28") {
+      showView(global.tm.views.p28.renderP28, { onNavigate: navigate });
       return;
     }
     if (key === "p-06") {
@@ -246,10 +243,16 @@
     layout.renderView(els.content, { route: state.route, role: state.role });
   }
 
-  window.addEventListener("hashchange", function () {
-    state.route = window.location.hash || INITIAL_ROUTE[state.role];
+  function syncRouteFromLocation() {
+    var route = router.fromLocation();
+    if (!route) return;
+    state.route = route;
     render();
-  });
+  }
+
+  window.addEventListener("popstate", syncRouteFromLocation);
+  // Compatibilidad temporal con enlaces antiguos que todavía traigan #/ruta.
+  window.addEventListener("hashchange", syncRouteFromLocation);
 
   if (els.navToggle) {
     els.navToggle.addEventListener("click", function () {
@@ -267,6 +270,17 @@
     }
   });
 
-  if (!window.location.hash) window.location.hash = INITIAL_ROUTE[state.role];
+  document.addEventListener("click", function (event) {
+    if (!els.nav.classList.contains("is-open")) return;
+    if (els.nav.contains(event.target) || els.navToggle?.contains(event.target)) return;
+    els.nav.classList.remove("is-open");
+    els.navToggle?.setAttribute("aria-expanded", "false");
+  });
+
+  var initialRoute = router.fromLocation() || INITIAL_ROUTE[state.role];
+  if (router.fromLocation() !== initialRoute || window.location.hash) {
+    window.history.replaceState({}, "", router.toPath(initialRoute) + window.location.search);
+  }
+  state.route = initialRoute;
   render();
 })(window);

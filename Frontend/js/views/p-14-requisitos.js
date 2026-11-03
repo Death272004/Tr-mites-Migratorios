@@ -226,8 +226,39 @@
   function renderP14(container, opts) {
     opts = opts || {};
 
+    function cargarCatalogoYMostrar() {
+      if (!global.tm.api || !global.tm.api.isOnline()) {
+        renderContent(container, opts);
+        return;
+      }
+      var p07 = global.tm.views.p07 || {};
+      if (p07.CATALOGO && p07.CATALOGO.length) {
+        renderContent(container, opts);
+        return;
+      }
+      renderLoading(container);
+      global.tm.api.request("GET", "/catalogos/tipos-tramite", { pantalla: "P-14" }, function (err, items) {
+        if (err) {
+          renderError(container, { mensaje: err.mensajeUsuario, onRetry: cargarCatalogoYMostrar });
+          return;
+        }
+        var mapper = p07.catalogoDesdeApi;
+        var catalogo = mapper ? mapper(items) : [];
+        if (global.tm.views.p07) global.tm.views.p07.CATALOGO = catalogo;
+        if (!catalogo.length) {
+          renderEmpty(container, { onRetry: cargarCatalogoYMostrar });
+          return;
+        }
+        renderContent(container, opts);
+      });
+    }
+
     function show(state) {
       if (!state) state = "carga";
+      if (global.tm.api && global.tm.api.isOnline()) {
+        cargarCatalogoYMostrar();
+        return;
+      }
       if (fixtures) fixtures.setScenario(state);
       if (state === "carga") {
         renderLoading(container);

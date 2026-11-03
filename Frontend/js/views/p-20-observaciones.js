@@ -141,6 +141,10 @@
   }
 
   function renderContent(container, opts, observaciones, rerender) {
+    // El estado de carga se pinta antes de las peticiones remotas. Limpiamos
+    // siempre el contenedor al recibir la respuesta para no dejar el spinner
+    // ni el encabezado de "Cargando" junto al contenido final.
+    layout.clear(container);
     var inner = layout.el("div", "app-content__inner");
 
     inner.appendChild(layout.pageHeader(

@@ -27,8 +27,8 @@ services:
       DB_USER: ${DB_USER:-tramites}
       DB_PASSWORD: ${DB_PASSWORD:-tramites_local}
       DOCUMENTOS_DIR: /app/almacenamiento
-      # Usuarios ficticios de demostración, uno por rol (solo desarrollo local).
-      DEMO_USUARIOS: ${DEMO_USUARIOS:-true}
+      # Las cuentas iniciales se crean mediante Flyway (V7); el cargador Java queda apagado.
+      DEMO_USUARIOS: ${DEMO_USUARIOS:-false}
       DEMO_CONTRASENA: ${DEMO_CONTRASENA:-Demo-Tramites-2026}
       # Sin proveedor de correo: solo aviso genérico; no se entregan ni registran enlaces o tokens.
       CORREO_SIMULADO: ${CORREO_SIMULADO:-true}

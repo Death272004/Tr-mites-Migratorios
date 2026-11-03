@@ -1,0 +1,50 @@
+name: Backend - pruebas y cobertura
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  backend-tests:
+    name: Pruebas Maven + JaCoCo
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Backend
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+
+      - name: Ejecutar pruebas y generar cobertura
+        run: ./mvnw -B verify
+
+      - name: Publicar reporte de cobertura
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-coverage
+          path: |
+            Backend/target/site/jacoco/
+            Backend/target/surefire-reports/
+          if-no-files-found: warn
+
+      - name: Resumir resultado en el job
+        if: always()
+        run: |
+          {
+            echo '## Resultado de pruebas del backend'
+            echo ''
+            echo '- Comando: `./mvnw -B verify`'
+            echo '- Cobertura: `target/site/jacoco/index.html`'
+            echo '- Pruebas: `target/surefire-reports/`'
+          } >> "$GITHUB_STEP_SUMMARY"

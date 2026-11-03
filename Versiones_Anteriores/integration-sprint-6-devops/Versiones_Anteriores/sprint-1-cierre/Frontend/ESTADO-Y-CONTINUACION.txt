@@ -1,0 +1,415 @@
+========================================================================
+ESTADO DEL PROYECTO FRONTEND - PUNTO DE CONTINUACION
+Producto: Gestion de expedientes migratorios para bufetes (Panama, Ley 81 de 2019)
+Rama: Frontend
+Ultima actualizacion de este archivo: TASK-21.2 (componente de linea de tiempo en P-19 e I-06); alcance hasta Sprint 4
+ALCANCE: el Frontend se trabaja HASTA el Sprint 4 inclusive. Sprints 5, 6 y 7 FUERA DE ALCANCE.
+========================================================================
+
+COMO ABRIR LA APP (arranque rapido)
+-----------------------------------
+1. Ir a: Frontend\html\index.html  y hacer DOBLE CLIC (se abre con el navegador).
+   - NO requiere servidor. Funciona con file:// porque TODO el JS son scripts
+     clasicos que exponen window.tm (NO usamos ES modules: file:// los bloquea).
+2. Login demo (rol SOLICITANTE):
+      correo:    demo@bufete.test
+      contrasena: Demo123!
+3. Flujo navegable: Login -> Mis tramites (P-06) -> Nueva solicitud (P-07) ->
+   Asistente P-08 ... P-16 -> Resumen/envio (P-17) -> Cita (P-18).
+
+
+ESTADO DE LA RAMA (git)
+-----------------------
+- Rama local: Frontend
+- Remoto: origin/Frontend  (sincronizado a 2bfd558)
+- Commits (mas reciente arriba):
+    2bfd558  feat(frontend): TASK-21.2 componente de linea de tiempo conectado a P-19 e I-06
+    073becf  docs(frontend): actualizar punto de continuacion (TASK-13.5 hecha, siguiente TASK-21.2)
+    71fde93  feat(frontend): TASK-13.5 permisos de interfaz por rol (tm.perms)
+    8a970fa  docs(frontend): HU-18c derechos ARCO (P-27) y fix de tablas
+    5aa7209  feat(frontend): HU-18c formulario de derechos ARCO en P-27 + fix de celdas de tabla
+    6610872  docs(frontend): HU-18b consentimiento informado (I-19 + P-05) y estado
+    49d790b  feat(frontend): HU-18b consentimiento informado (I-19 despacho + P-05 cliente)
+    530474a  docs(frontend): fijar alcance de trabajo hasta el Sprint 4
+    7f2bcd2  docs(frontend): cierre Sprint 1 (backlog, plan, README y estado)
+    2c195cb  feat(frontend): HU-09 modulo unico de servicios HTTP y selector X-Scenario (TASK-09.1..09.5)
+    00d8798  feat(frontend): modulo interno I-01..I-18 (Fases E y F) - 45/45 pantallas
+    141ccc3  feat(frontend): Fase D (P-19..P-27) y TASK-03.6 fixtures y 4 estados (P-06..P-18)
+    af3a0b9  primeras 18 pantallas del programa de tramites de inmigrantes
+    29f3f3a  feat(frontend): P-07 ficha de requisitos por tramite (catalogo real + Art. 28)
+    ff52d8e  feat(frontend): TASK-03.1 P-06 bandeja de tramites y P-07 seleccion de tramite
+    ebdd27a  fix(frontend): migrar de ES modules a scripts clasicos para soporte file://
+    6b0ec16  feat(frontend): P-02 a P-05 (registro, OTP simulado, recuperar, perfil) y gestor de sesión (TASK-02.2/02.3/02.4)
+    0b6e2cd  feat(frontend): P-01 inicio de sesión (validaciones, mensaje genérico CP-02, bloqueo por intentos)
+
+
+QUE YA ESTA HECHO
+-----------------
+- Fase A (HU-01): layout, cabecera, menu por rol, pie, enrutado hash con guards,
+  vistas 403/404/500, modales y componentes base (button, field, table, stepper,
+  timeline, errors).
+- Fase B (HU-02): P-01 login, P-02 registro, P-03 OTP (simulado), P-04 recuperar,
+  P-05 perfil, y gestor de sesion (sessionStorage: tm.session.v1).
+- Fase C (HU-03) PARCIAL: P-06 ... P-18 (13 pantallas) implementadas y enlazadas:
+    P-06  Bandeja de tramites (tarjetas, estados/vigencia, 4 estados)
+    P-07  Seleccion de tramite + ficha de requisitos (catalogo real + Art. 28)
+    P-08  Titularidad y representacion (campos [A] sellados, carga manual bloqueada)
+    P-09  Datos personales
+    P-10  Pasaporte e historial migratorio
+    P-11  Domicilio y notificaciones
+    P-12  Situacion (bloque DINAMICO segun el tramite: laboral/economico/educativo/
+          especial/familia)
+    P-13  Dependientes (bloques repetibles)
+    P-14  Requisitos y carga de documentos (checklist + barra de progreso; [A] auto)
+    P-15  Pagos y tasas (SIMULADO: desglose, cheque/exoneracion, constancia)
+    P-16  Declaracion jurada + firma manuscrita digital (canvas, simulada)
+    P-17  Resumen y envio (genera N.o de expediente + QR simulado)
+    P-18  Reserva de cita (calendario ficticio + confirmacion con codigo/QR)
+- Fase D (HU-04) COMPLETA (TASK-04.1 a 04.5):
+    P-19  Estado del tramite (linea de tiempo con 10 etapas, etapa actual,
+          dias transcurridos, requisitos faltantes, accion pendiente y alertas
+          de vigencias 30/90)
+    P-20  Observaciones y notificaciones (emisor, fecha, plazo, items,
+          nueva vigencia, marcar como leida y atender -> P-21)
+    P-21  Subsanacion (por cada item: documento corregido + justificacion +
+          sustitucion de dato; confirmacion de atender TODO en un solo
+          reingreso -> pasa a EN ANALISIS). Valida tamano <=5 MB (CP-05).
+    P-22  Resultados (resolucion, estado del permiso, carne digital con QR [A]
+          sellado, constancia; vista negada con motivos e impugnacion; descargas
+          simuladas/auditadas CP-12). Selector: carga/aprobada/negada/sin res./error.
+    P-23  Historial de pagos (tabla fecha/concepto/monto/medio/comprobante/
+          estado/recibo; incluye garantia devuelta; recibo descargable).
+    P-26  Naturalizacion (Carta de Naturaleza): flujo N-1 a N-13 con stepper
+          propio (apoderado; poder/solicitud; datos migratorios; antecedentes;
+          vinculos; solvencia 2 de 5; dependiente; entrevista; paz y salvo DGI;
+          salud y fotos; reciprocidad; examen TE; declaracion jurada y firma).
+          Persiste avance en el borrador (clave `naturalizacion`) y cierra con
+          el resumen listo para envio. Requiere abogado apoderado.
+    P-24  Edictos y citaciones (consulta por expediente + apellidos; bloques de
+          edictos publicados, oposiciones, citas de retiro y notificaciones con
+          fecha de publicacion; solo edictos propios, sin datos de terceros).
+    P-25  Certificaciones en linea (flujo de 3 pasos: Estatus/Movimiento,
+          entidad, uso de naturalizacion [cambia el timbre a B/.8.00],
+          documentos por tipo, tipo de retiro [personal/apoderado], pago y
+          confirmacion; pasaporte y carne verificados por el SNM [V]).
+    P-27  Ayuda, FAQ y peticiones (formulario de consulta/peticion con adjunto
+          CP-05, canal de derechos ARCO CP-14 y FAQ desplegable).
+    Las vistas con selector de vista demo: carga/exito/vacio/error (P-22 tambien
+    negada).
+    CSS nuevo en layout.css: .seguimiento-* , .obs-* , .subsana-* , .resultado-* ,
+    .edicto-* y .faq-* .
+    table.js ampliado: celda admite { node } ademas de { text }.
+- MODULO INTERNO DEL DESPACHO COMPLETO (Fases E y F, I-01..I-18 = 18 pantallas):
+    Acceso: el guard redirige al rol SOLICITANTE fuera de #/interno/*; para ver
+    el modulo, cambiar el selector de rol del encabezado a un rol interno
+    (entonces navega a INITIAL_ROUTE[rol], que apunta al login interno I-01).
+    Login institucional demo (I-01): analista/supervisor/auditor/admin,
+    clave "Interno123!", MFA cualquier codigo de 6 digitos (demo 123456).
+    Fase E (operacion):
+      I-01  Login institucional con MFA
+      I-02  Tablero (indicadores y colas)
+      I-03  Recepcion de expedientes
+      I-04  Verificacion de completitud
+      I-05  Asignacion de analista
+      I-06  Analisis del expediente
+      I-07  Verificaciones externas (TE/SNM/CSS/Registro Publico, error tecnico != negativo CP-07)
+      I-08  Emision y atencion de observaciones (reingreso unico)
+      I-09  Edictos
+      I-10  Resolucion (aprobar / negar; motivo obligatorio, firma digital simulada)
+      I-11  Notificacion (medio, plazo, constancia)
+      I-12  Entrega en ventanilla (identidad [S], apoderado, carne [V], saldo)
+      I-13  Archivo y reactivacion (historial inmutable, retencion)
+    Fase F (administracion):
+      I-14  Catalogos: tramites, requisitos, tasas y vigencias (versionado)
+      I-15  Usuarios, roles y permisos (granular; separacion tecnico-funcional)
+      I-16  Bitacora de auditoria (solo lectura, filtros, export CSV)
+      I-17  Reportes y tiempos por etapa (linea base 3-8 meses, export CSV/PDF)
+      I-18  Salud de conexiones (semaforo, modo de contingencia)
+    Cada pantalla I-02..I-18 usa el mismo patron de 4 estados (fixtures base +
+    carga/vacio/error) con demoSelector; I-01 es login (solo base).
+    Rutas: #/interno/{login,tablero,recepcion,completitud,asignacion,analisis,
+    verificaciones,observaciones,edictos,resolucion,notificacion,entrega,archivo,
+    catalogos,usuarios,bitacora,reportes,conexiones}.
+    Fixtures: js/fixtures/i-{01..18}-<slug>.{js,carga,vacio,error}.js.
+    Vistas: js/views/i-{01..18}-<slug>.js. Ramas en app.js (key === "interno/...")
+    con internalOpts = { onNavigate: navigate }.
+    Fix router: #/interno/login se anadio a publicPortal en resolveRoute (antes
+    resolvia a #/error/404 y el login interno nunca era alcanzable).
+    CSS nuevo en layout.css: .report-bars/.report-bar* (I-17).
+    Verificado con Edge headless: 18/18 vistas renderizan sin excepciones y,
+    salvo I-01 (login, sin selector), las 17 restantes pasan los 4 estados.
+- TASK-03.6 COMPLETA - Fixtures del flujo del solicitante y los 4 estados en
+  TODO el flujo P-06..P-18 (13 pantallas x 4 estados = 52 envelopes):
+    utils/fixtures.js (nuevo) -> loader "tm.fixtures" compatible con file://:
+      register/envelope/data/message/has/scenario/setScenario/load.
+      Sin servidor, cada fixture es un <script src> (js/fixtures/*.js) que
+      registra el envelope { meta, data, error } (mismo que llevaran los mocks
+      HU-08). scenario() vive en sessionStorage (preparado para el X-Scenario
+      transversal de HU-09). Con servidor, load() sirve el mismo envelope .json.
+    js/fixtures/p-{06..18}-<slug>.{js,carga,vacio,error}.js (52 archivos).
+      Datos movidos VERBATIM desde las vistas (no inventados): P-06 tramites;
+      P-07 catalogo+requisitos Art.28+motivos+paises; P-08 verificaciones [A];
+      P-10 historial migratorio; P-11 notificaciones; P-12 titulos/opciones del
+      bloque; P-14 requisitos fallback; P-15 tasas por categoria; P-18 sedes/horas.
+      P-09/P-13/P-16/P-17 son formularios puros (data null en exito/vacio).
+    Vistas P-06..P-18 con el patron de 4 estados (show(state) + setScenario +
+    renderLoading/renderEmpty/renderError + demoSelector). P-07 ahora EXPORTA
+    CATALOGO/REQUISITOS_ART_28 leidos del fixture (P-14 los sigue consumiendo).
+    index.html registra los 52 fixtures ANTES de las vistas (bloque
+    <script js/fixtures/...> tras services/session.js).
+    Verificado con Edge headless: 13 vistas x 3 estados de datos = 39/39 OK,
+    sin errores de consola; index.html arranca en login sin romper.
+- HU-09 COMPLETA - Integracion fixtures -> mocks (TASK-09.1 a 09.5), COMMITEADA (2c195cb):
+    TASK-09.1  js/services/api.js (nuevo) -> modulo UNICO de servicios HTTP
+               "tm.api". API: setBaseUrl/getBaseUrl/isOnline, token() (de
+               tm.session), scenario(), headers() (Content-Type + Authorization
+               Bearer <token> + X-Scenario), translateError(statusOrCode) con
+               mapa centralizado 400/401/403/404/405/409/422/429/5xx -> mensaje
+               de usuario (sin detalles tecnicos, CP-07/§2.2), envelope(),
+               get(), message(), request(method,path,{pantalla,escenario,body}),
+               clearCache(). OFFLINE (sin baseUrl) lee los fixtures locales con
+               el MISMO sobre { meta, data, error }; ONLINE usa XHR con token +
+               X-Scenario y cachea los envelopes remotos. Conexion al backend =
+               tm.api.setBaseUrl("http(s)://host/api") sin tocar vistas.
+    TASK-09.2/09.3  Sin reescribir vistas: tm.fixtures.data()/message() ahora
+               DELEGAN en tm.api (offline => tm.api.get). tm.fixtures expone
+               raw() (lectura cruda del registro) para que tm.api no entre en
+               recursion. Asi las 45 vistas siguen llamando tm.fixtures y ya
+               pasan por el modulo unico.
+    TASK-09.4  Selector de escenarios (X-Scenario) en la UI demo:
+               - Cabecera (components/layout.js renderHeaderUser): nuevo
+                 <select class="app-header__scenario-select"> con exito/carga/
+                 vacio/error, junto al selector de rol. Al cambiar, app.js hace
+                 tm.fixtures.setScenario(v) y re-renderiza el estado de la vista
+                 montada (captura de opts.onDemoState via showView).
+               - app.js: se anadio showView(renderFn, copts) que enruta TODAS las
+                 ramas y guarda el ultimo opts.onDemoState en `currentShow`,
+                 usado por el selector global. La cabecera recibe scenario y
+                 onScenarioChange.
+               - (Los demoSelector por vista de P-06..P-27 e I-02..I-18 siguen
+                 existiendo; el nuevo es global y transversal.)
+    TASK-09.5  Recorrido completo verificado con Edge headless, sin errores:
+               tm.api ok; X-Scenario y Authorization presentes en headers;
+               tm.fixtures.data delega en tm.api; translateError(409) ok;
+               cambiar el selector global a "error" re-renderiza la vista al
+               estado error; 45/45 pantallas renderizan; P-06..P-27 y I-02..I-18
+               pasan los 4 estados (P-01..P-05 e I-01 login sin selector, por
+               diseno).
+    CSS: layout.css -> .app-header__scenario-select comparte estilo con
+         .app-header__role-select.
+    index.html: registra js/services/api.js justo despues de services/session.js.
+- HU-18b COMPLETA - Consentimiento informado (Ley 81 de 2019 / DE 285 de 2021),
+  COMMITEADA (49d790b):
+    - Pantalla interna NUEVA I-19 - Consentimientos del titular (panel del
+      despacho), ruta #/interno/consentimientos, en el menu de FUNCIONARIO
+      (Operacion), ADMIN (Administracion) y AUDITOR (lectura, Auditoria).
+      Tabla (titular/documento/expediente/tipo/otorgado/vigencia/responsable/
+      estado) + filtro por estado + resumen (vigentes/por vencer/revocados) +
+      detalle con finalidad y responsable + accion "Revocar consentimiento"
+      (confirmModal; cambia estado a revocado y avisa que la traza va a la
+      bitacora I-16). 4 estados (exito/carga/vacio/error) con demoSelector
+      (patron de i-15-usuarios). Inventario: 45 -> 46 pantallas.
+    - Seccion de consentimiento en P-05 (portal): estado (badge), tipo
+      (informado / expreso para datos sensibles), finalidad, otorgado, vigencia
+      y responsable; boton Revocar/Otorgar (confirmModal, estado local) + aviso
+      de que la revocacion no tiene efecto retroactivo y nota de que los
+      derechos ARCO se canalizan por P-27.
+    - CSS: layout.css -> .btn--danger / .btn--danger:hover (el componente
+      button.js ya referenciaba la variante "danger" sin estilo previo).
+    - Fixtures: js/fixtures/i-19-consentimientos.{js,carga,vacio,error}.js.
+      Registrada en index.html (4 fixtures + vista) y rama en js/app.js
+      (key === "interno/consentimientos").
+    - Verificado con Edge headless: nav/ruta resuelven para ADMIN; la vista
+      renderiza, muestra tabla y detalle, el boton de revocar abre el modal;
+      I-19 pasa los 4 estados; P-05 renderiza; 45->46/46 sin errores.
+- HU-18c COMPLETA - Formulario de derechos ARCO en el portal (P-27), COMMITEADA (5aa7209):
+    - Seccion dedicada "Ejercicio de derechos ARCO (Ley 81 de 2019)" en P-27
+      (#/servicios/ayuda): radio del derecho (Acceso / Rectificacion /
+      Cancelacion-supresion / Oposicion) con detalle y plazo; condicion
+      (titular o representante acreditado); expediente opcional; correo de
+      notificacion; descripcion; fundamento obligatorio solo para Oposicion;
+      acreditacion adjunta (CP-05). Aviso de plazos (acceso 10 dias habiles;
+      rectificacion/cancelacion 5 dias habiles), excepcion (no procede si
+      entorpece un tramite o por seguridad del Estado) y recurso a la ANTAI.
+      Envio simulado con referencia (ARCO-2026-0031) + plazo, y tabla
+      "Mis solicitudes ARCO" (referencia/derecho/apertura/cierre/responsable/
+      estado). Validaciones de descripcion, correo y fundamento.
+    - Fix de componente: js/components/table.js ahora acepta celdas string/
+      number/nodo ademas de {text}/{node}. Esto corrige tablas con celdas
+      vacias (por el antiguo `cell.text ?? ""`) en i-03, i-07, i-14, i-15,
+      i-16, i-17, i-18, p-10 y p-23; i-19 (consentimientos) tambien usa {text}.
+      Verificado: i-17 muestra "12 d/30 d/92%/88%/48 h"; 46/46 sin errores.
+- TASK-13.5 COMPLETA - Permisos de interfaz por rol (HU-13), COMMITEADA (71fde93):
+    - Modulo js/utils/perms.js (tm.perms) con la matriz MOCK rol x permiso
+      derivada de 06-roles-y-accesos.md 6.3-6.4: SOLICITANTE=portal;
+      FUNCIONARIO=consultar/verificar/observar/resolver/notificar (operador
+      completo, demo); SUPERVISOR=consultar/reportar; AUDITOR=consultar/auditar/
+      reportar; ADMIN=consultar/administrar. API: can(perm) lee el rol desde
+      tm.session.getSession().datos.rol; notice(perm, msg) devuelve un badge
+      "Sin permiso «perm»..." y guard(node, perm) deshabilita el control.
+    - Guardas aplicadas en las acciones internas: I-06 observar (dictamen),
+      I-07 verificar (registrar/Verificado/Inconsistencia/Repetir), I-08 observar,
+      I-09 observar (publicar/retirar/republicar), I-10 resolver, I-11 e I-12
+      notificar, I-13 archivar (notificar) y reactivar (administrar), I-14/I-15/
+      I-18 administrar. Si el rol no tiene el permiso, la accion no se muestra y
+      se explica con un aviso; la validacion real sigue siendo del backend.
+    - js/utils/perms.js se registra en index.html tras services/api.js.
+    - CSS: .btn:disabled / .btn.is-disabled en layout.css.
+    - Verificado (Edge headless): FUNCIONARIO ve "Registrar resolucion" en I-10;
+      AUDITOR ve el aviso "Sin permiso «resolver»"; I-07/I-15/I-18 se ocultan para
+      roles sin permiso; ADMIN ve las acciones de administracion; 46/46 sin errores.
+- TASK-21.2 COMPLETA - Componente de linea de tiempo (HU-21), COMMITEADA (2bfd558):
+    - js/components/timeline.js reutilizable: items con {fecha, titulo|evento,
+      detalle, autor, done, active, estado} y emptyText; marca hitos done/active.
+    - P-19 (etapas del tramite) lo usa (10 etapas); I-06 incorpora el bloque
+      "Historial del expediente" y se actualiza al guardar el dictamen (anexa
+      "DICTAMEN - <estado>"). Antes I-06 tenia historial en el fixture pero no lo
+      pintaba.
+    - Verificado (Edge headless): I-06 muestra 2 eventos (RECIBIDO, EN ANALISIS) y
+      tras el dictamen 3, 1 activo; P-19 con 10 etapas (1 activa, 3 hechas); 46/46
+      sin errores.
+- Infra de apoyo del asistente:
+    utils/draft.js   -> borrador compartido (sessionStorage: tm.solicitud.v1)
+    utils/wizard.js  -> stepper, marco (frame), pie (footer), errores, nextRoute/prevRoute
+    utils/data.js    -> catalogos demo (paises, provincias, bancos)
+    components/verified-field.js -> campo [A] sellado (fuente/fecha + forzar revision)
+    components/file-upload.js     -> carga de documento simulada (solo nombre/tamano)
+    components/signature.js       -> pad de firma sobre <canvas>
+    field.js ampliado             -> fieldDate y fieldCheckbox
+- CSS: Frontend\css\layout.css (wizard, tarjetas/badges, alerts, fichas, checklist,
+  progreso, QR, detalle, firmas, citas, etc.)
+
+
+QUE FALTA (priorizado, segun tareas-frontend.md)
+-----------------------------------------------
+1) Fase D (HU-04) COMPLETA: P-19..P-27 (TASK-04.1 a 04.5). Todas las rutas del
+   portal ya tienen vista; no queda ningun placeholder "Vista en construccion"
+   en #/seguimiento/* ni en #/servicios/*. (TASK-03.6 YA HECHO: fixtures + 4
+   estados P-06..P-18.)
+2) MODULO INTERNO I-01..I-19 COMPLETO (Fases E y F + HU-18b). Inventario total:
+   46/46 pantallas (27 portal + 19 internas) con vista, fixtures y ruta.
+3) HU-09 (integracion fixtures -> mocks): COMPLETA (TASK-09.1..09.5): servicio
+   HTTP central tm.api, X-Scenario via tm.fixtures.scenario() + selector global
+   en la cabecera, recorrido completo verificado. COMMITEADA (2c195cb/7f2bcd2).
+4) HU-18b (consentimiento informado): COMPLETA y COMMITEADA (49d790b/6610872):
+   pantalla I-19 y seccion en P-05 (ver/revocar), 4 estados.
+5) HU-18c (derechos ARCO): COMPLETA y COMMITEADA (5aa7209): formulario dedicado
+   en P-27 (acceso/rectificacion/cancelacion/oposicion) con plazos de la Ley 81
+   y seguimiento; incluye fix de celdas de tabla (table.js).
+6) TASK-13.5 (permisos de interfaz por rol): COMPLETA y COMMITEADA (71fde93):
+   modulo tm.perms + guardas en las acciones internas (aviso cuando no aplica).
+7) TASK-21.2 (linea de tiempo): COMPLETA y COMMITEADA (2bfd558): componente
+   timeline.js usado por P-19 e I-06 (historial del expediente).
+8) Publicar el esquema oficial de envelopes (PO / HU-08) y migrar los sobres
+   provisionales sin reescribir vistas (hoy tm.api usa el mismo sobre
+   { meta, data, error }).
+
+SPRINT 4 (parte FRONTEND): COMPLETO. Unica tarea frontend-only (TASK-21.2) HECHA.
+Lo que resta de Sprint 4 (TASK-19.4, 20.2, 22.4) y de Sprint 2/3 (TASK-10.4,
+12.5, 15.3, 16.3, 17.4, 18.3) es CONEXION AL BACKEND y depende de la rama
+Backend (fuera de esta rama). No queda trabajo frontend-only dentro del alcance.
+
+
+DECISIONES Y NOTAS TECNICAS IMPORTANTES
+---------------------------------------
+- ES MODULES PROHIBIDOS aqui: file:// los bloquea. Todo es <script src> clasico
+  con patron (function(global){ ... global.tm.X = ... })(window).
+- ORDEN DE CARGA en index.html IMPORTA (scripts sincronicos):
+    utils(roles,nav,router,data,draft,fixtures) -> components(layout,button,
+    field,table,stepper,timeline,modal,errors,verified-field,file-upload,
+    signature) -> utils/wizard -> services/session -> services/api ->
+    utils/perms -> fixtures(p-06..p-18 + i-01..i-19) -> views(p-01..p-27 +
+    i-01..i-19) -> app.js
+  Al agregar vistas nuevas: anadir su <script>, su bloque de fixtures y su rama
+  en js/app.js via showView(<render>, { ... }) (key === "p-XX" o
+  key === "interno/..." con { onNavigate: navigate }); showView captura
+  opts.onDemoState para el selector de escenarios global.
+- El router (js/utils/router.js) tiene un map ruta->clave de vista. Las rutas del
+  asistente (#/solicitud/*) se validan con mapHas() aunque no esten en el menu.
+- Acceso: solo rol SOLICITANTE en el portal; resto de roles -> modulo interno.
+- Sin credenciales/secretos; todo dato es ficticio; OTP/MFA/firma/pago/QR simulados.
+- Campos origen "A": se muestran sellados y bloqueados (components/verified-field.js).
+- El esquema oficial de mocks HU-08 AUN NO esta publicado: se uso un sobre
+  provisional { meta, data, error } (ver Frontend/js/fixtures/README.md). Como
+  fetch()/JSON esta bloqueado en file://, el loader js/utils/fixtures.js registra
+  cada envelope desde un <script src> (js/fixtures/*.js) con la MISMA nomenclatura
+  y esquema; load() sirve el mismo envelope como .json cuando haya servidor.
+
+
+COMO PROBAR (sin navegador manual)
+----------------------------------
+Hay Java (temurin21) y Microsoft Edge. Se uso Edge headless con un HTML temporal
+en Frontend\html\ cargando todos los scripts y renderizando cada vista, luego:
+  & "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" `
+    --headless=new --disable-gpu --virtual-time-budget=4000 `
+    --dump-dom "file:///C:/.../Frontend/html/_smoke.html"
+Ultimo resultado: 45/45 vistas renderizan sin excepciones (window.onerror = 0).
+El modulo interno I-01..I-19 (19/19) y, salvo I-01 (login, sin selector), las 18
+restantes pasan los 4 estados (exito/carga/vacio/error).
+HU-09 verificado: tm.api cargado; headers con X-Scenario + Authorization;
+tm.fixtures.data delega en tm.api; translateError(409) ok; el selector global
+de escenarios (cabecera) cambia el estado de la vista montada; 45/45 OK.
+HU-18b verificado: nav/ruta de #/interno/consentimientos resuelven para ADMIN;
+I-19 renderiza tabla + detalle y el boton de revocar abre el modal; 46/46 OK.
+HU-18c verificado: P-27 muestra la seccion ARCO (4 derechos, 4 radios),
+oculta/muestra el fundamento segun el derecho, valida descripcion/correo/
+fundamento y el envio simulado devuelve referencia + plazo; tabla "Mis
+solicitudes ARCO" con filas; i-17 muestra celdas (fix de table.js); 46/46 OK.
+TASK-13.5 verificado: tm.perms.can lee el rol desde session.datos.rol;
+FUNCIONARIO ve "Registrar resolucion" (I-10) y AUDITOR ve el aviso "Sin
+permiso «resolver»"; I-07/I-15/I-18 ocultan sus acciones para roles sin
+permiso y ADMIN ve las de administracion; 46/46 sin errores.
+TASK-21.2 verificado: I-06 pinta "Historial del expediente" (linea de tiempo)
+con 2 eventos y suma un tercero ("DICTAMEN ...") al guardar el dictamen; P-19
+sigue mostrando 10 etapas (1 activa, 3 hechas); 46/46 sin errores.
+RECORDAR: borrar los archivos _*.html temporales antes de commitear.
+
+
+ESTRUCTURA RELEVANTE
+--------------------
+Frontend\
+  html\index.html            <- entrada (varias <script src>, NO modules)
+  css\variables.css base.css layout.css
+  js\app.js                  -> bootstrap + ruteo + ramas p-01..p-27 e interno/*
+  js\utils\    roles, nav, router, data, draft, wizard, fixtures, perms (tm.perms)
+  js\components\ layout, button, field, table, stepper, timeline, modal, errors,
+                 verified-field, file-upload, signature
+  js/services\ session.js, api.js (modulo unico de servicios HTTP tm.api)
+  js/views\    p-01 ... p-27 (P-19 estado, P-20 obs., P-21 subsanacion, P-22 resultados,
+                 P-23 historial de pagos, P-24 edictos, P-25 certificaciones,
+                 P-26 naturalizacion, P-27 ayuda/FAQ)
+                 i-01 ... i-19 (modulo interno: login, tablero, recepcion,
+                 completitud, asignacion, analisis, verificaciones, observaciones,
+                 edictos, resolucion, notificacion, entrega, archivo, catalogos,
+                 usuarios, bitacora, reportes, conexiones, consentimientos)
+  js/fixtures/ p-06..p-18.*.js (52 envelopes: base/carga/vacio/error)
+                 i-01..i-19.*.js (75 envelopes) + README.md
+                 (+ p-01-login.*.json de referencia)
+  Pantallas_y_Datos_Migracion.md   (fuente de campos por pantalla P-06..P-18)
+  tareas-frontend.md               (backlog/horas por tarea)
+  plan-de-ejecucion-frontend.md
+  README.md                        (convenciones del frontend)
+
+
+SIGUIENTE PASO SUGERIDO
+-----------------------
+ALCANCE ACORDADO: el Frontend se trabaja HASTA EL SPRINT 4 inclusive; los
+Sprints 5, 6 y 7 quedan FUERA DE ALCANCE.
+Sprint 1 (portal P-01..P-27 + HU-09), el modulo interno I-01..I-18, HU-18b
+(I-19 + P-05) y HU-18c (ARCO en P-27) estan COMPLETOS y COMMITEADOS
+(2c195cb, 7f2bcd2, 49d790b, 5aa7209). TASK-13.5 (permisos de interfaz por rol,
+tm.perms) COMPLETA y COMMITEADA. TASK-21.2 (linea de tiempo P-19/I-06) COMPLETA
+y COMMITEADA (2bfd558).
+Dentro del alcance (Sprints 2..4), la parte FRONTEND esta COMPLETA:
+  1) Sprint 2: TASK-13.5 HECHA. TASK-10.4 Docker y TASK-12.5 conexion auth
+     dependen del backend (otra rama).
+  2) Sprint 3: HU-18b (consentimiento informado, 49d790b) y HU-18c (derechos
+     ARCO en P-27, 5aa7209) HECHAS. TASK-15.3/16.3/17.4/18.3 son backend.
+  3) Sprint 4: TASK-21.2 HECHA. TASK-19.4/20.2/22.4 son conexion al backend.
+NO queda trabajo frontend-only dentro del alcance; el resto del Sprint 4 (y de
+los Sprints 2/3) depende de la rama Backend. Si se autoriza, los Sprints 5-7
+(verificaciones conectadas, seguridad/usabilidad OWASP, empaquetado y demo) son
+el siguiente bloque fuera del alcance actual.
+Pendiente del PO (no bloquea frontend con fixtures): publicar el esquema oficial
+de envelopes (HU-08) y afinar POR DEFINIR (I-10, I-13, I-15, I-17).
+========================================================================

@@ -30,7 +30,7 @@
 - **Incremento entregado en el ciclo:** portal ciudadano completo (27 pantallas navegables con fixtures y 4 estados), backend con autenticación, catálogos, expediente y auditoría (Spring Boot + PostgreSQL), contrato OpenAPI 0.2.0 y **entorno integrado frontend–backend en Docker con healthchecks en estado saludable**.
 - **Evidencia de calidad:** 15 clases de prueba en el backend ejecutadas con resultado PASS; contrato de API versionado; 4 estados de interfaz por pantalla (carga, éxito, vacío, error con reintento).
 - **Evidencia de seguridad:** 0 claves, tokens o credenciales reales en el repositorio (búsqueda automatizada en la revisión); datos únicamente ficticios; OTP (P-03) y MFA (I-01) simulados; sin enlaces públicos a documentos.
-- **Evidencia de DevOps:** `docker compose config` PASS, construcción y healthchecks de los tres servicios (PostgreSQL, backend, frontend) PASS — *`docs/evidencias/sprint-1-verificacion-2026-10-12.md`*; `.gitignore` con protección de secretos y artefactos.
+- **Evidencia de DevOps:** `docker compose config` PASS, construcción y healthchecks de los tres servicios (PostgreSQL, backend, frontend) PASS — *`recursos-proyecto/evidencias/sprint-1-verificacion-2026-10-12.md`*; `.gitignore` con protección de secretos y artefactos.
 - **Métricas:** ver §5 y §6 (LOC/ELOC, defectos, esfuerzo, productividad, ISO/IEC 25010).
 - **Retrospectiva (breve):** bien → integración verde y portal completo en 4 días hábiles; mal → el Review formal (Parcial 1) quedó programado para el 22 de octubre y la rama `main` desactualizada; mejorar → ejecutar ZAP/JMeter en cada ciclo y abrir PR hacia `main`.
 
@@ -135,7 +135,7 @@ Los módulos ES bloqueaban el frontend en `file://` (migrados a scripts clásico
 | **Historias corregidas** | HU-05, HU-06, HU-08 (correcciones de alcance y CA) + HU-18b y HU-18c (nuevas: consentimiento informado y derechos ARCO) |
 | **Indicadores QA aplicados** | GQM: LOC/ELOC (24.771/20.383), defectos (5, 0 abiertos, edad ≤1 día), esfuerzo, productividad (≈9 commits/día), integridad. ISO/IEC 25010: Seguridad, Adecuación funcional, Compatibilidad, Eficiencia de rendimiento |
 | **Triple restricción presentada** | §5 — alcance ajustado con RC-01/RC-02, capacidad 150 h/sprint, 4 roles activos, calidad vía DoD + pruebas + revisión de secretos |
-| **Evidencias técnicas** | Commits `19bd5a2` (integración FE–BE), `e6818d3` (HU backend 1–4), `d1ebb21`/`2bfd558` (TASK-21.2), `8a970fa` (HU-18c), evidencia `docs/evidencias/sprint-1-verificacion-2026-10-12.md`, contrato `openapi.yaml` 0.2.0 |
+| **Evidencias técnicas** | Commits `19bd5a2` (integración FE–BE), `e6818d3` (HU backend 1–4), `d1ebb21`/`2bfd558` (TASK-21.2), `8a970fa` (HU-18c), evidencia `recursos-proyecto/evidencias/sprint-1-verificacion-2026-10-12.md`, contrato `openapi.yaml` 0.2.0 |
 | **Roles involucrados** | Scrum Master (asistido por IA), Product Owner, Dev Lead, Dev Backend/Integración, QA Lead, DevOps/CI-CD Lead |
 | **Presupuesto del grupo (Neuronix)** | 1.000.000 disponibles |
 | **Ejecutado — compra del proyecto (Sprints 0–3)** | 350.000 |
@@ -160,4 +160,4 @@ Los módulos ES bloqueaban el frontend en `file://` (migrados a scripts clásico
 
 ---
 
-*Fuentes: `05-backlog-siete-sprints.md` (registro de cambios, HU, capacidad), `07-marco-legal-y-matriz-fuentes-verificacion.md`, `Rama-04-Producto-Documentacion.md`, `docs/evidencias/sprint-1-verificacion-2026-10-12.md`, historial de Git (ramas `Frontend`, `Backend`, `integracion/frontend-backend`). Métricas calculadas sobre el árbol de `origin/integracion/frontend-backend` (2026-10-18).*
+*Fuentes: `05-backlog-siete-sprints.md` (registro de cambios, HU, capacidad), `07-marco-legal-y-matriz-fuentes-verificacion.md`, `Rama-04-Producto-Documentacion.md`, `recursos-proyecto/evidencias/sprint-1-verificacion-2026-10-12.md`, historial de Git (ramas `Frontend`, `Backend`, `integracion/frontend-backend`). Métricas calculadas sobre el árbol de `origin/integracion/frontend-backend` (2026-10-18).*

@@ -1,7 +1,7 @@
 # Evidencia QA — Sprint 5
 
-**Rol:** QA  
-**Alcance:** TT-167, TT-172 y TT-176  
+**Rol:** QA
+**Alcance:** TT-167, TT-172 y TT-176
 **Fecha de validación:** 25 de octubre de 2026
 
 ## Resultado

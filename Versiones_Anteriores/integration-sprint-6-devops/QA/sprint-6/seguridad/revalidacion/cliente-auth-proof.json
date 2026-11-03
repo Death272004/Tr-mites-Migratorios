@@ -1,0 +1,21 @@
+{
+  "proofs": [
+    {
+      "phase": "before",
+      "status": 200,
+      "role": "SOLICITANTE"
+    },
+    {
+      "phase": "after",
+      "status": 200,
+      "role": "SOLICITANTE"
+    }
+  ],
+  "response_codes": {
+    "200": 35,
+    "400": 1524,
+    "0": 8,
+    "403": 32,
+    "500": 5
+  }
+}
