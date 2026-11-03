@@ -1,9 +1,9 @@
 <p align="center">
-  <img src="docs/assets/readme-banner-v2.svg" alt="Banner de la Plataforma Interoperable de Trámites Migratorios" width="100%">
+  <img src="recursos-proyecto/assets/readme-banner-v2.svg" alt="Banner de la Plataforma Interoperable de Trámites Migratorios" width="100%">
 </p>
 
 <p align="center">
-  <img src="docs/assets/tech-stack.svg" alt="Tecnologías del proyecto" width="100%">
+  <img src="recursos-proyecto/assets/tech-stack.svg" alt="Tecnologías del proyecto" width="100%">
 </p>
 
 <p align="center">
@@ -16,7 +16,7 @@
 </p>
 
 <p align="center">
-  <img src="docs/assets/project-status.svg" alt="Estado del MVP, QA y trazabilidad" width="100%">
+  <img src="recursos-proyecto/assets/project-status.svg" alt="Estado del MVP, QA y trazabilidad" width="100%">
 </p>
 
 > Una plataforma académica para que un bufete pueda organizar expedientes migratorios, consultar documentos y dar seguimiento a verificaciones desde un solo lugar.
@@ -32,7 +32,7 @@
   <sub>Construido con trazabilidad · datos ficticios · integración simulada · trabajo colaborativo</sub>
 </p>
 
-<img src="docs/assets/section-divider.svg" alt="Separador visual" width="100%">
+<img src="recursos-proyecto/assets/section-divider.svg" alt="Separador visual" width="100%">
 
 Este repositorio contiene el proyecto integrador de **Ingeniería de Software III**. La solución se construye como un MVP: primero demostramos el flujo principal de forma segura y trazable, y después dejamos preparadas las bases para futuras integraciones.
 
@@ -63,7 +63,7 @@ Nuestra propuesta centraliza el expediente del cliente y organiza el flujo del a
 
 > **Importante:** el sistema utiliza datos ficticios y servicios simulados. No consulta APIs reales del Tribunal Electoral, la CSS ni el Registro Público.
 
-<img src="docs/assets/section-divider.svg" alt="Separador visual" width="100%">
+<img src="recursos-proyecto/assets/section-divider.svg" alt="Separador visual" width="100%">
 
 ## 🚀 Qué incluye el MVP
 
@@ -104,7 +104,7 @@ flowchart LR
     J --> K[Seguimiento y auditoría]
 ```
 
-<img src="docs/assets/section-divider.svg" alt="Separador visual" width="100%">
+<img src="recursos-proyecto/assets/section-divider.svg" alt="Separador visual" width="100%">
 
 ## 🧱 Arquitectura del proyecto
 
@@ -115,7 +115,7 @@ Tr-mites-Migratorios/
 ├── QA/                   Evidencias de pruebas, seguridad y calidad
 ├── DevOps/               Entorno, CI/CD, despliegue y reproducibilidad
 ├── Documentacion/        Backlog, arquitectura, roles y entregas por Sprint
-├── docs/                 Convenciones, entornos y evidencias generales
+├── recursos-proyecto/    Convenciones, entornos, assets y evidencias generales
 ├── docker/               Nginx y configuración del proxy
 ├── docker-compose.yml    Servicios locales del proyecto
 └── Versiones_Anteriores/ Material histórico de ramas archivadas
@@ -134,7 +134,7 @@ Tr-mites-Migratorios/
 | Seguridad | OWASP ZAP, roles y datos ficticios |
 | Trabajo en equipo | GitHub y TeamTrack |
 
-<img src="docs/assets/section-divider.svg" alt="Separador visual" width="100%">
+<img src="recursos-proyecto/assets/section-divider.svg" alt="Separador visual" width="100%">
 
 ## ▶️ Ejecutar el proyecto
 
@@ -236,7 +236,7 @@ Pruebas de calidad y seguridad:
 
 </details>
 
-<img src="docs/assets/section-divider.svg" alt="Separador visual" width="100%">
+<img src="recursos-proyecto/assets/section-divider.svg" alt="Separador visual" width="100%">
 
 ## 🌿 Cómo trabajamos con Git
 
@@ -298,7 +298,7 @@ La rama se integra mediante Pull Request después de verificar que el proyecto c
   <img src="https://img.shields.io/badge/Documentación-Trazar-F28C28?style=flat-square" alt="Documentación">
 </p>
 
-<img src="docs/assets/section-divider.svg" alt="Separador visual" width="100%">
+<img src="recursos-proyecto/assets/section-divider.svg" alt="Separador visual" width="100%">
 
 ## 📚 Documentación útil
 
@@ -307,11 +307,11 @@ La rama se integra mediante Pull Request después de verificar que el proyecto c
 - [DevOps y despliegue](DevOps/README.md)
 - [Frontend](Frontend/README.md)
 - [QA y seguridad](QA/README.md)
-- [Evidencias técnicas](docs/evidencias/README.md)
+- [Evidencias técnicas](recursos-proyecto/evidencias/README.md)
 - [Evidencia QA del Sprint 5](QA/sprint-5/README.md)
 - [Documentación base](Documentacion/documentos-base/)
-- [Convenciones de Git](docs/CONVENCIONES-GIT.md)
-- [Entornos y secretos](docs/ENTORNOS-Y-SECRETOS.md)
+- [Convenciones de Git](recursos-proyecto/CONVENCIONES-GIT.md)
+- [Entornos y secretos](recursos-proyecto/ENTORNOS-Y-SECRETOS.md)
 
 <details>
 <summary><strong>🧭 Ruta rápida para un integrante nuevo</strong></summary>

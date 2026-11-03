@@ -30,8 +30,21 @@
   function renderHeaderUser(container, { user, role, scenario, onRoleChange, onScenarioChange, onLogout, onAutofill }) {
     clear(container);
 
-    container.appendChild(el("span", "app-header__user-name", user?.nombre ?? "No autenticado"));
-    container.appendChild(el("span", "app-header__badge", ROLE_LABELS[role] ?? role));
+    container.className = "app-contextbar";
+    const contextTrigger = el("button", "app-context-trigger", "Sesión");
+    contextTrigger.type = "button";
+    contextTrigger.setAttribute("aria-expanded", "false");
+    contextTrigger.setAttribute("aria-haspopup", "true");
+    contextTrigger.appendChild(el("span", "app-context-trigger__chevron"));
+
+    const contextMenu = el("div", "app-context-menu");
+    contextMenu.hidden = true;
+    contextMenu.setAttribute("role", "menu");
+    container.appendChild(contextTrigger);
+    container.appendChild(contextMenu);
+
+    contextMenu.appendChild(el("span", "app-header__user-name", user?.nombre ?? "No autenticado"));
+    contextMenu.appendChild(el("span", "app-header__badge", ROLE_LABELS[role] ?? role));
 
     const roleWrap = el("label", "app-header__role");
     roleWrap.appendChild(el("span", null, "Rol (demo)"));
@@ -45,7 +58,7 @@
     }
     select.addEventListener("change", (event) => onRoleChange?.(event.target.value));
     roleWrap.appendChild(select);
-    container.appendChild(roleWrap);
+    contextMenu.appendChild(roleWrap);
 
     // Selector de escenarios (X-Scenario) — HU-09 / TASK-09.4.
     const scenarioWrap = el("label", "app-header__role");
@@ -60,7 +73,7 @@
     }
     scenarioSelect.addEventListener("change", (event) => onScenarioChange?.(event.target.value));
     scenarioWrap.appendChild(scenarioSelect);
-    container.appendChild(scenarioWrap);
+    contextMenu.appendChild(scenarioWrap);
 
     // Botón de autorrellenado (solo demo): completa los campos de la pantalla
     // actual para agilizar las pruebas. No envía ni persiste datos.
@@ -74,34 +87,118 @@
         autofill.textContent = n ? `Rellenado (${n})` : "Sin campos";
         setTimeout(() => { autofill.textContent = "Autorrellenar"; }, 1400);
       });
-      container.appendChild(autofill);
+      contextMenu.appendChild(autofill);
     }
 
     const logout = el("button", "app-header__logout", "Salir");
     logout.type = "button";
     logout.addEventListener("click", () => onLogout?.());
-    container.appendChild(logout);
+    contextMenu.appendChild(logout);
+
+    const closeContext = () => {
+      contextMenu.hidden = true;
+      contextTrigger.setAttribute("aria-expanded", "false");
+      container.classList.remove("is-open");
+    };
+    contextTrigger.addEventListener("click", (event) => {
+      event.stopPropagation();
+      const open = contextTrigger.getAttribute("aria-expanded") === "true";
+      closeContext();
+      if (!open) {
+        contextMenu.hidden = false;
+        contextTrigger.setAttribute("aria-expanded", "true");
+        container.classList.add("is-open");
+      }
+    });
+    if (container._outsideContextHandler) {
+      document.removeEventListener("click", container._outsideContextHandler);
+      document.removeEventListener("keydown", container._escapeContextHandler);
+    }
+    container._outsideContextHandler = (event) => {
+      if (!container.contains(event.target)) closeContext();
+    };
+    container._escapeContextHandler = (event) => {
+      if (event.key === "Escape") closeContext();
+    };
+    document.addEventListener("click", container._outsideContextHandler);
+    document.addEventListener("keydown", container._escapeContextHandler);
   }
 
   function renderNav(container, { role, currentRoute }) {
     clear(container);
 
+    const groups = [];
+    const closeMenus = () => {
+      groups.forEach(({ trigger, menu, groupEl }) => {
+        trigger.setAttribute("aria-expanded", "false");
+        menu.hidden = true;
+        groupEl.classList.remove("is-open");
+      });
+    };
+
     for (const group of getNavForRole(role)) {
       const groupEl = el("div", "app-nav__group");
-      groupEl.appendChild(el("p", "app-nav__group-title", group.title));
+      const trigger = el("button", "app-nav__group-trigger");
+      trigger.type = "button";
+      trigger.setAttribute("aria-expanded", "false");
+      trigger.setAttribute("aria-haspopup", "true");
+      trigger.appendChild(el("span", null, group.title));
+      trigger.appendChild(el("span", "app-nav__chevron"));
 
-      const list = el("ul", "app-nav__list");
+      const menu = el("ul", "app-nav__dropdown");
+      menu.hidden = true;
+      menu.setAttribute("role", "menu");
+      let hasCurrent = false;
       for (const item of group.items) {
         const li = el("li");
+        li.setAttribute("role", "none");
         const link = el("a", "app-nav__link", item.label);
         link.href = item.route;
-        if (item.route === currentRoute) link.setAttribute("aria-current", "page");
+        link.setAttribute("role", "menuitem");
+        if (item.route === currentRoute) {
+          link.setAttribute("aria-current", "page");
+          hasCurrent = true;
+        }
         li.appendChild(link);
-        list.appendChild(li);
+        menu.appendChild(li);
       }
-      groupEl.appendChild(list);
+      if (hasCurrent) groupEl.classList.add("is-current");
+      trigger.addEventListener("click", (event) => {
+        event.stopPropagation();
+        const open = trigger.getAttribute("aria-expanded") === "true";
+        closeMenus();
+        if (!open) {
+          trigger.setAttribute("aria-expanded", "true");
+          menu.hidden = false;
+          groupEl.classList.add("is-open");
+        }
+      });
+      groupEl.appendChild(trigger);
+      groupEl.appendChild(menu);
       container.appendChild(groupEl);
+      groups.push({ trigger, menu, groupEl });
     }
+
+    if (container._linkMenuHandler) {
+      container.removeEventListener("click", container._linkMenuHandler);
+    }
+    container._linkMenuHandler = (event) => {
+      if (event.target.closest("a")) closeMenus();
+    };
+    container.addEventListener("click", container._linkMenuHandler);
+
+    if (container._outsideMenuHandler) {
+      document.removeEventListener("click", container._outsideMenuHandler);
+      document.removeEventListener("keydown", container._escapeMenuHandler);
+    }
+    container._outsideMenuHandler = (event) => {
+      if (!container.contains(event.target)) closeMenus();
+    };
+    container._escapeMenuHandler = (event) => {
+      if (event.key === "Escape") closeMenus();
+    };
+    document.addEventListener("click", container._outsideMenuHandler);
+    document.addEventListener("keydown", container._escapeMenuHandler);
   }
 
   function pageHeader(title, subtitle) {

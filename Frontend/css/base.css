@@ -25,6 +25,9 @@ body {
   line-height: var(--line-height-base);
   color: var(--color-text);
   background-color: var(--color-bg);
+  background-image:
+    radial-gradient(circle at 8% 0%, rgba(196, 225, 255, 0.42), transparent 28rem),
+    radial-gradient(circle at 96% 18%, rgba(194, 244, 232, 0.32), transparent 24rem);
   -webkit-font-smoothing: antialiased;
 }
 
@@ -48,6 +51,11 @@ a {
 }
 a:hover {
   text-decoration: underline;
+}
+
+::selection {
+  background: rgba(29, 78, 137, 0.18);
+  color: var(--color-primary-dark);
 }
 
 ul, ol {

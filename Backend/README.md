@@ -1,8 +1,52 @@
-# Backend
+# ⚙️ Backend · Trámites Migratorios
 
-Servidor Java 17 con Spring Boot y PostgreSQL. El contrato de la API está en [`docs/openapi.yaml`](docs/openapi.yaml), la matriz de autorización en [`docs/matriz-autorizacion.md`](docs/matriz-autorizacion.md) y el estándar de errores en [`docs/estandar-errores.md`](docs/estandar-errores.md). Sus cambios se registran en [`docs/CHANGELOG-api.md`](docs/CHANGELOG-api.md). Cómo levantarlo y probarlo: [README de la raíz](../README.md).
+<p align="center">
+  <img src="../recursos-proyecto/assets/project-status.svg" alt="Estado del backend y del proyecto" width="100%">
+</p>
 
-## Qué hay implementado
+<p align="center">
+  <img src="https://img.shields.io/badge/Java-17-F28C28?style=for-the-badge&logo=openjdk&logoColor=white" alt="Java 17">
+  <img src="https://img.shields.io/badge/Spring%20Boot-API-6DB33F?style=for-the-badge&logo=springboot&logoColor=white" alt="Spring Boot">
+  <img src="https://img.shields.io/badge/PostgreSQL-16-336791?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL 16">
+  <img src="https://img.shields.io/badge/Flyway-migraciones-CC0200?style=for-the-badge" alt="Flyway">
+</p>
+
+<p align="center">
+  <a href="#-qué-hace">🎯 Qué hace</a> ·
+  <a href="#-ejecución-rápida">▶ Ejecución</a> ·
+  <a href="#-módulos">🧩 Módulos</a> ·
+  <a href="#-fuentes-simuladas">🔌 Fuentes simuladas</a>
+</p>
+
+<p align="center"><strong>API central del sistema interoperable</strong><br>Expedientes · documentos · verificaciones · auditoría · privacidad</p>
+
+Servidor Java 17 con Spring Boot y PostgreSQL para el sistema de gestión de trámites migratorios de un bufete.
+
+## 🎯 Qué hace
+
+El backend concentra las reglas de negocio, la seguridad, la trazabilidad y la persistencia del MVP. Expone una API REST consumida por el frontend y representa las instituciones externas mediante fuentes simuladas.
+
+> El proyecto utiliza datos ficticios y servicios simulados. No consulta APIs reales del Tribunal Electoral, la CSS ni el Registro Público.
+
+## ▶ Ejecución rápida
+
+Desde la raíz del repositorio:
+
+```bash
+docker compose up --build
+```
+
+La API queda disponible en `http://localhost:8080` y el frontend la consume mediante `/api/` desde `http://localhost:8081`.
+
+Para comprobar el estado:
+
+```bash
+curl http://localhost:8080/actuator/health
+```
+
+El contrato ejecutable de la API se conserva en [`docs/openapi.yaml`](docs/openapi.yaml), porque las pruebas de contrato lo leen desde esa ruta. La documentación técnica complementaria se mantiene en la rama `Documentacion`, dentro de `Backend/docs`.
+
+## 🧩 Módulos
 
 | Paquete | Contenido | Historias |
 | --- | --- | --- |
@@ -19,7 +63,7 @@ Servidor Java 17 con Spring Boot y PostgreSQL. El contrato de la API está en [`
 
 El modelo de datos está en `src/main/resources/db/migration` (Flyway).
 
-## Usuarios de demostración
+## 👤 Usuarios de demostración
 
 Con `docker compose up` se crea un usuario ficticio por rol. Todos usan la contraseña de `DEMO_CONTRASENA` (por defecto `Demo-Tramites-2026`, solo para desarrollo local).
 
@@ -35,7 +79,7 @@ Con `docker compose up` se crea un usuario ficticio por rol. Todos usan la contr
 
 Los permisos son los mismos nueve del frontend (`js/utils/perms.js`) y llegan en `usuario.permisos` al iniciar sesión. Los del FUNCIONARIO se asignan por cuenta; los demás roles llevan siempre los de su rol.
 
-## Cuenta del portal
+## 🔐 Cuenta del portal
 
 Servicios para las pantallas de acceso y cuenta (TASK-12.5). Los tres primeros son públicos; el perfil es siempre el del usuario de la sesión.
 
@@ -59,7 +103,7 @@ La contraseña sigue la política del backend: 10 a 72 caracteres, con mayúscul
 
 No hay proveedor de correo. Con `CORREO_SIMULADO=true` solo se registra un aviso genérico: no se entrega el enlace ni se muestran destinatarios o tokens en los logs. La recuperación real requiere implementar `Correo` con un proveedor que entregue el enlace de forma privada. El token dura `RECUPERACION_MINUTOS` (60), sirve una vez y, al usarlo, se cierran todas las sesiones de la cuenta. Las pruebas usan un buzón en memoria.
 
-## Estados del expediente
+## 🔄 Estados del expediente
 
 La cadena es la de `Pantallas_y_Datos_Migracion.md`, la misma que muestra el frontend. Cada cambio exige el permiso de su etapa:
 
@@ -77,7 +121,7 @@ curl -s http://localhost:8080/api/auth/login -H "Content-Type: application/json"
 
 Desde el frontend (puerto 8081) la API responde en la misma dirección, bajo `/api/`.
 
-## Fuentes simuladas
+## 🔌 Fuentes simuladas
 
 `GET /api/mock/te/personas/{tipoDoc}/{numero}`, `/api/mock/css/afiliaciones/{idPersona}`, `/api/mock/registro/consultas/{idPersona}` y `/api/mock/snm/expedientes/{numero}`, solo para el rol FUNCIONARIO. Los datos ficticios salen de `src/main/resources/fixtures/fuentes-simuladas.json` (personas `P-0001` a `P-0003`).
 
@@ -95,17 +139,17 @@ El encabezado `X-Scenario` (o `?scenario=`) fuerza el comportamiento:
 
 `MOCK_LATENCIA_MS` agrega una espera a cada respuesta. El modo de producción es la verificación manual asistida; los simuladores representan integraciones futuras, sujetas a convenio.
 
-### Verificaciones del expediente (Sprint 5)
+### 🧪 Verificaciones del expediente (Sprint 5)
 
-`/api/expedientes/{id}/verificaciones` registra verificaciones en modo manual asistido o las envía a las fuentes simuladas a través de adaptadores (`verificacion/adaptadores`). El mismo `X-Scenario` fuerza el comportamiento de la fuente en modo simulado. Un fallo técnico programa un reintento con espera exponencial; agotado el tope queda en `ERROR_TECNICO` y se coteja a mano. Timeout y reintentos por fuente en `app.verificaciones.fuentes.*`; `VERIFICACION_REINTENTOS_AUTOMATICOS=false` apaga los reintentos programados. Ver `docs/matriz-fuentes-finalidad.md` y `docs/sustitucion-adaptadores.md`.
+`/api/expedientes/{id}/verificaciones` registra verificaciones en modo manual asistido o las envía a las fuentes simuladas a través de adaptadores (`verificacion/adaptadores`). El mismo `X-Scenario` fuerza el comportamiento de la fuente en modo simulado. Un fallo técnico programa un reintento con espera exponencial; agotado el tope queda en `ERROR_TECNICO` y se coteja a mano. Timeout y reintentos por fuente en `app.verificaciones.fuentes.*`; `VERIFICACION_REINTENTOS_AUTOMATICOS=false` apaga los reintentos programados. La matriz de fuentes y los detalles de los adaptadores están documentados en la rama `Documentacion`.
 
-## Decisiones tomadas que el PO debe confirmar
+## 🧠 Decisiones tomadas que el PO debe confirmar
 
 - **Registro sin verificación de correo:** la cuenta nace `ACTIVA`, porque el código de P-03 sigue simulado en el frontend. Por eso el registro sí informa cuando el correo o el documento ya existen.
 - **Perfil:** nombre, documento y correo son de solo lectura. Faltan el cambio de correo con código, la dirección de notificación y la regla de no repetir las últimas tres contraseñas (P-04).
 - **Aceptación de la Ley 81 en el registro:** se guarda la fecha y la IP en la cuenta; no crea un consentimiento informado (HU-18b).
 - **Estado inicial:** el expediente nace en `RECIBIDO`, porque la solicitud se envía al final del asistente (P-17). `EN_PREPARACION` existe pero no se usa: el borrador vive en el navegador.
-- **Matriz de transiciones:** el MVP registra explícitamente la matriz común por cada tipo de trámite activo en `expediente/Transiciones.java`; sus reglas y restricciones están documentadas en [`Documentacion/matriz-transiciones-sprint4.md`](../Documentacion/matriz-transiciones-sprint4.md).
+- **Matriz de transiciones:** el MVP registra explícitamente la matriz común por cada tipo de trámite activo en `expediente/Transiciones.java`; sus reglas y restricciones se mantienen en la documentación central del proyecto.
 - **Ámbito del personal:** FUNCIONARIO (con permiso CONSULTAR) y SUPERVISOR ven todos los expedientes del despacho.
 - **Resolución:** para pasar a `EN_RESOLUCION` o `RESUELTO` deben estar los documentos obligatorios y no puede haber verificaciones sin respuesta. No se exige una cantidad mínima de verificaciones hasta que exista su registro (HU-24).
 - **Archivo:** `ARCHIVADO` es definitivo; la reactivación que muestra I-13 no está implementada.

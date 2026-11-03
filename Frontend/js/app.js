@@ -57,6 +57,7 @@
   }
 
   function render() {
+    if (global.tm.settings) global.tm.settings.apply();
     var authed = session.isAuthenticated();
     var resolved = router.resolveRoute(state.route, state.role, authed);
     if (resolved !== state.route) {
@@ -170,6 +171,10 @@
     }
     if (key === "p-05") {
       showView(global.tm.views.p05.renderP05, { onNavigate: navigate });
+      return;
+    }
+    if (key === "p-28") {
+      showView(global.tm.views.p28.renderP28, { onNavigate: navigate });
       return;
     }
     if (key === "p-06") {
