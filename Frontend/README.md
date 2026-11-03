@@ -1,6 +1,14 @@
 # 🧭 Frontend · Trámites Migratorios
 
 <p align="center">
+  <img src="../recursos-proyecto/assets/readme-banner-v2.svg" alt="Banner de la Plataforma Interoperable de Trámites Migratorios" width="100%">
+</p>
+
+<p align="center">
+  <img src="../recursos-proyecto/assets/tech-stack.svg" alt="Tecnologías del proyecto" width="100%">
+</p>
+
+<p align="center">
   <img src="../recursos-proyecto/assets/project-status.svg" alt="Estado del frontend y del proyecto" width="100%">
 </p>
 
@@ -21,6 +29,20 @@
 <p align="center"><strong>Portal del cliente + módulo interno del bufete</strong><br>Expedientes · documentos · verificaciones · trazabilidad</p>
 
 **Proyecto:** Sistema Interoperable para la Gestión de Trámites Migratorios en Panamá (producto para bufetes de abogados). Enfoque a Ley 81 de 2019 y Decreto Ejecutivo 285 de 2021.
+
+## 🧩 Responsabilidad de esta rama
+
+Frontend contiene la experiencia que utilizan el cliente y el personal del bufete. Su función es presentar el flujo de trámites de forma clara, responsive y consistente, y consumir el contrato del backend cuando el entorno está conectado.
+
+- Portal del cliente y módulo interno organizados por rutas hash.
+- Formularios, validaciones, estados de carga/éxito/vacío/error y navegación por roles.
+- Menú responsive con navegación móvil, configuración de tema y accesibilidad básica.
+- Fixtures y servicios simulados para demostrar el MVP sin depender de APIs gubernamentales reales.
+- Cliente HTTP preparado para conectar con `Backend`; el modo offline permite revisar las pantallas localmente.
+
+> **Alcance académico:** la información visible en esta rama es ficticia y se utiliza únicamente para probar y demostrar el producto.
+
+<img src="../recursos-proyecto/assets/section-divider.svg" alt="Separador visual" width="100%">
 
 ## 🎯 Qué resuelve
 
