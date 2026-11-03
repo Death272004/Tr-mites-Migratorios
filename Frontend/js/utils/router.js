@@ -121,12 +121,12 @@
       route === "#/cuenta/configuracion";
 
     if (isInner) {
-      if (!findNavItem(role, route)) return ERRORS.NOT_FOUND;
+      if (!findNavItem(role, route)) return ERRORS.FORBIDDEN;
     } else if (isPortalRoute) {
       if (route.startsWith("#/solicitud/")) {
         if (!mapHas(route)) return ERRORS.NOT_FOUND;
       } else if (!findNavItem(role, route)) {
-        return ERRORS.NOT_FOUND;
+        return ERRORS.FORBIDDEN;
       }
     } else if (!publicPortal.includes(route) && !mapHas(route)) {
       return ERRORS.NOT_FOUND;

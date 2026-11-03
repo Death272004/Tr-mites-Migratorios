@@ -65,11 +65,11 @@ El modelo de datos está en `src/main/resources/db/migration` (Flyway).
 
 ##  Usuarios de demostración
 
-Con `docker compose up` se crea un usuario ficticio por rol. Todos usan la contraseña de `DEMO_CONTRASENA` (por defecto `Demo-Tramites-2026`, solo para desarrollo local).
+La migración Flyway `V7__usuarios_iniciales.sql` crea 10 cuentas de desarrollo con permisos y una representación de prueba. Todos usan la contraseña común `Demo-Tramites-2026` únicamente en el entorno local; en la base solo se guarda su hash. El cargador Java `DatosDemo` queda desactivado por defecto (`DEMO_USUARIOS=false`) para que la fuente de estas cuentas sea SQL.
 
 | Correo | Rol | Permisos |
 | --- | --- | --- |
-| `cliente@demo.pa`, `cliente2@demo.pa` | SOLICITANTE | PORTAL |
+| `cliente@demo.pa`, `cliente2@demo.pa`, `abogado@demo.pa`, `demo@bufete.test` | SOLICITANTE | PORTAL |
 | `abogado@demo.pa` | SOLICITANTE | PORTAL, con representación acreditada de `cliente@demo.pa` |
 | `recepcion@demo.pa`, `analista@demo.pa` | FUNCIONARIO | CONSULTAR, VERIFICAR, OBSERVAR |
 | `resolutor@demo.pa` | FUNCIONARIO | CONSULTAR, VERIFICAR, RESOLVER, NOTIFICAR |

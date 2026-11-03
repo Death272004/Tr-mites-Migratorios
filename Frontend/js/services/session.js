@@ -1,6 +1,7 @@
 /**
- * session.js — gestor de sesión de demostración sobre sessionStorage.
- * Token ficticio (no firma nada), expiración en segundos. Script clásico.
+ * session.js — gestor de sesión del portal.
+ * El token lo emite el backend; se usa sessionStorage o localStorage según la
+ * preferencia explícita de recordar la sesión. Script clásico.
  * Clave de almacenamiento: tm.session.v1. Expone `window.tm.session`.
  */
 (function (global) {
@@ -14,10 +15,14 @@
 
   function read() {
     try {
-      var raw = global.sessionStorage.getItem(STORAGE_KEY);
-      if (!raw) return null;
-      var parsed = JSON.parse(raw);
-      if (parsed && typeof parsed === "object" && parsed.token && parsed.datos) return parsed;
+      var stores = [global.sessionStorage, global.localStorage];
+      for (var i = 0; i < stores.length; i++) {
+        var raw = stores[i].getItem(STORAGE_KEY);
+        if (!raw) continue;
+        var parsed = JSON.parse(raw);
+        if (parsed && typeof parsed === "object" && parsed.token && parsed.datos) return parsed;
+        stores[i].removeItem(STORAGE_KEY);
+      }
       return null;
     } catch (e) {
       return null;
@@ -42,7 +47,10 @@
       expiraEn: now() + ttl,
       creada: new Date().toISOString(),
     };
-    global.sessionStorage.setItem(STORAGE_KEY, JSON.stringify(session));
+    var storage = config.recordar ? global.localStorage : global.sessionStorage;
+    var otherStorage = config.recordar ? global.sessionStorage : global.localStorage;
+    otherStorage.removeItem(STORAGE_KEY);
+    storage.setItem(STORAGE_KEY, JSON.stringify(session));
     return session;
   }
 
@@ -50,7 +58,8 @@
     var s = read();
     if (!s) return null;
     s.datos.rol = role;
-    global.sessionStorage.setItem(STORAGE_KEY, JSON.stringify(s));
+    try { global.sessionStorage.setItem(STORAGE_KEY, JSON.stringify(s)); }
+    catch (e) { global.localStorage.setItem(STORAGE_KEY, JSON.stringify(s)); }
     return s;
   }
 
@@ -72,6 +81,7 @@
 
   function clearSession() {
     global.sessionStorage.removeItem(STORAGE_KEY);
+    global.localStorage.removeItem(STORAGE_KEY);
   }
 
   global.tm.session = {

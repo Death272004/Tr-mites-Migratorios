@@ -1,7 +1,8 @@
 /**
  * P-01 — Inicio de sesión (vista del portal cliente).
  * Criterios: validaciones en cliente, mensaje genérico de fallo (CP-02).
- * Online: POST /api/auth/login. Offline (file://): demo inline con usuarios ficticios.
+ * Online: POST /api/auth/login. El login requiere el backend y la base de datos;
+ * no se mantienen contraseñas ni usuarios válidos dentro del navegador.
  * Script clásico: expone `tm.views.p01.renderP01`.
  */
 (function (global) {
@@ -10,21 +11,6 @@
   var layout = global.tm.layout;
   var field = global.tm.ui.field;
   var button = global.tm.ui.button;
-
-  // Demo offline (sin backend): mismos usuarios ficticios que crea DatosDemo en el backend.
-  var DEMO_PASS = "Demo-Tramites-2026";
-  var DEMO_USERS = {
-    "cliente@demo.pa": { rol: "SOLICITANTE", nombre: "Carla Cliente (ficticia)" },
-    "cliente2@demo.pa": { rol: "SOLICITANTE", nombre: "Tomás Titular (ficticio)" },
-    "abogado@demo.pa": { rol: "SOLICITANTE", nombre: "Ana Abogada (ficticia)" },
-    "recepcion@demo.pa": { rol: "FUNCIONARIO", nombre: "Rita Recepción (ficticia)" },
-    "analista@demo.pa": { rol: "FUNCIONARIO", nombre: "Andrés Analista (ficticio)" },
-    "resolutor@demo.pa": { rol: "FUNCIONARIO", nombre: "Rosa Resolutora (ficticia)" },
-    "supervisor@demo.pa": { rol: "SUPERVISOR", nombre: "Sara Supervisora (ficticia)" },
-    "auditor@demo.pa": { rol: "AUDITOR", nombre: "Aurelio Auditor (ficticio)" },
-    "admin@demo.pa": { rol: "ADMIN", nombre: "Alma Administradora (ficticia)" },
-    "demo@bufete.test": { rol: "SOLICITANTE", nombre: "María Demo" },
-  };
 
   function renderP01(container, opts) {
     opts = opts || {};
@@ -93,20 +79,9 @@
       setLoading(true);
 
       if (!global.tm.api.isOnline()) {
-        // Demo offline: sin backend, valida contra los usuarios ficticios.
         global.setTimeout(function () {
           setLoading(false);
-          var user = DEMO_USERS[email.toLowerCase()];
-          if (user && pass === DEMO_PASS) {
-            if (opts.onLoginSuccess) opts.onLoginSuccess({
-              rol: user.rol,
-              usuario: { nombre: user.nombre, correo: email },
-              token: null,
-              expiraEn: 3600,
-            });
-            return;
-          }
-          setError("No pudimos iniciar sesión. Verifique el correo y la contraseña e intente de nuevo.");
+          setError("El inicio de sesión requiere conexión con el backend. Abre la aplicación con Docker e inténtalo de nuevo.");
         }, 300);
         return;
       }

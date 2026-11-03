@@ -127,7 +127,9 @@
     if (key === "interno-login") {
       showView(global.tm.views.i01.renderI01, {
         onInternalLoginSuccess: function (res) {
-          session.saveSession({ rol: res.rol, usuario: res.usuario }, res.token ? { token: res.token, expiraEn: res.expiraEn } : {});
+          session.saveSession({ rol: res.rol, usuario: res.usuario }, Object.assign({}, res.token ? { token: res.token, expiraEn: res.expiraEn } : {}, {
+            recordar: !!(global.tm.settings && global.tm.settings.get().recordarSesion),
+          }));
           state.role = res.rol;
           state.user = res.usuario;
           navigate(INITIAL_ROUTE[state.role]);
@@ -138,7 +140,11 @@
     if (key === "login") {
       showView(global.tm.views.p01.renderP01, {
         onLoginSuccess: function (res) {
-          session.saveSession({ rol: res.rol, usuario: res.usuario }, { token: res.token, expiraEn: res.expiraEn });
+          session.saveSession({ rol: res.rol, usuario: res.usuario }, {
+            token: res.token,
+            expiraEn: res.expiraEn,
+            recordar: !!(global.tm.settings && global.tm.settings.get().recordarSesion),
+          });
           state.role = res.rol;
           state.user = res.usuario;
           navigate(INITIAL_ROUTE[state.role]);
