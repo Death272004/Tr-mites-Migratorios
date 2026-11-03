@@ -2487,6 +2487,38 @@ html.theme-dark .app-content {
     width: 100%;
   }
 
+  .app-nav--top .app-nav__close {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    min-height: 42px;
+    margin-bottom: 16px;
+    padding: 8px 10px;
+    border: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+    background: transparent;
+    color: #d8e4ef;
+    font: inherit;
+    font-size: 0.84rem;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .app-nav--top .app-nav__close:hover,
+  .app-nav--top .app-nav__close:focus-visible {
+    background: #173b5c;
+    color: #ffffff;
+    outline: 2px solid #e69a28;
+    outline-offset: 2px;
+  }
+
+  .app-nav__close-icon {
+    order: 2;
+    font-size: 1.5rem;
+    line-height: 1;
+  }
+
   .app-nav--top .app-nav__group + .app-nav__group {
     margin-top: 8px;
   }
