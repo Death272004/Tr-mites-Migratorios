@@ -1628,14 +1628,14 @@ body {
   right: 0;
   z-index: 50;
   display: grid;
-  gap: 10px;
-  min-width: 245px;
-  padding: 16px;
+  gap: 2px;
+  min-width: 232px;
+  padding: 8px;
   background: var(--theme-paper);
   border: 1px solid var(--theme-line);
   color: var(--theme-ink);
-  border-radius: 7px;
-  box-shadow: 0 15px 30px rgba(16, 42, 67, 0.2);
+  border-radius: 9px;
+  box-shadow: 0 14px 28px rgba(16, 42, 67, 0.22);
 }
 
 .app-context-menu[hidden] {
@@ -1651,7 +1651,8 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding-bottom: 4px;
+  padding: 6px 8px 10px;
+  margin-bottom: 3px;
   border-bottom: 1px solid var(--theme-line);
 }
 
@@ -1675,11 +1676,14 @@ body {
 
 .app-context-menu .app-header__badge {
   justify-self: start;
-  padding: 6px 9px;
-  background: color-mix(in srgb, var(--theme-blue) 12%, transparent);
-  border: 1px solid color-mix(in srgb, var(--theme-blue) 35%, var(--theme-line));
-  border-radius: 4px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
   color: var(--theme-blue);
+  font-size: 0.72rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
 
 .app-context-menu__link,
@@ -1688,8 +1692,8 @@ body {
   width: 100%;
   min-height: 36px;
   padding: 9px 11px;
-  border: 1px solid var(--theme-line);
-  border-radius: 5px;
+  border: 1px solid transparent;
+  border-radius: 6px;
   background: transparent;
   color: var(--theme-ink);
   text-align: left;
@@ -1699,8 +1703,9 @@ body {
 }
 
 .app-context-menu .app-header__logout {
-  border-color: #e2a4a0;
-  background: #fff5f4;
+  margin-top: 3px;
+  border-color: transparent;
+  background: transparent;
   color: #b42318;
   font-weight: 700;
   text-align: left;
@@ -1956,12 +1961,12 @@ html.theme-dark .app-context-menu__identity {
 html.theme-dark .app-context-menu__link,
 html.theme-dark .app-context-menu .app-header__logout {
   color: #e5edf4;
-  border-color: #38566c;
+  border-color: transparent;
 }
 
 html.theme-dark .app-context-menu .app-header__logout {
-  background: #351d25;
-  border-color: #8e4650;
+  background: transparent;
+  border-color: transparent;
   color: #ffaaa5;
 }
 
