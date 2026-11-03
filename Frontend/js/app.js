@@ -272,6 +272,13 @@
     }
   });
 
+  document.addEventListener("click", function (event) {
+    if (!els.nav.classList.contains("is-open")) return;
+    if (els.nav.contains(event.target) || els.navToggle?.contains(event.target)) return;
+    els.nav.classList.remove("is-open");
+    els.navToggle?.setAttribute("aria-expanded", "false");
+  });
+
   if (!window.location.hash) window.location.hash = INITIAL_ROUTE[state.role];
   render();
 })(window);
