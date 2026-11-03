@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 330" role="img" aria-labelledby="title desc">
+  <title id="title">Interfaz de Trámites Migratorios</title>
+  <desc id="desc">Composición inspirada en la barra superior y el espacio de trabajo de la aplicación.</desc>
+  <defs>
+    <linearGradient id="nav" x1="0" x2="1"><stop stop-color="#163c69"/><stop offset="1" stop-color="#1d4e89"/></linearGradient>
+    <linearGradient id="canvas" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f5f7fa"/><stop offset="1" stop-color="#e8f0f9"/></linearGradient>
+    <filter id="shadow"><feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#163c69" flood-opacity=".16"/></filter>
+  </defs>
+  <rect width="1400" height="330" rx="18" fill="url(#canvas)"/>
+  <rect width="1400" height="76" rx="18" fill="url(#nav)"/><rect y="58" width="1400" height="18" fill="url(#nav)"/><rect y="73" width="1400" height="4" fill="#d88926"/>
+  <rect x="34" y="16" width="44" height="44" rx="12" fill="#ffffff"/>
+  <path d="M47 31h18v16H47z" fill="#e8f0f9" stroke="#1d4e89" stroke-width="2"/><path d="M50 28h12l3 3H47z" fill="#0f766e"/><path d="M51 37h12M51 42h9" stroke="#1d4e89" stroke-width="2" stroke-linecap="round"/>
+  <text x="94" y="40" fill="#ffffff" font-family="Arial, Helvetica, sans-serif" font-size="21" font-weight="700">Trámites Migratorios</text>
+  <g font-family="Arial, Helvetica, sans-serif" font-size="15" font-weight="700" fill="#e8f0f9"><text x="675" y="41">Trámites</text><text x="785" y="41">Seguimiento</text><text x="925" y="41">Servicios</text><text x="1035" y="41">Cuenta</text></g>
+  <rect x="1205" y="22" width="137" height="34" rx="6" fill="#ffffff" fill-opacity=".12" stroke="#b9d1e5"/><text x="1234" y="44" fill="#ffffff" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="700">Sesión</text>
+  <rect x="78" y="118" width="1244" height="155" rx="14" fill="#ffffff" stroke="#d6dde6" filter="url(#shadow)"/><rect x="78" y="118" width="7" height="155" rx="3" fill="#d88926"/>
+  <text x="116" y="160" fill="#1d4e89" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="700" letter-spacing="2">PORTAL DEL CLIENTE</text>
+  <text x="116" y="204" fill="#1f2733" font-family="Arial, Helvetica, sans-serif" font-size="31" font-weight="700">Sistema Interoperable de</text><text x="116" y="242" fill="#1f2733" font-family="Arial, Helvetica, sans-serif" font-size="31" font-weight="700">Trámites Migratorios</text>
+  <text x="892" y="164" fill="#5b6675" font-family="Arial, Helvetica, sans-serif" font-size="13">Estado del MVP</text><rect x="892" y="181" width="330" height="13" rx="6" fill="#e8f0f9"/><rect x="892" y="181" width="246" height="13" rx="6" fill="#1d4e89"><animate attributeName="width" values="210;246;210" dur="5s" repeatCount="indefinite"/></rect>
+  <circle cx="919" cy="228" r="9" fill="#0f766e"/><text x="941" y="233" fill="#1f2733" font-family="Arial, Helvetica, sans-serif" font-size="14">Trazabilidad y calidad</text><circle cx="1120" cy="228" r="9" fill="#d88926"/><text x="1142" y="233" fill="#1f2733" font-family="Arial, Helvetica, sans-serif" font-size="14">Datos simulados</text>
+</svg>
