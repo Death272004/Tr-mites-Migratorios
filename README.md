@@ -3,11 +3,11 @@
 </p>
 
 <p align="center">
-  <img src="docs/assets/readme-banner-v2.svg" alt="Banner de la Plataforma Interoperable de Trámites Migratorios" width="100%">
+  <img src="docs/assets/readme-app-cover.svg" alt="Banner de la Plataforma Interoperable de Trámites Migratorios" width="100%">
 </p>
 
 <p align="center">
-  <img src="docs/assets/tech-stack.svg" alt="Tecnologías del proyecto" width="100%">
+  <img src="docs/assets/readme-app-stack.svg" alt="Tecnologías del proyecto" width="100%">
 </p>
 
 <p align="center">
