@@ -2,7 +2,7 @@
  * autofill.js — autorrellenado de pantallas para agilizar pruebas (solo demo).
  *
  * Recorre los campos del contenedor visible (`#contenido`) y los completa con
- * datos ficticios plausibles: textos, fechas, selects (primera opción válida),
+ * datos de prueba no sensibles: textos, fechas, selects (primera opción válida),
  * radios, checkboxes, firma manuscrita (simulada) y cargas de archivo.
  * No envía nada ni persiste: el asistente sigue guardando en `tm.draft` al
  * pulsar «Continuar». Nunca usa datos reales.
@@ -18,20 +18,11 @@
     // P-01 / P-02 / I-01 (autenticación)
     correo: "cliente@demo.pa",
     correoregistro: "nuevo.cliente@demo.pa",
-    clave: "Demo-Tramites-2026",
-    clave2: "Demo-Tramites-2026",
-    contrasenaactual: "Demo-Tramites-2026",
-    contrasenanueva: "Nueva-Clave-2026",
-    contrasenanueva2: "Nueva-Clave-2026",
-    clavenueva: "Nueva-Clave-2026",
-    clavenueva2: "Nueva-Clave-2026",
     tokenrecuperacion: "token-de-prueba",
     telefono: "+507 6000-0000",
     numdoc: "8-712-3456",
     usuario: "analista",
     usuariointerno: "analista",
-    claveinterna: "Interno123!",
-    mfainterno: "123456",
     perfilinterno: "FUNCIONARIO",
 
     // P-09 datos personales
@@ -121,7 +112,6 @@
   // Reglas por patrón de id/nombre (después del mapa exacto).
   var RULES = [
     { re: /(^|_)correo|email/, value: "cliente@demo.pa" },
-    { re: /(^|_)clave|password|contrasena/, value: "Demo-Tramites-2026" },
     { re: /(^|_)telefono|(^|_)tel$|celular|movil/, value: "+507 6000-0000" },
     { re: /(^|_)ruc/, value: "1556789-1-2020 DV 12" },
     { re: /cedula|documento|numdoc|(^|_)doc$/, value: "8-712-3456" },
@@ -152,7 +142,8 @@
     if (t === "date") return TODAY;
     if (t === "datetime-local") return TODAY + "T10:00";
     if (t === "email") return "cliente@demo.pa";
-    if (t === "password") return "Demo-Tramites-2026";
+    // Nunca se rellenan contraseñas, tokens ni códigos de verificación.
+    if (t === "password") return "";
     if (t === "number" || t === "range") return "100";
     if (t === "tel") return "+507 6000-0000";
     if (t === "url") return "https://ejemplo.test";
