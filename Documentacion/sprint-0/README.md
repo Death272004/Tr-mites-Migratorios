@@ -1,5 +1,9 @@
 # Sprint 0 - PRESENCIAL - Análisis de problema
-<p align="center">\n  <img src="../../recursos-proyecto/assets/readme-hero.svg" alt="Sistema Interoperable de Trámites Migratorios" width="100%">\n</p>\n\n
+<p align="center">
+  <img src="../../recursos-proyecto/assets/readme-hero.svg" alt="Sistema Interoperable de Trámites Migratorios" width="100%">
+</p>
+
+
 ## Indicaciones oficiales – Daily Scrum
 
 El objetivo del Daily es presentar un avance breve, técnico y basado en evidencias siguiendo el formato Scrum. La duración máxima por grupo es de 5 minutos y debe hablar al menos el 50% + 1 de los integrantes.
