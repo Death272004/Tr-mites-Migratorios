@@ -1543,6 +1543,11 @@ body {
   width: 100%;
 }
 
+/* El cierre pertenece únicamente al cajón de navegación móvil. */
+.app-nav--top .app-nav__close {
+  display: none;
+}
+
 .app-header > .app-contextbar {
   position: relative;
   flex: 0 1 auto;
