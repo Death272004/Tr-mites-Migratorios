@@ -136,6 +136,18 @@
       });
     };
 
+    const closeButton = el("button", "app-nav__close", "Cerrar menú");
+    closeButton.type = "button";
+    closeButton.setAttribute("aria-label", "Cerrar menú");
+    closeButton.appendChild(el("span", "app-nav__close-icon", "×"));
+    closeButton.addEventListener("click", () => {
+      container.classList.remove("is-open");
+      const toggle = document.getElementById("nav-toggle");
+      toggle?.setAttribute("aria-expanded", "false");
+      closeMenus();
+    });
+    container.appendChild(closeButton);
+
     for (const group of getNavForRole(role)) {
       const groupEl = el("div", "app-nav__group");
       const trigger = el("button", "app-nav__group-trigger");
