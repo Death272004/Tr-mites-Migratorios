@@ -1,8 +1,4 @@
 #  Documentación · Trámites Migratorios
-<p align="center">
-  <img src="../recursos-proyecto/assets/readme-hero.svg" alt="Sistema Interoperable de Trámites Migratorios" width="100%">
-</p>
-
 
 <p align="center">
   <img src="../recursos-proyecto/assets/readme-app-cover.svg" alt="Plataforma Interoperable de Trámites Migratorios" width="100%">

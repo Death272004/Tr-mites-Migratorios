@@ -1,8 +1,4 @@
 # Evidencias DevOps
-<p align="center">
-  <img src="../../recursos-proyecto/assets/readme-hero.svg" alt="Sistema Interoperable de Trámites Migratorios" width="100%">
-</p>
-
 
 Aquí se registran verificaciones de infraestructura, instalación limpia, pipelines, construcción de imágenes y comprobaciones de salud del entorno.
 
