@@ -59,7 +59,9 @@
     if (resolved !== state.route) {
       state.route = resolved;
       window.history.replaceState({}, "", router.toPath(resolved) + window.location.search);
-      return;
+      // `replaceState` no dispara `popstate`. Continuamos este mismo render
+      // para que una ruta protegida abierta sin sesión muestre el login de
+      // inmediato, en lugar de dejar el contenido vacío hasta recargar.
     }
 
     var routeChanged = lastRenderedRoute !== state.route;
