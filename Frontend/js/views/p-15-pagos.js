@@ -1,7 +1,7 @@
 /**
  * P-15 Paso 7 — Pagos y tasas (simulado, sin pasarela real).
- * Desglose de tasas desde el catálogo, modalidad de pago, verificación de
- * cheque (si aplica) y constancia de pago generada localmente.
+ * Desglose de tasas desde el catálogo y confirmación de pago de demostración.
+ * No solicita tarjetas, cuentas, cheques ni conecta una pasarela real.
  * 4 estados: carga, éxito, vacío, error.
  * Script clásico: expone `tm.views.p15.renderP15`.
  */
@@ -63,8 +63,7 @@
     modalidad.appendChild(layout.el("legend", "form-field__label", "Modalidad de pago"));
     var rg = layout.el("div", "radio-group");
     var mods = [
-      { value: "EN_LINEA", label: "En línea (tarjeta/transferencia)" },
-      { value: "CHEQUE", label: "Cheque certificado presencial" },
+      { value: "PAGO_SIMULADO", label: "Confirmar pago de demostración" },
       { value: "EXONERACION", label: "Exoneración" },
     ];
     mods.forEach(function (m, i) {
@@ -84,12 +83,10 @@
     }));
     body.appendChild(grid);
 
-    var chequeWrap = layout.el("div", "wizard-grid");
-    chequeWrap.appendChild(field.fieldText({ id: "chequeNumero", label: "Número del cheque", value: pagos.chequeNumero }));
-    chequeWrap.appendChild(field.fieldSelect({ id: "chequeBanco", label: "Banco del cheque", options: data.bancoOptions("Seleccione…"), value: pagos.chequeBanco }));
-    chequeWrap.appendChild(field.fieldDate({ id: "chequeFecha", label: "Fecha del cheque", value: pagos.chequeFecha }));
-    chequeWrap.appendChild(global.tm.ui.fileUpload({ id: "comprobantePago", label: "Comprobante de pago (si aplica)", accept: ".pdf,.jpg,.jpeg,.png" }));
-    body.appendChild(chequeWrap);
+    var paymentNote = layout.el("div", "app-alert app-alert--info");
+    paymentNote.appendChild(layout.el("span", "app-alert__title", "Pago de demostración"));
+    paymentNote.appendChild(layout.el("span", "app-alert__text", "Este paso solo registra el flujo para la demostración. No se realiza ningún cobro ni se solicitan datos bancarios."));
+    body.appendChild(paymentNote);
 
     var constancia = layout.el("div", "app-alert app-alert--info");
     constancia.style.display = "none";
@@ -102,15 +99,8 @@
 
     var paid = !!pagos.pagado;
 
-    function updateChequeVisibility() {
-      var m = (rg.querySelector("input:checked") || {}).value;
-      chequeWrap.style.display = m === "CHEQUE" ? "" : "none";
-    }
-    rg.addEventListener("change", updateChequeVisibility);
-    updateChequeVisibility();
-
     var actions = layout.el("div", "auth-actions");
-    var payBtn = layout.el("button", "btn btn--primary", "Pagar " + money(total) + " (simulado)");
+    var payBtn = layout.el("button", "btn btn--primary", "Confirmar pago de demostración");
     payBtn.type = "button";
     var nextBtn = layout.el("button", "btn btn--primary", "Continuar");
     nextBtn.type = "button";
@@ -132,11 +122,6 @@
       wizard.clearError(err);
       var m = (rg.querySelector("input:checked") || {}).value;
       if (!m) return wizard.showError(err, "Seleccione la modalidad de pago.");
-      if (m === "CHEQUE") {
-        if (!byId("chequeNumero") || !byId("chequeBanco") || !byId("chequeFecha")) {
-          return wizard.showError(err, "Complete los datos del cheque certificado.");
-        }
-      }
       payBtn.disabled = true;
       payBtn.textContent = "Procesando…";
       setTimeout(function () {
@@ -158,9 +143,6 @@
         pagos: {
           modalidad: m,
           concepto: byId("concepto"),
-          chequeNumero: byId("chequeNumero"),
-          chequeBanco: byId("chequeBanco"),
-          chequeFecha: byId("chequeFecha"),
           total: total,
           pagado: paid || m === "EXONERACION",
         },
