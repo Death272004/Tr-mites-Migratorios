@@ -1,9 +1,9 @@
 <p align="center">\n  <img src="recursos-proyecto/assets/readme-hero.svg" alt="Sistema Interoperable de Trámites Migratorios" width="100%">\n</p>\n\n<p align="center">
-  <img src="recursos-proyecto/assets/readme-banner-v2.svg" alt="Banner de la Plataforma Interoperable de Trámites Migratorios" width="100%">
+  <img src="recursos-proyecto/assets/readme-app-cover.svg" alt="Banner de la Plataforma Interoperable de Trámites Migratorios" width="100%">
 </p>
 
 <p align="center">
-  <img src="recursos-proyecto/assets/tech-stack.svg" alt="Tecnologías del proyecto" width="100%">
+  <img src="recursos-proyecto/assets/readme-app-stack.svg" alt="Tecnologías del proyecto" width="100%">
 </p>
 
 <p align="center">
