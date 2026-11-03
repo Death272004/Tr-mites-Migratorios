@@ -6,7 +6,7 @@
 (function (global) {
   "use strict";
 
-  const { ROLE_LABELS, ROLE_CONTEXT, ROLES } = global.tm.roles;
+  const { ROLE_LABELS, ROLE_CONTEXT } = global.tm.roles;
   const { getNavForRole, findNavItem } = global.tm.nav;
 
   function el(tag, className, text) {
@@ -20,21 +20,35 @@
     while (node.firstChild) node.removeChild(node.firstChild);
   }
 
-  const SCENARIOS = [
-    { value: "exito", label: "Éxito" },
-    { value: "carga", label: "Cargando" },
-    { value: "vacio", label: "Sin datos" },
-    { value: "error", label: "Error" }
-  ];
+  function profileIcon(className) {
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("class", className || "app-profile-icon");
+    svg.setAttribute("viewBox", "0 0 24 24");
+    svg.setAttribute("aria-hidden", "true");
+    svg.setAttribute("focusable", "false");
+    const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    circle.setAttribute("cx", "12"); circle.setAttribute("cy", "8"); circle.setAttribute("r", "3.2");
+    circle.setAttribute("fill", "none");
+    circle.setAttribute("stroke", "currentColor");
+    circle.setAttribute("stroke-width", "1.8");
+    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    path.setAttribute("d", "M4.8 20c.8-3.5 3.2-5.4 7.2-5.4s6.4 1.9 7.2 5.4");
+    path.setAttribute("fill", "none"); path.setAttribute("stroke", "currentColor"); path.setAttribute("stroke-width", "1.8");
+    path.setAttribute("stroke-linecap", "round");
+    svg.appendChild(circle); svg.appendChild(path);
+    return svg;
+  }
 
-  function renderHeaderUser(container, { user, role, scenario, onRoleChange, onScenarioChange, onLogout, onAutofill }) {
+  function renderHeaderUser(container, { user, role, authenticated, onNavigate, onLogout }) {
     clear(container);
 
     container.className = "app-contextbar";
-    const contextTrigger = el("button", "app-context-trigger", "Sesión");
+    const contextTrigger = el("button", "app-context-trigger");
     contextTrigger.type = "button";
     contextTrigger.setAttribute("aria-expanded", "false");
     contextTrigger.setAttribute("aria-haspopup", "true");
+    contextTrigger.appendChild(profileIcon("app-profile-icon"));
+    contextTrigger.appendChild(el("span", "app-context-trigger__label", "Sesión"));
     contextTrigger.appendChild(el("span", "app-context-trigger__chevron"));
 
     const contextMenu = el("div", "app-context-menu");
@@ -43,57 +57,30 @@
     container.appendChild(contextTrigger);
     container.appendChild(contextMenu);
 
-    contextMenu.appendChild(el("span", "app-header__user-name", user?.nombre ?? "No autenticado"));
-    contextMenu.appendChild(el("span", "app-header__badge", ROLE_LABELS[role] ?? role));
+    const identity = el("div", "app-context-menu__identity");
+    identity.appendChild(profileIcon("app-context-menu__profile-icon"));
+    const identityText = el("div", "app-context-menu__identity-text");
+    identityText.appendChild(el("span", "app-header__user-name", user?.nombre ?? "No autenticado"));
+    identityText.appendChild(el("span", "app-header__badge", ROLE_LABELS[role] ?? role));
+    identity.appendChild(identityText);
+    contextMenu.appendChild(identity);
 
-    const roleWrap = el("label", "app-header__role");
-    roleWrap.appendChild(el("span", null, "Rol (demo)"));
-    const select = el("select", "app-header__role-select");
-    select.setAttribute("aria-label", "Selector de rol para demostración");
-    for (const value of Object.values(ROLES)) {
-      const option = el("option", null, ROLE_LABELS[value]);
-      option.value = value;
-      if (value === role) option.selected = true;
-      select.appendChild(option);
+    const goTo = (route, text) => {
+      const link = el("a", "app-context-menu__link", text);
+      link.href = global.tm.router.toPath(route);
+      link.setAttribute("role", "menuitem");
+      link.addEventListener("click", () => onNavigate?.(route));
+      return link;
+    };
+    if (authenticated) contextMenu.appendChild(goTo("#/perfil", "Mi perfil"));
+    contextMenu.appendChild(goTo("#/cuenta/configuracion", "Configuración"));
+
+    if (authenticated) {
+      const logout = el("button", "app-header__logout", "Salir");
+      logout.type = "button";
+      logout.addEventListener("click", () => onLogout?.());
+      contextMenu.appendChild(logout);
     }
-    select.addEventListener("change", (event) => onRoleChange?.(event.target.value));
-    roleWrap.appendChild(select);
-    contextMenu.appendChild(roleWrap);
-
-    // Selector de escenarios (X-Scenario) — HU-09 / TASK-09.4.
-    const scenarioWrap = el("label", "app-header__role");
-    scenarioWrap.appendChild(el("span", null, "Escenario (demo)"));
-    const scenarioSelect = el("select", "app-header__scenario-select");
-    scenarioSelect.setAttribute("aria-label", "Selector de escenario de demostración");
-    for (const item of SCENARIOS) {
-      const option = el("option", null, item.label);
-      option.value = item.value;
-      if (item.value === scenario) option.selected = true;
-      scenarioSelect.appendChild(option);
-    }
-    scenarioSelect.addEventListener("change", (event) => onScenarioChange?.(event.target.value));
-    scenarioWrap.appendChild(scenarioSelect);
-    contextMenu.appendChild(scenarioWrap);
-
-    // Botón de autorrellenado (solo demo): completa los campos de la pantalla
-    // actual para agilizar las pruebas. No envía ni persiste datos.
-    if (onAutofill) {
-      const autofill = el("button", "app-header__autofill", "Autorrellenar");
-      autofill.type = "button";
-      autofill.title = "Completa los campos de esta pantalla con datos de prueba";
-      autofill.addEventListener("click", () => {
-        const res = onAutofill();
-        const n = res && res.count ? res.count : 0;
-        autofill.textContent = n ? `Rellenado (${n})` : "Sin campos";
-        setTimeout(() => { autofill.textContent = "Autorrellenar"; }, 1400);
-      });
-      contextMenu.appendChild(autofill);
-    }
-
-    const logout = el("button", "app-header__logout", "Salir");
-    logout.type = "button";
-    logout.addEventListener("click", () => onLogout?.());
-    contextMenu.appendChild(logout);
 
     const closeContext = () => {
       contextMenu.hidden = true;
@@ -165,7 +152,7 @@
         const li = el("li");
         li.setAttribute("role", "none");
         const link = el("a", "app-nav__link", item.label);
-        link.href = item.route;
+        link.href = global.tm.router.toPath(item.route);
         link.setAttribute("role", "menuitem");
         if (item.route === currentRoute) {
           link.setAttribute("aria-current", "page");
