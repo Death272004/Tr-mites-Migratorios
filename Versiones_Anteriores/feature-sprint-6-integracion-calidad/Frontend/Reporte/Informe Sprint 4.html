@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Informe del Sprint 4</title>
+<style>
+  @page { size: A4; margin: 18mm 16mm 16mm 16mm; }
+  * { box-sizing: border-box; }
+  body { font-family: "Segoe UI", Arial, sans-serif; color: #1d2530; font-size: 10.5pt; line-height: 1.5; margin: 0; }
+  h1 { font-size: 22pt; margin: 0 0 4px 0; color: #0f2b46; }
+  h2 { font-size: 14pt; color: #0f2b46; border-bottom: 2px solid #1f6feb; padding-bottom: 4px; margin: 26px 0 10px 0; page-break-after: avoid; }
+  h3 { font-size: 11.5pt; color: #17456e; margin: 16px 0 6px 0; page-break-after: avoid; }
+  p { margin: 6px 0; text-align: justify; }
+  ul, ol { margin: 6px 0 6px 18px; padding: 0; }
+  li { margin: 3px 0; }
+  table { width: 100%; border-collapse: collapse; margin: 8px 0 12px 0; font-size: 9.3pt; page-break-inside: auto; }
+  th, td { border: 1px solid #c9d2dc; padding: 5px 7px; vertical-align: top; text-align: left; }
+  th { background: #eef3f9; color: #0f2b46; font-weight: 600; }
+  tr { page-break-inside: avoid; }
+  .cover { border: 3px solid #1f6feb; border-radius: 6px; padding: 26px 26px 20px 26px; margin-bottom: 10px; }
+  .cover .sub { font-size: 12pt; color: #33506e; margin: 2px 0; }
+  .meta { width: 100%; margin-top: 14px; font-size: 9.8pt; }
+  .meta td { border: none; padding: 3px 4px; }
+  .meta td.k { color: #5b6b7d; width: 34%; }
+  .pc { color: #9a3412; background: #fff1e6; border: 1px dashed #e07b39; border-radius: 3px; padding: 0 4px; font-size: 8.6pt; font-weight: 600; white-space: nowrap; }
+  .ok { color: #14532d; background: #e7f6ec; border: 1px solid #86c79b; border-radius: 3px; padding: 0 4px; font-size: 8.6pt; font-weight: 600; }
+  .warn { color: #92400e; background: #fff7e6; border: 1px solid #e6c26a; border-radius: 3px; padding: 0 4px; font-size: 8.6pt; font-weight: 600; }
+  .note { background: #f4f7fb; border-left: 4px solid #1f6feb; padding: 8px 12px; margin: 10px 0; font-size: 9.6pt; }
+  .legend { font-size: 8.8pt; color: #5b6b7d; }
+  .page-break { page-break-before: always; }
+  code { font-family: Consolas, "Courier New", monospace; font-size: 9pt; background: #f0f2f5; padding: 0 3px; border-radius: 3px; }
+  .small { font-size: 9pt; color: #5b6b7d; }
+  hr { border: none; border-top: 1px solid #dbe3ec; margin: 18px 0; }
+</style>
+</head>
+<body>
+
+<!-- ===================== PORTADA ===================== -->
+<div class="cover">
+  <h1>Informe del Sprint 4</h1>
+  <p class="sub">Sistema para la Gestión de Trámites Migratorios en Panamá</p>
+  <p class="sub">Producto para bufetes de abogados · Ley 81 de 2019 y Decreto Ejecutivo 285 de 2021</p>
+  <table class="meta">
+    <tr><td class="k">Sprint</td><td><strong>Sprint 4</strong> — Flujo de estados, revisión y auditoría (semanas 7–8)</td></tr>
+    <tr><td class="k">Épicas involucradas</td><td>EP-05 (Flujo de estados y revisión) · EP-07 (Auditoría, seguridad y privacidad)</td></tr>
+    <tr><td class="k">Historias del sprint</td><td>HU-19, HU-20, HU-21 y HU-22</td></tr>
+    <tr><td class="k">Fecha de elaboración</td><td>19 de octubre de 2026</td></tr>
+    <tr><td class="k">Evidencia de trabajo</td><td>10 al 19 de octubre de 2026 · integración en <code>main</code> el 19-oct (commit <code>86eec8c</code>)</td></tr>
+    <tr><td class="k">Duración prevista</td><td>2 semanas (semanas 7–8) · fechas oficiales de inicio/fin: <span class="pc">POR CONFIRMAR</span></td></tr>
+    <tr><td class="k">Elaborado por</td><td>Equipo del proyecto (Frontend) — revisión conjunta pendiente</td></tr>
+    <tr><td class="k">Estado del informe</td><td>Borrador para revisión del grupo antes de subirlo a Teams</td></tr>
+  </table>
+</div>
+<p class="legend">
+  <strong>Convenciones:</strong>
+  <span class="pc">POR CONFIRMAR</span> dato pendiente de verificar con el equipo ·
+  <span class="ok">HECHO</span> verificado con evidencia en el repositorio ·
+  <span class="warn">OBSERVACIÓN</span> hallazgo no bloqueante o pendiente menor.
+</p>
+
+<div class="note">
+  <strong>Resumen ejecutivo.</strong> El Sprint 4 quedó <strong>completado y validado técnicamente</strong>. La matriz de
+  transiciones está publicada, las cuatro historias (HU-19 a HU-22) están implementadas y la interfaz quedó conectada a la API
+  real en I-04, I-08, I-10, I-16 y P-20. La validación local del sprint pasó (sintaxis, Maven/Testcontainers, Docker Compose,
+  build, healthchecks, <code>401</code> sin sesión y exportación CSV de auditoría), y QA ejecutó las tareas de los Sprints 2 a 4
+  con <strong>111 pruebas y 0 fallas</strong>. El trabajo está integrado en <code>main</code> (commit <code>86eec8c</code>,
+  19-oct-2026). Queda pendiente el <strong>cierre administrativo</strong> (revisión del equipo, PR y actualización de TeamTrack)
+  y atender <strong>cinco hallazgos no bloqueantes</strong>.
+</div>
+
+<!-- ===================== 1. DAILY SCRUM ===================== -->
+<h2>1. Daily Scrum</h2>
+<p>
+  Este es el pulso del sprint, con el formato de siempre: qué hicimos, qué haremos y qué problemas aparecieron. Se apoya en lo
+  que quedó registrado en el repositorio (commits, ramas, evidencias de QA y documentos de cierre). Los días exactos de cada
+  daily y quién reportó qué se completan con el equipo: <span class="pc">POR CONFIRMAR</span>.
+</p>
+
+<h3>1.1. Qué hicimos</h3>
+<ul>
+  <li><strong>Publicamos la matriz de transiciones (HU-19).</strong> Quedó documentada en
+      <code>Documentacion/matriz-transiciones-sprint4.md</code> y codificada en <code>Transiciones.POR_TRAMITE</code>, con una
+      matriz común para residencia temporal, residencia permanente, prórroga de estadía y naturalización. Los nombres de estado
+      se alinearon con el frontend: <code>EN_PREPARACION</code> → <code>RECIBIDO</code> → <code>CON_OBSERVACIONES</code> /
+      <code>EN_ANALISIS</code> → <code>ADMITIDO</code> → <code>EN_RESOLUCION</code> → <code>RESUELTO</code> →
+      <code>NOTIFICADO</code> → <code>ENTREGADO</code> → <code>ARCHIVADO</code>.</li>
+  <li><strong>Conectamos la interfaz a la API real.</strong> I-04 consulta el expediente y registra observaciones o la transición
+      a <code>EN_ANALISIS</code>; I-08 consulta y crea observaciones; I-10 resuelve con versión, motivo y resultado; I-16 consulta
+      la bitácora y descarga el CSV protegido; P-20 combina notificaciones y observaciones. Todo pasa por <code>tm.api</code>,
+      conservando el modo offline para demostraciones. Commits <code>90555ae</code> y <code>86eec8c</code>.</li>
+  <li><strong>Cerramos el Sprint 3 en paralelo.</strong> Se conectaron P-06, P-07, P-17, P-14, P-19, P-20, P-05, P-27, I-19, I-03,
+      I-02 e I-06 al backend real. Commits <code>add463f</code>, <code>bb373a7</code>, <code>a95899f</code> y
+      <code>c33d132</code>.</li>
+  <li><strong>Ejecutamos QA de los Sprints 2 a 4.</strong> El 18-oct se corrieron las tareas de QA con evidencia por tarea:
+      11 casos de autorización, 10 de códigos de error, 12 de titularidad/paginación, 11 de documentos, 4 de notificaciones,
+      8 de consentimiento, 6 de ARCO y las cuatro tareas del Sprint 4 (transiciones, observaciones, historial y auditoría).
+      Rama <code>qa/pruebas-sprints-2-4</code>, commits <code>119fb11</code>, <code>1eb4c90</code> y <code>5abac8f</code>.</li>
+  <li><strong>Validamos el cierre técnico del Sprint 4.</strong> <code>node --check</code> a todo el JS, Maven/Testcontainers,
+      <code>docker compose config</code>, build de imágenes, healthchecks <code>UP</code>/<code>ok</code>, <code>401</code> sin
+      sesión y login de auditor con descarga CSV <code>200 text/csv</code>. Evidencia en
+      <code>docs/evidencias/sprint-4-validacion-local-2026-10-19.md</code>.</li>
+</ul>
+
+<h3>1.2. Qué haremos</h3>
+<ul>
+  <li><strong>Revisar los resultados con el equipo</strong> y preparar el PR / actualizar TeamTrack (paso administrativo que la
+      propia evidencia del sprint deja como pendiente).</li>
+  <li><strong>Atender los hallazgos no bloqueantes</strong>: patrón de correlación en los logs, re-verificación de P-06 «Mis
+      trámites», invocación de la regla de consentimiento y <code>CORREO_SIMULADO=false</code> fuera de desarrollo.</li>
+  <li><strong>Preparar el Sprint 5</strong> (verificaciones y fuentes externas), donde deben conectarse las verificaciones que hoy
+      no invocan la regla de consentimiento.</li>
+</ul>
+
+<h3>1.3. Problemas e impedimentos</h3>
+<ul>
+  <li><strong>El cierre administrativo quedó por detrás del cierre técnico.</strong> El código está validado, pero falta la
+      revisión del equipo, el PR y el marcado en TeamTrack. No es un bloqueo técnico, es gestión pendiente.
+      <span class="warn">OBSERVACIÓN</span></li>
+  <li><strong>Correlación incompleta en los logs.</strong> El <code>X-Correlation-Id</code> viaja en el encabezado y en el cuerpo
+      de error, pero las líneas del log no lo imprimen porque el patrón no incluye <code>%X{correlacionId}</code>. Responsables:
+      Kenneth y Edgar. <span class="warn">OBSERVACIÓN</span></li>
+  <li><strong>Regla de consentimiento sin invocación en endpoints.</strong> La regla existe y está probada
+      (<code>ConsentimientoServicio.exigirVigente</code>), pero ninguna operación la llama todavía; las verificaciones del Sprint 5
+      deben hacerlo. Responsable: Backend. <span class="warn">OBSERVACIÓN</span></li>
+  <li><strong>P-06 «Mis trámites» en la corrida de QA del 18-oct</strong> mostraba un bloque de carga duplicado y tarjetas de
+      ejemplo. La integración del Sprint 3 (19-oct) ya conecta P-06 a <code>GET /api/expedientes</code>; hay que
+      <strong>re-verificar</strong> el hallazgo. <span class="warn">OBSERVACIÓN</span></li>
+  <li><strong>Correo simulado.</strong> Con <code>CORREO_SIMULADO=true</code> el token de recuperación se escribe en el log del
+      backend. Es lo esperado en desarrollo, pero debe quedar en <code>false</code> fuera de él.
+      <span class="warn">OBSERVACIÓN</span></li>
+  <li><strong>OWASP ZAP y JMeter</strong> pertenecen al Sprint 6 (HU-28/HU-29) y no se ejecutaron en esta entrega; se aclara para
+      que no se lean como pendientes del Sprint 4.</li>
+</ul>
+<p class="small">Nota de transparencia: el detalle por persona y por día (quién reportó qué en cada daily) no queda en el
+  repositorio; por eso se marca como pendiente en vez de inventarse. Los nombres que sí aparecen en las evidencias son Kenneth
+  Carter (integración/DevOps) y Edgar Rosario (QA, cubriendo las tareas asignadas a Vivian Paris).</p>
+
+<!-- ===================== 2. HU CORREGIDAS ===================== -->
+<div class="page-break"></div>
+<h2>2. Historias de usuario del Sprint 4 (versión con ajustes)</h2>
+<p>
+  Se reproducen las cuatro historias con el enunciado «Como… quiero… para…» y se anotan los ajustes aplicados y su evidencia.
+  Los ajustes reflejan decisiones reales del sprint, no supuestos.
+</p>
+
+<h3>HU-19 — Máquina de estados y endpoint de transición</h3>
+<table>
+  <tr><th style="width:22%">Campo</th><th>Contenido</th></tr>
+  <tr><td>Enunciado</td><td><strong>Como</strong> funcionario autorizado, <strong>quiero</strong> cambiar el estado de un expediente según las reglas del trámite <strong>para</strong> mantener un proceso consistente y verificable.</td></tr>
+  <tr><td>Prioridad / puntos</td><td>Crítica · 8 PH · Responsable BE (con PO/LT, FE y QA en tareas asociadas)</td></tr>
+  <tr><td>Ajustes aplicados</td><td>La lista provisional del backlog (<code>BORRADOR</code>, <code>PRESENTADO</code>, <code>EN_REVISION</code>…) se sustituyó por los estados reales del sistema: <code>EN_PREPARACION</code>, <code>RECIBIDO</code>, <code>CON_OBSERVACIONES</code>, <code>EN_ANALISIS</code>, <code>ADMITIDO</code>, <code>EN_RESOLUCION</code>, <code>RESUELTO</code>, <code>NOTIFICADO</code>, <code>ENTREGADO</code> y <code>ARCHIVADO</code>. La matriz es común a los cuatro tipos de trámite del MVP y cada etapa exige su permiso (OBSERVAR / RESOLVER / NOTIFICAR). Matriz publicada en <code>Documentacion/matriz-transiciones-sprint4.md</code>. <span class="ok">HECHO</span></td></tr>
+  <tr><td>Evidencia</td><td>Commit <code>86eec8c</code>; <code>Transiciones.POR_TRAMITE</code>; validación de 100 pares de estados en TASK-19.5 (10/10 casos).</td></tr>
+</table>
+
+<h3>HU-20 — Observaciones y solicitudes de corrección</h3>
+<table>
+  <tr><th style="width:22%">Campo</th><th>Contenido</th></tr>
+  <tr><td>Enunciado</td><td><strong>Como</strong> funcionario, <strong>quiero</strong> registrar observaciones para indicar al solicitante qué debe corregir <strong>para</strong> reducir idas y vueltas.</td></tr>
+  <tr><td>Prioridad / puntos</td><td>Alta · 5 PH · Responsable BE con FE</td></tr>
+  <tr><td>Ajustes aplicados</td><td>Se mantiene que una observación <strong>no equivale a decisión final ni cambia el estado</strong>, que el funcionario solo observa en su ámbito y que el solicitante solo ve lo suyo. I-08 consulta el historial real y registra observaciones por <code>POST /api/expedientes/{id}/observaciones</code>; P-20 combina notificaciones y observaciones del expediente. <span class="ok">HECHO</span></td></tr>
+  <tr><td>Evidencia</td><td>Commit <code>86eec8c</code>; TASK-20.3 (5/5 casos: permisos y auditoría de observaciones).</td></tr>
+</table>
+
+<h3>HU-21 — Historial de estados visible</h3>
+<table>
+  <tr><th style="width:22%">Campo</th><th>Contenido</th></tr>
+  <tr><td>Enunciado</td><td><strong>Como</strong> solicitante y funcionario, <strong>quiero</strong> ver la trazabilidad de cambios del expediente <strong>para</strong> entender quién hizo qué y cuándo.</td></tr>
+  <tr><td>Prioridad / puntos</td><td>Crítica · 5 PH · Responsable BE con FE</td></tr>
+  <tr><td>Ajustes aplicados</td><td>El historial se expone con <strong>proyección por rol</strong> y sin datos sensibles innecesarios. La línea de tiempo se construyó una sola vez y se reutiliza en P-19 e I-06; I-06 la actualiza al guardar el dictamen. <span class="ok">HECHO</span></td></tr>
+  <tr><td>Evidencia</td><td>Commits <code>2bfd558</code> y <code>d1ebb21</code>; TASK-21.3 (4/4 casos de autorización del historial).</td></tr>
+</table>
+
+<h3>HU-22 — Auditoría de operaciones</h3>
+<table>
+  <tr><th style="width:22%">Campo</th><th>Contenido</th></tr>
+  <tr><td>Enunciado</td><td><strong>Como</strong> auditor autorizado, <strong>quiero</strong> consultar los eventos críticos del sistema <strong>para</strong> verificar quién realizó cada operación y cuándo.</td></tr>
+  <tr><td>Prioridad / puntos</td><td>Crítica · 8 PH · Responsable BE con FE</td></tr>
+  <tr><td>Ajustes aplicados</td><td>La bitácora es <strong>inmutable</strong> (no se modifica ni elimina vía API) y solo el rol auditor la consulta con filtros y paginación. La exportación CSV aplica los filtros y la propia descarga queda auditada; I-16 la consume desde <code>/api/auditoria/eventos/exportacion</code>. Cada evento lleva actor, operación, recurso, fecha, resultado y correlación. <span class="ok">HECHO</span></td></tr>
+  <tr><td>Evidencia</td><td>Commit <code>86eec8c</code>; TASK-22.5 (6/6 casos de eventos críticos y logs sin secretos); validación local con CSV <code>200 text/csv</code>.</td></tr>
+</table>
+
+<!-- ===================== 3. CA Y VALIDACIONES ===================== -->
+<div class="page-break"></div>
+<h2>3. Criterios de aceptación y validaciones</h2>
+<p>
+  Los criterios provienen del backlog (Documento 5) y de las ramas de Backend, Frontend, QA y DevOps. A cada uno se le asocia
+  el caso del Plan de Pruebas (Documento 4) y el resultado real disponible en las evidencias.
+</p>
+
+<h3>3.1. Criterios de aceptación por historia</h3>
+<table>
+  <tr><th style="width:11%">HU</th><th>Criterio de aceptación</th><th style="width:12%">Validación</th><th style="width:22%">Resultado / evidencia</th></tr>
+  <tr><td rowspan="5"><strong>HU-19</strong></td><td>El endpoint de transición aplica la matriz permitida por tipo de trámite.</td><td>CP-04</td><td><span class="ok">10/10</span> TASK-19.5</td></tr>
+  <tr><td>Una transición no permitida responde <code>409</code>/<code>403</code> y conserva el estado original.</td><td>CP-04</td><td><span class="ok">Verificado</span> (caso de transición no permitida en suite)</td></tr>
+  <tr><td>No se llega a estados finales sin verificaciones respondidas y requisitos obligatorios completos.</td><td>CP-04, CP-06</td><td><span class="ok">Verificado</span> (bloqueo por prerrequisitos)</td></tr>
+  <tr><td>Todo cambio registra estado anterior, nuevo, autor, fecha y motivo.</td><td>CP-09</td><td><span class="ok">Verificado</span> (historial y auditoría)</td></tr>
+  <tr><td>Transiciones concurrentes sin pérdida de actualización (versión optimista).</td><td>CP-04</td><td><span class="ok">Verificado</span> («dos cambios simultáneos no se pisan»)</td></tr>
+  <tr><td rowspan="3"><strong>HU-20</strong></td><td>Observaciones vinculadas al expediente con autor, fecha y texto obligatorio.</td><td>CP-09</td><td><span class="ok">5/5</span> TASK-20.3</td></tr>
+  <tr><td>El funcionario solo observa en su ámbito; el solicitante solo ve lo suyo; una observación no cambia el estado.</td><td>CP-03, CP-09</td><td><span class="ok">Verificado</span> (permisos por rol)</td></tr>
+  <tr><td>Cada observación genera evento de auditoría y muestra el hilo (I-08 y P-19/P-20).</td><td>CP-09</td><td><span class="ok">Verificado</span>; I-08/P-20 conectados</td></tr>
+  <tr><td rowspan="3"><strong>HU-21</strong></td><td>El historial devuelve los eventos en orden con autor, fecha, cambio y motivo.</td><td>CP-09</td><td><span class="ok">Verificado</span> (línea de tiempo P-19/I-06)</td></tr>
+  <tr><td>El acceso exige permiso; los eventos no autorizados no se filtran ni revelan.</td><td>CP-09</td><td><span class="ok">4/4</span> TASK-21.3</td></tr>
+  <tr><td>El historial no expone datos sensibles innecesarios.</td><td>CP-11</td><td><span class="ok">Verificado</span> (pruebas de no exposición)</td></tr>
+  <tr><td rowspan="3"><strong>HU-22</strong></td><td>Quedan registradas las operaciones críticas (sesión, expedientes, documentos, verificaciones, consentimiento/ARCO y administración).</td><td>CP-09, CP-11</td><td><span class="ok">6/6</span> TASK-22.5</td></tr>
+  <tr><td>Cada evento incluye actor, operación, recurso, fecha, resultado y correlación; los registros son inmutables.</td><td>CP-09</td><td><span class="ok">Verificado</span> (<code>AuditoriaTest</code> 5/5)</td></tr>
+  <tr><td>Los logs no contienen contraseñas, tokens ni datos personales innecesarios; cobertura del 100 % de eventos críticos.</td><td>CP-11</td><td><span class="ok">6/6</span> con <span class="warn">1 observación</span> de correlación</td></tr>
+</table>
+
+<h3>3.2. Validaciones ejecutadas (evidencia del cierre)</h3>
+<table>
+  <tr><th style="width:52%">Validación</th><th style="width:14%">Resultado</th><th>Fuente</th></tr>
+  <tr><td>Sintaxis de todos los JavaScript de <code>Frontend/js</code> (<code>node --check</code>)</td><td><span class="ok">PASS</span></td><td><code>sprint-4-validacion-local-2026-10-19.md</code></td></tr>
+  <tr><td>Pruebas unitarias e integración del backend (Maven/Testcontainers)</td><td><span class="ok">PASS</span> — 111 pruebas, 0 fallas</td><td>QA <code>mvn-resumen.txt</code> / surefire</td></tr>
+  <tr><td>Configuración de Docker Compose (<code>docker compose config</code>)</td><td><span class="ok">PASS</span></td><td>Validación local Sprint 4</td></tr>
+  <tr><td>Build de imágenes <code>backend</code> y <code>frontend</code></td><td><span class="ok">PASS</span></td><td>Validación local Sprint 4</td></tr>
+  <tr><td>Healthcheck backend <code>/actuator/health</code></td><td><span class="ok">UP</span></td><td>Validación local Sprint 4</td></tr>
+  <tr><td>Healthcheck frontend <code>/salud</code></td><td><span class="ok">ok</span></td><td>Validación local Sprint 4</td></tr>
+  <tr><td>Protección de API sin sesión</td><td><span class="ok">401 esperado</span></td><td>Validación local Sprint 4</td></tr>
+  <tr><td>Login de auditor y consulta/exportación de auditoría</td><td><span class="ok">PASS</span> — CSV <code>200 text/csv</code></td><td>Validación local Sprint 4</td></tr>
+  <tr><td>Arranque limpio en máquina nueva</td><td><span class="ok">127 s · 3/3 healthy</span></td><td>TASK-10.6 (QA)</td></tr>
+  <tr><td>Flujos de API ejecutados contra Docker</td><td><span class="ok">35/35 flujos · 131/131 peticiones</span></td><td>QA <code>flujos.json</code> / XLSX</td></tr>
+  <tr><td>Flujos del portal (login, perfil, registro, recuperación)</td><td><span class="ok">6/6</span> con 1 observación (P-06)</td><td>QA flujos U-01…U-06</td></tr>
+  <tr><td>Pantallas del inventario que renderizan (smoke Edge headless)</td><td><span class="ok">46/46</span></td><td><code>ESTADO-Y-CONTINUACION.txt</code></td></tr>
+</table>
+
+<h3>3.3. Definition of Done (DoD) del Sprint 4</h3>
+<table>
+  <tr><th style="width:62%">Criterio</th><th style="width:12%">Estado</th><th>Evidencia</th></tr>
+  <tr><td>Ninguna transición no permitida es posible vía API.</td><td><span class="ok">CUMPLIDO</span></td><td>TASK-19.5 · 10/10 · 100 pares</td></tr>
+  <tr><td>Cobertura del 100 % de los eventos críticos definidos en pruebas.</td><td><span class="ok">CUMPLIDO</span></td><td>TASK-22.5 · 6/6</td></tr>
+  <tr><td>Logs auditados sin secretos ni datos sensibles.</td><td><span class="ok">CUMPLIDO</span> con observación</td><td>TASK-22.5 · falta el id de correlación en líneas de log</td></tr>
+  <tr><td>Suite de autorización de historial y auditoría en verde.</td><td><span class="ok">CUMPLIDO</span></td><td>TASK-21.3 · 4/4 · suite 111/111</td></tr>
+  <tr><td>Matriz de transiciones publicada y aprobada por el PO.</td><td><span class="warn">PENDIENTE</span></td><td>Publicada; aprobación formal del PO <span class="pc">POR CONFIRMAR</span></td></tr>
+  <tr><td>HU-19…HU-22 aceptadas y marcadas en TeamTrack.</td><td><span class="warn">PENDIENTE</span></td><td>Cierre administrativo</td></tr>
+</table>
+
+<!-- ===================== 4. TRIPLE RESTRICCIÓN ===================== -->
+<div class="page-break"></div>
+<h2>4. Matriz de triple restricción (alcance · tiempo · recursos · calidad)</h2>
+<table>
+  <tr>
+    <th style="width:13%">Dimensión</th>
+    <th style="width:29%">Comprometido (plan)</th>
+    <th style="width:33%">Estado observado</th>
+    <th style="width:25%">Evidencia / fuente</th>
+  </tr>
+  <tr>
+    <td><strong>Alcance</strong></td>
+    <td>4 historias (HU-19 a HU-22), 16 tareas, 26 PH. Entregables: máquina de estados operativa, observaciones e historial visibles por rol y auditoría consultable con cobertura de eventos críticos.</td>
+    <td>Las 4 HU implementadas e integradas en <code>main</code>. Matriz publicada, interfaces I-04/I-08/I-10/I-16 y P-20 conectadas. Cifra de PH por conciliar: el mapa lista 30 y la suma de HU da 26.</td>
+    <td>Backlog Doc 5 · <code>matriz-transiciones-sprint4.md</code> · commit <code>86eec8c</code></td>
+  </tr>
+  <tr>
+    <td><strong>Tiempo</strong></td>
+    <td>2 semanas (semanas 7–8 del plan de 7 sprints).</td>
+    <td>Trabajo con evidencia entre el 10 y el 19 de octubre de 2026; validación local e integración en <code>main</code> el 19-oct. Fechas oficiales del sprint: <span class="pc">POR CONFIRMAR</span>.</td>
+    <td>Log de commits · <code>docs/evidencias/sprint-4-validacion-local-2026-10-19.md</code></td>
+  </tr>
+  <tr>
+    <td><strong>Recursos</strong></td>
+    <td>Capacidad de referencia: 5 personas × 2 semanas × ~30 h ≈ 150 h/sprint. Estimación del Sprint 4 ≈ 86 h (PO/LT 8 h, Backend 39 h, Frontend 14 h, QA 21 h, DevOps 14 h).</td>
+    <td>Horas reales por persona no documentadas: <span class="pc">POR CONFIRMAR</span>. Participación verificable en evidencias: Kenneth Carter (integración/DevOps), Edgar Rosario (QA) y Vivian Paris (tareas QA asignadas).</td>
+    <td>Doc 5 §5.3.7 · tablas de tareas de las ramas · README de QA</td>
+  </tr>
+  <tr>
+    <td><strong>Calidad</strong></td>
+    <td>DoD: cero transiciones inválidas por API, cobertura del 100 % de eventos críticos, logs sin datos sensibles y suites de autorización en verde. Ejes CP-04 y CP-09.</td>
+    <td>Suite backend <strong>111 pruebas / 0 fallas</strong>; Sprint 4: transiciones 10/10, observaciones 5/5, historial 4/4, auditoría 6/6. 35/35 flujos API y 6/6 flujos de portal. 5 hallazgos no bloqueantes.</td>
+    <td>QA <code>README.md</code>, <code>mvn-resumen.txt</code>, <code>resultados.json</code>, surefire</td>
+  </tr>
+</table>
+<div class="note">
+  <strong>Lectura de la restricción.</strong> El alcance comprometido se cumplió y la calidad está respaldada por evidencia
+  ejecutada (<em>no</em> por estimaciones). La tensión se movió al <strong>cierre administrativo</strong>: revisión, PR y
+  TeamTrack. No hay señal para recortar alcance; la acción correcta es cerrar la gestión pendiente y atender los hallazgos no
+  bloqueantes antes de abrir el Sprint 5.
+</div>
+
+<h3>4.1. Desglose de la estimación de recursos (86 h)</h3>
+<table>
+  <tr><th>Grupo de tareas</th><th>Tareas</th><th style="width:12%">Horas</th></tr>
+  <tr><td>PO / Líder técnico — HU-19</td><td>TASK-19.1 (matriz de transiciones)</td><td>4 h</td></tr>
+  <tr><td>Backend — HU-19</td><td>TASK-19.2, TASK-19.3</td><td>13 h</td></tr>
+  <tr><td>Backend — HU-20</td><td>TASK-20.1</td><td>6 h</td></tr>
+  <tr><td>Backend — HU-21</td><td>TASK-21.1</td><td>5 h</td></tr>
+  <tr><td>Backend — HU-22</td><td>TASK-22.1 (4 h, con LT), TASK-22.2, TASK-22.3</td><td>18 h</td></tr>
+  <tr><td>Frontend</td><td>TASK-19.4, TASK-20.2, TASK-21.2, TASK-22.4</td><td>19 h</td></tr>
+  <tr><td>QA</td><td>TASK-19.5, TASK-20.3, TASK-21.3, TASK-22.5</td><td>21 h</td></tr>
+  <tr><td>DevOps</td><td>Auditoría persistente, logs, correlación e I-18</td><td>14 h</td></tr>
+</table>
+<p class="small">Las horas son estimaciones de planificación; el esfuerzo real debe conciliarse con el equipo:
+  <span class="pc">POR CONFIRMAR</span>. TASK-22.1 se atribuye una sola vez (LT/BE).</p>
+
+<!-- ===================== 5. INDICADORES QA ===================== -->
+<div class="page-break"></div>
+<h2>5. Indicadores de QA y cómo se miden</h2>
+<p>
+  Cada indicador incluye su definición, la meta y el resultado real de las evidencias. Los resultados del Sprint 4 están
+  respaldados por la corrida de QA del 18-oct-2026 y la validación local del 19-oct-2026.
+</p>
+<table>
+  <tr>
+    <th style="width:21%">Indicador</th>
+    <th style="width:23%">Definición / fórmula</th>
+    <th style="width:12%">Meta</th>
+    <th style="width:22%">Cómo se mide</th>
+    <th style="width:22%">Resultado real</th>
+  </tr>
+  <tr>
+    <td>Transiciones inválidas aceptadas</td>
+    <td>Peticiones de cambio de estado no permitidas aceptadas (200) ÷ peticiones no permitidas.</td>
+    <td>0 (CP-04)</td>
+    <td>Suite de transiciones: válidas, inválidas, concurrentes y bloqueo por requisitos (<code>QaTransicionesTest</code>).</td>
+    <td><span class="ok">0 · 10/10 casos · 100 pares de estados</span></td>
+  </tr>
+  <tr>
+    <td>Integridad ante concurrencia</td>
+    <td>Actualizaciones perdidas entre dos cambios simultáneos sobre el mismo expediente.</td>
+    <td>0 pérdidas</td>
+    <td>Prueba de versión optimista / «dos cambios simultáneos no se pisan» (<code>EstadosTest</code> 8/8).</td>
+    <td><span class="ok">0 pérdidas</span></td>
+  </tr>
+  <tr>
+    <td>Accesos no autorizados a historial/auditoría</td>
+    <td>Consultas permitidas a roles sin permiso ÷ consultas de roles restringidos.</td>
+    <td>0 (CP-09)</td>
+    <td>Suite de autorización por rol (<code>AutorizacionTest</code>, <code>QaHistorialTest</code>, TASK-20.3 y 21.3).</td>
+    <td><span class="ok">0 · 4/4 y 5/5 en las tareas del sprint</span></td>
+  </tr>
+  <tr>
+    <td>Cobertura de eventos críticos de auditoría</td>
+    <td>Eventos críticos registrados ÷ eventos críticos definidos.</td>
+    <td>100 %</td>
+    <td>Prueba de integridad de la bitácora (<code>QaAuditoriaLogsTest</code>, TASK-22.5).</td>
+    <td><span class="ok">100 % (6/6 casos)</span></td>
+  </tr>
+  <tr>
+    <td>Fuga de datos sensibles en logs/errores</td>
+    <td>Registros con contraseñas, tokens o datos personales innecesarios ÷ registros revisados.</td>
+    <td>0 (CP-11)</td>
+    <td>Revisión de logs + pruebas de no exposición (<code>QaAuditoriaLogsTest</code> 1/1, TASK-22.5 6/6).</td>
+    <td><span class="ok">0 fugas en pruebas</span> · <span class="warn">1 obs.: id de correlación no impreso</span></td>
+  </tr>
+  <tr>
+    <td>Inmutabilidad de la bitácora</td>
+    <td>Intentos de modificar o eliminar eventos que prosperan.</td>
+    <td>0 (CP-11)</td>
+    <td><code>AuditoriaTest</code>: «los eventos no se pueden modificar ni eliminar».</td>
+    <td><span class="ok">0 · 5/5</span></td>
+  </tr>
+  <tr>
+    <td>Suite completa del backend</td>
+    <td>Pruebas ejecutadas con resultado exitoso ÷ total ejecutado.</td>
+    <td>100 %</td>
+    <td><code>./mvnw test</code> (Maven/Testcontainers).</td>
+    <td><span class="ok">111/111 · 0 fallas</span> en 53,1 s</td>
+  </tr>
+  <tr>
+    <td>Flujos punta a punta (API y portal)</td>
+    <td>Flujos con el código esperado ÷ flujos ejecutados.</td>
+    <td>100 %</td>
+    <td>Recorrido automatizado contra Docker (<code>flujos.json</code> / XLSX).</td>
+    <td><span class="ok">API 35/35 (131/131 peticiones)</span> · <span class="ok">portal 6/6</span></td>
+  </tr>
+  <tr>
+    <td>Rendimiento del listado</td>
+    <td>P95 de respuesta con 1.000 expedientes.</td>
+    <td>&lt; 2 s (meta inicial)</td>
+    <td>Medición de TASK-16.4 (<code>listado-1000.txt</code>).</td>
+    <td><span class="ok">P95 = 30 ms</span></td>
+  </tr>
+  <tr>
+    <td>Arranque limpio</td>
+    <td>Tiempo hasta 3 servicios saludables en máquina nueva.</td>
+    <td>≤ 30 min</td>
+    <td>TASK-10.6: clonar, <code>docker compose build --no-cache</code> y <code>up -d</code>.</td>
+    <td><span class="ok">127 s · 3/3 healthy</span></td>
+  </tr>
+  <tr>
+    <td>Cobertura de la interfaz (smoke)</td>
+    <td>Pantallas que renderizan sin excepción ÷ total del inventario.</td>
+    <td>46/46</td>
+    <td>Edge headless sobre 27 pantallas del portal + 19 internas, con los 4 estados.</td>
+    <td><span class="ok">46/46</span></td>
+  </tr>
+  <tr>
+    <td>Incidencias críticas abiertas</td>
+    <td>Incidencias críticas/altas sin cerrar en la entrega.</td>
+    <td>0</td>
+    <td>Registro de hallazgos con severidad y responsable (Doc 4 §4.6).</td>
+    <td><span class="ok">0 críticas</span> · 5 no bloqueantes</td>
+  </tr>
+</table>
+<p class="small">Los umbrales de rendimiento bajo carga concurrente (JMeter) y el análisis OWASP ZAP pertenecen al Sprint 6
+  (HU-28/HU-29) y no forman parte del alcance del Sprint 4. Los indicadores de producto del despacho (reducción del tiempo de
+  preparación, respuesta al cliente, vigencias) se miden en operación y no en este sprint.</p>
+
+<h3>5.1. Hallazgos no bloqueantes registrados por QA</h3>
+<table>
+  <tr><th style="width:5%">#</th><th>Hallazgo</th><th style="width:18%">Responsable</th><th style="width:14%">Impacto</th></tr>
+  <tr><td>1</td><td>La regla de tratamiento sin consentimiento existe y está probada, pero ningún endpoint la invoca todavía.</td><td>Backend</td><td>Debe llamarse en las verificaciones del Sprint 5.</td></tr>
+  <tr><td>2</td><td>El <code>X-Correlation-Id</code> no aparece en las líneas del log (falta <code>%X{correlacionId}</code> en el patrón).</td><td>Kenneth / Edgar</td><td>Afecta la validación de correlación.</td></tr>
+  <tr><td>3</td><td>P-06 «Mis trámites» mostró carga duplicada y tarjetas de ejemplo en la corrida del 18-oct.</td><td>Frontend</td><td>Re-verificar tras la integración del 19-oct (TASK-16.3).</td></tr>
+  <tr><td>4</td><td>Con <code>CORREO_SIMULADO=true</code> el token de recuperación se escribe en el log del backend.</td><td>Backend / DevOps</td><td>Aceptable en desarrollo; debe ser <code>false</code> fuera de él.</td></tr>
+  <tr><td>5</td><td>OWASP ZAP y JMeter figuran en el Sprint 6 y no se ejecutaron en esta entrega.</td><td>QA</td><td>Fuera de alcance del Sprint 4.</td></tr>
+</table>
+
+<!-- ===================== 6. IMPACTO ===================== -->
+<div class="page-break"></div>
+<h2>6. Impacto de cambios, retrasos y tareas pendientes</h2>
+
+<h3>6.1. Cambios de alcance que afectaron al sprint</h3>
+<table>
+  <tr><th style="width:10%">Código</th><th style="width:34%">Cambio</th><th>Impacto sobre el Sprint 4</th></tr>
+  <tr><td>RC-01</td><td>Inventario oficial de 45 pantallas (portal P-01…P-27 + interno I-01…I-18) en lugar del esquema de 21.</td><td>Amplió las pantallas que consumen estados, historial y auditoría (P-19, P-20, I-04, I-06, I-08, I-10, I-16).</td></tr>
+  <tr><td>RC-02</td><td>Reencuadre comercial a producto para bufetes (Ley 81 de 2019): verificaciones en modo manual asistido.</td><td>Incorporó consentimiento informado y derechos ARCO como eventos de auditoría y reforzó la regla de tratamiento sin consentimiento.</td></tr>
+</table>
+
+<h3>6.2. Estado de pendientes y su impacto</h3>
+<table>
+  <tr><th style="width:25%">Pendiente</th><th>Detalle</th><th style="width:14%">Impacto</th></tr>
+  <tr><td>Cierre administrativo</td><td>Revisión del equipo, PR y actualización de TeamTrack con commits y evidencias.</td><td><span class="warn">Bloquea el cierre formal</span>, no la operación.</td></tr>
+  <tr><td>Aprobación de la matriz</td><td>La matriz está publicada y codificada; falta la aprobación formal del PO.</td><td><span class="warn">Riesgo de cambio de reglas</span> si el PO pide ajustes.</td></tr>
+  <tr><td>Hallazgo #2 — correlación</td><td>Agregar el identificador de correlación al patrón de log.</td><td><span class="warn">Bajo</span>; afecta trazabilidad técnica.</td></tr>
+  <tr><td>Hallazgo #3 — P-06</td><td>Re-verificar «Mis trámites» tras la conexión del Sprint 3.</td><td><span class="warn">Bajo</span>; ya existe la conexión.</td></tr>
+  <tr><td>Hallazgo #1 — consentimiento</td><td>Invocar la regla en las operaciones que correspondan (Sprint 5).</td><td><span class="warn">Medio</span>; requisito legal Ley 81.</td></tr>
+  <tr><td>Hallazgo #4 — correo simulado</td><td>Asegurar <code>CORREO_SIMULADO=false</code> fuera de desarrollo.</td><td><span class="warn">Medio</span>; exposición de token en logs.</td></tr>
+  <tr><td>Conciliación de datos</td><td>PH 26 vs. 30 y horas reales por persona.</td><td><span class="warn">Bajo</span>; afecta métricas del informe.</td></tr>
+</table>
+
+<h3>6.3. Riesgos del sprint y cómo quedaron</h3>
+<ul>
+  <li><strong>Matriz de transiciones discutida a mitad de sprint.</strong> Se mitigó publicándola y codificándola; queda la
+      aprobación formal del PO.</li>
+  <li><strong>Auditoría demasiado verbosa.</strong> Se mantiene como riesgo de operación: la política de eventos y retención debe
+      confirmarse y la escritura no debe bloquear la operación principal. Estado: <span class="pc">POR CONFIRMAR</span>.</li>
+</ul>
+
+<h3>6.4. Para cerrar definitivamente el Sprint 4</h3>
+<ol>
+  <li>PO/LT: aprobar formalmente la matriz de transiciones y aceptar HU-19…HU-22.</li>
+  <li>Equipo: revisar las evidencias de QA y preparar el PR.</li>
+  <li>Actualizar TeamTrack con el commit <code>86eec8c</code> y la evidencia de pruebas.</li>
+  <li>Atender los hallazgos #1, #2 y #4; re-verificar #3.</li>
+  <li>Conciliar PH (26 vs. 30) y horas reales.</li>
+</ol>
+
+<!-- ===================== 7. CONCLUSIÓN ===================== -->
+<h2>7. Conclusión del estado actual del Sprint 4</h2>
+<p>
+  El Sprint 4 está <strong>técnicamente completo y validado</strong>. La máquina de estados funciona con una matriz publicada,
+  las observaciones respetan permisos y ámbito, el historial se proyecta por rol y la auditoría es inmutable, consultable y
+  exportable. La interfaz correspondiente quedó conectada a la API real y el trabajo está integrado en <code>main</code>
+  (commit <code>86eec8c</code> del 19-oct-2026).
+</p>
+<p>
+  La calidad no se apoya en una impresión: QA ejecutó <strong>111 pruebas con 0 fallas</strong>, incluidos los 10 casos de
+  transiciones (100 pares de estados), 5 de observaciones, 4 de historial y 6 de auditoría; además, 35/35 flujos de API con
+  131/131 peticiones correctas y 6/6 flujos de portal. La validación local confirmó sintaxis, build, healthchecks,
+  <code>401</code> sin sesión y descarga CSV autorizada. El arranque limpio se completó en 127 s con 3/3 servicios saludables y
+  el listado de 1.000 expedientes respondió con P95 de 30 ms.
+</p>
+<p>
+  Lo que falta es <strong>cierre administrativo y higiene</strong>: aprobación formal de la matriz, revisión del equipo, PR y
+  TeamTrack. Se suman cinco hallazgos no bloqueantes, de los cuales el más relevante para la Ley 81 es que la regla de
+  consentimiento aún no se invoca desde ningún endpoint; debe conectarse en las verificaciones del Sprint 5. No hay bloqueos
+  técnicos ni necesidad de recortar alcance.
+</p>
+<p>
+  <strong>Recomendación.</strong> Dar el Sprint 4 por cerrado técnicamente, ejecutar en paralelo el cierre administrativo y
+  entrar al Sprint 5 con los hallazgos #1, #2 y #4 en el backlog de correcciones. Dejar constancia en el Registro de cambios del
+  backlog de la aprobación de la matriz y de la conciliación de PH/horas.
+</p>
+
+<hr>
+<h3>Fuentes y evidencias consultadas</h3>
+<ul class="small">
+  <li><code>Documentacion/matriz-transiciones-sprint4.md</code> — matriz de transiciones publicada (rama <code>main</code>).</li>
+  <li><code>docs/evidencias/sprint-4-validacion-local-2026-10-19.md</code> — validación local y criterios verificados.</li>
+  <li><code>QA/evidencias/sprints-2-4/README.md</code>, <code>mvn-resumen.txt</code>, <code>resultados.json</code>, <code>surefire/</code>,
+      <code>flujos/</code> — evidencias de QA de los Sprints 2 a 4 (rama <code>qa/pruebas-sprints-2-4</code>).</li>
+  <li><code>docs/evidencias/sprint-3-cierre-2026-10-19.md</code> — cierre técnico del Sprint 3 que habilita el flujo del Sprint 4.</li>
+  <li><code>Documentacion/05-backlog-siete-sprints.md</code> — HU-19…HU-22, criterios, entregables, DoD y riesgos.</li>
+  <li><code>Documentacion/04-plan-de-pruebas.md</code> — CP-01…CP-14, estrategia y cierre de incidencias.</li>
+  <li><code>Backend/Rama-02-Backend.md</code>, <code>Frontend/Rama-01-Frontend.md</code>, <code>QA/Rama-03-QA-Seguridad.md</code>,
+      <code>DevOps/Rama-05-DevOps.md</code> y <code>Documentacion/Rama-04-Producto-Documentacion.md</code> — tareas y criterios por rama.</li>
+  <li>Commits de referencia: <code>86eec8c</code> (integración Sprint 4), <code>90555ae</code> y <code>c33d132</code> (Sprint 3),
+      <code>2bfd558</code> y <code>d1ebb21</code> (línea de tiempo), <code>119fb11</code>, <code>1eb4c90</code> y <code>5abac8f</code> (QA).</li>
+  <li><code>Frontend/ESTADO-Y-CONTINUACION.txt</code> y <code>RESUMEN-FRONTEND.txt</code> — estado del frontend (46/46 pantallas).</li>
+</ul>
+
+<h3>Datos que aún conviene confirmar en grupo</h3>
+<ul class="small">
+  <li>Fechas oficiales de inicio y fin del Sprint 4 y días de daily.</li>
+  <li>Horas reales por persona (el informe usa la estimación de 86 h).</li>
+  <li>Aprobación formal de la matriz de transiciones por el PO.</li>
+  <li>Cifra de PH del Sprint 4: 26 (suma de HU) vs. 30 (mapa de sprints).</li>
+  <li>Estado de la política de eventos y retención de auditoría.</li>
+  <li>Cierre en TeamTrack del commit <code>86eec8c</code> y de las tareas QA.</li>
+</ul>
+
+</body>
+</html>

@@ -1,0 +1,20 @@
+{
+  "meta": {
+    "pantalla": "P-01",
+    "titulo": "Inicio de sesión",
+    "escenario": "exito",
+    "esquema": "hu-08/v1",
+    "nota": "Datos ficticios. El token es simulado en el MVP (sin secretos reales en el cliente)."
+  },
+  "data": {
+    "token": "demo.token.simulado",
+    "expiraEn": 3600,
+    "rol": "SOLICITANTE",
+    "usuario": {
+      "id": "USR-0001",
+      "correo": "cliente.demo@bufete.test",
+      "nombre": "María Demo"
+    }
+  },
+  "error": null
+}
