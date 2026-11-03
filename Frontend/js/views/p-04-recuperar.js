@@ -49,7 +49,7 @@
       showStep2();
     });
     var linkLogin = layout.el("a", "auth-link", "Volver a iniciar sesión");
-    linkLogin.href = "#/login";
+    linkLogin.href = "/login";
     linkLogin.addEventListener("click", function (ev) {
       ev.preventDefault();
       if (opts.onGoToLogin) opts.onGoToLogin();
