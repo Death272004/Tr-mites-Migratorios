@@ -126,7 +126,10 @@
       (route.startsWith("#/interno/") && route !== INTERNAL_LOGIN_ROUTE);
 
     if (needsAuth && !isAuthenticated) {
-      route = isInternalRole(role) ? INTERNAL_LOGIN_ROUTE : LOGIN_ROUTE;
+      // La URL solicitada determina el acceso correcto. Sin una sesión aún
+      // no existe un rol fiable para decidir entre el portal y el módulo
+      // institucional.
+      route = route.startsWith("#/interno/") ? INTERNAL_LOGIN_ROUTE : LOGIN_ROUTE;
     }
 
     if (!canAccess(route, role)) {
