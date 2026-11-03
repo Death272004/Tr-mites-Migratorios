@@ -65,13 +65,15 @@ El modelo de datos está en `src/main/resources/db/migration` (Flyway).
 
 ##  Cuentas iniciales del equipo
 
-La migración Flyway `V7__usuarios_iniciales.sql` dejó las cuentas semilla y `V8__cuentas_integrantes_equipo.sql` las reemplaza por las 9 cuentas del equipo. Las contraseñas iniciales siguen el formato `nombre.apellido` únicamente para la prueba local; en la base solo se guarda su hash BCrypt. El cargador Java `DatosDemo` queda desactivado por defecto (`DEMO_USUARIOS=false`).
+La migración Flyway `V7__usuarios_iniciales.sql` dejó las cuentas semilla, `V8__cuentas_integrantes_equipo.sql` las reemplaza por las cuentas del equipo y `V9__distribuir_roles_equipo.sql` aplica la distribución funcional. Las contraseñas iniciales siguen el formato `nombre.apellido` únicamente para la prueba local; en la base solo se guarda su hash BCrypt. El cargador Java `DatosDemo` queda desactivado por defecto (`DEMO_USUARIOS=false`).
 
 | Correo | Rol | Permisos |
 | --- | --- | --- |
 | `kenneth.carter@tr-utp.com` | ADMIN | CONSULTAR, ADMINISTRAR |
-| `richard.rodriguez@tr-utp.com`, `edgar.rosario@tr-utp.com`, `jonathan.gomez@tr-utp.com`, `vivian.paris@tr-utp.com` | SOLICITANTE | PORTAL |
-| `daniela.anaya@tr-utp.com`, `edwin.cisnero@tr-utp.com`, `leonardo.liang@tr-utp.com`, `javier.pravia@tr-utp.com` | SOLICITANTE | PORTAL |
+| `richard.rodriguez@tr-utp.com` | SUPERVISOR | CONSULTAR, REPORTAR |
+| `edgar.rosario@tr-utp.com`, `jonathan.gomez@tr-utp.com` | FUNCIONARIO | CONSULTAR, VERIFICAR, OBSERVAR, RESOLVER, NOTIFICAR |
+| `vivian.paris@tr-utp.com` | AUDITOR | CONSULTAR, AUDITAR, REPORTAR |
+| `daniela.anaya@tr-utp.com`, `edwin.cisnero@tr-utp.com`, `leonardo.liang@tr-utp.com`, `javier.pravia@tr-utp.com`, `yomayri2911@gmail.com` | SOLICITANTE | PORTAL |
 
 Los permisos son los mismos nueve del frontend (`js/utils/perms.js`) y llegan en `usuario.permisos` al iniciar sesión. Los del FUNCIONARIO se asignan por cuenta; los demás roles llevan siempre los de su rol.
 
