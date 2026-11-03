@@ -20,14 +20,32 @@
     while (node.firstChild) node.removeChild(node.firstChild);
   }
 
-  function renderHeaderUser(container, { user, role, onLogout }) {
+  function profileIcon(className) {
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("class", className || "app-profile-icon");
+    svg.setAttribute("viewBox", "0 0 24 24");
+    svg.setAttribute("aria-hidden", "true");
+    svg.setAttribute("focusable", "false");
+    const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    circle.setAttribute("cx", "12"); circle.setAttribute("cy", "8"); circle.setAttribute("r", "3.2");
+    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    path.setAttribute("d", "M4.8 20c.8-3.5 3.2-5.4 7.2-5.4s6.4 1.9 7.2 5.4");
+    path.setAttribute("fill", "none"); path.setAttribute("stroke", "currentColor"); path.setAttribute("stroke-width", "1.8");
+    path.setAttribute("stroke-linecap", "round");
+    svg.appendChild(circle); svg.appendChild(path);
+    return svg;
+  }
+
+  function renderHeaderUser(container, { user, role, authenticated, onNavigate, onLogout }) {
     clear(container);
 
     container.className = "app-contextbar";
-    const contextTrigger = el("button", "app-context-trigger", "Sesión");
+    const contextTrigger = el("button", "app-context-trigger");
     contextTrigger.type = "button";
     contextTrigger.setAttribute("aria-expanded", "false");
     contextTrigger.setAttribute("aria-haspopup", "true");
+    contextTrigger.appendChild(profileIcon("app-profile-icon"));
+    contextTrigger.appendChild(el("span", "app-context-trigger__label", "Sesión"));
     contextTrigger.appendChild(el("span", "app-context-trigger__chevron"));
 
     const contextMenu = el("div", "app-context-menu");
@@ -36,13 +54,30 @@
     container.appendChild(contextTrigger);
     container.appendChild(contextMenu);
 
-    contextMenu.appendChild(el("span", "app-header__user-name", user?.nombre ?? "No autenticado"));
-    contextMenu.appendChild(el("span", "app-header__badge", ROLE_LABELS[role] ?? role));
+    const identity = el("div", "app-context-menu__identity");
+    identity.appendChild(profileIcon("app-context-menu__profile-icon"));
+    const identityText = el("div", "app-context-menu__identity-text");
+    identityText.appendChild(el("span", "app-header__user-name", user?.nombre ?? "No autenticado"));
+    identityText.appendChild(el("span", "app-header__badge", ROLE_LABELS[role] ?? role));
+    identity.appendChild(identityText);
+    contextMenu.appendChild(identity);
 
-    const logout = el("button", "app-header__logout", "Salir");
-    logout.type = "button";
-    logout.addEventListener("click", () => onLogout?.());
-    contextMenu.appendChild(logout);
+    const goTo = (route, text) => {
+      const link = el("a", "app-context-menu__link", text);
+      link.href = route;
+      link.setAttribute("role", "menuitem");
+      link.addEventListener("click", () => onNavigate?.(route));
+      return link;
+    };
+    if (authenticated) contextMenu.appendChild(goTo("#/perfil", "Mi perfil"));
+    contextMenu.appendChild(goTo("#/cuenta/configuracion", "Configuración"));
+
+    if (authenticated) {
+      const logout = el("button", "app-header__logout", "Salir");
+      logout.type = "button";
+      logout.addEventListener("click", () => onLogout?.());
+      contextMenu.appendChild(logout);
+    }
 
     const closeContext = () => {
       contextMenu.hidden = true;

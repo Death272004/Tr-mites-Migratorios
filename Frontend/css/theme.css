@@ -1575,6 +1575,17 @@ body {
   cursor: pointer;
 }
 
+.app-profile-icon {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  color: currentColor;
+}
+
+.app-context-trigger__label {
+  line-height: 1;
+}
+
 .app-context-trigger:hover,
 .app-contextbar.is-open .app-context-trigger,
 .app-context-trigger:focus-visible {
@@ -1607,8 +1618,9 @@ body {
   gap: 10px;
   min-width: 245px;
   padding: 16px;
-  background: #ffffff;
-  border: 1px solid #cbd7e2;
+  background: var(--theme-paper);
+  border: 1px solid var(--theme-line);
+  color: var(--theme-ink);
   border-radius: 7px;
   box-shadow: 0 15px 30px rgba(16, 42, 67, 0.2);
 }
@@ -1618,17 +1630,67 @@ body {
 }
 
 .app-context-menu .app-header__user-name {
-  color: #263b4e;
+  color: var(--theme-ink);
   font-weight: 700;
+}
+
+.app-context-menu__identity {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--theme-line);
+}
+
+.app-context-menu__profile-icon {
+  width: 34px;
+  height: 34px;
+  padding: 6px;
+  flex: 0 0 34px;
+  border-radius: 50%;
+  color: var(--theme-blue);
+  background: color-mix(in srgb, var(--theme-blue) 14%, transparent);
+}
+
+.app-context-menu__identity-text {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
 }
 
 .app-context-menu .app-header__badge {
   justify-self: start;
   padding: 6px 9px;
-  background: #eaf2f8;
-  border: 1px solid #c6d5e1;
+  background: color-mix(in srgb, var(--theme-blue) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--theme-blue) 35%, var(--theme-line));
   border-radius: 4px;
-  color: #155b91;
+  color: var(--theme-blue);
+}
+
+.app-context-menu__link,
+.app-context-menu .app-header__logout {
+  display: block;
+  width: 100%;
+  min-height: 36px;
+  padding: 9px 11px;
+  border: 1px solid var(--theme-line);
+  border-radius: 5px;
+  background: transparent;
+  color: var(--theme-ink);
+  text-align: left;
+  text-decoration: none;
+  font: inherit;
+  cursor: pointer;
+}
+
+.app-context-menu__link:hover,
+.app-context-menu__link:focus-visible,
+.app-context-menu .app-header__logout:hover,
+.app-context-menu .app-header__logout:focus-visible {
+  background: color-mix(in srgb, var(--theme-blue) 12%, transparent);
+  border-color: var(--theme-blue);
+  color: var(--theme-blue);
+  outline: none;
 }
 
 .app-context-menu .app-header__role {
@@ -1846,11 +1908,37 @@ html.theme-high-contrast .settings-section {
   border-color: #7b8b99;
 }
 
-/* Modo oscuro de demostración, aplicado a todo el portal. */
+/* Modo oscuro del portal, aplicado a toda la interfaz. */
 html.theme-dark body,
 html.theme-dark .app-content {
   background: #101b26;
   color: #e5edf4;
+}
+
+html.theme-dark .app-context-menu {
+  background: #16222d;
+  border-color: #38566c;
+  color: #e5edf4;
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.42);
+}
+
+html.theme-dark .app-context-menu__identity {
+  border-bottom-color: #38566c;
+}
+
+html.theme-dark .app-context-menu__link,
+html.theme-dark .app-context-menu .app-header__logout {
+  color: #e5edf4;
+  border-color: #38566c;
+}
+
+html.theme-dark .app-context-menu__link:hover,
+html.theme-dark .app-context-menu__link:focus-visible,
+html.theme-dark .app-context-menu .app-header__logout:hover,
+html.theme-dark .app-context-menu .app-header__logout:focus-visible {
+  background: #203e55;
+  border-color: #8fc5ee;
+  color: #ffffff;
 }
 
 html.theme-dark {

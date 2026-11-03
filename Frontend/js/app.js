@@ -68,6 +68,8 @@
     layout.renderHeaderUser(els.user, {
       user: authed ? state.user : { nombre: "No autenticado" },
       role: state.role,
+      authenticated: authed,
+      onNavigate: navigate,
       onLogout: function () {
         var role = state.role;
         function fin() {
