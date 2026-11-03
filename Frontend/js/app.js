@@ -37,10 +37,6 @@
     navToggle: document.getElementById("nav-toggle"),
   };
 
-  function loginRoute(role) {
-    return isInternalRole(role) ? router.INTERNAL_LOGIN_ROUTE : router.LOGIN_ROUTE;
-  }
-
   function navigate(route) {
     if (window.location.hash === route) {
       state.route = route;
@@ -71,10 +67,11 @@
       authenticated: authed,
       onNavigate: navigate,
       onLogout: function () {
-        var role = state.role;
         function fin() {
           session.clearSession();
-          navigate(loginRoute(role));
+          // Todos los perfiles regresan al login general del portal.
+          // El rol se resolverá nuevamente después de autenticarse.
+          navigate(router.LOGIN_ROUTE);
         }
         if (global.tm.api.isOnline() && session.getToken()) {
           global.tm.api.request("POST", "/auth/logout", { pantalla: "P-01" }, function () { fin(); });
