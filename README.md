@@ -1,9 +1,9 @@
 <p align="center">
-  <img src="docs/assets/readme-banner-v2.svg" alt="Banner de la Plataforma Interoperable de Trámites Migratorios" width="100%">
+  <img src="recursos-proyecto/assets/readme-banner-v2.svg" alt="Banner de la Plataforma Interoperable de Trámites Migratorios" width="100%">
 </p>
 
 <p align="center">
-  <img src="docs/assets/tech-stack.svg" alt="Tecnologías del proyecto" width="100%">
+  <img src="recursos-proyecto/assets/tech-stack.svg" alt="Tecnologías del proyecto" width="100%">
 </p>
 
 <p align="center">
@@ -16,7 +16,7 @@
 </p>
 
 <p align="center">
-  <img src="docs/assets/project-status.svg" alt="Estado del MVP, QA y trazabilidad" width="100%">
+  <img src="recursos-proyecto/assets/project-status.svg" alt="Estado del MVP, QA y trazabilidad" width="100%">
 </p>
 
 > Una plataforma académica para que un bufete pueda organizar expedientes migratorios, consultar documentos y dar seguimiento a verificaciones desde un solo lugar.
@@ -32,9 +32,21 @@
   <sub>Construido con trazabilidad · datos ficticios · integración simulada · trabajo colaborativo</sub>
 </p>
 
-<img src="docs/assets/section-divider.svg" alt="Separador visual" width="100%">
+<img src="recursos-proyecto/assets/section-divider.svg" alt="Separador visual" width="100%">
 
-Este repositorio contiene el proyecto integrador de **Ingeniería de Software III**. La solución se construye como un MVP: primero demostramos el flujo principal de forma segura y trazable, y después dejamos preparadas las bases para futuras integraciones.
+Este repositorio contiene el proyecto integrador de **Ingeniería de Software III**. Esta rama concentra el **backend**: las reglas de negocio, la persistencia, los servicios REST y las verificaciones simuladas que consume el frontend.
+
+## 🧩 Responsabilidad de esta rama
+
+Backend mantiene la parte ejecutable del servidor y deja el contrato que permite conectar la interfaz con el dominio migratorio:
+
+- API REST para acceso, expedientes, documentos, trámites y verificaciones.
+- DTO común para normalizar fuente, resultado, referencia, fecha, responsable y estado técnico.
+- Adaptadores simulados para Tribunal Electoral, CSS y Registro Público; no se consultan APIs gubernamentales reales.
+- Validaciones, manejo de errores, roles, trazabilidad y respuestas consistentes para el frontend.
+- Persistencia y ejecución reproducible mediante Spring Boot, PostgreSQL y Docker.
+
+> **Alcance académico:** los datos son ficticios y los servicios externos están simulados para poder probar el flujo sin exponer información real.
 
 <p>
   <img src="https://img.shields.io/badge/Estado-MVP%20en%20desarrollo-56C596?style=flat-square" alt="MVP en desarrollo">
@@ -57,7 +69,7 @@ Nuestra propuesta centraliza el expediente del cliente y organiza el flujo del a
 
 > **Importante:** el sistema utiliza datos ficticios y servicios simulados. No consulta APIs reales del Tribunal Electoral, la CSS ni el Registro Público.
 
-<img src="docs/assets/section-divider.svg" alt="Separador visual" width="100%">
+<img src="recursos-proyecto/assets/section-divider.svg" alt="Separador visual" width="100%">
 
 ## 🚀 Qué incluye el MVP
 
@@ -98,7 +110,7 @@ flowchart LR
     J --> K[Seguimiento y auditoría]
 ```
 
-<img src="docs/assets/section-divider.svg" alt="Separador visual" width="100%">
+<img src="recursos-proyecto/assets/section-divider.svg" alt="Separador visual" width="100%">
 
 ## 🧱 Arquitectura del proyecto
 
@@ -128,7 +140,7 @@ Tr-mites-Migratorios/
 | Seguridad | OWASP ZAP, roles y datos ficticios |
 | Trabajo en equipo | GitHub y TeamTrack |
 
-<img src="docs/assets/section-divider.svg" alt="Separador visual" width="100%">
+<img src="recursos-proyecto/assets/section-divider.svg" alt="Separador visual" width="100%">
 
 ## ▶️ Ejecutar el proyecto
 
@@ -230,7 +242,7 @@ Pruebas de calidad y seguridad:
 
 </details>
 
-<img src="docs/assets/section-divider.svg" alt="Separador visual" width="100%">
+<img src="recursos-proyecto/assets/section-divider.svg" alt="Separador visual" width="100%">
 
 ## 🌿 Cómo trabajamos con Git
 
