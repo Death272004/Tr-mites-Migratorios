@@ -1,5 +1,9 @@
 # QA – Sprint 0: Análisis de problema
-<p align="center">\n  <img src="../../recursos-proyecto/assets/readme-hero.svg" alt="Sistema Interoperable de Trámites Migratorios" width="100%">\n</p>\n\n
+<p align="center">
+  <img src="../../recursos-proyecto/assets/readme-hero.svg" alt="Sistema Interoperable de Trámites Migratorios" width="100%">
+</p>
+
+
 ## Objetivo
 
 Definir la estrategia inicial de calidad para una plataforma interoperable que organiza trámites migratorios y expedientes de un bufete, sin comprometer la seguridad de los datos personales.
