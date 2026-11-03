@@ -1,0 +1,25 @@
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 16.11 s -- in pa.tramitesmigratorios.AuditoriaTest
+[INFO] Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.575 s -- in pa.tramitesmigratorios.AutenticacionTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.637 s -- in pa.tramitesmigratorios.AutorizacionTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.557 s -- in pa.tramitesmigratorios.BackendApplicationTests
+[INFO] Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.461 s -- in pa.tramitesmigratorios.CuentaTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.650 s -- in pa.tramitesmigratorios.DocumentoTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.092 s -- in pa.tramitesmigratorios.ErroresYModeloTest
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.989 s -- in pa.tramitesmigratorios.EstadosTest
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.596 s -- in pa.tramitesmigratorios.ExpedienteTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.454 s -- in pa.tramitesmigratorios.FuentesSimuladasTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.541 s -- in pa.tramitesmigratorios.PrivacidadTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.578 s -- in pa.tramitesmigratorios.QaArcoTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.300 s -- in pa.tramitesmigratorios.QaAuditoriaLogsTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.375 s -- in pa.tramitesmigratorios.QaAutorizacionTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.154 s -- in pa.tramitesmigratorios.QaCodigosErrorTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.392 s -- in pa.tramitesmigratorios.QaConsentimientoTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.467 s -- in pa.tramitesmigratorios.QaDocumentosTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 5.174 s -- in pa.tramitesmigratorios.QaErrorInternoTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.602 s -- in pa.tramitesmigratorios.QaHistorialTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.649 s -- in pa.tramitesmigratorios.QaListadoTitularidadTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.717 s -- in pa.tramitesmigratorios.QaNotificacionesTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.476 s -- in pa.tramitesmigratorios.QaObservacionesTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 5.138 s -- in pa.tramitesmigratorios.QaTransicionesTest
+[INFO] BUILD SUCCESS
+[INFO] Total time:  53.103 s

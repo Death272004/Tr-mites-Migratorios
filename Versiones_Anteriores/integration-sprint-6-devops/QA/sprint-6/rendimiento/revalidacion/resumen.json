@@ -1,0 +1,581 @@
+{
+  "calentamiento": {
+    "samples": 15,
+    "mean_ms": 114.6,
+    "p95_ms": 309,
+    "max_ms": 309,
+    "duration_s": 8.82,
+    "throughput_rps": 1.7,
+    "errors": 0,
+    "error_pct": 0.0,
+    "http_errors": 0,
+    "error_details": {},
+    "operations": {
+      "01 Login cliente": {
+        "samples": 3,
+        "mean_ms": 259,
+        "p95_ms": 309,
+        "max_ms": 309
+      },
+      "02 Listar mis expedientes": {
+        "samples": 3,
+        "mean_ms": 88.67,
+        "p95_ms": 147,
+        "max_ms": 147
+      },
+      "03 Crear expediente": {
+        "samples": 3,
+        "mean_ms": 90,
+        "p95_ms": 168,
+        "max_ms": 168
+      },
+      "04 Adjuntar documento": {
+        "samples": 2,
+        "mean_ms": 134,
+        "p95_ms": 203,
+        "max_ms": 203
+      },
+      "05 Estado del expediente": {
+        "samples": 2,
+        "mean_ms": 27.5,
+        "p95_ms": 28,
+        "max_ms": 28
+      },
+      "06 Verificaciones (cliente)": {
+        "samples": 2,
+        "mean_ms": 41.5,
+        "p95_ms": 51,
+        "max_ms": 51
+      }
+    },
+    "p95_reference_2000ms_pass": true,
+    "resources": {
+      "hu29validacion-backend-1": {
+        "cpu_max_pct": 95.07,
+        "memory_observed": [
+          "288.4MiB / 7.078GiB",
+          "293MiB / 7.078GiB",
+          "304.3MiB / 7.078GiB",
+          "305.5MiB / 7.078GiB"
+        ]
+      },
+      "hu29validacion-db-1": {
+        "cpu_max_pct": 1.83,
+        "memory_observed": [
+          "76.41MiB / 7.078GiB",
+          "78.73MiB / 7.078GiB",
+          "78.87MiB / 7.078GiB",
+          "80.01MiB / 7.078GiB"
+        ]
+      },
+      "hu29validacion-frontend-1": {
+        "cpu_max_pct": 0.15,
+        "memory_observed": [
+          "13.47MiB / 7.078GiB",
+          "13.48MiB / 7.078GiB",
+          "13.98MiB / 7.078GiB",
+          "14MiB / 7.078GiB"
+        ]
+      }
+    }
+  },
+  "referencia": {
+    "samples": 6135,
+    "mean_ms": 39.39,
+    "p95_ms": 161,
+    "max_ms": 311,
+    "duration_s": 119.457,
+    "throughput_rps": 51.36,
+    "errors": 0,
+    "error_pct": 0.0,
+    "http_errors": 0,
+    "error_details": {},
+    "operations": {
+      "01 Login cliente": {
+        "samples": 690,
+        "mean_ms": 158.29,
+        "p95_ms": 181,
+        "max_ms": 311
+      },
+      "02 Listar mis expedientes": {
+        "samples": 686,
+        "mean_ms": 14.36,
+        "p95_ms": 27,
+        "max_ms": 49
+      },
+      "03 Crear expediente": {
+        "samples": 682,
+        "mean_ms": 17.9,
+        "p95_ms": 31,
+        "max_ms": 69
+      },
+      "04 Adjuntar documento": {
+        "samples": 679,
+        "mean_ms": 23.63,
+        "p95_ms": 40,
+        "max_ms": 123
+      },
+      "05 Estado del expediente": {
+        "samples": 675,
+        "mean_ms": 8.97,
+        "p95_ms": 16,
+        "max_ms": 31
+      },
+      "06 Verificaciones (cliente)": {
+        "samples": 673,
+        "mean_ms": 9.98,
+        "p95_ms": 17,
+        "max_ms": 56
+      },
+      "11 Login analista": {
+        "samples": 347,
+        "mean_ms": 159.81,
+        "p95_ms": 189,
+        "max_ms": 311
+      },
+      "12 Bandeja del despacho": {
+        "samples": 344,
+        "mean_ms": 17.23,
+        "p95_ms": 30,
+        "max_ms": 60
+      },
+      "13 Documentos del expediente": {
+        "samples": 343,
+        "mean_ms": 10.43,
+        "p95_ms": 18,
+        "max_ms": 59
+      },
+      "14 Registrar verificación TE (simulada)": {
+        "samples": 341,
+        "mean_ms": 24.58,
+        "p95_ms": 41,
+        "max_ms": 185
+      },
+      "15 Verificaciones del expediente": {
+        "samples": 338,
+        "mean_ms": 14.38,
+        "p95_ms": 26,
+        "max_ms": 45
+      },
+      "16 Historial del expediente": {
+        "samples": 337,
+        "mean_ms": 9.99,
+        "p95_ms": 17,
+        "max_ms": 40
+      }
+    },
+    "p95_reference_2000ms_pass": true,
+    "resources": {
+      "hu29validacion-backend-1": {
+        "cpu_max_pct": 314.04,
+        "memory_observed": [
+          "304MiB / 7.078GiB",
+          "308.2MiB / 7.078GiB",
+          "336.2MiB / 7.078GiB",
+          "360.5MiB / 7.078GiB",
+          "381.2MiB / 7.078GiB",
+          "381.3MiB / 7.078GiB",
+          "381.8MiB / 7.078GiB",
+          "381MiB / 7.078GiB",
+          "382.4MiB / 7.078GiB",
+          "382.7MiB / 7.078GiB",
+          "382.8MiB / 7.078GiB",
+          "383.1MiB / 7.078GiB",
+          "383.3MiB / 7.078GiB",
+          "383.5MiB / 7.078GiB",
+          "383.7MiB / 7.078GiB",
+          "384.2MiB / 7.078GiB",
+          "384MiB / 7.078GiB",
+          "385.6MiB / 7.078GiB",
+          "385.8MiB / 7.078GiB",
+          "389.3MiB / 7.078GiB",
+          "390.2MiB / 7.078GiB",
+          "391.6MiB / 7.078GiB",
+          "394.9MiB / 7.078GiB",
+          "405.1MiB / 7.078GiB"
+        ]
+      },
+      "hu29validacion-db-1": {
+        "cpu_max_pct": 65.86,
+        "memory_observed": [
+          "100.1MiB / 7.078GiB",
+          "100.4MiB / 7.078GiB",
+          "101.6MiB / 7.078GiB",
+          "102.4MiB / 7.078GiB",
+          "102.5MiB / 7.078GiB",
+          "102.6MiB / 7.078GiB",
+          "102.7MiB / 7.078GiB",
+          "103.1MiB / 7.078GiB",
+          "103.3MiB / 7.078GiB",
+          "103.6MiB / 7.078GiB",
+          "103.7MiB / 7.078GiB",
+          "103MiB / 7.078GiB",
+          "107MiB / 7.078GiB",
+          "78.78MiB / 7.078GiB",
+          "82.64MiB / 7.078GiB",
+          "85.88MiB / 7.078GiB",
+          "88.16MiB / 7.078GiB",
+          "92.03MiB / 7.078GiB",
+          "94.87MiB / 7.078GiB",
+          "96.58MiB / 7.078GiB",
+          "96.84MiB / 7.078GiB",
+          "97.84MiB / 7.078GiB",
+          "99.04MiB / 7.078GiB",
+          "99.37MiB / 7.078GiB"
+        ]
+      },
+      "hu29validacion-frontend-1": {
+        "cpu_max_pct": 4.72,
+        "memory_observed": [
+          "13.47MiB / 7.078GiB",
+          "14.71MiB / 7.078GiB",
+          "15.24MiB / 7.078GiB",
+          "15.46MiB / 7.078GiB",
+          "15.76MiB / 7.078GiB",
+          "15.78MiB / 7.078GiB",
+          "15.84MiB / 7.078GiB",
+          "15.86MiB / 7.078GiB",
+          "15.92MiB / 7.078GiB",
+          "15.95MiB / 7.078GiB",
+          "16.01MiB / 7.078GiB",
+          "16.07MiB / 7.078GiB",
+          "16.22MiB / 7.078GiB",
+          "16.4MiB / 7.078GiB",
+          "16.55MiB / 7.078GiB",
+          "16.56MiB / 7.078GiB",
+          "16.61MiB / 7.078GiB",
+          "16.68MiB / 7.078GiB",
+          "16.87MiB / 7.078GiB",
+          "16.91MiB / 7.078GiB",
+          "17.06MiB / 7.078GiB",
+          "17.43MiB / 7.078GiB",
+          "17.49MiB / 7.078GiB",
+          "17.55MiB / 7.078GiB"
+        ]
+      }
+    }
+  },
+  "estres": {
+    "samples": 30087,
+    "mean_ms": 47.47,
+    "p95_ms": 196,
+    "max_ms": 791,
+    "duration_s": 119.647,
+    "throughput_rps": 251.46,
+    "errors": 0,
+    "error_pct": 0.0,
+    "http_errors": 0,
+    "error_details": {},
+    "operations": {
+      "01 Login cliente": {
+        "samples": 3387,
+        "mean_ms": 199.16,
+        "p95_ms": 339,
+        "max_ms": 791
+      },
+      "02 Listar mis expedientes": {
+        "samples": 3361,
+        "mean_ms": 15.44,
+        "p95_ms": 34,
+        "max_ms": 82
+      },
+      "03 Crear expediente": {
+        "samples": 3348,
+        "mean_ms": 20.89,
+        "p95_ms": 42,
+        "max_ms": 209
+      },
+      "04 Adjuntar documento": {
+        "samples": 3331,
+        "mean_ms": 26.44,
+        "p95_ms": 56,
+        "max_ms": 233
+      },
+      "05 Estado del expediente": {
+        "samples": 3324,
+        "mean_ms": 9.84,
+        "p95_ms": 23,
+        "max_ms": 74
+      },
+      "06 Verificaciones (cliente)": {
+        "samples": 3301,
+        "mean_ms": 11.3,
+        "p95_ms": 26,
+        "max_ms": 108
+      },
+      "11 Login analista": {
+        "samples": 1689,
+        "mean_ms": 200.07,
+        "p95_ms": 348,
+        "max_ms": 722
+      },
+      "12 Bandeja del despacho": {
+        "samples": 1684,
+        "mean_ms": 18.51,
+        "p95_ms": 38,
+        "max_ms": 195
+      },
+      "13 Documentos del expediente": {
+        "samples": 1676,
+        "mean_ms": 10.9,
+        "p95_ms": 26,
+        "max_ms": 100
+      },
+      "14 Registrar verificación TE (simulada)": {
+        "samples": 1669,
+        "mean_ms": 25.61,
+        "p95_ms": 52,
+        "max_ms": 141
+      },
+      "15 Verificaciones del expediente": {
+        "samples": 1663,
+        "mean_ms": 15.58,
+        "p95_ms": 33,
+        "max_ms": 229
+      },
+      "16 Historial del expediente": {
+        "samples": 1654,
+        "mean_ms": 10.84,
+        "p95_ms": 25,
+        "max_ms": 126
+      }
+    },
+    "p95_reference_2000ms_pass": true,
+    "resources": {
+      "hu29validacion-backend-1": {
+        "cpu_max_pct": 987.71,
+        "memory_observed": [
+          "382.3MiB / 7.078GiB",
+          "383.8MiB / 7.078GiB",
+          "396.1MiB / 7.078GiB",
+          "397.8MiB / 7.078GiB",
+          "398.3MiB / 7.078GiB",
+          "398.4MiB / 7.078GiB",
+          "398.9MiB / 7.078GiB",
+          "398MiB / 7.078GiB",
+          "399.8MiB / 7.078GiB",
+          "400.7MiB / 7.078GiB",
+          "401.4MiB / 7.078GiB",
+          "401MiB / 7.078GiB",
+          "402.2MiB / 7.078GiB",
+          "402.4MiB / 7.078GiB",
+          "403.3MiB / 7.078GiB",
+          "403.9MiB / 7.078GiB",
+          "404.2MiB / 7.078GiB",
+          "405.8MiB / 7.078GiB",
+          "406.2MiB / 7.078GiB",
+          "411MiB / 7.078GiB",
+          "413.9MiB / 7.078GiB",
+          "414.6MiB / 7.078GiB",
+          "418.1MiB / 7.078GiB",
+          "420.9MiB / 7.078GiB"
+        ]
+      },
+      "hu29validacion-db-1": {
+        "cpu_max_pct": 150.02,
+        "memory_observed": [
+          "105.6MiB / 7.078GiB",
+          "107.4MiB / 7.078GiB",
+          "108.8MiB / 7.078GiB",
+          "110.2MiB / 7.078GiB",
+          "111.8MiB / 7.078GiB",
+          "118.1MiB / 7.078GiB",
+          "120.8MiB / 7.078GiB",
+          "122.5MiB / 7.078GiB",
+          "123.7MiB / 7.078GiB",
+          "126.1MiB / 7.078GiB",
+          "127.7MiB / 7.078GiB",
+          "128.7MiB / 7.078GiB",
+          "131.3MiB / 7.078GiB",
+          "132.1MiB / 7.078GiB",
+          "132.7MiB / 7.078GiB",
+          "160.4MiB / 7.078GiB",
+          "167MiB / 7.078GiB",
+          "169.5MiB / 7.078GiB",
+          "173.9MiB / 7.078GiB",
+          "176.8MiB / 7.078GiB",
+          "177.5MiB / 7.078GiB",
+          "178.8MiB / 7.078GiB",
+          "178.9MiB / 7.078GiB",
+          "179.6MiB / 7.078GiB",
+          "179.8MiB / 7.078GiB",
+          "181.2MiB / 7.078GiB"
+        ]
+      },
+      "hu29validacion-frontend-1": {
+        "cpu_max_pct": 16.47,
+        "memory_observed": [
+          "14.04MiB / 7.078GiB",
+          "15.43MiB / 7.078GiB",
+          "15.66MiB / 7.078GiB",
+          "16.32MiB / 7.078GiB",
+          "16.55MiB / 7.078GiB",
+          "16.8MiB / 7.078GiB",
+          "17.33MiB / 7.078GiB",
+          "17.36MiB / 7.078GiB",
+          "17.52MiB / 7.078GiB",
+          "17.63MiB / 7.078GiB",
+          "17.65MiB / 7.078GiB",
+          "17.8MiB / 7.078GiB",
+          "17.9MiB / 7.078GiB",
+          "18.01MiB / 7.078GiB",
+          "18.06MiB / 7.078GiB",
+          "18.08MiB / 7.078GiB",
+          "18.12MiB / 7.078GiB",
+          "18.14MiB / 7.078GiB",
+          "18.2MiB / 7.078GiB",
+          "18.34MiB / 7.078GiB",
+          "18.3MiB / 7.078GiB",
+          "18.48MiB / 7.078GiB",
+          "18.52MiB / 7.078GiB",
+          "18.66MiB / 7.078GiB",
+          "18.87MiB / 7.078GiB"
+        ]
+      }
+    }
+  },
+  "dependencia-error": {
+    "samples": 2795,
+    "mean_ms": 40.71,
+    "p95_ms": 186,
+    "max_ms": 593,
+    "duration_s": 59.518,
+    "throughput_rps": 46.96,
+    "errors": 31,
+    "error_pct": 1.10912,
+    "http_errors": 31,
+    "error_details": {
+      "14 Registrar verificación TE (simulada) | 409 | ": 31
+    },
+    "operations": {
+      "01 Login cliente": {
+        "samples": 320,
+        "mean_ms": 168.43,
+        "p95_ms": 201,
+        "max_ms": 494
+      },
+      "02 Listar mis expedientes": {
+        "samples": 313,
+        "mean_ms": 14.27,
+        "p95_ms": 15,
+        "max_ms": 444
+      },
+      "03 Crear expediente": {
+        "samples": 311,
+        "mean_ms": 16.36,
+        "p95_ms": 24,
+        "max_ms": 458
+      },
+      "04 Adjuntar documento": {
+        "samples": 307,
+        "mean_ms": 20.44,
+        "p95_ms": 27,
+        "max_ms": 443
+      },
+      "05 Estado del expediente": {
+        "samples": 303,
+        "mean_ms": 8.99,
+        "p95_ms": 11,
+        "max_ms": 378
+      },
+      "06 Verificaciones (cliente)": {
+        "samples": 303,
+        "mean_ms": 10.46,
+        "p95_ms": 12,
+        "max_ms": 372
+      },
+      "11 Login analista": {
+        "samples": 161,
+        "mean_ms": 170.66,
+        "p95_ms": 201,
+        "max_ms": 593
+      },
+      "12 Bandeja del despacho": {
+        "samples": 157,
+        "mean_ms": 14.99,
+        "p95_ms": 19,
+        "max_ms": 415
+      },
+      "13 Documentos del expediente": {
+        "samples": 157,
+        "mean_ms": 8.64,
+        "p95_ms": 12,
+        "max_ms": 132
+      },
+      "14 Registrar verificación TE (simulada)": {
+        "samples": 156,
+        "mean_ms": 21.12,
+        "p95_ms": 31,
+        "max_ms": 480
+      },
+      "15 Verificaciones del expediente": {
+        "samples": 154,
+        "mean_ms": 13.89,
+        "p95_ms": 23,
+        "max_ms": 358
+      },
+      "16 Historial del expediente": {
+        "samples": 153,
+        "mean_ms": 10.18,
+        "p95_ms": 11,
+        "max_ms": 407
+      }
+    },
+    "p95_reference_2000ms_pass": true,
+    "resources": {
+      "hu29validacion-backend-1": {
+        "cpu_max_pct": 231.21,
+        "memory_observed": [
+          "388.6MiB / 7.078GiB",
+          "388.8MiB / 7.078GiB",
+          "389.2MiB / 7.078GiB",
+          "391.9MiB / 7.078GiB",
+          "394.4MiB / 7.078GiB",
+          "398MiB / 7.078GiB",
+          "399.1MiB / 7.078GiB",
+          "399.8MiB / 7.078GiB",
+          "400.3MiB / 7.078GiB",
+          "401.2MiB / 7.078GiB",
+          "401.5MiB / 7.078GiB",
+          "402.3MiB / 7.078GiB"
+        ]
+      },
+      "hu29validacion-db-1": {
+        "cpu_max_pct": 43.09,
+        "memory_observed": [
+          "171.6MiB / 7.078GiB",
+          "171.9MiB / 7.078GiB",
+          "172.3MiB / 7.078GiB",
+          "172.7MiB / 7.078GiB",
+          "178.3MiB / 7.078GiB",
+          "180.1MiB / 7.078GiB",
+          "180MiB / 7.078GiB",
+          "181.1MiB / 7.078GiB",
+          "181.5MiB / 7.078GiB",
+          "181.6MiB / 7.078GiB",
+          "181.8MiB / 7.078GiB",
+          "182.1MiB / 7.078GiB",
+          "182MiB / 7.078GiB"
+        ]
+      },
+      "hu29validacion-frontend-1": {
+        "cpu_max_pct": 13.95,
+        "memory_observed": [
+          "14.09MiB / 7.078GiB",
+          "14.9MiB / 7.078GiB",
+          "15.39MiB / 7.078GiB",
+          "15.48MiB / 7.078GiB",
+          "15.59MiB / 7.078GiB",
+          "16.34MiB / 7.078GiB",
+          "16.39MiB / 7.078GiB",
+          "16.83MiB / 7.078GiB",
+          "17.38MiB / 7.078GiB",
+          "17.41MiB / 7.078GiB",
+          "17.44MiB / 7.078GiB",
+          "17.56MiB / 7.078GiB",
+          "17.63MiB / 7.078GiB"
+        ]
+      }
+    }
+  }
+}
