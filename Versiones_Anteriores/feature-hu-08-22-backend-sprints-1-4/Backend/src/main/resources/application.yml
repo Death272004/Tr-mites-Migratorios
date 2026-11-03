@@ -1,0 +1,54 @@
+# Configuración base: todo valor sensible llega por variables de entorno (ver .env.example).
+spring:
+  application:
+    name: tramites-migratorios-backend
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+  jackson:
+    default-property-inclusion: non_null
+  servlet:
+    multipart:
+      # Por encima del límite de negocio (app.documentos.tamano-maximo-bytes) para responder con un error claro.
+      max-file-size: 15MB
+      max-request-size: 16MB
+
+server:
+  port: ${SERVER_PORT:8080}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
+
+# Configuración del producto. Los valores sensibles llegan por variables de entorno.
+app:
+  despacho:
+    nombre: ${DESPACHO_NOMBRE:Bufete de demostración}
+  seguridad:
+    token-minutos: ${TOKEN_MINUTOS:60}
+    intentos-maximos: ${LOGIN_INTENTOS_MAXIMOS:5}
+    bloqueo-minutos: ${LOGIN_BLOQUEO_MINUTOS:15}
+    bcrypt-coste: 10
+  documentos:
+    directorio: ${DOCUMENTOS_DIR:almacenamiento}
+    tamano-maximo-bytes: 10485760
+  arco:
+    plazo-dias: ${ARCO_PLAZO_DIAS:10}
+  fuentes-simuladas:
+    latencia-ms: ${MOCK_LATENCIA_MS:0}
+  demo:
+    usuarios: ${DEMO_USUARIOS:false}
+    contrasena: ${DEMO_CONTRASENA:}

@@ -1,0 +1,104 @@
+:root {
+  /* ============================================================
+     Paleta — Producto de gestión de expedientes migratorios (bufetes)
+     Ley 81 de 2019 · tono institucional sobrio
+     ============================================================ */
+
+  /* Marca */
+  --color-primary: #1d4e89;
+  --color-primary-dark: #163c69;
+  --color-primary-light: #e8f0f9;
+  --color-accent: #0f766e;
+
+  /* Superficies */
+  --color-bg: #f5f7fa;
+  --color-surface: #ffffff;
+  --color-surface-alt: #f0f3f7;
+  --color-border: #d6dde6;
+
+  /* Texto */
+  --color-text: #1f2733;
+  --color-text-muted: #5b6675;
+  --color-text-inverse: #ffffff;
+
+  /* Estados semánticos */
+  --color-success: #1e7d4f;
+  --color-success-bg: #e6f4ec;
+  --color-warning: #b45309;
+  --color-warning-bg: #fdf3e3;
+  --color-danger: #b3261e;
+  --color-danger-bg: #fbeae9;
+  --color-info: #1d4e89;
+  --color-info-bg: #e8f0f9;
+
+  /* Verificación automática (futuro convenio) — campo sellado [V] */
+  --color-verified: #5b21b6;
+  --color-verified-bg: #f1ebfb;
+
+  /* ============================================================
+     Tipografía
+     ============================================================ */
+  --font-family-base: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --font-family-mono: "Consolas", "Menlo", monospace;
+
+  --font-size-xs: 0.75rem;   /* 12px */
+  --font-size-sm: 0.875rem;  /* 14px */
+  --font-size-md: 1rem;      /* 16px */
+  --font-size-lg: 1.25rem;   /* 20px */
+  --font-size-xl: 1.5rem;    /* 24px */
+  --font-size-2xl: 2rem;     /* 32px */
+
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  --line-height-tight: 1.25;
+  --line-height-base: 1.5;
+
+  /* ============================================================
+     Espaciados (escala de 4px)
+     ============================================================ */
+  --space-1: 0.25rem;  /* 4px */
+  --space-2: 0.5rem;   /* 8px */
+  --space-3: 0.75rem;  /* 12px */
+  --space-4: 1rem;     /* 16px */
+  --space-5: 1.5rem;   /* 24px */
+  --space-6: 2rem;     /* 32px */
+  --space-7: 3rem;     /* 48px */
+
+  /* ============================================================
+     Radios y sombras
+     ============================================================ */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-pill: 999px;
+
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+  --shadow-md: 0 2px 8px rgba(15, 23, 42, 0.10);
+  --shadow-lg: 0 8px 24px rgba(15, 23, 42, 0.16);
+
+  /* ============================================================
+     Layout
+     ============================================================ */
+  --layout-header-height: 64px;
+  --layout-footer-height: 48px;
+  --layout-sidebar-width: 260px;
+  --layout-max-width: 1200px;
+  --layout-z-header: 100;
+  --layout-z-modal: 1000;
+
+  /* ============================================================
+     Breakpoints (referencia — usados en media queries)
+     Escritorio y tablet son los objetivos; móvil fuera de alcance.
+     ============================================================ */
+  --breakpoint-tablet: 1024px;
+  --breakpoint-tablet-sm: 768px;
+
+  /* ============================================================
+     Transiciones
+     ============================================================ */
+  --transition-fast: 120ms ease-in-out;
+  --transition-base: 200ms ease-in-out;
+}
