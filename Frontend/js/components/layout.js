@@ -74,6 +74,14 @@
     };
     if (authenticated) contextMenu.appendChild(goTo("#/perfil", "Mi perfil"));
     contextMenu.appendChild(goTo("#/cuenta/configuracion", "Configuración"));
+    if (authenticated) {
+      const correo = el("a", "app-context-menu__link", "Correo institucional");
+      correo.href = "http://localhost:18084";
+      correo.target = "_blank";
+      correo.rel = "noopener noreferrer";
+      correo.setAttribute("role", "menuitem");
+      contextMenu.appendChild(correo);
+    }
 
     if (authenticated) {
       const logout = el("button", "app-header__logout", "Salir");

@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.Year;
 import java.time.ZoneOffset;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.context.ApplicationEventPublisher;
@@ -59,6 +60,12 @@ public class ExpedienteServicio {
 	 */
 	@Transactional
 	public Expediente crear(String tipoTramite, UUID titularId, UsuarioActual usuario) {
+		return crear(tipoTramite, titularId, Map.of(), usuario);
+	}
+
+	@Transactional
+	public Expediente crear(String tipoTramite, UUID titularId, Map<String, Object> datosSolicitud,
+			UsuarioActual usuario) {
 		String tipo = catalogos.tramiteActivo(tipoTramite)
 			.orElseThrow(() -> ErrorApi.entradaInvalida("tipoTramite", "El tipo de trámite no existe en el catálogo."))
 			.getCodigo();
@@ -71,7 +78,7 @@ public class ExpedienteServicio {
 		}
 		String numero = "EXP-%d-%06d".formatted(Year.now().getValue(), expedientes.siguienteNumero());
 		Expediente expediente = expedientes
-			.save(new Expediente(numero, titular, usuario.id(), tipo, EstadoExpediente.RECIBIDO));
+			.save(new Expediente(numero, titular, usuario.id(), tipo, EstadoExpediente.RECIBIDO, datosSolicitud));
 		historial.save(new HistorialEstado(expediente.getId(), null, EstadoExpediente.RECIBIDO, usuario.id(),
 				"Presentación de la solicitud"));
 		auditoria.exito(usuario.id(), "CREAR_EXPEDIENTE", "expediente/" + expediente.getId(), "tipoTramite=" + tipo);

@@ -1,0 +1,3 @@
+# Exclusivo para la red Docker local: Roundcube usa IMAP sin TLS dentro de ella.
+ssl = yes
+disable_plaintext_auth = no

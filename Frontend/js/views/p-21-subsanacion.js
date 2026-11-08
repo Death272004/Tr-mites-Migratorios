@@ -4,7 +4,8 @@
  * observaciones. Por cada ítem observado (prellenado): documento corregido
  * (archivo, obligatorio), justificación (opcional) y sustitución de dato
  * digitalizado (condicional). Confirmación final obligatoria de atender todo.
- * Al reingresar, el trámite vuelve a EN ANÁLISIS (simulado).
+ * En modo conectado carga las observaciones reales y registra los documentos
+ * corregidos sin inventar un cambio de estado.
  * 4 estados de vista: carga, éxito, vacío, error.
  * Script clásico: expone `tm.views.p21.renderP21`.
  */
@@ -15,9 +16,11 @@
   var field = global.tm.ui.field;
   var button = global.tm.ui.button;
   var fileUpload = global.tm.ui.fileUpload;
+  var api = global.tm.api;
 
   var MAX_BYTES = 5 * 1024 * 1024;
   var ACCEPT = ".pdf,.jpg,.jpeg,.png";
+  var MARCA_SUBSANACION = "Subsanación presentada por el solicitante";
 
   // Ítems de respaldo si P-20 no está disponible (mismos datos ficticios).
   var FALLBACK_ITEMS = [
@@ -84,7 +87,7 @@
   }
 
   function itemBlock(item, index) {
-    var state = { file: null };
+    var state = { file: null, tipoDocumental: "" };
 
     var block = layout.el("section", "subsana-item");
     block.appendChild(layout.el("h3", "subsana-item__title", (index + 1) + ". " + item.titulo));
@@ -118,6 +121,25 @@
     }));
     block.appendChild(err);
 
+    var tipoWrap = layout.el("div", "form-field");
+    var tipoLabel = layout.el("label", "form-field__label", "Tipo de documento corregido");
+    tipoLabel.setAttribute("for", "tipo-doc-" + index);
+    tipoWrap.appendChild(tipoLabel);
+    var tipoSelect = layout.el("select", "form-field__control");
+    tipoSelect.id = "tipo-doc-" + index;
+    [
+      ["", "Seleccione…"], ["PASAPORTE", "Pasaporte vigente"],
+      ["FOTO_CARNE", "Fotografía tamaño carné"], ["PODER_NOTARIADO", "Poder notariado"],
+      ["DECLARACION_JURADA", "Declaración jurada"], ["COMPROBANTE_PAGO", "Comprobante de pago"],
+      ["FICHA_CSS", "Ficha de la CSS"], ["CERTIFICADO_SALUD", "Certificado de salud"],
+      ["ANTECEDENTES_PENALES", "Antecedentes penales"],
+    ].forEach(function (op) {
+      var option = layout.el("option", null, op[1]); option.value = op[0]; tipoSelect.appendChild(option);
+    });
+    tipoSelect.addEventListener("change", function () { state.tipoDocumental = tipoSelect.value; });
+    tipoWrap.appendChild(tipoSelect);
+    block.appendChild(tipoWrap);
+
     block.appendChild(field.fieldTextarea({
       id: "just-" + index,
       label: "Justificación de la corrección (opcional)",
@@ -144,7 +166,7 @@
 
     var toolbar = layout.el("div", "toolbar");
     toolbar.appendChild(layout.el("span", null, items.length + (items.length === 1 ? " ítem observado" : " ítems observados")));
-    toolbar.appendChild(demoSelector(opts));
+    if (!api || !api.isOnline()) toolbar.appendChild(demoSelector(opts));
     inner.appendChild(toolbar);
 
     var alert = layout.el("div", "app-alert app-alert--warning");
@@ -185,9 +207,10 @@
       var faltantes = [];
       for (var k = 0; k < entries.length; k++) {
         if (!entries[k].state.file) faltantes.push(k + 1);
+        else if (!entries[k].state.tipoDocumental) faltantes.push(k + 1);
       }
       if (faltantes.length > 0) {
-        err.textContent = "Cargue el documento corregido del ítem " + faltantes.join(", ") + ".";
+        err.textContent = "Cargue y clasifique el documento corregido del ítem " + faltantes.join(", ") + ".";
         err.classList.add("is-visible");
         return;
       }
@@ -196,22 +219,57 @@
         err.classList.add("is-visible");
         return;
       }
+      var seleccionado = global.tm.expediente && global.tm.expediente.getSelected ? global.tm.expediente.getSelected() : null;
+      if (api && api.isOnline() && seleccionado && seleccionado.id) {
+        enviarSubsanacion(seleccionado, entries, items, 0, function (apiErr) {
+          if (apiErr) {
+            err.textContent = apiErr.mensajeUsuario || "No se pudo registrar la subsanación.";
+            err.classList.add("is-visible");
+            return;
+          }
+          var real = {
+            expediente: seleccionado.numero,
+            items: items.length,
+            reingreso: seleccionado.numero + "/SUB-" + new Date().toISOString().slice(0, 10).replace(/-/g, ""),
+            fecha: new Date().toISOString().slice(0, 10),
+            estadoAnterior: seleccionado.estado,
+            estadoNuevo: "PENDIENTE DE REVISIÓN",
+          };
+          if (global.tm.draft) global.tm.draft.mergeDraft({ subsanacion: real });
+          renderConfirm(container, opts, real);
+        });
+        return;
+      }
       var post = {
-        expediente: expedienteFromDraft(),
-        items: items.length,
-        reingreso: "EXP-2026-000184/R1",
-        fecha: new Date().toISOString().slice(0, 10),
-        estadoAnterior: "CON OBSERVACIONES",
-        estadoNuevo: "EN ANÁLISIS",
+        expediente: expedienteFromDraft(), items: items.length,
+        reingreso: expedienteFromDraft() + "/SUB-DEMO", fecha: new Date().toISOString().slice(0, 10),
+        estadoAnterior: "CON OBSERVACIONES", estadoNuevo: "PENDIENTE DE REVISIÓN",
       };
       if (global.tm.draft) global.tm.draft.mergeDraft({ subsanacion: post });
       renderConfirm(container, opts, post);
     }
   }
 
+  function enviarSubsanacion(expediente, entries, items, index, done) {
+    if (index >= entries.length) {
+      api.request("POST", "/expedientes/" + encodeURIComponent(expediente.id) + "/observaciones", {
+        body: { texto: MARCA_SUBSANACION + " para " + items.length + " observación(es)." },
+      }, done);
+      return;
+    }
+    var formData = new FormData();
+    formData.append("archivo", entries[index].state.file, entries[index].state.file.name);
+    formData.append("tipoDocumental", entries[index].state.tipoDocumental);
+    api.request("POST", "/expedientes/" + encodeURIComponent(expediente.id) + "/documentos", { body: formData }, function (uploadErr) {
+      if (uploadErr) { done(uploadErr); return; }
+      enviarSubsanacion(expediente, entries, items, index + 1, done);
+    });
+  }
+
   function expedienteFromDraft() {
     var d = global.tm.draft ? global.tm.draft.getDraft() : {};
-    return (d.submitted && d.submitted.expediente) || "EXP-2026-000184";
+    var seleccionado = global.tm.expediente && global.tm.expediente.getSelected ? global.tm.expediente.getSelected() : null;
+    return (seleccionado && seleccionado.numero) || (d.submitted && d.submitted.expediente) || "—";
   }
 
   function renderConfirm(container, opts, post) {
@@ -220,7 +278,7 @@
     inner.appendChild(layout.pageHeader("Reingreso enviado", "Su expediente vuelve a análisis"));
 
     var ok = layout.el("div", "app-alert app-alert--info");
-    ok.appendChild(layout.el("span", "app-alert__title", "Subsanación registrada (simulado)"));
+    ok.appendChild(layout.el("span", "app-alert__title", "Subsanación registrada"));
     ok.appendChild(layout.el("span", "app-alert__text", "N.o de reingreso: " + post.reingreso));
     inner.appendChild(ok);
 
@@ -314,6 +372,36 @@
 
   function renderP21(container, opts) {
     opts = opts || {};
+
+    if (api && api.isOnline()) {
+      renderLoading(container);
+      api.request("GET", "/expedientes?pagina=0&tamano=1", { pantalla: "P-21" }, function (listErr, page) {
+        if (listErr) { renderError(container, { onRetry: function () { renderP21(container, opts); } }); return; }
+        var expedientes = page && page.contenido ? page.contenido : [];
+        if (!expedientes.length) { renderEmpty(container, opts); return; }
+        var seleccionado = global.tm.expediente && global.tm.expediente.getSelected ? global.tm.expediente.getSelected() : null;
+        if (!seleccionado || !seleccionado.id) seleccionado = expedientes[0];
+        global.tm.expediente.setSelected(seleccionado);
+        api.request("GET", "/expedientes/" + encodeURIComponent(seleccionado.id) + "/observaciones", { pantalla: "P-21" }, function (obsErr, observaciones) {
+          if (obsErr) { renderError(container, { onRetry: function () { renderP21(container, opts); } }); return; }
+          var sesion = global.tm.session && global.tm.session.getSession ? global.tm.session.getSession() : null;
+          var usuarioId = sesion && sesion.datos && sesion.datos.usuario ? sesion.datos.usuario.id : null;
+          var ultimaSubsanacion = (observaciones || []).filter(function (o) {
+            return String(o.texto || "").indexOf(MARCA_SUBSANACION) === 0;
+          }).slice(-1)[0];
+          var items = (observaciones || []).filter(function (o) {
+            if (String(o.texto || "").indexOf(MARCA_SUBSANACION) === 0) return false;
+            if (usuarioId && o.autorId === usuarioId) return false;
+            return !ultimaSubsanacion || String(o.fecha || "") > String(ultimaSubsanacion.fecha || "");
+          }).map(function (o) {
+            return { obsId: String(o.id).slice(0, 8), emisor: "Despacho", plazo: null, titulo: "Observación del expediente", detalle: o.texto };
+          });
+          if (!items.length || seleccionado.estado !== "CON_OBSERVACIONES") { renderEmpty(container, opts); return; }
+          renderForm(container, opts, items);
+        });
+      });
+      return;
+    }
 
     function show(state) {
       if (state === "carga") {

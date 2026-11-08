@@ -21,6 +21,17 @@
     { route: "#/solicitud/paso-8", label: "Declaración y firma" },
   ];
 
+  // Las pantallas técnicas se agrupan en seis etapas comprensibles para el
+  // ciudadano. Se conserva cada ruta para no alterar el borrador ni el API.
+  var PHASES = [
+    { label: "Trámite", routes: ["#/solicitud/tramite", "#/solicitud/titularidad"] },
+    { label: "Identidad", routes: ["#/solicitud/paso-1", "#/solicitud/paso-2"] },
+    { label: "Información", routes: ["#/solicitud/paso-3", "#/solicitud/paso-4"] },
+    { label: "Documentos", routes: ["#/solicitud/paso-5", "#/solicitud/paso-6"] },
+    { label: "Pago", routes: ["#/solicitud/paso-7"] },
+    { label: "Revisión", routes: ["#/solicitud/paso-8", "#/solicitud/resumen"] },
+  ];
+
   var TITULARIDAD = "#/solicitud/titularidad";
 
   function indexOf(route) {
@@ -28,6 +39,13 @@
       if (STEPS[i].route === route) return i;
     }
     return -1;
+  }
+
+  function phaseIndex(route) {
+    for (var i = 0; i < PHASES.length; i++) {
+      if (PHASES[i].routes.indexOf(route) !== -1) return i;
+    }
+    return 0;
   }
 
   function nextRoute(route) {
@@ -47,16 +65,15 @@
   function frame(container, route) {
     layout.clear(container);
     var inner = layout.el("div", "app-content__inner");
-    var i = indexOf(route);
-    var total = STEPS.length;
+    var i = phaseIndex(route);
 
     inner.appendChild(layout.pageHeader(
       "Nueva solicitud",
-      i >= 0 ? "Paso " + (i + 1) + " de " + total + " · " + STEPS[i].label : "Asistente de solicitud"
+      "Complete la información correspondiente a " + PHASES[i].label.toLowerCase() + "."
     ));
 
     inner.appendChild(stepper({
-      steps: STEPS.map(function (s) { return { label: s.label }; }),
+      steps: PHASES.map(function (s) { return { label: s.label }; }),
       current: i,
     }));
 
@@ -116,7 +133,9 @@
 
   global.tm.wizard = {
     STEPS: STEPS,
+    PHASES: PHASES,
     indexOf: indexOf,
+    phaseIndex: phaseIndex,
     nextRoute: nextRoute,
     prevRoute: prevRoute,
     frame: frame,

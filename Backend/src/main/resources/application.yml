@@ -23,6 +23,15 @@ spring:
       # Por encima del límite de negocio (app.documentos.tamano-maximo-bytes) para responder con un error claro.
       max-file-size: 15MB
       max-request-size: 16MB
+  mail:
+    host: ${SMTP_HOST:localhost}
+    port: ${SMTP_PORT:25}
+    properties:
+      mail.smtp.auth: false
+      mail.smtp.starttls.enable: false
+      mail.smtp.connectiontimeout: 5000
+      mail.smtp.timeout: 5000
+      mail.smtp.writetimeout: 5000
 
 server:
   port: ${SERVER_PORT:8080}
@@ -51,8 +60,9 @@ app:
     bcrypt-coste: 10
     recuperacion-minutos: ${RECUPERACION_MINUTOS:60}
   correo:
-    # No hay proveedor de correo: con true el enlace de recuperación se escribe en el registro (solo desarrollo local).
-    simulado: ${CORREO_SIMULADO:false}
+    modo: ${CORREO_MODO:simulado}
+    remitente: ${CORREO_REMITENTE:no.reply@tr-utp.com}
+    portal-url: ${PORTAL_URL:http://localhost:8081}
   documentos:
     directorio: ${DOCUMENTOS_DIR:almacenamiento}
     tamano-maximo-bytes: 10485760

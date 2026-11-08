@@ -49,6 +49,36 @@ class ExpedienteTest extends PruebaApi {
 	}
 
 	@Test
+	void conservaLosDatosCompletosDelAsistenteEnPostgresql() throws Exception {
+		String token = tokenDe(Rol.SOLICITANTE);
+		String cuerpo = """
+				{
+				  "tipoTramite": "RESIDENCIA_TEMPORAL",
+				  "datosSolicitud": {
+				    "motivo": "Trabajo",
+				    "datosPersonales": {"nombres": "Ana", "apellidos": "Prueba"},
+				    "pagos": {"modalidad": "SIMULADO", "pagado": true, "total": 50}
+				  }
+				}
+				""";
+
+		MvcResult creado = enviar(token, "/api/expedientes", cuerpo)
+			.andExpect(status().isCreated())
+			.andExpect(jsonPath("$.datosSolicitud.motivo").value("Trabajo"))
+			.andExpect(jsonPath("$.datosSolicitud.datosPersonales.nombres").value("Ana"))
+			.andExpect(jsonPath("$.datosSolicitud.pagos.total").value(50))
+			.andReturn();
+		String id = leer(creado, "$.id");
+
+		obtener(token, "/api/expedientes/{id}", id)
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.datosSolicitud.datosPersonales.apellidos").value("Prueba"));
+		assertThat(jdbc.queryForObject(
+				"SELECT datos_solicitud->>'motivo' FROM expediente WHERE id = ?::uuid", String.class, id))
+			.isEqualTo("Trabajo");
+	}
+
+	@Test
 	void elTipoDeTramiteSeValidaEnElServidorConDetallePorCampo() throws Exception {
 		String token = tokenDe(Rol.SOLICITANTE);
 
