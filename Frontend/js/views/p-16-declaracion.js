@@ -18,6 +18,9 @@
 
   function renderContent(container, opts) {
     var body = wizard.frame(container, ROUTE);
+    body.appendChild(global.tm.autofill.createStageControl({
+      root: function () { return body; },
+    }));
     body.appendChild(demoSelector(opts));
     var d = draft.getDraft();
     var decl = d.declaracion || {};
