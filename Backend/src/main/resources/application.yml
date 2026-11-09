@@ -62,7 +62,11 @@ app:
   correo:
     modo: ${CORREO_MODO:simulado}
     remitente: ${CORREO_REMITENTE:no.reply@tr-utp.com}
-    portal-url: ${PORTAL_URL:http://localhost:8081}
+    portal-url: ${PORTAL_URL:http://localhost:8080}
+    aprovisionamiento:
+      habilitado: ${BUZON_APROVISIONAMIENTO:false}
+      url: ${BUZON_APROVISIONADOR_URL:http://mail-provisioner:8080}
+      token: ${BUZON_APROVISIONADOR_TOKEN:local-disabled}
   documentos:
     directorio: ${DOCUMENTOS_DIR:almacenamiento}
     tamano-maximo-bytes: 10485760

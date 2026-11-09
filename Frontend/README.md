@@ -87,7 +87,7 @@ Desde la raíz del repositorio:
 docker compose up --build
 ```
 
-Luego abre `http://localhost:8081/html/index.html#/login`.
+Luego abre `http://localhost:8080/login`.
 
 ### Opción offline
 

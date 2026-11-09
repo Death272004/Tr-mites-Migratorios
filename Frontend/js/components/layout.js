@@ -76,7 +76,7 @@
     contextMenu.appendChild(goTo("#/cuenta/configuracion", "Configuración"));
     if (authenticated) {
       const correo = el("a", "app-context-menu__link", "Correo institucional");
-      correo.href = "http://localhost:18084";
+      correo.href = "http://localhost:8081";
       correo.target = "_blank";
       correo.rel = "noopener noreferrer";
       correo.setAttribute("role", "menuitem");

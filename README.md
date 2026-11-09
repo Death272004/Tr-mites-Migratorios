@@ -155,15 +155,18 @@ Tr-mites-Migratorios/
 ```bash
 git clone https://github.com/Death272004/Tr-mites-Migratorios.git
 cd Tr-mites-Migratorios
-docker compose up --build
+./iniciarApps.sh
 ```
+
+En Windows, ejecuta `iniciarApps.bat`. Ambos iniciadores liberan los puertos requeridos y abren los servicios.
+
+Las cuentas nuevas reciben automáticamente un buzón `@tr-utp.com` con la misma contraseña del portal.
 
 | Servicio | Dirección |
 | --- | --- |
-| Frontend | <http://localhost:8081> |
-| Backend | <http://localhost:8080> |
-| Salud del backend | <http://localhost:8080/actuator/health> |
-| Salud del frontend | <http://localhost:8081/salud> |
+| Portal y API | <http://localhost:8080> |
+| Correo institucional | <http://localhost:8081> |
+| Salud del portal | <http://localhost:8080/salud> |
 | PostgreSQL | `localhost:5433` |
 
 Para detener los contenedores:
@@ -184,7 +187,7 @@ docker compose down -v
 cp .env.example .env
 ```
 
-Edita `.env` y cambia `DB_PORT`, `BACKEND_PORT` o `FRONTEND_PORT`. Ese archivo es local: no debe subirse al repositorio.
+Los iniciadores liberan automáticamente `8080` y `8081`. Para una ejecución manual, edita `.env` y cambia `DB_PORT`, `FRONTEND_PORT` o `WEBMAIL_PORT`. Ese archivo es local: no debe subirse al repositorio.
 
 ### Ejecutar únicamente el backend
 

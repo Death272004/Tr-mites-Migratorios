@@ -38,8 +38,8 @@ Servicios principales:
 
 | Servicio | Dirección local |
 | --- | --- |
-| Frontend | `http://localhost:8081/html/index.html#/login` |
-| Backend | `http://localhost:8080` |
+| Portal y API | `http://localhost:8080/login` |
+| Correo institucional | `http://localhost:8081` |
 | PostgreSQL | `localhost:5433` |
 
 Para detener el entorno:

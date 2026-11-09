@@ -52,13 +52,13 @@ docker compose up --build
 Después abre:
 
 ```text
-http://localhost:8081/html/index.html#/login
+http://localhost:8080/login
 ```
 
 Para comprobar Nginx directamente:
 
 ```bash
-curl http://localhost:8081/salud
+curl http://localhost:8080/salud
 ```
 
 El resultado esperado es `ok`.

@@ -110,7 +110,7 @@
     form2.appendChild(claveNueva2);
 
     var ayuda = layout.el("p", "form-field__help",
-      "Abra el enlace recibido en su bandeja local en http://localhost:18084.");
+      "Abra el enlace recibido en su bandeja local en http://localhost:8081.");
     form2.appendChild(ayuda);
 
     var errorBox2 = layout.el("div", "auth-error", "");

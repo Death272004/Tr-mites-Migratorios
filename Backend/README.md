@@ -36,12 +36,12 @@ Desde la raíz del repositorio:
 docker compose up --build
 ```
 
-La API queda disponible en `http://localhost:8080` y el frontend la consume mediante `/api/` desde `http://localhost:8081`.
+La API queda disponible mediante el proxy del portal en `http://localhost:8080/api/`. El contenedor backend permanece dentro de la red de Docker y no ocupa otro puerto público.
 
 Para comprobar el estado:
 
 ```bash
-curl http://localhost:8080/actuator/health
+docker compose exec backend wget -qO- http://127.0.0.1:8080/actuator/health
 ```
 
 El contrato ejecutable de la API se conserva en [`docs/openapi.yaml`](docs/openapi.yaml), porque las pruebas de contrato lo leen desde esa ruta. La documentación técnica complementaria se mantiene en la rama `Documentacion`, dentro de `Backend/docs`.
