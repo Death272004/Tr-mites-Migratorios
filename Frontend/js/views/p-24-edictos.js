@@ -12,6 +12,7 @@
   var layout = global.tm.layout;
   var field = global.tm.ui.field;
   var button = global.tm.ui.button;
+  var api = global.tm.api;
 
   var DEMO_EDICTOS = {
     expediente: "EXP-2026-000184",
@@ -142,7 +143,7 @@
 
       var toolbar = layout.el("div", "toolbar");
       toolbar.appendChild(layout.el("span", null, ""));
-      toolbar.appendChild(demoSelector());
+      if (!api || !api.isOnline()) toolbar.appendChild(demoSelector());
       inner.appendChild(toolbar);
 
       var errBox = layout.el("div", "auth-error", "");
@@ -185,8 +186,8 @@
       var inner = layout.el("div", "app-content__inner");
       inner.appendChild(layout.pageHeader("Edictos y citaciones", "Sin resultados"));
       var empty = layout.el("div", "app-empty");
-      empty.appendChild(layout.el("p", null, "No encontramos edictos ni citaciones para ese expediente."));
-      empty.appendChild(layout.el("p", null, "Verifique el número de expediente o intente más tarde."));
+      empty.appendChild(layout.el("p", null, "No hay edictos ni citaciones registrados para sus expedientes."));
+      empty.appendChild(layout.el("p", null, "Cuando exista una publicación oficial, aparecerá en esta sección."));
       inner.appendChild(empty);
       container.appendChild(inner);
     }
@@ -214,6 +215,19 @@
       if (state === "error") { renderError(container, { onRetry: function () { show("carga"); } }); return; }
       if (state === "vacio") { renderEmpty(container); return; }
       renderContent(container, opts, true, consulta);
+    }
+
+    if (api && api.isOnline()) {
+      renderLoading(container);
+      api.request("GET", "/expedientes?pagina=0&tamano=1", { pantalla: "P-24" }, function (err) {
+        if (err) {
+          renderError(container, { onRetry: function () { renderP24(container, opts); } });
+          return;
+        }
+        // El backend todavía no publica edictos. En modo conectado nunca se inventan registros.
+        renderEmpty(container);
+      });
+      return;
     }
 
     opts.onDemoState = show;

@@ -27,6 +27,7 @@ public class AuthServicio {
 	private final UsuarioRepo usuarios;
 	private final SesionRepo sesiones;
 	private final PasswordEncoder codificador;
+	private final AprovisionadorBuzon buzones;
 	private final Auditoria auditoria;
 	private final Duration duracionToken;
 	private final int intentosMaximos;
@@ -34,13 +35,15 @@ public class AuthServicio {
 	// Se compara contra este hash cuando la cuenta no existe, para no revelarlo por el tiempo de respuesta.
 	private final String hashSenuelo;
 
-	AuthServicio(UsuarioRepo usuarios, SesionRepo sesiones, PasswordEncoder codificador, Auditoria auditoria,
+	AuthServicio(UsuarioRepo usuarios, SesionRepo sesiones, PasswordEncoder codificador,
+			AprovisionadorBuzon buzones, Auditoria auditoria,
 			@Value("${app.seguridad.token-minutos}") long tokenMinutos,
 			@Value("${app.seguridad.intentos-maximos}") int intentosMaximos,
 			@Value("${app.seguridad.bloqueo-minutos}") long bloqueoMinutos) {
 		this.usuarios = usuarios;
 		this.sesiones = sesiones;
 		this.codificador = codificador;
+		this.buzones = buzones;
 		this.auditoria = auditoria;
 		this.duracionToken = Duration.ofMinutes(tokenMinutos);
 		this.intentosMaximos = intentosMaximos;
@@ -113,6 +116,7 @@ public class AuthServicio {
 			throw new ErrorApi(HttpStatus.BAD_REQUEST, "ENTRADA_INVALIDA", "Revise los datos enviados.",
 					faltas.stream().map(f -> new ErrorDeCampo("contrasenaNueva", f)).toList());
 		}
+		buzones.sincronizar(usuario.getCorreo(), contrasenaNueva);
 		usuario.cambiarContrasena(codificador.encode(contrasenaNueva));
 		// Las demás sesiones abiertas dejan de servir; la actual continúa.
 		sesiones.revocarOtras(usuario.getId(), actual.sesionId());
@@ -126,6 +130,7 @@ public class AuthServicio {
 		if (!faltas.isEmpty()) {
 			throw new IllegalArgumentException("La contraseña no cumple la política: " + String.join(" ", faltas));
 		}
+		buzones.sincronizar(correo, contrasena);
 		return usuarios.save(new Usuario(nombre, correo, codificador.encode(contrasena), rol, permisos));
 	}
 

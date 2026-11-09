@@ -7,6 +7,7 @@
   --theme-navy-2: #173b5c;
   --theme-blue: #2167a8;
   --theme-amber: #d88926;
+  --theme-orange: var(--theme-amber);
   --theme-amber-soft: #fff3df;
   --theme-canvas: #f4f6f9;
   --theme-paper: #fffdf9;
@@ -289,6 +290,30 @@ body {
 
 .form-field__group {
   gap: 8px;
+}
+
+.institutional-email {
+  display: flex;
+  align-items: stretch;
+  min-width: 0;
+}
+
+.institutional-email .form-field__input {
+  min-width: 0;
+  border-radius: 6px 0 0 6px;
+}
+
+.institutional-email__domain {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+  padding: 0 14px;
+  border: 1px solid #c6c0b7;
+  border-left: 0;
+  border-radius: 0 6px 6px 0;
+  background: rgba(16, 42, 67, 0.07);
+  color: var(--theme-navy);
+  font-weight: 700;
 }
 
 .wizard-grid,
@@ -2107,6 +2132,12 @@ html.theme-dark .form-field__textarea {
   color: #f2f7fb;
 }
 
+html.theme-dark .institutional-email__domain {
+  border-color: #587287;
+  background: rgba(255, 255, 255, 0.08);
+  color: #f2f7fb;
+}
+
 html.theme-dark .toolbar__demo {
   color: #dce8f1 !important;
 }
@@ -2734,5 +2765,408 @@ html.theme-dark .app-content {
     width: min(300px, 88vw);
     min-height: 100dvh;
     padding-top: 78px;
+  }
+}
+
+/* Ajustes finales del encabezado: marca legible y menú de sesión más limpio. */
+.app-context-trigger {
+  border-color: transparent;
+  background: transparent;
+}
+
+.app-context-menu__link:hover,
+.app-context-menu__link:focus-visible,
+.app-context-menu .app-header__logout:hover,
+.app-context-menu .app-header__logout:focus-visible,
+html.theme-dark .app-context-menu__link:hover,
+html.theme-dark .app-context-menu__link:focus-visible,
+html.theme-dark .app-context-menu .app-header__logout:hover,
+html.theme-dark .app-context-menu .app-header__logout:focus-visible {
+  background: transparent;
+  border-color: transparent;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 5px;
+  outline: none;
+}
+
+@media (max-width: 820px) {
+  .app-header__brand {
+    flex: 1 1 auto;
+  }
+
+  .app-header__title {
+    max-width: none;
+    overflow: visible;
+    text-overflow: clip;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 600px) {
+  .app-header__title {
+    max-width: none;
+    font-size: 0.82rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .app-context-trigger__label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .app-context-trigger {
+    gap: 5px;
+    padding-inline: 7px;
+  }
+}
+
+/* Flujo administrativo abreviado de solicitudes (6 etapas). */
+.stepper {
+  margin: 8px 0 28px;
+  padding: 0;
+}
+
+.stepper__list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
+  gap: 0;
+  width: 100%;
+}
+
+.stepper__item,
+.stepper__item.is-current,
+.stepper__item.is-done,
+.stepper__item.is-pending {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  align-content: start;
+  gap: 8px;
+  min-width: 0;
+  padding: 0 6px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--theme-muted);
+  text-align: center;
+}
+
+.stepper__item::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  top: 17px;
+  left: calc(50% + 18px);
+  width: calc(100% - 36px);
+  height: 2px;
+  background: #c7d2dc;
+}
+
+.stepper__item:last-child::after {
+  display: none;
+}
+
+.stepper__item.is-done::after {
+  background: var(--theme-blue);
+}
+
+.stepper__bullet {
+  position: relative;
+  z-index: 1;
+  width: 34px;
+  height: 34px;
+  border: 2px solid #aebdca;
+  background: var(--theme-page);
+  color: #52687a;
+  font-size: 0.76rem;
+}
+
+.stepper__item.is-current .stepper__bullet {
+  border-color: var(--theme-orange);
+  background: var(--theme-orange);
+  color: #102a43;
+  box-shadow: 0 0 0 4px rgba(240, 145, 34, 0.16);
+}
+
+.stepper__item.is-done .stepper__bullet {
+  border-color: var(--theme-blue);
+  background: var(--theme-blue);
+  color: #fff;
+}
+
+.stepper__label {
+  overflow: hidden;
+  width: 100%;
+  color: #52687a;
+  font-size: 0.76rem;
+  font-weight: 700;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.stepper__item.is-current .stepper__label {
+  color: var(--theme-ink);
+}
+
+.stepper__subtitle {
+  color: var(--theme-muted);
+  font-size: 0.68rem;
+  line-height: 1;
+}
+
+.stepper__compact {
+  display: none;
+}
+
+.stepper__meter {
+  display: none;
+  overflow: hidden;
+  height: 6px;
+  margin-top: 18px;
+  border-radius: 999px;
+  background: #d8e1e8;
+}
+
+.stepper__meter-fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--theme-blue), var(--theme-amber));
+  transition: width 280ms ease;
+}
+
+.application-stage__context {
+  margin: -8px 0 24px;
+}
+
+.application-stage__modules {
+  border-top: 0;
+}
+
+.application-stage__module {
+  position: relative;
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  column-gap: 16px;
+  padding: 30px 0 34px;
+  border-bottom: 1px solid var(--theme-line);
+}
+
+.application-stage__module-number {
+  grid-row: 1 / span 2;
+  color: var(--theme-orange);
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  padding-top: 4px;
+}
+
+.application-stage__module-title {
+  margin: 0 0 20px;
+  color: var(--theme-ink);
+  font-size: 1.05rem;
+}
+
+.application-stage__module-host {
+  min-width: 0;
+}
+
+.application-stage__module-host > .app-content__inner {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+}
+
+.application-stage__module-host > .app-content__inner > .page-header,
+.application-stage__module-host > .app-content__inner > .app-page-header,
+.application-stage__module-host > .app-content__inner > .stepper,
+.application-stage__module-host > .app-content__inner > .wizard-summary,
+.application-stage__module-host .toolbar__demo,
+.application-stage__module-host .auth-actions {
+  display: none !important;
+}
+
+.application-stage__module-host .wizard-body {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.application-stage__module-host form.card {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.application-stage__module.is-complete .application-stage__module-number {
+  color: var(--theme-success, #237a57);
+}
+
+.application-stage__actions {
+  justify-content: space-between;
+  margin-top: 28px;
+}
+
+html.theme-dark .stepper__item,
+html.theme-dark .stepper__item.is-current,
+html.theme-dark .stepper__item.is-done,
+html.theme-dark .stepper__item.is-pending {
+  border: 0;
+  background: transparent;
+}
+
+html.theme-dark .stepper__item::after {
+  background: #385064;
+}
+
+html.theme-dark .stepper__item.is-done::after {
+  background: #63a3cf;
+}
+
+html.theme-dark .stepper__bullet {
+  border-color: #587084;
+  background: #101e29;
+  color: #c9d7e2;
+}
+
+html.theme-dark .stepper__item.is-current .stepper__bullet {
+  border-color: #f4a33f;
+  background: #f4a33f;
+  color: #10212e;
+}
+
+html.theme-dark .stepper__item.is-done .stepper__bullet {
+  border-color: #4f91bf;
+  background: #2c6f9e;
+}
+
+html.theme-dark .stepper__label,
+html.theme-dark .stepper__subtitle {
+  color: #aebfcd !important;
+}
+
+html.theme-dark .stepper__item.is-current .stepper__label,
+html.theme-dark .application-stage__module-title {
+  color: #f2f7fb !important;
+}
+
+html.theme-dark .stepper__meter {
+  background: #385064;
+}
+
+html.theme-dark .application-stage__module-host .wizard-body,
+html.theme-dark .application-stage__module-host form.card {
+  background: transparent !important;
+}
+
+@media (max-width: 760px) {
+  .stepper {
+    overflow: visible;
+    margin-bottom: 24px;
+  }
+
+  .stepper__list {
+    display: none;
+  }
+
+  .stepper__compact {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 5px 12px;
+    padding: 10px 0 14px;
+  }
+
+  .stepper__meter {
+    display: block;
+    height: 6px;
+    margin: 0;
+  }
+
+  .stepper__compact-count {
+    color: var(--theme-muted);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .stepper__compact-label {
+    color: var(--theme-ink);
+    font-size: 0.88rem;
+  }
+
+  .application-stage__module {
+    grid-template-columns: 32px minmax(0, 1fr);
+    gap: 10px;
+    padding: 24px 0 28px;
+  }
+
+  .application-stage__module-title {
+    margin-bottom: 16px;
+    font-size: 1rem;
+  }
+
+  .application-stage__actions {
+    gap: 10px;
+  }
+
+  html.theme-dark .stepper__compact-label {
+    color: #f2f7fb;
+  }
+
+}
+
+/* Naturalización: requisitos legales agrupados en siete etapas. */
+.naturalization-phase__title {
+  margin: 0;
+  color: var(--theme-ink);
+  font-size: 1.25rem;
+}
+
+.naturalization-phase__intro {
+  margin: 8px 0 24px;
+}
+
+.naturalization-phase__section {
+  padding: 26px 0 30px;
+  border-top: 1px solid var(--theme-line);
+}
+
+.naturalization-phase__section:first-of-type {
+  padding-top: 22px;
+}
+
+.naturalization-phase__section > .wizard-section-title:first-child {
+  margin: 0 0 8px;
+  color: var(--theme-blue);
+  font-size: 0.9rem;
+  letter-spacing: 0.025em;
+}
+
+html.theme-dark .naturalization-phase__title {
+  color: #f2f7fb;
+}
+
+html.theme-dark .naturalization-phase__section > .wizard-section-title:first-child {
+  color: #8fc2e5;
+}
+
+@media (max-width: 760px) {
+  .naturalization-phase__section {
+    padding: 22px 0 26px;
   }
 }

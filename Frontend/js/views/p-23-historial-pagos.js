@@ -12,6 +12,7 @@
   var layout = global.tm.layout;
   var button = global.tm.ui.button;
   var table = global.tm.ui.table;
+  var api = global.tm.api;
 
   // Datos demo (ficticios). Se reemplazan por fixtures/HTTP en Sprint 2.
   var DEMO_PAGOS = [
@@ -21,7 +22,7 @@
     { fecha: "2026-10-05", concepto: "Carné de residente", monto: 50, medio: "En línea (tarjeta)", comprobante: "COMP-2026-005110", estado: "Pendiente" },
   ];
 
-  var TONO_ESTADO = { Pagado: "success", Pendiente: "warning", Devuelto: "info" };
+  var TONO_ESTADO = { Pagado: "success", Pendiente: "warning", Devuelto: "info", Exonerado: "info" };
 
   function fmtFecha(iso) {
     if (!iso) return "—";
@@ -77,7 +78,7 @@
 
     var toolbar = layout.el("div", "toolbar");
     toolbar.appendChild(layout.el("span", null, pagos.length + (pagos.length === 1 ? " pago registrado" : " pagos registrados")));
-    toolbar.appendChild(demoSelector(opts));
+    if (!api || !api.isOnline()) toolbar.appendChild(demoSelector(opts));
     inner.appendChild(toolbar);
 
     if (pagos.length === 0) {
@@ -101,7 +102,9 @@
       rows: tableRows(pagos),
     }));
 
-    var total = pagos.reduce(function (s, p) { return s + (p.estado === "Devuelto" ? 0 : p.monto); }, 0);
+    var total = pagos.reduce(function (s, p) {
+      return s + ((p.estado === "Devuelto" || p.estado === "Exonerado") ? 0 : p.monto);
+    }, 0);
     var resumen = layout.el("p", "seguimiento-note",
       "Total pagado (sin garantías devueltas): " + money(total) + ". Captura simulada, sin pasarela real; descargas auditadas (CP-12).");
     inner.appendChild(resumen);
@@ -158,6 +161,29 @@
 
   function renderP23(container, opts) {
     opts = opts || {};
+
+    if (api && api.isOnline()) {
+      renderLoading(container);
+      api.request("GET", "/expedientes?pagina=0&tamano=50", { pantalla: "P-23" }, function (err, page) {
+        if (err) { renderError(container, { onRetry: function () { renderP23(container, opts); } }); return; }
+        var expedientes = page && page.contenido ? page.contenido : [];
+        if (!expedientes.length) { renderContent(container, opts, []); return; }
+        var seleccionado = global.tm.expediente && global.tm.expediente.getSelected ? global.tm.expediente.getSelected() : null;
+        var actual = expedientes.find(function (e) { return seleccionado && e.id === seleccionado.id; }) || expedientes[0];
+        global.tm.expediente.setSelected(actual);
+        var pago = actual.datosSolicitud && actual.datosSolicitud.pagos;
+        if (!pago || !pago.pagado) { renderContent(container, opts, []); return; }
+        renderContent(container, opts, [{
+          fecha: String(actual.fechaCreacion || "").slice(0, 10),
+          concepto: pago.concepto || "Pago del trámite (simulado)",
+          monto: Number(pago.total || 0),
+          medio: pago.modalidad || "Simulado",
+          comprobante: "SIM-" + actual.numero,
+          estado: pago.modalidad === "EXONERACION" ? "Exonerado" : "Pagado",
+        }]);
+      });
+      return;
+    }
 
     function show(state) {
       if (state === "carga") {
