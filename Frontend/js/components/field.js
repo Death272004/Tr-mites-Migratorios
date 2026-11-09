@@ -6,11 +6,6 @@
 
   const { el } = global.tm.layout;
 
-  function markRequired(labelEl, required) {
-    if (!required || /obligatori/i.test(labelEl.textContent)) return;
-    labelEl.appendChild(el("span", "form-field__required", " (obligatorio)"));
-  }
-
   function setHelp(id, helpText) {
     if (!helpText) return null;
     const help = el("span", "form-field__help", helpText);
@@ -30,7 +25,6 @@
     const wrapper = el("div", "form-field");
     const lbl = el("label", "form-field__label", label);
     lbl.setAttribute("for", id);
-    markRequired(lbl, required);
     wrapper.appendChild(lbl);
 
     const input = el("input", "form-field__input");
@@ -57,7 +51,6 @@
     const wrapper = el("div", "form-field");
     const lbl = el("label", "form-field__label", label);
     lbl.setAttribute("for", id);
-    markRequired(lbl, required);
     wrapper.appendChild(lbl);
 
     const group = el("div", "form-field__group");
@@ -97,7 +90,6 @@
     const wrapper = el("div", "form-field");
     const lbl = el("label", "form-field__label", label);
     lbl.setAttribute("for", id);
-    markRequired(lbl, required);
     wrapper.appendChild(lbl);
 
     const select = el("select", "form-field__select");
@@ -127,7 +119,6 @@
     const wrapper = el("div", "form-field");
     const lbl = el("label", "form-field__label", label);
     lbl.setAttribute("for", id);
-    markRequired(lbl, required);
     wrapper.appendChild(lbl);
 
     const input = el("input", "form-field__input");
@@ -137,10 +128,7 @@
     if (value) input.value = value;
     if (required) input.required = true;
     if (disabled) input.disabled = true;
-    const describedBy = [];
-    if (helpText) describedBy.push(`${id}-help`);
-    if (errorText) describedBy.push(`${id}-error`);
-    if (describedBy.length) input.setAttribute("aria-describedby", describedBy.join(" "));
+    if (helpText) input.setAttribute("aria-describedby", `${id}-help`);
     if (errorText) input.setAttribute("aria-invalid", "true");
     wrapper.appendChild(input);
     if (helpText) {
@@ -172,7 +160,6 @@
     const wrapper = el("div", "form-field");
     const lbl = el("label", "form-field__label", label);
     lbl.setAttribute("for", id);
-    markRequired(lbl, required);
     wrapper.appendChild(lbl);
 
     const ta = el("textarea", "form-field__textarea");
