@@ -5,6 +5,7 @@ import java.time.Instant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 /**
@@ -13,13 +14,14 @@ import org.springframework.stereotype.Component;
  * Correo para entregar enlaces de recuperación de forma privada.
  */
 @Component
+@ConditionalOnProperty(name = "app.correo.modo", havingValue = "simulado", matchIfMissing = true)
 class CorreoSimulado implements Correo {
 
 	private static final Logger log = LoggerFactory.getLogger(CorreoSimulado.class);
 
 	private final boolean activo;
 
-	CorreoSimulado(@Value("${app.correo.simulado}") boolean activo) {
+	CorreoSimulado(@Value("${app.correo.simulado:true}") boolean activo) {
 		this.activo = activo;
 	}
 

@@ -351,16 +351,16 @@
     function paint() {
       layout.clear(container);
       var inner = layout.el("div", "app-content__inner");
-      inner.appendChild(layout.pageHeader("Certificaciones en línea", "Estatus migratorio y movimiento migratorio · 3 pasos"));
+      inner.appendChild(layout.pageHeader("Certificaciones en línea", "Certificados de estatus y movimiento migratorio"));
 
       if (mode === "carga") { inner.appendChild(renderLoading()); container.appendChild(inner); return; }
 
-      inner.appendChild(toolbar());
+      if (!global.tm.api || !global.tm.api.isOnline()) inner.appendChild(toolbar());
       if (mode === "error") { inner.appendChild(renderError()); container.appendChild(inner); return; }
       if (mode === "vacio") { inner.appendChild(renderEmpty()); container.appendChild(inner); return; }
       if (confirmed) { inner.appendChild(confirmPanel()); container.appendChild(inner); return; }
 
-      inner.appendChild(stepper({ steps: STEPS, current: stepIndex }));
+      inner.appendChild(stepper({ steps: STEPS, current: stepIndex, unit: "Paso" }));
       inner.appendChild(layout.el("p", "wizard-summary", "Verificación de estatus contra el expediente del SNM (origen S). En modo consulta mínimo la emisión se completa en el despacho."));
       inner.appendChild(drawStep());
       container.appendChild(inner);
@@ -368,7 +368,6 @@
 
     function toolbar() {
       var tb = layout.el("div", "toolbar");
-      tb.appendChild(layout.el("span", null, "Paso " + (stepIndex + 1) + " de " + STEPS.length));
       tb.appendChild(demoSelector());
       return tb;
     }

@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -35,19 +36,22 @@ import pa.tramitesmigratorios.seguridad.UsuarioActual;
 @RequestMapping("/api/expedientes")
 class ExpedienteController {
 
-	/** Proyección mínima: identificadores, tipo, estado y fechas; ningún dato personal. */
-	record ExpedienteDto(UUID id, String numero, UUID solicitanteId, String tipoTramite, EstadoExpediente estado,
+	/** Expediente accesible según rol, incluida la solicitud estructurada del asistente. */
+	record ExpedienteDto(UUID id, String numero, UUID solicitanteId, String tipoTramite,
+			Map<String, Object> datosSolicitud, EstadoExpediente estado,
 			Resultado resultado, Instant fechaCreacion, Instant fechaActualizacion, long version) {
 
 		static ExpedienteDto de(Expediente e) {
-			return new ExpedienteDto(e.getId(), e.getNumero(), e.getSolicitanteId(), e.getTipoTramite(), e.getEstado(),
-					e.getResultado(), e.getFechaCreacion(), e.getFechaActualizacion(), e.getVersion());
+			return new ExpedienteDto(e.getId(), e.getNumero(), e.getSolicitanteId(), e.getTipoTramite(),
+					e.getDatosSolicitud(), e.getEstado(), e.getResultado(), e.getFechaCreacion(),
+					e.getFechaActualizacion(), e.getVersion());
 		}
 
 	}
 
 	record ExpedienteNuevo(@NotBlank(message = "El tipo de trámite es obligatorio.") String tipoTramite,
-			UUID titularId) {
+			UUID titularId, @Size(max = 20, message = "La solicitud contiene demasiadas secciones.")
+			Map<String, Object> datosSolicitud) {
 	}
 
 	record CambioEstadoSolicitud(@NotNull(message = "El estado nuevo es obligatorio.") EstadoExpediente estadoNuevo,
@@ -99,7 +103,8 @@ class ExpedienteController {
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	ExpedienteDto crear(@AuthenticationPrincipal UsuarioActual usuario, @Valid @RequestBody ExpedienteNuevo nuevo) {
-		return ExpedienteDto.de(servicio.crear(nuevo.tipoTramite(), nuevo.titularId(), usuario));
+		return ExpedienteDto.de(
+				servicio.crear(nuevo.tipoTramite(), nuevo.titularId(), nuevo.datosSolicitud(), usuario));
 	}
 
 	@GetMapping("/{id}")
