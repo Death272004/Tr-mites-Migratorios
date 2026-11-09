@@ -12,6 +12,85 @@
   "use strict";
 
   var TODAY = new Date().toISOString().slice(0, 10);
+  var PROFILE_KEY = "tm.solicitud.demo.profile";
+
+  var PROFILES = [
+    {
+      id: "andrea-morales",
+      name: "Andrea Morales Vega",
+      caption: "Pasaporte colombiano · solicitud laboral",
+      values: {
+        primerapellido: "Morales", segundoapellido: "Vega", nombres: "Andrea Lucía",
+        nombrespasaporte: "MORALES VEGA ANDREA LUCIA", fechanacimiento: "1992-04-18",
+        lugarnacimiento: "Medellín", nombrepadre: "Jorge Morales", nombremadre: "Elena Vega",
+        numdoctitular: "CO-DEMO-1001", nombretitular: "Andrea Lucía Morales Vega",
+        numpasaporte: "CO-DEMO-1001", correonotificacion: "andrea.morales@demo.invalid",
+        telefononotificacion: "+507 6000-1001", titularrecibo: "Andrea Lucía Morales Vega",
+        nombrefirmante: "Andrea Lucía Morales Vega"
+      },
+      selects: { paisNacimiento: "CO", nacionalidad: "CO", nacionalidadPadre: "CO", nacionalidadMadre: "CO", sexo: "F", estadoCivil: "SOLTERO", paisEmisor: "CO" }
+    },
+    {
+      id: "luis-herrera",
+      name: "Luis Herrera Soto",
+      caption: "Pasaporte venezolano · solicitud familiar",
+      values: {
+        primerapellido: "Herrera", segundoapellido: "Soto", nombres: "Luis Alberto",
+        nombrespasaporte: "HERRERA SOTO LUIS ALBERTO", fechanacimiento: "1988-09-07",
+        lugarnacimiento: "Caracas", nombrepadre: "Alberto Herrera", nombremadre: "Mónica Soto",
+        numdoctitular: "VE-DEMO-1002", nombretitular: "Luis Alberto Herrera Soto",
+        numpasaporte: "VE-DEMO-1002", correonotificacion: "luis.herrera@demo.invalid",
+        telefononotificacion: "+507 6000-1002", titularrecibo: "Luis Alberto Herrera Soto",
+        nombrefirmante: "Luis Alberto Herrera Soto"
+      },
+      selects: { paisNacimiento: "VE", nacionalidad: "VE", nacionalidadPadre: "VE", nacionalidadMadre: "VE", sexo: "M", estadoCivil: "CASADO", paisEmisor: "VE" }
+    },
+    {
+      id: "sofia-alvarez",
+      name: "Sofía Álvarez Ruiz",
+      caption: "Pasaporte costarricense · solicitud de estudios",
+      values: {
+        primerapellido: "Álvarez", segundoapellido: "Ruiz", nombres: "Sofía Elena",
+        nombrespasaporte: "ALVAREZ RUIZ SOFIA ELENA", fechanacimiento: "1998-02-21",
+        lugarnacimiento: "San José", nombrepadre: "Mario Álvarez", nombremadre: "Laura Ruiz",
+        numdoctitular: "CR-DEMO-1003", nombretitular: "Sofía Elena Álvarez Ruiz",
+        numpasaporte: "CR-DEMO-1003", correonotificacion: "sofia.alvarez@demo.invalid",
+        telefononotificacion: "+507 6000-1003", titularrecibo: "Sofía Elena Álvarez Ruiz",
+        nombrefirmante: "Sofía Elena Álvarez Ruiz"
+      },
+      selects: { paisNacimiento: "CR", nacionalidad: "CR", nacionalidadPadre: "CR", nacionalidadMadre: "CR", sexo: "F", estadoCivil: "SOLTERO", paisEmisor: "CR" }
+    },
+    {
+      id: "mateo-castillo",
+      name: "Mateo Castillo Rojas",
+      caption: "Pasaporte dominicano · residencia temporal",
+      values: {
+        primerapellido: "Castillo", segundoapellido: "Rojas", nombres: "Mateo José",
+        nombrespasaporte: "CASTILLO ROJAS MATEO JOSE", fechanacimiento: "1985-12-11",
+        lugarnacimiento: "Santo Domingo", nombrepadre: "José Castillo", nombremadre: "Irene Rojas",
+        numdoctitular: "DO-DEMO-1004", nombretitular: "Mateo José Castillo Rojas",
+        numpasaporte: "DO-DEMO-1004", correonotificacion: "mateo.castillo@demo.invalid",
+        telefononotificacion: "+507 6000-1004", titularrecibo: "Mateo José Castillo Rojas",
+        nombrefirmante: "Mateo José Castillo Rojas"
+      },
+      selects: { paisNacimiento: "DO", nacionalidad: "DO", nacionalidadPadre: "DO", nacionalidadMadre: "DO", sexo: "M", estadoCivil: "CASADO", paisEmisor: "DO" }
+    },
+    {
+      id: "valentina-navarro",
+      name: "Valentina Navarro Paz",
+      caption: "Pasaporte ecuatoriano · residencia permanente",
+      values: {
+        primerapellido: "Navarro", segundoapellido: "Paz", nombres: "Valentina Isabel",
+        nombrespasaporte: "NAVARRO PAZ VALENTINA ISABEL", fechanacimiento: "1994-07-30",
+        lugarnacimiento: "Quito", nombrepadre: "Ramón Navarro", nombremadre: "Isabel Paz",
+        numdoctitular: "EC-DEMO-1005", nombretitular: "Valentina Isabel Navarro Paz",
+        numpasaporte: "EC-DEMO-1005", correonotificacion: "valentina.navarro@demo.invalid",
+        telefononotificacion: "+507 6000-1005", titularrecibo: "Valentina Isabel Navarro Paz",
+        nombrefirmante: "Valentina Isabel Navarro Paz"
+      },
+      selects: { paisNacimiento: "EC", nacionalidad: "EC", nacionalidadPadre: "EC", nacionalidadMadre: "EC", sexo: "F", estadoCivil: "SOLTERO", paisEmisor: "EC" }
+    }
+  ];
 
   // Valores demo por id exacto (clave en minúsculas).
   var EXACT = {
@@ -128,8 +207,26 @@
     return String(el.id || el.name || "").toLowerCase();
   }
 
-  function valueFor(el) {
+  function getProfile(id) {
+    var selected = id;
+    if (!selected) {
+      try { selected = global.sessionStorage.getItem(PROFILE_KEY); } catch (e) { selected = ""; }
+    }
+    for (var i = 0; i < PROFILES.length; i++) if (PROFILES[i].id === selected) return PROFILES[i];
+    return null;
+  }
+
+  function setProfile(id) {
+    try {
+      if (id) global.sessionStorage.setItem(PROFILE_KEY, id);
+      else global.sessionStorage.removeItem(PROFILE_KEY);
+    } catch (e) { /* ignore */ }
+    return getProfile(id);
+  }
+
+  function valueFor(el, profile) {
     var key = keyOf(el);
+    if (profile && profile.values && Object.prototype.hasOwnProperty.call(profile.values, key)) return profile.values[key];
     if (Object.prototype.hasOwnProperty.call(EXACT, key)) return EXACT[key];
     for (var i = 0; i < RULES.length; i++) {
       if (RULES[i].re.test(key)) return RULES[i].value;
@@ -228,8 +325,18 @@
     }
   }
 
-  function fill(root) {
+  function preferredOption(sel, profile) {
+    if (!profile || !profile.selects) return null;
+    var wanted = profile.selects[sel.id] || profile.selects[sel.name];
+    if (!wanted) return null;
+    for (var i = 0; i < sel.options.length; i++) if (String(sel.options[i].value) === String(wanted)) return sel.options[i];
+    return null;
+  }
+
+  function fill(root, options) {
     root = root || global.document.getElementById("contenido") || global.document;
+    options = options || {};
+    var profile = getProfile(options.profileId);
     var result = { count: 0 };
     var pending = [];
     var radioGroups = {};
@@ -255,7 +362,7 @@
       if (type === "file") continue;
       if (!isFillableInput(el)) continue;
 
-      var value = valueFor(el);
+      var value = valueFor(el, profile);
       if (String(el.value) !== String(value)) { el.value = value; result.count += 1; }
       pending.push([el, el.tagName === "TEXTAREA" || type === "text" ? "input" : "change"]);
     }
@@ -273,7 +380,7 @@
     for (i = 0; i < selects.length; i++) {
       var sel = selects[i];
       if (sel.disabled) continue;
-      var opt = pickOption(sel);
+      var opt = preferredOption(sel, profile) || pickOption(sel);
       if (opt && String(sel.value) !== String(opt.value)) {
         sel.value = opt.value;
         result.count += 1;
@@ -291,6 +398,129 @@
     return result;
   }
 
+  function fillStage(root, options, done) {
+    var total = 0;
+    var passes = [0, 140, 420];
+    for (var i = 0; i < passes.length; i++) {
+      (function (delay, last) {
+        global.setTimeout(function () {
+          total += fill(typeof root === "function" ? root() : root, options).count;
+          if (last && done) done(total);
+        }, delay);
+      })(passes[i], i === passes.length - 1);
+    }
+  }
+
+  function createStageControl(options) {
+    options = options || {};
+    var panel = global.document.createElement("section");
+    panel.className = "demo-fill";
+    panel.setAttribute("aria-label", "Datos ficticios para demostración");
+
+    var heading = global.document.createElement("div");
+    heading.className = "demo-fill__heading";
+    var title = global.document.createElement("strong");
+    title.textContent = "Datos de prueba";
+    var badge = global.document.createElement("span");
+    badge.className = "demo-fill__badge";
+    badge.textContent = "Solo demostración";
+    heading.appendChild(title);
+    heading.appendChild(badge);
+    panel.appendChild(heading);
+
+    var profileArea = global.document.createElement("div");
+    profileArea.className = "demo-fill__profiles";
+    panel.appendChild(profileArea);
+
+    function renderProfiles() {
+      profileArea.innerHTML = "";
+      var active = getProfile();
+      if (options.chooseProfile) {
+        var activation = global.document.createElement("label");
+        activation.className = "demo-fill__activation";
+        var check = global.document.createElement("input");
+        check.type = "checkbox";
+        check.checked = !!active;
+        activation.appendChild(check);
+        var activationText = global.document.createElement("span");
+        activationText.textContent = "Usar una persona ficticia para completar el formulario";
+        activation.appendChild(activationText);
+        profileArea.appendChild(activation);
+
+        var choices = global.document.createElement("div");
+        choices.className = "demo-fill__choices";
+        choices.hidden = !check.checked;
+        for (var i = 0; i < PROFILES.length; i++) {
+          var item = global.document.createElement("label");
+          item.className = "demo-fill__choice";
+          var radio = global.document.createElement("input");
+          radio.type = "radio";
+          radio.name = "demo-profile";
+          radio.value = PROFILES[i].id;
+          radio.checked = !!active && active.id === PROFILES[i].id;
+          var text = global.document.createElement("span");
+          text.innerHTML = "<strong>" + PROFILES[i].name + "</strong><small>" + PROFILES[i].caption + "</small>";
+          radio.addEventListener("change", function () { setProfile(this.value); updateButton(); });
+          item.appendChild(radio);
+          item.appendChild(text);
+          choices.appendChild(item);
+        }
+        profileArea.appendChild(choices);
+        check.addEventListener("change", function () {
+          choices.hidden = !check.checked;
+          if (!check.checked) setProfile("");
+          updateButton();
+        });
+      } else {
+        var summary = global.document.createElement("p");
+        summary.className = "demo-fill__summary";
+        summary.textContent = active ? "Persona seleccionada: " + active.name : "Seleccione una persona ficticia en la etapa 1 para habilitar el autocompletado.";
+        profileArea.appendChild(summary);
+      }
+    }
+
+    var actions = global.document.createElement("div");
+    actions.className = "demo-fill__actions";
+    var status = global.document.createElement("span");
+    status.className = "demo-fill__status";
+    status.setAttribute("aria-live", "polite");
+    var fillButton = global.document.createElement("button");
+    fillButton.type = "button";
+    fillButton.className = "btn demo-fill__button";
+    fillButton.textContent = "Completar esta etapa";
+    fillButton.addEventListener("click", function () {
+      if (!getProfile()) return;
+      fillButton.disabled = true;
+      status.textContent = "Completando…";
+      fillStage(options.root, { profileId: getProfile().id }, function () {
+        fillButton.disabled = false;
+        fillButton.textContent = "Volver a completar esta etapa";
+        status.textContent = "Etapa completada con datos ficticios. Revise antes de continuar.";
+        if (options.onFilled) options.onFilled();
+      });
+    });
+    actions.appendChild(status);
+    actions.appendChild(fillButton);
+    panel.appendChild(actions);
+
+    function updateButton() {
+      fillButton.disabled = !getProfile() || (options.isReady && !options.isReady());
+    }
+
+    panel.refresh = function () { renderProfiles(); updateButton(); };
+    panel.updateAvailability = updateButton;
+    renderProfiles();
+    updateButton();
+    return panel;
+  }
+
   global.tm = global.tm || {};
-  global.tm.autofill = { fill: fill };
+  global.tm.autofill = {
+    fill: fill,
+    fillStage: fillStage,
+    createStageControl: createStageControl,
+    profiles: PROFILES.slice(),
+    getProfile: getProfile,
+    setProfile: setProfile,
+  };
 })(window);

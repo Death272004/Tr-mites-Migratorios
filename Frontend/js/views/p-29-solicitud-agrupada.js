@@ -75,6 +75,17 @@
     for (var i = 0; i < group.modules.length; i++) {
       states.push(addModule(modules, group.modules[i], i + 1));
     }
+
+    var demoControl = global.tm.autofill.createStageControl({
+      chooseProfile: groupNumber === 1,
+      root: function () { return modules; },
+      isReady: function () { return states.every(function (state) { return !!actionFor(state); }); },
+      onFilled: function () {
+        if (groupNumber === 1) syncRepresentation();
+        checkReady();
+      },
+    });
+    inner.appendChild(demoControl);
     inner.appendChild(modules);
 
     var status = layout.el("div", "auth-error application-stage__error", "");
@@ -131,6 +142,7 @@
       var ready = states.every(function (state) { return !!actionFor(state); });
       continueButton.disabled = !ready;
       modules.classList.toggle("is-ready", ready);
+      if (demoControl && demoControl.updateAvailability) demoControl.updateAvailability();
       if (ready && groupNumber === 1) syncRepresentation();
     }
 
