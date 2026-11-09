@@ -17,7 +17,7 @@
   var draft = global.tm.draft;
 
   var TITULO = "Naturalización (Carta de Naturaleza)";
-  var SUBTITULO = "Flujo específico N-1 a N-13 · requiere abogado apoderado";
+  var SUBTITULO = "7 etapas administrativas · requisitos legales N-1 a N-13 · requiere abogado apoderado";
 
   var OPC_SEXO = [
     { value: "", label: "Seleccione…" },
@@ -142,6 +142,9 @@
       label: "N-6 Solvencia",
       title: "N-6 · Solvencia económica (2 de 5)",
       intro: "Adjunte al menos 2 de las siguientes 5 opciones para acreditar solvencia.",
+      fields: [
+        { id: "esDependiente", label: "¿El solicitante depende económicamente de otra persona?", type: "select", options: OPC_SINO, required: true },
+      ],
       minDocs: 2,
       docsTitle: "Opciones de solvencia (elija al menos 2)",
       docs: [
@@ -254,6 +257,25 @@
     },
   ];
 
+  // Las trece secciones legales se presentan en siete etapas comprensibles.
+  // Los índices apuntan a STEPS para conservar todos los campos y documentos.
+  var PHASES = [
+    { label: "Apoderado", title: "Apoderado", intro: "Identifique al abogado responsable de presentar la solicitud.", sections: [0] },
+    { label: "Solicitante", title: "Solicitante y migración", intro: "Confirme la identidad y los documentos migratorios del peticionario.", sections: [1, 2] },
+    { label: "Antecedentes", title: "Antecedentes y vínculos", intro: "Aporte los antecedentes y únicamente los vínculos familiares aplicables.", sections: [3, 4] },
+    { label: "Solvencia", title: "Solvencia económica", intro: "Acredite la solvencia; los datos del responsable aparecen solo si corresponde.", sections: [5, 6] },
+    { label: "Entrevista", title: "Entrevista y DGI", intro: "Adjunte la entrevista y registre la constancia fiscal.", sections: [7, 8] },
+    { label: "Elegibilidad", title: "Salud y elegibilidad", intro: "Complete salud, fotografías, reciprocidad cuando aplique y examen.", sections: [9, 10, 11] },
+    { label: "Declaración", title: "Declaración y envío", intro: "Revise las declaraciones finales antes de completar la solicitud.", sections: [12] },
+  ];
+
+  function legacyStepToPhase(step) {
+    for (var i = 0; i < PHASES.length; i++) {
+      if (PHASES[i].sections.indexOf(step) !== -1) return i;
+    }
+    return 0;
+  }
+
   function byId(id) {
     var e = document.getElementById(id);
     return e ? String(e.value).trim() : "";
@@ -262,14 +284,48 @@
   function renderP26(container, opts) {
     opts = opts || {};
 
-    var saved = draft.getDraft().naturalizacion || {};
+    var completeDraft = draft.getDraft();
+    var saved = completeDraft.naturalizacion || {};
     var values = saved.valores || {};
-    var stepIndex = typeof saved.paso === "number" ? Math.min(Math.max(saved.paso, 0), STEPS.length - 1) : 0;
+    var stepIndex = typeof saved.paso === "number"
+      ? (saved.version === 2 ? Math.min(Math.max(saved.paso, 0), PHASES.length - 1) : legacyStepToPhase(saved.paso))
+      : 0;
     var mode = "carga";
     var confirmed = false;
 
+    prefillKnownData(values, completeDraft);
+
+    function prefillKnownData(target, source) {
+      var personal = source.datosPersonales || {};
+      var titular = source.titularidad || {};
+      var representante = titular.representante || {};
+      var passport = source.pasaporte || {};
+      var address = source.domicilio || {};
+      function put(key, value) { if (!target[key] && value) target[key] = value; }
+
+      put("nombreAbogado", representante.nombre);
+      put("cedulaAbogado", titular.cedulaAbogado || representante.documento);
+      put("idoneidadAbogado", titular.cedulaAbogado);
+      put("telefonoAbogado", representante.telefono);
+      put("correoAbogado", representante.correo);
+      put("nombrePasaporte", personal.nombresPasaporte || [personal.nombres, personal.primerApellido, personal.segundoApellido].filter(Boolean).join(" ") || titular.nombreTitular);
+      put("domicilio", address.direccionCompleta);
+      put("sexo", personal.sexo);
+      put("estadoCivil", personal.estadoCivil);
+      put("lugarNacimiento", personal.lugarNacimiento);
+      put("nacionalidadNacimiento", personal.nacionalidad || personal.paisNacimiento);
+      put("pasaporte", passport.numPasaporte);
+      put("carneE", passport.carneENumero || passport.numeroCarne);
+      put("correo", address.correoNotificacion);
+      put("telefono", address.telefonoNotificacion);
+      put("nombrePadre", personal.nombrePadre);
+      put("nacionalidadPadre", personal.nacionalidadPadre);
+      put("nombreMadre", personal.nombreMadre);
+      put("nacionalidadMadre", personal.nacionalidadMadre);
+    }
+
     function save() {
-      draft.mergeDraft({ naturalizacion: { paso: stepIndex, valores: values } });
+      draft.mergeDraft({ naturalizacion: { paso: stepIndex, version: 2, valores: values } });
     }
 
     function docKey(id) { return "doc:" + id; }
@@ -314,6 +370,31 @@
       return null;
     }
 
+    function activeSections(phase) {
+      var out = [];
+      for (var i = 0; i < phase.sections.length; i++) {
+        var sectionIndex = phase.sections[i];
+        if (sectionIndex === 6 && values.esDependiente !== "SI") continue;
+        if (sectionIndex === 10 && values.fundamentoDerecho !== "3") continue;
+        out.push(STEPS[sectionIndex]);
+      }
+      return out;
+    }
+
+    function collectPhase(phase) {
+      var sections = activeSections(phase);
+      for (var i = 0; i < sections.length; i++) collect(sections[i]);
+    }
+
+    function validatePhase(phase) {
+      var sections = activeSections(phase);
+      for (var i = 0; i < sections.length; i++) {
+        var message = validate(sections[i]);
+        if (message) return message;
+      }
+      return null;
+    }
+
     function buildField(def) {
       var value = values[def.id];
       if (def.type === "check") {
@@ -331,7 +412,7 @@
       return field.fieldText({ id: def.id, label: def.label, value: value || "", required: def.required, helpText: def.help });
     }
 
-    function buildDoc(step, doc) {
+    function buildDoc(step, doc, progressState) {
       var req = doc.required ? " *" : step.minDocs ? " (opción)" : "";
       return global.tm.ui.fileUpload({
         id: doc.id,
@@ -341,51 +422,77 @@
         onChange: function (f) {
           values[docKey(doc.id)] = f ? { name: f.name, size: f.size } : null;
           save();
-          if (progress) {
+          if (progressState.el) {
             var loaded = 0;
             for (var k = 0; k < step.docs.length; k++) if (values[docKey(step.docs[k].id)]) loaded++;
-            progress.textContent = loaded + " de " + step.docs.length + " documentos adjuntos";
+            progressState.el.textContent = loaded + " de " + step.docs.length + " documentos adjuntos";
           }
         },
       });
     }
 
-    var progress = null;
-
-    function drawStep(step) {
-      var body = layout.el("div", "wizard-body");
-
-      body.appendChild(layout.el("h2", "wizard-section-title", step.title));
-      if (step.intro) body.appendChild(layout.el("p", "wizard-summary", step.intro));
+    function drawSection(step, phase) {
+      var section = layout.el("section", "naturalization-phase__section");
+      section.appendChild(layout.el("h3", "wizard-section-title", step.title));
+      if (step.intro) section.appendChild(layout.el("p", "wizard-summary", step.intro));
 
       if (step.fields && step.fields.length) {
         var grid = layout.el("div", "wizard-grid");
-        for (var i = 0; i < step.fields.length; i++) grid.appendChild(buildField(step.fields[i]));
-        body.appendChild(grid);
+        for (var i = 0; i < step.fields.length; i++) {
+          var control = buildField(step.fields[i]);
+          grid.appendChild(control);
+          if (step.fields[i].id === "esDependiente") {
+            var dependentSelect = control.querySelector("select");
+            dependentSelect.addEventListener("change", function () {
+              collectPhase(phase);
+              save();
+              paint();
+            });
+          }
+        }
+        section.appendChild(grid);
       }
 
-      progress = null;
       if (step.docs && step.docs.length) {
         var docsBlock = layout.el("fieldset", "wizard-section");
         docsBlock.appendChild(layout.el("legend", "wizard-section-title", step.docsTitle || "Documentos"));
         var docsGrid = layout.el("div", "wizard-grid");
-        for (var j = 0; j < step.docs.length; j++) docsGrid.appendChild(buildDoc(step, step.docs[j]));
+        var progressState = { el: null };
+        for (var j = 0; j < step.docs.length; j++) docsGrid.appendChild(buildDoc(step, step.docs[j], progressState));
         docsBlock.appendChild(docsGrid);
         var loaded = 0;
         for (var k = 0; k < step.docs.length; k++) if (values[docKey(step.docs[k].id)]) loaded++;
-        progress = layout.el("span", "form-field__help", loaded + " de " + step.docs.length + " documentos adjuntos");
-        docsBlock.appendChild(progress);
-        body.appendChild(docsBlock);
+        progressState.el = layout.el("span", "form-field__help", loaded + " de " + step.docs.length + " documentos adjuntos");
+        docsBlock.appendChild(progressState.el);
+        section.appendChild(docsBlock);
       }
 
       if (step.aviso) {
         var aviso = layout.el("div", "app-alert app-alert--warning");
         aviso.appendChild(layout.el("span", "app-alert__title", "Advertencia legal"));
         aviso.appendChild(layout.el("span", "app-alert__text", step.aviso));
-        body.appendChild(aviso);
+        section.appendChild(aviso);
       }
 
-      if (step.note) body.appendChild(layout.el("p", "seguimiento-note", step.note));
+      if (step.note) section.appendChild(layout.el("p", "seguimiento-note", step.note));
+      return section;
+    }
+
+    function drawPhase(phase) {
+      var body = layout.el("div", "wizard-body");
+
+      body.appendChild(layout.el("h2", "naturalization-phase__title", phase.title));
+      body.appendChild(layout.el("p", "wizard-summary naturalization-phase__intro", phase.intro));
+
+      var sections = activeSections(phase);
+      for (var i = 0; i < sections.length; i++) body.appendChild(drawSection(sections[i], phase));
+
+      if (phase.sections.indexOf(6) !== -1 && values.esDependiente === "NO") {
+        body.appendChild(layout.el("p", "seguimiento-note", "La sección de responsable económico se omitió porque indicó que el solicitante no es dependiente."));
+      }
+      if (phase.sections.indexOf(10) !== -1 && values.fundamentoDerecho !== "3") {
+        body.appendChild(layout.el("p", "seguimiento-note", "La documentación de reciprocidad no aplica al fundamento seleccionado."));
+      }
 
       var errBox = layout.el("div", "auth-error", "");
       errBox.setAttribute("aria-live", "polite");
@@ -397,7 +504,7 @@
         disabled: stepIndex === 0,
         onClick: function () {
           if (stepIndex === 0) return;
-          collect(step);
+          collectPhase(phase);
           save();
           stepIndex--;
           paint();
@@ -405,21 +512,21 @@
       }));
       actions.appendChild(button({
         variant: "primary",
-        text: stepIndex === STEPS.length - 1 ? "Finalizar y revisar" : "Continuar",
+        text: stepIndex === PHASES.length - 1 ? "Finalizar y revisar" : "Continuar",
         onClick: function () {
           errBox.textContent = "";
           errBox.classList.remove("is-visible");
-          collect(step);
-          var msg = validate(step);
+          collectPhase(phase);
+          var msg = validatePhase(phase);
           if (msg) {
             errBox.textContent = msg;
             errBox.classList.add("is-visible");
             return;
           }
           save();
-          if (stepIndex === STEPS.length - 1) {
+          if (stepIndex === PHASES.length - 1) {
             confirmed = true;
-            draft.mergeDraft({ naturalizacion: { paso: stepIndex, valores: values, enviado: true } });
+            draft.mergeDraft({ naturalizacion: { paso: stepIndex, version: 2, valores: values, enviado: true } });
             paint();
             return;
           }
@@ -434,7 +541,6 @@
 
     function toolbar() {
       var tb = layout.el("div", "toolbar");
-      tb.appendChild(layout.el("span", null, "Paso " + (stepIndex + 1) + " de " + STEPS.length));
       tb.appendChild(demoSelector());
       return tb;
     }
@@ -481,14 +587,14 @@
         if (!step.docs) continue;
         for (var j = 0; j < step.docs.length; j++) if (values[docKey(step.docs[j].id)]) totalDocs++;
       }
-      panel.appendChild(layout.el("p", "resultado-doc__meta", "Pasos completados: " + STEPS.length + " · Documentos adjuntos: " + totalDocs + "."));
+      panel.appendChild(layout.el("p", "resultado-doc__meta", "Etapas completadas: " + PHASES.length + " · Documentos adjuntos: " + totalDocs + "."));
       panel.appendChild(layout.el("p", "resultado-doc__text", "El expediente se enviará al despacho de abogados para su revisión y presentación ante el Servicio Nacional de Migración. El despacho le notificará cualquier observación."));
 
       var list = layout.el("ul", "ficha__list");
-      for (var s = 0; s < STEPS.length; s++) {
+      for (var s = 0; s < PHASES.length; s++) {
         var li = layout.el("li", "ficha__item");
         li.appendChild(layout.el("span", "ficha__marker", "✓"));
-        li.appendChild(layout.el("span", null, STEPS[s].label));
+        li.appendChild(layout.el("span", null, PHASES[s].label));
         list.appendChild(li);
       }
       panel.appendChild(list);
@@ -496,7 +602,7 @@
       var actions = layout.el("div", "resultado-doc__actions");
       actions.appendChild(button({
         text: "Volver a revisar",
-        onClick: function () { confirmed = false; stepIndex = STEPS.length - 1; paint(); },
+        onClick: function () { confirmed = false; stepIndex = PHASES.length - 1; paint(); },
       }));
       actions.appendChild(button({
         variant: "primary",
@@ -549,18 +655,18 @@
         return;
       }
 
-      inner.appendChild(toolbar());
+      if (!global.tm.api || !global.tm.api.isOnline()) inner.appendChild(toolbar());
 
       if (mode === "error") { inner.appendChild(renderError()); container.appendChild(inner); return; }
       if (mode === "vacio") { inner.appendChild(renderEmpty()); container.appendChild(inner); return; }
       if (confirmed) { inner.appendChild(confirmPanel()); container.appendChild(inner); return; }
 
       inner.appendChild(stepper({
-        steps: STEPS.map(function (s) { return { label: s.label }; }),
+        steps: PHASES.map(function (s) { return { label: s.label }; }),
         current: stepIndex,
       }));
       inner.appendChild(layout.el("p", "wizard-summary", "Requiere abogado apoderado. Los documentos del exterior deben estar apostillados/legalizados y certificados por Relaciones Exteriores."));
-      inner.appendChild(drawStep(STEPS[stepIndex]));
+      inner.appendChild(drawPhase(PHASES[stepIndex]));
       container.appendChild(inner);
     }
 
@@ -581,5 +687,5 @@
   }
 
   global.tm.views = global.tm.views || {};
-  global.tm.views.p26 = { renderP26: renderP26, STEPS: STEPS };
+  global.tm.views.p26 = { renderP26: renderP26, STEPS: STEPS, PHASES: PHASES };
 })(window);
