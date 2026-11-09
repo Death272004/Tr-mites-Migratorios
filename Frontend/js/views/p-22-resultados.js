@@ -11,6 +11,7 @@
 
   var layout = global.tm.layout;
   var button = global.tm.ui.button;
+  var api = global.tm.api;
 
   var DEMO_APROBADA = {
     expediente: "EXP-2026-000047",
@@ -116,12 +117,14 @@
 
     var toolbar = layout.el("div", "toolbar");
     toolbar.appendChild(layout.el("span", null, negada ? "Resolución: NEGADA" : "Resolución: APROBADA"));
-    toolbar.appendChild(demoSelector(opts));
+    if (!api || !api.isOnline()) toolbar.appendChild(demoSelector(opts));
     inner.appendChild(toolbar);
 
     var aviso = layout.el("div", "app-alert app-alert--info");
-    aviso.appendChild(layout.el("span", "app-alert__title", "Descargas auditadas"));
-    aviso.appendChild(layout.el("span", "app-alert__text", "Las descargas están disponibles solo para su sesión autenticada y quedan registradas (CP-12). No hay enlaces públicos."));
+    aviso.appendChild(layout.el("span", "app-alert__title", data.real ? "Resultado oficial del expediente" : "Descargas de demostración"));
+    aviso.appendChild(layout.el("span", "app-alert__text", data.real
+      ? "La resolución corresponde al estado almacenado en el backend. Los documentos adjuntos se consultan desde el expediente."
+      : "Las descargas de esta vista son simuladas y no representan documentos oficiales."));
     inner.appendChild(aviso);
 
     var grid = layout.el("div", "wizard-grid");
@@ -134,7 +137,7 @@
     resolCard.appendChild(fila("Sentido", badge(data.resolucion.estado, negada ? "danger" : "success")));
     resol.appendChild(resolCard);
     var resolActions = layout.el("div", "resultado-doc__actions");
-    resolActions.appendChild(button({ text: "Descargar resolución (PDF)", onClick: function () { descargar("resolucion-" + data.resolucion.numero + ".pdf"); } }));
+    if (!data.real) resolActions.appendChild(button({ text: "Descargar resolución (PDF)", onClick: function () { descargar("resolucion-" + data.resolucion.numero + ".pdf"); } }));
     resol.appendChild(resolActions);
     grid.appendChild(resol);
 
@@ -158,7 +161,7 @@
       mot.appendChild(layout.el("p", "resultado-doc__meta", "Vía de impugnación"));
       mot.appendChild(layout.el("p", "resultado-doc__text", data.impugnacion));
       var motActions = layout.el("div", "resultado-doc__actions");
-      motActions.appendChild(button({ text: "Descargar resolución (PDF)", onClick: function () { descargar("resolucion-" + data.resolucion.numero + ".pdf"); } }));
+      if (!data.real) motActions.appendChild(button({ text: "Descargar resolución (PDF)", onClick: function () { descargar("resolucion-" + data.resolucion.numero + ".pdf"); } }));
       mot.appendChild(motActions);
       grid.appendChild(mot);
     }
@@ -272,6 +275,41 @@
 
   function renderP22(container, opts) {
     opts = opts || {};
+
+    if (api && api.isOnline()) {
+      renderLoading(container);
+      api.request("GET", "/expedientes?pagina=0&tamano=50", { pantalla: "P-22" }, function (listErr, page) {
+        if (listErr) { renderError(container, { onRetry: function () { renderP22(container, opts); } }); return; }
+        var expedientes = page && page.contenido ? page.contenido : [];
+        if (!expedientes.length) { renderEmpty(container, opts); return; }
+        var seleccionado = global.tm.expediente && global.tm.expediente.getSelected ? global.tm.expediente.getSelected() : null;
+        var actual = expedientes.find(function (e) { return seleccionado && e.id === seleccionado.id; }) || expedientes[0];
+        global.tm.expediente.setSelected(actual);
+        if (!actual.resultado) { renderEmpty(container, opts); return; }
+        api.request("GET", "/expedientes/" + encodeURIComponent(actual.id) + "/historial", { pantalla: "P-22" }, function (histErr, historial) {
+          if (histErr) { renderError(container, { onRetry: function () { renderP22(container, opts); } }); return; }
+          var resolucion = (historial || []).filter(function (h) { return h.estadoNuevo === "RESUELTO"; }).slice(-1)[0] || {};
+          var datos = actual.datosSolicitud || {};
+          renderContent(container, opts, {
+            real: true,
+            expediente: actual.numero,
+            tramite: datos.tramite || actual.tipoTramite,
+            resolucion: {
+              numero: "RES-" + actual.numero.replace("EXP-", ""),
+              fecha: String(resolucion.fecha || actual.fechaActualizacion || "").slice(0, 10),
+              estado: actual.resultado,
+            },
+            permiso: null,
+            carne: null,
+            constancia: null,
+            motivos: resolucion.motivo || "Consulte el detalle con el despacho.",
+            impugnacion: actual.resultado === "NEGADA" ? "Consulte con el despacho los recursos y plazos aplicables." : null,
+            etapas: null,
+          });
+        });
+      });
+      return;
+    }
 
     function show(state) {
       if (state === "carga") {

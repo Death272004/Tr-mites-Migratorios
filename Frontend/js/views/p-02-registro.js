@@ -14,6 +14,7 @@
 
   var IDIOMA_DEFECTO = "ES";
   var MEDIO_DEFECTO = "CORREO";
+  var DOMINIO_INSTITUCIONAL = "@tr-utp.com";
 
   function renderP02(container, opts) {
     opts = opts || {};
@@ -53,7 +54,29 @@
       ],
       required: true,
     });
-    var correo = field.fieldText({ id: "correoRegistro", label: "Correo electrónico", placeholder: "nombre@ejemplo.com", required: true });
+    var correo = field.fieldText({
+      id: "correoRegistro",
+      label: "Usuario del correo institucional",
+      placeholder: "nombre.apellido",
+      required: true,
+      helpText: "El dominio institucional se agrega automáticamente.",
+    });
+    var correoInput = correo.querySelector("input");
+    correoInput.autocomplete = "username";
+    correoInput.setAttribute("inputmode", "email");
+    var correoError = layout.el("span", "form-field__error", "");
+    correoError.id = "correoRegistro-error";
+    correoError.hidden = true;
+    correoError.setAttribute("aria-live", "polite");
+    correoInput.setAttribute("aria-describedby", "correoRegistro-help correoRegistro-error");
+    correoInput.addEventListener("input", validarCorreoMientrasEscribe);
+    correoInput.addEventListener("change", validarCorreoMientrasEscribe);
+    correoInput.addEventListener("blur", validarCorreoMientrasEscribe);
+    var correoGrupo = layout.el("div", "institutional-email");
+    correo.insertBefore(correoGrupo, correoInput);
+    correoGrupo.appendChild(correoInput);
+    correoGrupo.appendChild(layout.el("span", "institutional-email__domain", DOMINIO_INSTITUCIONAL));
+    correo.appendChild(correoError);
     var telefono = field.fieldText({ id: "telefono", label: "Teléfono (código país + número)", placeholder: "+507 6000-0000", required: true });
     var paisRes = field.fieldSelect({
       id: "paisRes",
@@ -116,12 +139,14 @@
     form.addEventListener("submit", function (ev) {
       ev.preventDefault();
       clearError();
-      var email = correo.querySelector("input").value.trim();
+      normalizarCorreoAutocompletado();
+      var usuarioCorreo = correoInput.value.trim().toLowerCase();
+      var email = usuarioCorreo + DOMINIO_INSTITUCIONAL;
       var p1 = clave.querySelector("input").value;
       var p2 = clave2.querySelector("input").value;
       var acepta = leyChk.checked;
 
-      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return setError("Correo inválido.");
+      if (!validarUsuarioCorreo(usuarioCorreo)) return;
       var faltas = global.tm.validacion.incumplimientos(p1, email);
       if (faltas.length) return setError(faltas[0]);
       if (p1 !== p2) return setError("Las contraseñas no coinciden.");
@@ -165,6 +190,36 @@
     function setError(msg) { errorBox.textContent = msg; errorBox.classList.add("is-visible"); }
     function clearError() { errorBox.textContent = ""; errorBox.classList.remove("is-visible"); }
     function setLoading(l) { btnReg.disabled = l; btnReg.textContent = l ? "Creando…" : "Crear cuenta"; }
+    function normalizarCorreoAutocompletado() {
+      var valor = correoInput.value.trim().toLowerCase();
+      if (valor.slice(-DOMINIO_INSTITUCIONAL.length) === DOMINIO_INSTITUCIONAL) {
+        correoInput.value = valor.slice(0, -DOMINIO_INSTITUCIONAL.length);
+      }
+    }
+
+    function validarCorreoMientrasEscribe() {
+      normalizarCorreoAutocompletado();
+      validarUsuarioCorreo(correoInput.value.trim().toLowerCase(), true);
+    }
+
+    function validarUsuarioCorreo(usuario, permitirVacio) {
+      var mensaje = "";
+      if (!usuario && !permitirVacio) mensaje = "Escriba el usuario del correo institucional.";
+      else if (usuario.indexOf("@") !== -1) mensaje = "No escriba @ ni otro dominio; @tr-utp.com ya está agregado.";
+      else if (usuario && !/^[a-z0-9]+(?:[._-][a-z0-9]+)*$/.test(usuario)) {
+        mensaje = "Use solo letras, números, puntos, guiones o guiones bajos.";
+      }
+
+      correoError.textContent = mensaje;
+      correoError.hidden = !mensaje;
+      if (mensaje) correoInput.setAttribute("aria-invalid", "true");
+      else correoInput.removeAttribute("aria-invalid");
+      return !mensaje;
+    }
+
+    // Algunos administradores de contraseñas completan el correo después de renderizar.
+    global.setTimeout(validarCorreoMientrasEscribe, 0);
+    global.setTimeout(validarCorreoMientrasEscribe, 500);
 
     inner.appendChild(form);
     container.appendChild(inner);

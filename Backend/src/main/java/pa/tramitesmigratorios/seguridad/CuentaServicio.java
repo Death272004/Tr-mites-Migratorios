@@ -36,17 +36,19 @@ public class CuentaServicio {
 	private final RecuperacionContrasenaRepo recuperaciones;
 	private final PasswordEncoder codificador;
 	private final Correo correo;
+	private final AprovisionadorBuzon buzones;
 	private final Auditoria auditoria;
 	private final Duration duracionEnlace;
 
 	CuentaServicio(UsuarioRepo usuarios, SesionRepo sesiones, RecuperacionContrasenaRepo recuperaciones,
-			PasswordEncoder codificador, Correo correo, Auditoria auditoria,
+			PasswordEncoder codificador, Correo correo, AprovisionadorBuzon buzones, Auditoria auditoria,
 			@Value("${app.seguridad.recuperacion-minutos}") long recuperacionMinutos) {
 		this.usuarios = usuarios;
 		this.sesiones = sesiones;
 		this.recuperaciones = recuperaciones;
 		this.codificador = codificador;
 		this.correo = correo;
+		this.buzones = buzones;
 		this.auditoria = auditoria;
 		this.duracionEnlace = Duration.ofMinutes(recuperacionMinutos);
 	}
@@ -71,6 +73,7 @@ public class CuentaServicio {
 				Rol.SOLICITANTE, Set.of());
 		usuario.completarRegistro(datos.tipoDocumento(), datos.numeroDocumento(), datos.nacionalidad(),
 				datos.paisResidencia(), datos.telefono(), ip);
+		buzones.sincronizar(usuario.getCorreo(), datos.contrasena());
 		usuarios.save(usuario);
 		auditoria.exito(usuario.getId(), "REGISTRO_CUENTA", "usuario/" + usuario.getId());
 		return usuario;
@@ -118,6 +121,7 @@ public class CuentaServicio {
 			// El enlace no se consume: el titular puede reintentar con otra contraseña.
 			throw contrasenaInvalida("contrasenaNueva", faltas);
 		}
+		buzones.sincronizar(usuario.getCorreo(), contrasenaNueva);
 		usuario.cambiarContrasena(codificador.encode(contrasenaNueva));
 		// Quien recupera la contraseña también sale del bloqueo temporal por intentos.
 		usuario.registrarAccesoCorrecto();

@@ -1665,6 +1665,10 @@ components:
         tipoTramite:
           type: string
           description: Código del tipo de trámite, tomado del catálogo.
+        datosSolicitud:
+          type: object
+          additionalProperties: true
+          description: Datos estructurados capturados en todos los pasos del asistente.
         estado:
           $ref: "#/components/schemas/EstadoExpediente"
         resultado:
@@ -2125,6 +2129,11 @@ components:
           description: |
             Solo para el `SOLICITANTE` con representación acreditada (P-08). Si se omite, el
             titular es el usuario autenticado.
+        datosSolicitud:
+          type: object
+          maxProperties: 20
+          additionalProperties: true
+          description: Formulario completo del asistente, sin incluir archivos binarios.
 
     PaginaExpedientes:
       type: object

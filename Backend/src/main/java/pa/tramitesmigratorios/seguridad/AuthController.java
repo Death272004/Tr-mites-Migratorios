@@ -55,7 +55,9 @@ class AuthController {
 					message = "La nacionalidad es un código de país de dos letras.") String nacionalidad,
 			@NotBlank(message = "El correo es obligatorio.") @Email(
 					message = "El correo no tiene un formato válido.") @Size(max = 160,
-							message = "El correo es demasiado largo.") String correo,
+							message = "El correo es demasiado largo.") @Pattern(
+								regexp = "(?i)^[a-z0-9]+(?:[._-][a-z0-9]+)*@tr-utp\\.com$",
+								message = "El correo debe pertenecer al dominio @tr-utp.com.") String correo,
 			@NotBlank(message = "El teléfono es obligatorio.") @Pattern(regexp = PerfilController.TELEFONO,
 					message = PerfilController.TELEFONO_MENSAJE) String telefono,
 			@NotBlank(message = "El país de residencia es obligatorio.") @Pattern(regexp = "[A-Z]{2}",

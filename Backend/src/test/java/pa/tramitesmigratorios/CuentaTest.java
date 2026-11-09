@@ -16,7 +16,7 @@ import pa.tramitesmigratorios.seguridad.Usuario;
 class CuentaTest extends PruebaApi {
 
 	private static String correoNuevo() {
-		return "registro-" + UUID.randomUUID() + "@prueba.pa";
+		return "registro-" + UUID.randomUUID() + "@tr-utp.com";
 	}
 
 	private static String documentoNuevo() {
@@ -97,6 +97,14 @@ class CuentaTest extends PruebaApi {
 		enviar(null, "/api/auth/registro", "{\"correo\":\"no-es-correo\"}").andExpect(status().isBadRequest())
 			.andExpect(jsonPath("$.errores[?(@.campo == 'correo')]").isNotEmpty())
 			.andExpect(jsonPath("$.errores[?(@.campo == 'numeroDocumento')]").isNotEmpty());
+	}
+
+	@Test
+	void elRegistroSoloAceptaElDominioInstitucional() throws Exception {
+		enviar(null, "/api/auth/registro",
+				registro("persona@gmail.com", documentoNuevo(), CLAVE, true))
+			.andExpect(status().isBadRequest())
+			.andExpect(jsonPath("$.errores[?(@.campo == 'correo')]").isNotEmpty());
 	}
 
 	@Test

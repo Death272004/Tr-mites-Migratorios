@@ -1,8 +1,14 @@
 package pa.tramitesmigratorios.expediente;
 
 import java.time.Instant;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.UUID;
 
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -29,6 +35,11 @@ public class Expediente {
 
 	private String tipoTramite;
 
+	/** Formulario completo del asistente, sin archivos binarios. */
+	@JdbcTypeCode(SqlTypes.JSON)
+	@Column(columnDefinition = "jsonb")
+	private Map<String, Object> datosSolicitud = new LinkedHashMap<>();
+
 	@Enumerated(EnumType.STRING)
 	private EstadoExpediente estado;
 
@@ -48,11 +59,17 @@ public class Expediente {
 	}
 
 	Expediente(String numero, UUID solicitanteId, UUID creadoPorId, String tipoTramite, EstadoExpediente estado) {
+		this(numero, solicitanteId, creadoPorId, tipoTramite, estado, Map.of());
+	}
+
+	Expediente(String numero, UUID solicitanteId, UUID creadoPorId, String tipoTramite, EstadoExpediente estado,
+			Map<String, Object> datosSolicitud) {
 		this.id = UUID.randomUUID();
 		this.numero = numero;
 		this.solicitanteId = solicitanteId;
 		this.creadoPorId = creadoPorId;
 		this.tipoTramite = tipoTramite;
+		this.datosSolicitud = datosSolicitud == null ? new LinkedHashMap<>() : new LinkedHashMap<>(datosSolicitud);
 		this.estado = estado;
 		this.fechaCreacion = Instant.now();
 		this.fechaActualizacion = this.fechaCreacion;
@@ -88,6 +105,10 @@ public class Expediente {
 
 	public String getTipoTramite() {
 		return tipoTramite;
+	}
+
+	public Map<String, Object> getDatosSolicitud() {
+		return new LinkedHashMap<>(datosSolicitud);
 	}
 
 	public EstadoExpediente getEstado() {
