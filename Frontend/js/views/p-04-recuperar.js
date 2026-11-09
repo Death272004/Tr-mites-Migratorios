@@ -110,8 +110,7 @@
     form2.appendChild(claveNueva2);
 
     var ayuda = layout.el("p", "form-field__help",
-      "En desarrollo local, el token aparece en los registros del backend: " +
-      "docker compose logs backend | Select-String \"CORREO SIMULADO\".");
+      "Abra el enlace recibido en su bandeja local en http://localhost:8081.");
     form2.appendChild(ayuda);
 
     var errorBox2 = layout.el("div", "auth-error", "");
@@ -169,6 +168,12 @@
       form2.style.display = "";
       var firstInput = form2.querySelector("input");
       if (firstInput) firstInput.focus();
+    }
+
+    var tokenEnlace = new URLSearchParams(global.location.search).get("token");
+    if (tokenEnlace) {
+      token.querySelector("input").value = tokenEnlace;
+      showStep2();
     }
 
     function setError(msg) { errorBox.textContent = msg; errorBox.classList.add("is-visible"); }

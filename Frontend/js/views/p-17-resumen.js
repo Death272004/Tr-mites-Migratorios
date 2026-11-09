@@ -1,8 +1,7 @@
 /**
  * P-17 — Resumen y envío.
- * Muestra el resumen de P-08…P-15; al enviar genera número de expediente,
- * trámite, registro y QR (simulados) y fija el estado inicial
- * "RECIBIDO – EN PREPARACIÓN".
+ * Muestra el resumen de P-08…P-15 y registra el expediente completo en el
+ * backend. El QR solo existe en el modo de demostración sin conexión.
  * Script clásico: expone `tm.views.p17.renderP17`.
  */
 (function (global) {
@@ -63,7 +62,7 @@
   function renderResult(container, submitted, opts) {
     layout.clear(container);
     var inner = layout.el("div", "app-content__inner");
-    inner.appendChild(layout.pageHeader("Solicitud enviada", "Estado inicial: RECIBIDO – EN PREPARACIÓN"));
+    inner.appendChild(layout.pageHeader("Solicitud enviada", "Estado inicial: " + (submitted.simulado ? "RECIBIDO – EN PREPARACIÓN" : "RECIBIDO")));
 
     var toolbar = layout.el("div", "toolbar");
     if (!api || !api.isOnline()) toolbar.appendChild(demoSelector(opts));
@@ -71,7 +70,9 @@
 
     var success = layout.el("div", "app-alert app-alert--info");
     success.appendChild(layout.el("span", "app-alert__title", submitted.simulado ? "Su solicitud fue registrada (simulado)" : "Su solicitud fue registrada"));
-    success.appendChild(layout.el("span", "app-alert__text", "Conserve el número de expediente y el código QR para el seguimiento."));
+    success.appendChild(layout.el("span", "app-alert__text", submitted.simulado
+      ? "Conserve el número de expediente y el código QR para el seguimiento."
+      : "Conserve el número de expediente para consultar el seguimiento."));
     inner.appendChild(success);
 
     if (submitted.documentosPendientes) {
@@ -86,22 +87,24 @@
       ["Número de expediente", submitted.expediente],
       ["Trámite", submitted.tramite],
       ["Registro", submitted.registro],
-      ["Estado", "RECIBIDO – EN PREPARACIÓN"],
+      ["Estado", submitted.simulado ? "RECIBIDO – EN PREPARACIÓN" : "RECIBIDO"],
       ["Total pagado", submitted.total],
     ]));
 
-    var qrCard = layout.el("div", "detail-card");
-    qrCard.appendChild(layout.el("div", "detail-row detail-row--head"));
-    var qrWrap = layout.el("div", "qr-box");
-    var canvas = layout.el("canvas", "signature__canvas");
-    canvas.width = 210; canvas.height = 210;
-    canvas.style.width = "210px"; canvas.style.height = "210px";
-    drawQR(canvas, submitted.expediente);
-    qrWrap.appendChild(canvas);
-    qrWrap.appendChild(layout.el("span", "detail-row__value", submitted.expediente));
-    qrWrap.appendChild(layout.el("span", "form-field__help", "QR simulado de demostración"));
-    qrCard.appendChild(qrWrap);
-    grid.appendChild(qrCard);
+    if (submitted.simulado) {
+      var qrCard = layout.el("div", "detail-card");
+      qrCard.appendChild(layout.el("div", "detail-row detail-row--head"));
+      var qrWrap = layout.el("div", "qr-box");
+      var canvas = layout.el("canvas", "signature__canvas");
+      canvas.width = 210; canvas.height = 210;
+      canvas.style.width = "210px"; canvas.style.height = "210px";
+      drawQR(canvas, submitted.expediente);
+      qrWrap.appendChild(canvas);
+      qrWrap.appendChild(layout.el("span", "detail-row__value", submitted.expediente));
+      qrWrap.appendChild(layout.el("span", "form-field__help", "QR simulado de demostración"));
+      qrCard.appendChild(qrWrap);
+      grid.appendChild(qrCard);
+    }
 
     inner.appendChild(grid);
 
@@ -125,16 +128,42 @@
     layout.clear(container);
     var inner = layout.el("div", "app-content__inner");
     inner.appendChild(layout.pageHeader("Resumen y envío", "Revise la información antes de enviar"));
+    inner.appendChild(global.tm.ui.stepper({
+      steps: global.tm.wizard.PHASES.map(function (phase) { return { label: phase.label }; }),
+      current: global.tm.wizard.PHASES.length - 1,
+    }));
 
-    var toolbar = layout.el("div", "toolbar");
-    toolbar.appendChild(demoSelector(opts));
-    inner.appendChild(toolbar);
+    if (!api || !api.isOnline()) {
+      var toolbar = layout.el("div", "toolbar");
+      toolbar.appendChild(demoSelector(opts));
+      inner.appendChild(toolbar);
+    }
 
     var dp = d.datosPersonales || {};
     var tit = d.titularidad || {};
     var pas = d.pasaporte || {};
     var dom = d.domicilio || {};
     var pagos = d.pagos || {};
+
+    function datosSolicitud() {
+      var secciones = {
+        categoria: d.categoria || null,
+        tramite: d.tramite || null,
+        motivo: d.motivo || null,
+        paisOrigen: d.paisOrigen || null,
+        titularidad: d.titularidad || {},
+        datosPersonales: d.datosPersonales || {},
+        pasaporte: d.pasaporte || {},
+        domicilio: d.domicilio || {},
+        situacion: d.situacion || {},
+        dependientes: d.dependientes || [],
+        requisitos: d.requisitos || {},
+        pagos: d.pagos || {},
+        declaracion: d.declaracion || {},
+      };
+      // Fuerza un objeto JSON puro y evita conservar referencias o archivos.
+      return JSON.parse(JSON.stringify(secciones));
+    }
 
     var grid = layout.el("div", "wizard-grid");
     grid.appendChild(resumenCard("Trámite", [["Categoría", d.categoria], ["Trámite", d.tramite], ["Motivo", d.motivo], ["País de origen", d.paisOrigen]]));
@@ -200,7 +229,12 @@
 
             if (!api || !api.isOnline()) { crearLocal(); return; }
 
-            api.request("POST", "/expedientes", { body: { tipoTramite: d.categoria || d.tramite || "" } }, function (createErr, dto) {
+            api.request("POST", "/expedientes", {
+              body: {
+                tipoTramite: d.categoria || d.tramite || "",
+                datosSolicitud: datosSolicitud(),
+              },
+            }, function (createErr, dto) {
               if (createErr || !dto || !dto.id) {
                 renderError(container, { mensaje: createErr ? createErr.mensajeUsuario : "El backend no devolvió el expediente creado." });
                 return;

@@ -30,14 +30,25 @@ services:
       # Las cuentas iniciales se crean mediante Flyway (V7); el cargador Java queda apagado.
       DEMO_USUARIOS: ${DEMO_USUARIOS:-false}
       DEMO_CONTRASENA: ${DEMO_CONTRASENA:-Demo-Tramites-2026}
-      # Sin proveedor de correo: solo aviso genérico; no se entregan ni registran enlaces o tokens.
-      CORREO_SIMULADO: ${CORREO_SIMULADO:-true}
-    ports:
-      - "${BACKEND_PORT:-8080}:8080"
+      # Correo institucional local. La entrega ocurre únicamente dentro de esta red Docker.
+      CORREO_MODO: ${CORREO_MODO:-smtp}
+      SMTP_HOST: mailserver
+      SMTP_PORT: 25
+      CORREO_REMITENTE: no.reply@tr-utp.com
+      PORTAL_URL: http://localhost:${FRONTEND_PORT:-8080}
+      BUZON_APROVISIONAMIENTO: "true"
+      BUZON_APROVISIONADOR_URL: http://mail-provisioner:8080
+      BUZON_APROVISIONADOR_TOKEN: ${MAIL_PROVISIONER_TOKEN:-tr-utp-provisioner-local-only}
+    expose:
+      - "8080"
     volumes:
       - documentos:/app/almacenamiento
     depends_on:
       db:
+        condition: service_healthy
+      mailserver:
+        condition: service_healthy
+      mail-provisioner:
         condition: service_healthy
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8080/actuator/health | grep -q UP"]
@@ -53,7 +64,7 @@ services:
     volumes:
       - ./docker/nginx.conf:/etc/nginx/conf.d/default.conf:ro
     ports:
-      - "${FRONTEND_PORT:-8081}:80"
+      - "127.0.0.1:${FRONTEND_PORT:-8080}:80"
     depends_on:
       backend:
         condition: service_healthy
@@ -63,6 +74,79 @@ services:
       timeout: 3s
       retries: 5
 
+  # Servidor de correo exclusivo del entorno local. No publica SMTP ni IMAP en el host.
+  mailserver:
+    image: ghcr.io/docker-mailserver/docker-mailserver:15.1.0
+    hostname: mail.tr-utp.com
+    environment:
+      ENABLE_IMAP: 1
+      ENABLE_POP3: 0
+      ENABLE_CLAMAV: 0
+      ENABLE_RSPAMD: 0
+      ENABLE_FAIL2BAN: 0
+      SSL_TYPE: ""
+      # Solo los contenedores de esta red pueden entregar mensajes sin autenticación SMTP.
+      PERMIT_DOCKER: network
+      # Detecta rápidamente los buzones creados por el aprovisionador interno.
+      DMS_CONFIG_POLL: 2
+    volumes:
+      - correo_datos:/var/mail
+      - correo_estado:/var/mail-state
+      - correo_registros:/var/log/mail
+      - ./docker/mail/config:/tmp/docker-mailserver
+      - /etc/localtime:/etc/localtime:ro
+    restart: unless-stopped
+    stop_grace_period: 1m
+    healthcheck:
+      test: ["CMD-SHELL", "ss -ltn '( sport = :25 )' | grep -q LISTEN && ss -ltn '( sport = :143 )' | grep -q LISTEN"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+
+  # Servicio interno para crear y sincronizar buzones sin exponer el socket de Docker.
+  mail-provisioner:
+    build: ./docker/mail/provisioner
+    environment:
+      PROVISIONER_TOKEN: ${MAIL_PROVISIONER_TOKEN:-tr-utp-provisioner-local-only}
+      DMS_ACCOUNTS_FILE: /config/postfix-accounts.cf
+    volumes:
+      - ./docker/mail/config:/config
+    expose:
+      - "8080"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/health', timeout=2)"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 5s
+
+  # Bandeja web local: cada integrante inicia sesión con su correo y su propia contraseña.
+  webmail:
+    image: roundcube/roundcubemail:1.6.x-apache
+    environment:
+      ROUNDCUBEMAIL_DB_TYPE: sqlite
+      ROUNDCUBEMAIL_DEFAULT_HOST: mailserver
+      ROUNDCUBEMAIL_DEFAULT_PORT: 143
+      ROUNDCUBEMAIL_SMTP_SERVER: mailserver
+      ROUNDCUBEMAIL_SMTP_PORT: 25
+      ROUNDCUBEMAIL_USERNAME_DOMAIN: tr-utp.com
+      ROUNDCUBEMAIL_SKIN: elastic
+      ROUNDCUBEMAIL_PLUGINS: archive,zipdownload
+    ports:
+      - "127.0.0.1:${WEBMAIL_PORT:-8081}:80"
+    volumes:
+      - webmail_datos:/var/roundcube/db
+    depends_on:
+      mailserver:
+        condition: service_healthy
+    restart: unless-stopped
+
 volumes:
   db_datos:
   documentos:
+  correo_datos:
+  correo_estado:
+  correo_registros:
+  webmail_datos:

@@ -180,10 +180,7 @@
       return;
     }
     if (key === "p-07") {
-      showView(global.tm.views.p07.renderP07, {
-        onBack: function () { navigate("#/mis-tramites"); },
-        onContinue: function () { navigate("#/solicitud/titularidad"); },
-      });
+      showView(function (container, viewOpts) { global.tm.views.p29.render(container, viewOpts, 1); }, { onNavigate: navigate });
       return;
     }
     if (key === "p-19") {
@@ -209,13 +206,10 @@
     if (key === "p-26") { showView(global.tm.views.p26.renderP26, { onNavigate: navigate }); return; }
     if (key === "p-27") { showView(global.tm.views.p27.renderP27, { onNavigate: navigate }); return; }
 
-    if (key === "p-08") { showView(global.tm.views.p08.renderP08, { onNavigate: navigate }); return; }
-    if (key === "p-09") { showView(global.tm.views.p09.renderP09, { onNavigate: navigate }); return; }
-    if (key === "p-10") { showView(global.tm.views.p10.renderP10, { onNavigate: navigate }); return; }
-    if (key === "p-11") { showView(global.tm.views.p11.renderP11, { onNavigate: navigate }); return; }
-    if (key === "p-12") { showView(global.tm.views.p12.renderP12, { onNavigate: navigate }); return; }
-    if (key === "p-13") { showView(global.tm.views.p13.renderP13, { onNavigate: navigate }); return; }
-    if (key === "p-14") { showView(global.tm.views.p14.renderP14, { onNavigate: navigate }); return; }
+    if (key === "p-08") { showView(function (container, viewOpts) { global.tm.views.p29.render(container, viewOpts, 1); }, { onNavigate: navigate }); return; }
+    if (key === "p-09" || key === "p-10") { showView(function (container, viewOpts) { global.tm.views.p29.render(container, viewOpts, 2); }, { onNavigate: navigate }); return; }
+    if (key === "p-11" || key === "p-12") { showView(function (container, viewOpts) { global.tm.views.p29.render(container, viewOpts, 3); }, { onNavigate: navigate }); return; }
+    if (key === "p-13" || key === "p-14") { showView(function (container, viewOpts) { global.tm.views.p29.render(container, viewOpts, 4); }, { onNavigate: navigate }); return; }
     if (key === "p-15") { showView(global.tm.views.p15.renderP15, { onNavigate: navigate }); return; }
     if (key === "p-16") { showView(global.tm.views.p16.renderP16, { onNavigate: navigate }); return; }
     if (key === "p-17") { showView(global.tm.views.p17.renderP17, { onNavigate: navigate }); return; }
