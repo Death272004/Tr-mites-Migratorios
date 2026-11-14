@@ -12,7 +12,7 @@
       title: "Trámites",
       items: [
         { label: "Mis trámites", route: "#/mis-tramites" },
-        { label: "Nueva solicitud", route: "#/solicitud/tramite" },
+        { label: "Nueva solicitud", route: "#/solicitud/paso-1" },
       ],
     },
     {

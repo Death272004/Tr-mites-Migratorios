@@ -17,6 +17,28 @@
     renderFn(els.content, opts);
   }
 
+  // Asistente de solicitud en tres pasos (P-29). Un paso solo se abre si el
+  // anterior ya dejó su parte en el borrador; si no, se vuelve al que falta.
+  function showSolicitudStep(step) {
+    var d = global.tm.draft.getDraft();
+    if (step >= 2 && !d.datosPersonales) step = 1;
+    if (step === 3 && !(d.tramite && d.requisitos)) step = 2;
+    var entry = global.tm.wizard.PHASES[step - 1].entry;
+    if (global.tm.wizard.phaseIndex(state.route) !== step - 1) {
+      state.route = entry;
+      lastRenderedRoute = entry;
+      window.history.replaceState({}, "", router.toPath(entry) + window.location.search);
+      layout.renderNav(els.nav, { role: state.role, currentRoute: state.route, onNavigate: navigate });
+    }
+    showView(function (container, viewOpts) { global.tm.views.p29.render(container, viewOpts, step); }, { onNavigate: navigate });
+  }
+
+  function nuevaSolicitud() {
+    global.tm.draft.clearDraft();
+    if (global.tm.docs) global.tm.docs.clear();
+    navigate("#/solicitud/paso-1");
+  }
+
   var DEFAULT_ROLE = roles.DEFAULT_ROLE;
   var INITIAL_ROUTE = roles.INITIAL_ROUTE;
   var isInternalRole = roles.isInternalRole;
@@ -76,6 +98,9 @@
       onNavigate: navigate,
       onLogout: function () {
         function fin() {
+          // Al salir no quedan borradores ni documentos en este navegador.
+          if (global.tm.draft) global.tm.draft.clearDraft();
+          if (global.tm.docs) global.tm.docs.clear();
           session.clearSession();
           state.role = DEFAULT_ROLE;
           state.user = { nombre: "No autenticado", correo: "" };
@@ -171,18 +196,15 @@
     }
     if (key === "p-06") {
       showView(global.tm.views.p06.renderP06, {
-        onNueva: function () { navigate("#/solicitud/tramite"); },
-        onContinue: function () { navigate("#/solicitud/tramite"); },
+        onNueva: nuevaSolicitud,
+        onContinue: function () { navigate("#/solicitud/paso-1"); },
         onVerObservacion: function () { navigate("#/seguimiento/observaciones"); },
         onVerEstado: function () { navigate("#/seguimiento/estado"); },
         onDescargar: function () { navigate("#/seguimiento/resultados"); },
       });
       return;
     }
-    if (key === "p-07") {
-      showView(function (container, viewOpts) { global.tm.views.p29.render(container, viewOpts, 1); }, { onNavigate: navigate });
-      return;
-    }
+    if (key === "p-07") { showSolicitudStep(2); return; }
     if (key === "p-19") {
       showView(global.tm.views.p19.renderP19, {
         onAtender: function () { navigate("#/seguimiento/observaciones"); },
@@ -206,13 +228,17 @@
     if (key === "p-26") { showView(global.tm.views.p26.renderP26, { onNavigate: navigate }); return; }
     if (key === "p-27") { showView(global.tm.views.p27.renderP27, { onNavigate: navigate }); return; }
 
-    if (key === "p-08") { showView(function (container, viewOpts) { global.tm.views.p29.render(container, viewOpts, 1); }, { onNavigate: navigate }); return; }
-    if (key === "p-09" || key === "p-10") { showView(function (container, viewOpts) { global.tm.views.p29.render(container, viewOpts, 2); }, { onNavigate: navigate }); return; }
-    if (key === "p-11" || key === "p-12") { showView(function (container, viewOpts) { global.tm.views.p29.render(container, viewOpts, 3); }, { onNavigate: navigate }); return; }
-    if (key === "p-13" || key === "p-14") { showView(function (container, viewOpts) { global.tm.views.p29.render(container, viewOpts, 4); }, { onNavigate: navigate }); return; }
-    if (key === "p-15") { showView(global.tm.views.p15.renderP15, { onNavigate: navigate }); return; }
-    if (key === "p-16") { showView(global.tm.views.p16.renderP16, { onNavigate: navigate }); return; }
-    if (key === "p-17") { showView(global.tm.views.p17.renderP17, { onNavigate: navigate }); return; }
+    // Paso 1: identidad e información · Paso 2: trámite y documentación ·
+    // Paso 3: revisión y pago. Las rutas heredadas abren el paso que las contiene.
+    if (key === "p-09" || key === "p-10" || key === "p-11") { showSolicitudStep(1); return; }
+    if (key === "p-08" || key === "p-12" || key === "p-13" || key === "p-14") { showSolicitudStep(2); return; }
+    if (key === "p-15" || key === "p-16") { showSolicitudStep(3); return; }
+    if (key === "p-17") {
+      // El resumen como pantalla propia solo muestra el resultado del envío.
+      if (global.tm.draft.getDraft().submitted) showView(global.tm.views.p17.renderP17, { onNavigate: navigate });
+      else showSolicitudStep(3);
+      return;
+    }
     if (key === "p-18") { showView(global.tm.views.p18.renderP18, { onNavigate: navigate }); return; }
 
     if (key === "interno/tablero") { showView(global.tm.views.i02.renderI02, { onNavigate: navigate }); return; }
@@ -276,5 +302,17 @@
     window.history.replaceState({}, "", router.toPath(initialRoute) + window.location.search);
   }
   state.route = initialRoute;
-  render();
+  // Los adjuntos respaldados se recuperan antes de pintar. Sin un borrador en
+  // curso (pestaña nueva, sesión anterior) no corresponden a nada y se descartan.
+  function arrancar() {
+    var d = global.tm.draft ? global.tm.draft.getDraft() : {};
+    var hayBorrador = d && Object.keys(d).length > 0 && !d.submitted;
+    if (!global.tm.docs || !global.tm.docs.restore) { render(); return; }
+    if (!hayBorrador || !session.isAuthenticated()) { global.tm.docs.clear(); render(); return; }
+    var listo = false;
+    function seguir() { if (!listo) { listo = true; render(); } }
+    global.tm.docs.restore().then(seguir, seguir);
+    global.setTimeout(seguir, 1500);
+  }
+  arrancar();
 })(window);

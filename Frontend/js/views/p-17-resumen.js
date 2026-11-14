@@ -1,8 +1,10 @@
 /**
- * P-17 — Resumen y envío.
- * Muestra el resumen de P-08…P-15 y registra el expediente completo en el
- * backend. El QR solo existe en el modo de demostración sin conexión.
- * Script clásico: expone `tm.views.p17.renderP17`.
+ * P-17 — Revisión y envío.
+ * Aporta al paso «Revisión y pago» las tarjetas de revisión (`resumenCards`) y
+ * el envío de la solicitud (`enviar`), que registra el expediente completo en el
+ * backend y carga los documentos adjuntos. Como pantalla propia muestra el
+ * resultado del envío. El QR solo existe en el modo de demostración sin conexión.
+ * Script clásico: expone `tm.views.p17`.
  */
 (function (global) {
   "use strict";
@@ -78,7 +80,7 @@
     if (submitted.documentosPendientes) {
       var uploadAlert = layout.el("div", "app-alert app-alert--warning");
       uploadAlert.appendChild(layout.el("span", "app-alert__title", "Solicitud registrada con documentos pendientes"));
-      uploadAlert.appendChild(layout.el("span", "app-alert__text", "El expediente se creó, pero " + submitted.documentosPendientes + " documento(s) no pudieron cargarse. Puede reintentarlo desde el paso de requisitos."));
+      uploadAlert.appendChild(layout.el("span", "app-alert__text", "El expediente se creó, pero " + submitted.documentosPendientes + " documento(s) no pudieron cargarse. Preséntelos al despacho o adjúntelos al atender una observación."));
       inner.appendChild(uploadAlert);
     }
 
@@ -88,7 +90,9 @@
       ["Trámite", submitted.tramite],
       ["Registro", submitted.registro],
       ["Estado", submitted.simulado ? "RECIBIDO – EN PREPARACIÓN" : "RECIBIDO"],
-      ["Total pagado", submitted.total],
+      ["Monto de tasas", submitted.total],
+      ["Medio de pago", submitted.metodoPago],
+      ["Estado del pago", submitted.estadoPago],
     ]));
 
     if (submitted.simulado) {
@@ -108,151 +112,164 @@
 
     inner.appendChild(grid);
 
-    var aviso = layout.el("p", "wizard-summary", "Aviso: «No se recibirán solicitudes incompletas.» Siguiente paso: reserva de cita (P-18) o espera de revisión.");
+    var aviso = layout.el("p", "wizard-summary", "Siguiente paso: reserve su cita o espere la revisión del despacho. Puede consultar el avance en «Mis trámites».");
     inner.appendChild(aviso);
 
     var actions = layout.el("div", "auth-actions");
-    actions.appendChild(button({ variant: "primary", text: "Reservar cita (P-18)", onClick: function () { if (opts.onNavigate) opts.onNavigate("#/solicitud/cita"); } }));
+    actions.appendChild(button({ variant: "primary", text: "Reservar cita", onClick: function () { if (opts.onNavigate) opts.onNavigate("#/solicitud/cita"); } }));
     actions.appendChild(button({ text: "Descargar comprobante", onClick: function () { window.print(); } }));
-    actions.appendChild(button({ text: "Ir a mis trámites", onClick: function () { draft.clearDraft(); if (opts.onNavigate) opts.onNavigate("#/mis-tramites"); } }));
+    actions.appendChild(button({ text: "Ir a mis trámites", onClick: function () { draft.clearDraft(); if (global.tm.docs) global.tm.docs.clear(); if (opts.onNavigate) opts.onNavigate("#/mis-tramites"); } }));
     inner.appendChild(actions);
 
     container.appendChild(inner);
   }
 
-  function renderContent(container, opts) {
-    var d = draft.getDraft();
+  function datosSolicitud(d) {
+    var secciones = {
+      categoria: d.categoria || null,
+      tramite: d.tramite || null,
+      motivo: d.motivo || null,
+      paisOrigen: d.paisOrigen || null,
+      titularidad: d.titularidad || {},
+      datosPersonales: d.datosPersonales || {},
+      pasaporte: d.pasaporte || {},
+      domicilio: d.domicilio || {},
+      situacion: d.situacion || {},
+      dependientes: d.dependientes || [],
+      requisitos: d.requisitos || {},
+      pagos: d.pagos || {},
+      declaracion: d.declaracion || {},
+    };
+    // Fuerza un objeto JSON puro y evita conservar referencias o archivos.
+    return JSON.parse(JSON.stringify(secciones));
+  }
 
-    if (d.submitted) { renderResult(container, d.submitted, opts); return; }
-
-    layout.clear(container);
-    var inner = layout.el("div", "app-content__inner");
-    inner.appendChild(layout.pageHeader("Resumen y envío", "Revise la información antes de enviar"));
-    inner.appendChild(global.tm.ui.stepper({
-      steps: global.tm.wizard.PHASES.map(function (phase) { return { label: phase.label }; }),
-      current: global.tm.wizard.PHASES.length - 1,
-    }));
-
-    if (!api || !api.isOnline()) {
-      var toolbar = layout.el("div", "toolbar");
-      toolbar.appendChild(demoSelector(opts));
-      inner.appendChild(toolbar);
-    }
-
+  /** Tarjetas de revisión de los pasos 1 y 2 (el pago se revisa en su propio módulo). */
+  function resumenCards(d) {
+    d = d || draft.getDraft();
     var dp = d.datosPersonales || {};
     var tit = d.titularidad || {};
     var pas = d.pasaporte || {};
     var dom = d.domicilio || {};
-    var pagos = d.pagos || {};
+    var req = d.requisitos || {};
+    var adjuntos = global.tm.docs ? global.tm.docs.list("requisitos") : [];
 
-    function datosSolicitud() {
-      var secciones = {
-        categoria: d.categoria || null,
-        tramite: d.tramite || null,
-        motivo: d.motivo || null,
-        paisOrigen: d.paisOrigen || null,
-        titularidad: d.titularidad || {},
-        datosPersonales: d.datosPersonales || {},
-        pasaporte: d.pasaporte || {},
-        domicilio: d.domicilio || {},
-        situacion: d.situacion || {},
-        dependientes: d.dependientes || [],
-        requisitos: d.requisitos || {},
-        pagos: d.pagos || {},
-        declaracion: d.declaracion || {},
-      };
-      // Fuerza un objeto JSON puro y evita conservar referencias o archivos.
-      return JSON.parse(JSON.stringify(secciones));
+    var grid = layout.el("div", "wizard-grid review-grid");
+    grid.appendChild(resumenCard("Solicitante", [
+      ["Nombre", [dp.nombres, dp.primerApellido, dp.segundoApellido].filter(Boolean).join(" ") || tit.nombreTitular],
+      ["Nacionalidad", dp.nacionalidad],
+      ["Estado civil", dp.estadoCivil],
+    ]));
+    grid.appendChild(resumenCard("Pasaporte", [["Número", pas.numPasaporte], ["País emisor", pas.paisEmisor], ["Vencimiento", pas.fechaVencimiento], ["Sello de ingreso", pas.selloFecha],
+      ["Entradas y salidas", (pas.historial || []).length + (pas.historialFuente === "SNM" ? " (obtenidas del SNM)" : " declaradas con comprobante")]]));
+    grid.appendChild(resumenCard("Domicilio", [["Provincia", dom.provincia], ["Dirección", dom.direccionCompleta], ["Correo de notificación", dom.correoNotificacion]]));
+    grid.appendChild(resumenCard("Trámite", [["Categoría", d.categoria], ["Trámite", d.tramite], ["Motivo", d.motivo], ["Presenta", d.presentante === "APODERADO" ? "Mediante apoderado" : (d.presentante ? "Por cuenta propia" : "")]]));
+
+    var docsCard = resumenCard("Documentos", [
+      ["Adjuntos", adjuntos.length + " archivo(s)"],
+      ["Prioritarios requeridos", req.prioritarios != null ? req.prioritarios : "—"],
+      ["Verificación automática", req.automaticos != null ? req.automaticos : "—"],
+    ]);
+    if (adjuntos.length) {
+      var lista = layout.el("ul", "review-docs");
+      adjuntos.forEach(function (e) {
+        var li = layout.el("li", "review-docs__item");
+        li.appendChild(layout.el("span", "review-docs__name", e.label));
+        var ver = layout.el("button", "btn review-docs__view", "Ver");
+        ver.type = "button";
+        ver.setAttribute("aria-label", "Vista previa de " + e.label);
+        ver.addEventListener("click", function () { global.tm.docs.preview(e); });
+        li.appendChild(ver);
+        lista.appendChild(li);
+      });
+      docsCard.appendChild(lista);
+    }
+    grid.appendChild(docsCard);
+    return grid;
+  }
+
+  /**
+   * Envía la solicitud (previa confirmación): crea el expediente y carga los
+   * documentos adjuntos. `hooks.onCancel` avisa si el usuario no confirma.
+   */
+  function enviar(container, opts, hooks) {
+    opts = opts || {};
+    hooks = hooks || {};
+    var d = draft.getDraft();
+    var pagos = d.pagos || {};
+    var totalTexto = pagos.total != null ? ("B/." + Number(pagos.total).toFixed(2)) : "B/.0.00";
+
+    function guardarResultado(resultado) {
+      resultado.metodoPago = pagos.metodo || "—";
+      resultado.estadoPago = pagos.estadoTexto || "—";
+      draft.mergeDraft({ submitted: resultado });
+      if (global.tm.expediente) global.tm.expediente.setSelected(resultado);
+      if (opts.onNavigate) opts.onNavigate(ROUTE);
     }
 
-    var grid = layout.el("div", "wizard-grid");
-    grid.appendChild(resumenCard("Trámite", [["Categoría", d.categoria], ["Trámite", d.tramite], ["Motivo", d.motivo], ["País de origen", d.paisOrigen]]));
-    grid.appendChild(resumenCard("Solicitante", [["Nombre", [dp.nombres, dp.primerApellido, dp.segundoApellido].filter(Boolean).join(" ") || tit.nombreTitular], ["Nacionalidad", dp.nacionalidad], ["Estado civil", dp.estadoCivil]]));
-    grid.appendChild(resumenCard("Pasaporte", [["Número", pas.numPasaporte], ["País emisor", pas.paisEmisor], ["Vencimiento", pas.fechaVencimiento], ["Sello de ingreso", pas.selloFecha]]));
-    grid.appendChild(resumenCard("Domicilio", [["Provincia", dom.provincia], ["Dirección", dom.direccionCompleta], ["Correo notificación", dom.correoNotificacion]]));
-    grid.appendChild(resumenCard("Requisitos", [["Total", d.requisitos ? (d.requisitos.total || "—") : "Pendiente"], ["Automáticos [A]", d.requisitos ? d.requisitos.automaticos : "—"], ["Requisitos de P-14", d.requisitos ? "Cumplidos" : "Pendiente"]]));
-    grid.appendChild(resumenCard("Pago", [["Modalidad", pagos.modalidad], ["Total", pagos.total != null ? ("B/." + Number(pagos.total).toFixed(2)) : "—"], ["Pagado", pagos.pagado ? "Sí (simulado)" : "No"]]));
-    inner.appendChild(grid);
+    function cargarDocumentos(id, documentos, index, pendientes, base) {
+      if (!documentos || index >= documentos.length) {
+        base.documentosPendientes = pendientes.length ? pendientes.length : null;
+        guardarResultado(base);
+        return;
+      }
+      var documento = documentos[index];
+      if (!documento || !documento.file) {
+        cargarDocumentos(id, documentos, index + 1, pendientes, base);
+        return;
+      }
+      var formData = new FormData();
+      formData.append("archivo", documento.file, documento.file.name);
+      formData.append("tipoDocumental", documento.tipoDocumental || "Documento de trámite");
+      api.request("POST", "/expedientes/" + encodeURIComponent(id) + "/documentos", { body: formData }, function (uploadErr) {
+        if (uploadErr) pendientes.push(documento);
+        cargarDocumentos(id, documentos, index + 1, pendientes, base);
+      });
+    }
 
-    var aviso = layout.el("p", "wizard-summary", "Aviso: «No se recibirán solicitudes incompletas.»");
-    inner.appendChild(aviso);
+    function crearLocal() {
+      var expediente = "EXP-2026-" + String(Math.floor(100000 + Math.random() * 899999));
+      var registro = "REG-" + String(Math.floor(1000 + Math.random() * 8999));
+      guardarResultado({ expediente: expediente, registro: registro, tramite: d.tramite || "—", total: totalTexto, simulado: true });
+    }
 
-    var actions = layout.el("div", "auth-actions");
-    actions.appendChild(button({ text: "Volver al asistente", onClick: function () { if (opts.onNavigate) opts.onNavigate("#/solicitud/paso-8"); } }));
-    actions.appendChild(button({
-      variant: "primary",
-      text: "Enviar solicitud",
-      onClick: function () {
-        confirmModal("Enviar solicitud", "¿Confirma el envío de su solicitud? Se generará el número de expediente.", {
-          onConfirm: function () {
-            function guardarResultado(resultado) {
-              draft.mergeDraft({ submitted: resultado });
-              if (global.tm.expediente) global.tm.expediente.setSelected(resultado);
-              if (opts.onNavigate) opts.onNavigate(ROUTE);
-            }
+    confirmModal("Enviar solicitud", "¿Confirma el envío de su solicitud? Se generará el número de expediente.", {
+      confirmText: "Enviar solicitud",
+      onCancel: function () { if (hooks.onCancel) hooks.onCancel(); },
+      onConfirm: function () {
+        if (!api || !api.isOnline()) { crearLocal(); return; }
 
-            function cargarDocumentos(id, documentos, index, pendientes) {
-              if (!documentos || index >= documentos.length) {
-                guardarResultado(resultadoBase(pendientes.length ? pendientes.length : null));
-                return;
-              }
-              var documento = documentos[index];
-              if (!documento || !documento.file) {
-                cargarDocumentos(id, documentos, index + 1, pendientes);
-                return;
-              }
-              var formData = new FormData();
-              formData.append("archivo", documento.file, documento.file.name);
-              formData.append("tipoDocumental", documento.tipoDocumental || "Documento de trámite");
-              api.request("POST", "/expedientes/" + encodeURIComponent(id) + "/documentos", { body: formData }, function (uploadErr) {
-                if (uploadErr) pendientes.push(documento);
-                cargarDocumentos(id, documentos, index + 1, pendientes);
-              });
-            }
-
-            function resultadoBase(documentosPendientes) {
-              return {
-                id: d._expedienteId || null,
-                expediente: d._expedienteNumero || "—",
-                registro: d._registro || "—",
-                tramite: d.tramite || "—",
-                total: pagos.total != null ? ("B/." + Number(pagos.total).toFixed(2)) : "B/.0.00",
-                documentosPendientes: documentosPendientes,
-              };
-            }
-
-            function crearLocal() {
-              var expediente = "EXP-2026-" + String(Math.floor(100000 + Math.random() * 899999));
-              var registro = "REG-" + String(Math.floor(1000 + Math.random() * 8999));
-              guardarResultado({ expediente: expediente, registro: registro, tramite: d.tramite || "—", total: pagos.total != null ? ("B/." + Number(pagos.total).toFixed(2)) : "B/.0.00", simulado: true });
-            }
-
-            if (!api || !api.isOnline()) { crearLocal(); return; }
-
-            api.request("POST", "/expedientes", {
-              body: {
-                tipoTramite: d.categoria || d.tramite || "",
-                datosSolicitud: datosSolicitud(),
-              },
-            }, function (createErr, dto) {
-              if (createErr || !dto || !dto.id) {
-                renderError(container, { mensaje: createErr ? createErr.mensajeUsuario : "El backend no devolvió el expediente creado." });
-                return;
-              }
-              var documentos = global.tm.pendingDocuments || [];
-              d._expedienteId = dto.id;
-              d._expedienteNumero = dto.numero || dto.id;
-              d._registro = dto.id;
-              global.tm.pendingDocuments = [];
-              cargarDocumentos(dto.id, documentos, 0, []);
-            });
+        api.request("POST", "/expedientes", {
+          body: {
+            tipoTramite: d.categoria || d.tramite || "",
+            datosSolicitud: datosSolicitud(d),
           },
+        }, function (createErr, dto) {
+          if (createErr || !dto || !dto.id) {
+            renderError(container, {
+              mensaje: createErr ? createErr.mensajeUsuario : "El backend no devolvió el expediente creado.",
+              onRetry: function () { if (opts.onNavigate) opts.onNavigate("#/solicitud/paso-7"); },
+            });
+            return;
+          }
+          var documentos = global.tm.docs ? global.tm.docs.pending() : [];
+          cargarDocumentos(dto.id, documentos, 0, [], {
+            id: dto.id,
+            expediente: dto.numero || dto.id,
+            registro: dto.id,
+            tramite: d.tramite || "—",
+            total: totalTexto,
+          });
         });
       },
-    }));
-    inner.appendChild(actions);
+    });
+  }
 
-    container.appendChild(inner);
+  function renderContent(container, opts) {
+    var d = draft.getDraft();
+    if (d.submitted) { renderResult(container, d.submitted, opts); return; }
+    // Sin envío previo, la revisión vive en el paso «Revisión y pago».
+    if (opts.onNavigate) opts.onNavigate("#/solicitud/paso-7");
   }
 
   function demoSelector(opts) {
@@ -345,5 +362,5 @@
   }
 
   global.tm.views = global.tm.views || {};
-  global.tm.views.p17 = { renderP17: renderP17 };
+  global.tm.views.p17 = { renderP17: renderP17, resumenCards: resumenCards, enviar: enviar };
 })(window);

@@ -3337,3 +3337,458 @@ html.theme-dark .naturalization-phase__section > .wizard-section-title:first-chi
     padding: 22px 0 26px;
   }
 }
+
+/* ============================================================
+   Solicitud en tres pasos · fichas de documentos · pago
+   ============================================================ */
+
+.application-stage__placeholder,
+.application-stage__hint {
+  margin: 0;
+  color: var(--theme-muted);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.application-stage__placeholder {
+  padding: 16px 18px;
+  border: 1px dashed var(--theme-line);
+  border-radius: var(--theme-radius);
+}
+
+.application-stage__hint {
+  margin-bottom: 18px;
+}
+
+.application-stage__edit {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+/* La ficha de requisitos es informativa: viñetas, no casillas. */
+.ficha__marker--bullet {
+  flex: 0 0 6px;
+  width: 6px;
+  height: 6px;
+  align-self: center;
+  border: 0;
+  border-radius: 50%;
+  background: var(--theme-blue);
+}
+
+/* --- Fichas de documentos ---------------------------------- */
+
+.doc-intro__text {
+  margin: 0 0 16px;
+  color: var(--theme-muted);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.doc-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--theme-line);
+}
+
+.doc-toolbar__summary {
+  margin: 0;
+  color: var(--theme-ink);
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.doc-toolbar__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.doc-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.doc-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid var(--theme-line);
+  border-left: 4px solid var(--theme-line);
+  border-radius: var(--theme-radius);
+  background: var(--theme-paper);
+}
+
+.doc-card.is-loaded {
+  border-left-color: var(--color-success);
+}
+
+.doc-card--info {
+  border-left-color: transparent;
+  background: transparent;
+}
+
+.doc-card--receipt {
+  margin-top: 6px;
+}
+
+.doc-card [hidden] {
+  display: none !important;
+}
+
+.doc-card__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.doc-card__name {
+  min-width: 0;
+  color: var(--theme-ink);
+  font-size: 0.94rem;
+  font-weight: 700;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.doc-card__priority {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+.doc-card__note,
+.doc-card__file {
+  margin: 0;
+  color: var(--theme-muted);
+  font-size: 0.82rem;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.doc-card.is-loaded .doc-card__file {
+  color: var(--color-success);
+  font-weight: 600;
+}
+
+.doc-card__error {
+  display: none;
+  margin: 0;
+  color: var(--color-danger);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.doc-card__error.is-visible {
+  display: block;
+}
+
+.doc-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 4px;
+}
+
+.doc-card__actions {
+  align-items: center;
+}
+
+.doc-card__actions .btn {
+  min-height: 36px;
+  padding: 6px 12px;
+  font-size: 0.82rem;
+}
+
+/* Acciones del documento adjunto: botones de icono (ojo, descarga, quitar). */
+.doc-card__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border: 1px solid var(--theme-line);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--theme-blue);
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.doc-card__icon:hover {
+  border-color: var(--theme-blue);
+  background: rgba(33, 103, 168, 0.1);
+}
+
+.doc-card__icon:focus-visible {
+  outline: 2px solid var(--theme-blue);
+  outline-offset: 2px;
+}
+
+.doc-card__icon--danger {
+  margin-left: auto;
+  color: var(--color-danger);
+}
+
+.doc-card__icon--danger:hover {
+  border-color: var(--color-danger);
+  background: rgba(179, 38, 30, 0.1);
+}
+
+html.theme-dark .doc-card__icon {
+  color: #8fc2e5;
+}
+
+html.theme-dark .doc-card__icon--danger {
+  color: #f1a29c;
+}
+
+/* --- Vista rápida ------------------------------------------ */
+
+.modal.modal--preview {
+  width: min(900px, 100%);
+  max-height: calc(100vh - 48px);
+}
+
+.modal--preview .modal__body {
+  overflow: auto;
+}
+
+.doc-preview__meta {
+  margin: 0 0 12px;
+  color: var(--theme-muted);
+  font-size: 0.82rem;
+}
+
+.doc-preview__image {
+  display: block;
+  max-width: 100%;
+  max-height: 62vh;
+  margin: 0 auto;
+  border-radius: 6px;
+}
+
+.doc-preview__frame {
+  display: block;
+  width: 100%;
+  height: 62vh;
+  border: 1px solid var(--theme-line);
+  border-radius: 6px;
+  background: #fff;
+}
+
+.doc-preview__empty {
+  margin: 0;
+  color: var(--theme-muted);
+}
+
+/* --- Estado de la solicitud y pago -------------------------- */
+
+.status-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.status-strip__item {
+  display: grid;
+  gap: 3px;
+  padding: 14px 16px;
+  border: 1px solid var(--theme-line);
+  border-top: 3px solid var(--theme-line);
+  border-radius: var(--theme-radius);
+  background: var(--theme-paper);
+}
+
+.status-strip__item--info { border-top-color: var(--theme-blue); }
+.status-strip__item--success { border-top-color: var(--color-success); }
+.status-strip__item--warning { border-top-color: var(--theme-amber); }
+
+.status-strip__label {
+  color: var(--theme-muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.status-strip__value {
+  color: var(--theme-ink);
+  font-size: 1rem;
+}
+
+.status-strip__detail {
+  color: var(--theme-muted);
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.pay-method {
+  margin: 22px 0 18px;
+}
+
+.pay-method__options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+}
+
+.pay-method__option {
+  padding: 12px 14px;
+  border: 1px solid var(--theme-line);
+  border-radius: var(--theme-radius);
+  background: var(--theme-paper);
+  cursor: pointer;
+}
+
+.pay-method__option:has(input:checked) {
+  border-color: var(--theme-blue);
+  box-shadow: inset 0 0 0 1px var(--theme-blue);
+}
+
+/* --- Revisión ----------------------------------------------- */
+
+.review-docs {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 10px 16px 14px;
+  list-style: none;
+}
+
+.review-docs__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 0.84rem;
+}
+
+.review-docs__name {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.review-docs__view {
+  flex: 0 0 auto;
+  min-height: 30px;
+  padding: 3px 10px;
+  font-size: 0.78rem;
+}
+
+@media (max-width: 760px) {
+  .doc-list {
+    grid-template-columns: 1fr;
+  }
+
+  .doc-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .doc-card__actions .btn,
+  .doc-toolbar__actions .btn,
+  .application-stage__edit .btn {
+    flex: 1 1 auto;
+  }
+
+  .doc-preview__frame {
+    height: 56vh;
+  }
+}
+
+/* --- Historial de entradas y salidas declarado --------------- */
+
+.movements__intro {
+  margin: 0 0 14px;
+  color: var(--theme-muted);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.movements__list {
+  display: grid;
+  gap: 14px;
+}
+
+.movements__row {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid var(--theme-line);
+  border-radius: var(--theme-radius);
+}
+
+.movements__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.movements__title {
+  color: var(--theme-ink);
+  font-size: 0.92rem;
+}
+
+.movements__remove {
+  min-height: 32px;
+  padding: 4px 10px;
+  font-size: 0.78rem;
+}
+
+.movements__actions {
+  margin-top: 14px;
+}
+
+/* Origen del historial: con convenio / sin convenio */
+.movements__source {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.movements__source-option {
+  align-items: flex-start;
+  padding: 12px 14px;
+  border: 1px solid var(--theme-line);
+  border-radius: var(--theme-radius);
+  background: var(--theme-paper);
+  cursor: pointer;
+}
+
+.movements__source-option:has(input:checked) {
+  border-color: var(--theme-blue);
+  box-shadow: inset 0 0 0 1px var(--theme-blue);
+}
+
+.movements__source-text {
+  display: grid;
+  gap: 2px;
+}
+
+.movements__source-text small {
+  color: var(--theme-muted);
+  font-size: 0.8rem;
+}
+
+.movements [hidden] {
+  display: none !important;
+}

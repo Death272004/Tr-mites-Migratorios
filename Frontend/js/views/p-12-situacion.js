@@ -141,7 +141,7 @@
       add(field.fieldText({ id: "convenio", label: "Convenio con el Estado (si aplica)", value: d.convenio }), function () { return byId("convenio"); });
     }
 
-    var note = layout.el("p", "wizard-summary", "Bloque mostrado: " + titulos[block] + " (según el trámite seleccionado en P-07).");
+    var note = layout.el("p", "wizard-summary", "Bloque mostrado: " + titulos[block] + " (según el trámite seleccionado).");
     body.appendChild(note);
     body.appendChild(wrap);
 

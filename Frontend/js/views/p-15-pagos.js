@@ -1,7 +1,9 @@
 /**
- * P-15 Paso 7 — Pagos y tasas (simulado, sin pasarela real).
- * Desglose de tasas desde el catálogo y confirmación de pago de demostración.
- * No solicita tarjetas, cuentas, cheques ni conecta una pasarela real.
+ * P-15 — Pago de tasas.
+ * Muestra el estado de la solicitud, el desglose de tasas y permite declarar el
+ * medio de pago utilizado (ventanilla, Yappy o tarjeta) y adjuntar el recibo
+ * como prueba de pago. No hay pasarela: nunca se solicitan datos de tarjetas ni
+ * de cuentas; el despacho verifica el comprobante al recibir la solicitud.
  * 4 estados: carga, éxito, vacío, error.
  * Script clásico: expone `tm.views.p15.renderP15`.
  */
@@ -13,15 +15,57 @@
   var button = global.tm.ui.button;
   var wizard = global.tm.wizard;
   var draft = global.tm.draft;
-  var data = global.tm.data;
   var fixtures = global.tm.fixtures;
+  var docs = global.tm.docs;
 
   var ROUTE = "#/solicitud/paso-7";
+  var CLAVE_COMPROBANTE = "pago:comprobante";
+
+  var METODOS = [
+    {
+      value: "VENTANILLA",
+      label: "Ventanilla",
+      ayuda: "Pago presencial en caja. Adjunte el recibo sellado que le entregaron.",
+    },
+    {
+      value: "YAPPY",
+      label: "Yappy",
+      ayuda: "Adjunte la captura del comprobante de Yappy donde se vea el monto y la fecha.",
+    },
+    {
+      value: "TARJETA",
+      label: "Tarjeta de crédito o débito",
+      ayuda: "Adjunte el comprobante de la transacción. No se solicitan los datos de su tarjeta.",
+    },
+    {
+      value: "EXONERACION",
+      label: "Exoneración",
+      ayuda: "Si está exonerado del pago, adjunte la constancia o resolución que lo acredita.",
+    },
+  ];
 
   function byId(id) { var e = document.getElementById(id); return e ? e.value.trim() : ""; }
 
   function estadoActual() {
     return (fixtures && fixtures.scenario && fixtures.scenario()) || "exito";
+  }
+
+  function metodoLabel(value) {
+    for (var i = 0; i < METODOS.length; i++) if (METODOS[i].value === value) return METODOS[i].label;
+    return "";
+  }
+
+  /** Estado del pago según el medio declarado y el comprobante adjunto. */
+  function estadoPago(metodo, tieneComprobante) {
+    if (!metodo) return { codigo: "PENDIENTE", texto: "Pendiente", detalle: "Indique el medio de pago que utilizó.", tono: "warning" };
+    if (metodo === "EXONERACION") {
+      return tieneComprobante
+        ? { codigo: "EXONERACION_SOLICITADA", texto: "Exoneración solicitada", detalle: "Constancia adjunta; el despacho la validará.", tono: "info" }
+        : { codigo: "EXONERACION_SIN_CONSTANCIA", texto: "Exoneración sin constancia", detalle: "Adjunte la constancia para agilizar la revisión.", tono: "warning" };
+    }
+    return tieneComprobante
+      ? { codigo: "REPORTADO", texto: "Pago reportado", detalle: "Comprobante adjunto; pendiente de verificación por el despacho.", tono: "success" }
+      : { codigo: "SIN_COMPROBANTE", texto: "Pago declarado sin comprobante", detalle: "Puede adjuntar el recibo como prueba de pago.", tono: "warning" };
   }
 
   function tasasDe(d) {
@@ -44,114 +88,133 @@
 
   function money(n) { return "B/." + Number(n).toFixed(2); }
 
+  function statusTile(titulo) {
+    var tile = layout.el("div", "status-strip__item");
+    tile.appendChild(layout.el("span", "status-strip__label", titulo));
+    var value = layout.el("strong", "status-strip__value", "");
+    var detail = layout.el("span", "status-strip__detail", "");
+    tile.appendChild(value);
+    tile.appendChild(detail);
+    tile.set = function (texto, detalle, tono) {
+      value.textContent = texto;
+      detail.textContent = detalle || "";
+      tile.className = "status-strip__item" + (tono ? " status-strip__item--" + tono : "");
+    };
+    return tile;
+  }
+
   function renderContent(container, opts) {
     var body = wizard.frame(container, ROUTE);
-    body.appendChild(global.tm.autofill.createStageControl({
-      root: function () { return body; },
-    }));
     body.appendChild(demoSelector(opts));
     var d = draft.getDraft();
     var pagos = d.pagos || {};
+    var requisitos = d.requisitos || {};
 
     var tasas = tasasDe(d);
     var total = tasas.reduce(function (s, t) { return s + t.monto; }, 0);
 
+    // Estado de la solicitud: en qué punto está, sus documentos y el pago.
+    var strip = layout.el("div", "status-strip");
+    strip.setAttribute("role", "group");
+    strip.setAttribute("aria-label", "Estado de la solicitud");
+    var tileSolicitud = statusTile("Estado de la solicitud");
+    var tileDocs = statusTile("Documentos");
+    var tilePago = statusTile("Pago");
+    tilePago.setAttribute("aria-live", "polite");
+    strip.appendChild(tileSolicitud);
+    strip.appendChild(tileDocs);
+    strip.appendChild(tilePago);
+    body.appendChild(strip);
+
+    tileSolicitud.set("En preparación", "Aún no se ha enviado al despacho.", "info");
+    var adjuntos = docs.list("requisitos").length;
+    if (requisitos.prioritarios != null) {
+      tileDocs.set(adjuntos + " adjunto(s)", requisitos.prioritarios + " prioritario(s) requeridos para este trámite.", "success");
+    } else {
+      tileDocs.set(adjuntos + " adjunto(s)", "Complete el paso «Trámite y documentación».", adjuntos ? "success" : "warning");
+    }
+
     var rows = tasas.map(function (t) { return [{ text: t.concepto }, { text: money(t.monto), align: "right" }]; });
-    rows.push([{ text: "Total", }, { text: money(total), align: "right" }]);
+    rows.push([{ text: "Total a pagar" }, { text: money(total), align: "right" }]);
     body.appendChild(global.tm.ui.table({ headers: [{ label: "Concepto" }, { label: "Monto", align: "right" }], rows: rows }));
 
-    var grid = layout.el("div", "wizard-grid");
-
-    var modalidad = layout.el("fieldset", "form-field");
-    modalidad.appendChild(layout.el("legend", "form-field__label", "Modalidad de pago"));
-    var rg = layout.el("div", "radio-group");
-    var mods = [
-      { value: "PAGO_SIMULADO", label: "Confirmar pago de demostración" },
-      { value: "EXONERACION", label: "Exoneración" },
-    ];
-    mods.forEach(function (m, i) {
-      var lbl = layout.el("label", "radio-option");
+    var metodo = layout.el("fieldset", "form-field pay-method");
+    metodo.appendChild(layout.el("legend", "form-field__label", "¿Por qué medio realizó el pago?"));
+    var rg = layout.el("div", "radio-group pay-method__options");
+    METODOS.forEach(function (m) {
+      var lbl = layout.el("label", "radio-option pay-method__option");
       var input = layout.el("input");
-      input.type = "radio"; input.name = "modalidad"; input.value = m.value;
-      if (pagos.modalidad === m.value || (!pagos.modalidad && i === 0)) input.checked = true;
-      rg.appendChild(lbl); lbl.appendChild(input); lbl.appendChild(layout.el("span", null, m.label));
+      input.type = "radio"; input.name = "metodoPago"; input.value = m.value;
+      if (pagos.modalidad === m.value) input.checked = true;
+      lbl.appendChild(input);
+      lbl.appendChild(layout.el("span", null, m.label));
+      rg.appendChild(lbl);
     });
-    modalidad.appendChild(rg);
-    grid.appendChild(modalidad);
+    metodo.appendChild(rg);
+    var ayuda = layout.el("span", "form-field__help", "");
+    metodo.appendChild(ayuda);
+    body.appendChild(metodo);
 
-    grid.appendChild(field.fieldSelect({
-      id: "concepto", label: "Concepto de pago",
-      options: [{ value: "", label: "Seleccione…" }, { value: "TRAMITE", label: "Trámite" }, { value: "CARNE", label: "Carné" }, { value: "REPATRIACION", label: "Repatriación" }, { value: "TIMBRES", label: "Timbres" }],
-      value: pagos.concepto, required: true,
+    var grid = layout.el("div", "wizard-grid");
+    grid.appendChild(field.fieldText({
+      id: "referenciaPago", label: "Número de recibo o referencia", value: pagos.referencia || "",
+      helpText: "Opcional. El número que aparece en su recibo o comprobante.",
     }));
+    grid.appendChild(field.fieldDate({ id: "fechaPago", label: "Fecha del pago", value: pagos.fechaPago || "" }));
     body.appendChild(grid);
 
-    var paymentNote = layout.el("div", "app-alert app-alert--info");
-    paymentNote.appendChild(layout.el("span", "app-alert__title", "Pago de demostración"));
-    paymentNote.appendChild(layout.el("span", "app-alert__text", "Este paso solo registra el flujo para la demostración. No se realiza ningún cobro ni se solicitan datos bancarios."));
-    body.appendChild(paymentNote);
-
-    var constancia = layout.el("div", "app-alert app-alert--info");
-    constancia.style.display = "none";
-    constancia.appendChild(layout.el("span", "app-alert__title", "Constancia de pago generada (simulada)"));
-    constancia.appendChild(layout.el("span", "app-alert__text", "Referencia: DEMO-" + total + "-" + (d.tramite || "TRAMITE").slice(0, 6).toUpperCase()));
-    body.appendChild(constancia);
+    var comprobante = docs.card({
+      tag: "div",
+      key: CLAVE_COMPROBANTE,
+      grupo: "pago",
+      label: "Recibo o comprobante de pago",
+      tipoDocumental: "COMPROBANTE_PAGO",
+      nota: "Adjúntelo como prueba de pago. Podrá verlo o descargarlo antes de enviar la solicitud.",
+      onChange: refresh,
+    });
+    comprobante.classList.add("doc-card--receipt");
+    body.appendChild(comprobante);
 
     var err = wizard.errorBox();
     body.appendChild(err);
 
-    var paid = !!pagos.pagado;
+    function metodoElegido() { return (rg.querySelector("input:checked") || {}).value || ""; }
 
-    var actions = layout.el("div", "auth-actions");
-    var payBtn = layout.el("button", "btn btn--primary", "Confirmar pago de demostración");
-    payBtn.type = "button";
-    var nextBtn = layout.el("button", "btn btn--primary", "Continuar");
-    nextBtn.type = "button";
-    var backBtn = layout.el("button", "btn", "Volver");
-    backBtn.type = "button";
-    actions.appendChild(backBtn);
-    actions.appendChild(payBtn);
-    actions.appendChild(nextBtn);
-    body.appendChild(actions);
-
-    if (paid) showPaid();
-    function showPaid() {
-      constancia.style.display = "";
-      payBtn.disabled = true;
-      payBtn.textContent = "Pagado (simulado)";
+    function refresh() {
+      var m = metodoElegido();
+      var estado = estadoPago(m, !!docs.get(CLAVE_COMPROBANTE));
+      tilePago.set(estado.texto, (m ? metodoLabel(m) + " · " : "") + estado.detalle, estado.tono);
+      var def = METODOS.filter(function (x) { return x.value === m; })[0];
+      ayuda.textContent = def ? def.ayuda : "Seleccione una opción. No se realiza ningún cobro desde este portal.";
     }
+    rg.addEventListener("change", function () { wizard.clearError(err); refresh(); });
+    refresh();
 
-    payBtn.addEventListener("click", function () {
-      wizard.clearError(err);
-      var m = (rg.querySelector("input:checked") || {}).value;
-      if (!m) return wizard.showError(err, "Seleccione la modalidad de pago.");
-      payBtn.disabled = true;
-      payBtn.textContent = "Procesando…";
-      setTimeout(function () {
-        paid = true;
-        showPaid();
-      }, 600);
-    });
-
-    backBtn.addEventListener("click", function () { if (opts.onNavigate) opts.onNavigate("#/solicitud/paso-6"); });
-
-    nextBtn.addEventListener("click", function () {
-      wizard.clearError(err);
-      var m = (rg.querySelector("input:checked") || {}).value;
-      if (!m) return wizard.showError(err, "Seleccione la modalidad de pago.");
-      if (!byId("concepto")) return wizard.showError(err, "Seleccione el concepto de pago.");
-      if (m !== "EXONERACION" && !paid) return wizard.showError(err, "Debe registrar el pago (o marcar exoneración) para continuar.");
-
-      draft.mergeDraft({
-        pagos: {
-          modalidad: m,
-          concepto: byId("concepto"),
-          total: total,
-          pagado: paid || m === "EXONERACION",
-        },
-      });
-      if (opts.onNavigate) opts.onNavigate(wizard.nextRoute(ROUTE));
-    });
+    body.appendChild(wizard.footer({
+      onBack: function () { if (opts.onNavigate) opts.onNavigate(wizard.prevRoute(ROUTE)); },
+      onNext: function () {
+        wizard.clearError(err);
+        var m = metodoElegido();
+        if (!m) return wizard.showError(err, "Indique por qué medio realizó el pago.");
+        var entrada = docs.get(CLAVE_COMPROBANTE);
+        var estado = estadoPago(m, !!entrada);
+        draft.mergeDraft({
+          pagos: {
+            modalidad: m,
+            metodo: metodoLabel(m),
+            concepto: "TRAMITE",
+            referencia: byId("referenciaPago"),
+            fechaPago: byId("fechaPago"),
+            total: total,
+            comprobante: entrada ? { archivo: entrada.file.name, tamano: entrada.file.size } : null,
+            estado: estado.codigo,
+            estadoTexto: estado.texto,
+            pagado: estado.codigo === "REPORTADO",
+          },
+        });
+        if (opts.onNavigate) opts.onNavigate(wizard.nextRoute(ROUTE));
+      },
+    }));
   }
 
   function demoSelector(opts) {
@@ -245,5 +308,5 @@
   }
 
   global.tm.views = global.tm.views || {};
-  global.tm.views.p15 = { renderP15: renderP15 };
+  global.tm.views.p15 = { renderP15: renderP15, estadoPago: estadoPago, METODOS: METODOS, CLAVE_COMPROBANTE: CLAVE_COMPROBANTE };
 })(window);

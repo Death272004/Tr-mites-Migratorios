@@ -22,7 +22,7 @@
       const text = el("div", "stepper__text");
       text.appendChild(el("div", "stepper__label", step.label));
       text.appendChild(el("div", "stepper__subtitle", i === current ? "En curso" : i < current ? "Completada" : "Pendiente"));
-      const sr = el("span", "sr-only", i === current ? "Etapa actual" : i < current ? "Etapa completada" : "Etapa pendiente");
+      const sr = el("span", "sr-only", unit + (i === current ? " actual" : i < current ? " completado" : " pendiente"));
       text.appendChild(sr);
       li.appendChild(bullet);
       li.appendChild(text);

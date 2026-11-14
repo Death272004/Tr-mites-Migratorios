@@ -18,9 +18,6 @@
 
   function renderContent(container, opts) {
     var body = wizard.frame(container, ROUTE);
-    body.appendChild(global.tm.autofill.createStageControl({
-      root: function () { return body; },
-    }));
     body.appendChild(demoSelector(opts));
     var d = draft.getDraft();
     var decl = d.declaracion || {};
@@ -33,7 +30,7 @@
       id: "ley81",
       label: "Autorizo el tratamiento de mis datos personales (Ley 81 de 2019).",
       checked: !!decl.ley81,
-      helpText: "Finalidad: tramitar la solicitud. Destinatarios: Tribunal Electoral, CSS, Registro Público y SNM. Conservación según normativa. Derechos ARCO disponibles en P-05.",
+      helpText: "Finalidad: tramitar la solicitud. Destinatarios: Tribunal Electoral, CSS, Registro Público y SNM. Conservación según normativa. Puede ejercer sus derechos ARCO desde «Mi perfil».",
     });
     var chkImpedimentos = field.fieldCheckbox({ id: "impedimentos", label: "Declaro no tener impedimentos ni antecedentes que lo impidan.", checked: !!decl.impedimentos });
     wrap.appendChild(chkVeracidad);
@@ -50,7 +47,7 @@
     var grid = layout.el("div", "wizard-grid");
     grid.appendChild(field.fieldText({ id: "lugarFirma", label: "Lugar", value: decl.lugarFirma || "Ciudad de Panamá", required: true }));
     grid.appendChild(field.fieldDate({ id: "fechaFirma", label: "Fecha", value: decl.fechaFirma || new Date().toISOString().slice(0, 10), required: true }));
-    grid.appendChild(field.fieldText({ id: "nombreFirmante", label: "Nombre del firmante", value: decl.nombreFirmante || (d.titularidad && d.titularidad.nombreTitular) || "", required: true, helpText: "Debe coincidir con el titular de P-08." }));
+    grid.appendChild(field.fieldText({ id: "nombreFirmante", label: "Nombre del firmante", value: decl.nombreFirmante || (d.titularidad && d.titularidad.nombreTitular) || "", required: true, helpText: "Debe coincidir con el titular de la solicitud." }));
     body.appendChild(grid);
 
     var signWrap = layout.el("div", "wizard-grid");
@@ -66,7 +63,7 @@
     body.appendChild(wizard.footer({
       backText: "Volver",
       nextText: "Firmar y continuar",
-      onBack: function () { if (opts.onNavigate) opts.onNavigate("#/solicitud/paso-7"); },
+      onBack: function () { if (opts.onNavigate) opts.onNavigate(wizard.prevRoute(ROUTE)); },
       onNext: function () {
         wizard.clearError(err);
         var box = document.getElementById("veracidad");

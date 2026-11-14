@@ -309,15 +309,42 @@
     }
   }
 
+  // PDF de una página, válido, para que la vista previa del documento de
+  // demostración funcione igual que con un archivo real.
+  function demoPdf() {
+    var contenido = "BT /F1 16 Tf 60 720 Td (Documento de demostracion) Tj 0 -26 Td /F1 11 Tf (Archivo ficticio generado para pruebas. Sin datos reales.) Tj ET";
+    var objetos = [
+      "<< /Type /Catalog /Pages 2 0 R >>",
+      "<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
+      "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>",
+      "<< /Length " + contenido.length + " >>\nstream\n" + contenido + "\nendstream",
+      "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>",
+    ];
+    var pdf = "%PDF-1.4\n";
+    var offsets = [];
+    for (var i = 0; i < objetos.length; i++) {
+      offsets.push(pdf.length);
+      pdf += (i + 1) + " 0 obj\n" + objetos[i] + "\nendobj\n";
+    }
+    var xref = pdf.length;
+    pdf += "xref\n0 " + (objetos.length + 1) + "\n0000000000 65535 f \n";
+    for (var j = 0; j < offsets.length; j++) pdf += ("0000000000" + offsets[j]).slice(-10) + " 00000 n \n";
+    pdf += "trailer\n<< /Size " + (objetos.length + 1) + " /Root 1 0 R >>\nstartxref\n" + xref + "\n%%EOF\n";
+    return pdf;
+  }
+
   function fillFiles(root, result) {
     if (!global.DataTransfer || !global.File) return;
     var inputs = root.querySelectorAll('input[type="file"]');
     for (var i = 0; i < inputs.length; i++) {
       var inp = inputs[i];
       if (inp.disabled) continue;
+      // Nunca se reemplaza un documento que el usuario ya adjuntó.
+      if (inp.files && inp.files.length) continue;
+      if (inp.closest && inp.closest(".doc-card.is-loaded")) continue;
       try {
         var dt = new global.DataTransfer();
-        dt.items.add(new global.File(["documento de demostración"], "documento-demo.pdf", { type: "application/pdf" }));
+        dt.items.add(new global.File([demoPdf()], "documento-demo.pdf", { type: "application/pdf" }));
         inp.files = dt.files;
         inp.dispatchEvent(new Event("change", { bubbles: true }));
         result.count += 1;
@@ -380,7 +407,12 @@
     for (i = 0; i < selects.length; i++) {
       var sel = selects[i];
       if (sel.disabled) continue;
-      var opt = preferredOption(sel, profile) || pickOption(sel);
+      var preferida = preferredOption(sel, profile);
+      // Se respeta lo que el usuario ya eligió (p. ej. el trámite): solo se
+      // completa un select vacío o uno con un valor propio de la persona ficticia.
+      var actual = sel.options[sel.selectedIndex];
+      if (!preferida && actual && !isPlaceholder(actual)) continue;
+      var opt = preferida || pickOption(sel);
       if (opt && String(sel.value) !== String(opt.value)) {
         sel.value = opt.value;
         result.count += 1;
@@ -400,7 +432,7 @@
 
   function fillStage(root, options, done) {
     var total = 0;
-    var passes = [0, 140, 420];
+    var passes = (options && options.passes) || [0, 140, 420];
     for (var i = 0; i < passes.length; i++) {
       (function (delay, last) {
         global.setTimeout(function () {
@@ -474,7 +506,7 @@
       } else {
         var summary = global.document.createElement("p");
         summary.className = "demo-fill__summary";
-        summary.textContent = active ? "Persona seleccionada: " + active.name : "Seleccione una persona ficticia en la etapa 1 para habilitar el autocompletado.";
+        summary.textContent = active ? "Persona seleccionada: " + active.name : "Seleccione una persona ficticia en el paso 1 para habilitar el autocompletado.";
         profileArea.appendChild(summary);
       }
     }
@@ -487,15 +519,15 @@
     var fillButton = global.document.createElement("button");
     fillButton.type = "button";
     fillButton.className = "btn demo-fill__button";
-    fillButton.textContent = "Completar esta etapa";
+    fillButton.textContent = "Completar este paso";
     fillButton.addEventListener("click", function () {
       if (!getProfile()) return;
       fillButton.disabled = true;
       status.textContent = "Completando…";
-      fillStage(options.root, { profileId: getProfile().id }, function () {
+      fillStage(options.root, { profileId: getProfile().id, passes: options.passes }, function () {
         fillButton.disabled = false;
-        fillButton.textContent = "Volver a completar esta etapa";
-        status.textContent = "Etapa completada con datos ficticios. Revise antes de continuar.";
+        fillButton.textContent = "Volver a completar este paso";
+        status.textContent = "Paso completado con datos ficticios. Revise antes de continuar.";
         if (options.onFilled) options.onFilled();
       });
     });

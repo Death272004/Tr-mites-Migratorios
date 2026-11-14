@@ -1,6 +1,6 @@
 /**
- * modal.js — componentes de modal (confirmación) con foco y teclado.
- * Script clásico: expone `tm.ui.confirmModal`.
+ * modal.js — componentes de modal (confirmación y contenido libre) con foco y teclado.
+ * Script clásico: expone `tm.ui.confirmModal`, `tm.ui.openModal` y `tm.ui.closeModal`.
  */
 (function (global) {
   "use strict";
@@ -41,10 +41,12 @@
     onClose?.();
   }
 
-  function openBackdrop({ title, body, actions }) {
+  function openBackdrop({ title, body, actions, className }) {
+    // Un solo modal a la vez: si queda uno abierto se cierra antes de abrir otro.
+    if (activeBackdrop) closeBackdrop();
     lastFocus = document.activeElement;
     const backdrop = el("div", "modal-backdrop");
-    const dialog = el("div", "modal");
+    const dialog = el("div", "modal" + (className ? " " + className : ""));
     dialog.setAttribute("role", "dialog");
     dialog.setAttribute("aria-modal", "true");
     if (title) dialog.setAttribute("aria-labelledby", "modal-title");
@@ -102,15 +104,15 @@
     };
   }
 
-  function confirmModal(title, message, { onConfirm, onCancel } = {}) {
+  function confirmModal(title, message, { onConfirm, onCancel, confirmText, cancelText, danger } = {}) {
     const actions = el("div", "modal__actions");
-    const cancel = el("button", "btn", "Cancelar");
+    const cancel = el("button", "btn", cancelText || "Cancelar");
     cancel.type = "button";
     cancel.addEventListener("click", () => {
       closeBackdrop();
       onCancel?.();
     });
-    const ok = el("button", "btn btn--primary", "Aceptar");
+    const ok = el("button", danger ? "btn btn--danger" : "btn btn--primary", confirmText || "Aceptar");
     ok.type = "button";
     ok.addEventListener("click", () => {
       closeBackdrop();
@@ -125,4 +127,6 @@
 
   global.tm.ui = global.tm.ui || {};
   global.tm.ui.confirmModal = confirmModal;
+  global.tm.ui.openModal = openBackdrop;
+  global.tm.ui.closeModal = closeBackdrop;
 })(window);

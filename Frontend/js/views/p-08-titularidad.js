@@ -226,6 +226,19 @@
     }
 
     condicion.querySelector("select").addEventListener("change", updateVisibility);
+
+    // Al volver al paso se restaura lo ya guardado en el borrador.
+    var previo = draft.getDraft().titularidad;
+    if (previo) {
+      var rep = previo.representante || {};
+      [[condicion, previo.condicion], [tipoDocTitular, previo.tipoDocTitular], [numDocTitular, previo.numDocTitular],
+        [nombreTitular, previo.nombreTitular], [tipoRep, previo.tipoRep], [cedulaAbogado, previo.cedulaAbogado],
+        [cedulaPasante, previo.cedulaPasante], [repNombre, rep.nombre], [repDoc, rep.documento],
+        [repTel, rep.telefono], [repCorreo, rep.correo]].forEach(function (par) {
+        var control = par[0].querySelector("input, select, textarea");
+        if (control && par[1]) control.value = par[1];
+      });
+    }
     updateVisibility();
 
     function submit() {

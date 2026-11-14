@@ -627,7 +627,7 @@
       empty.appendChild(button({
         variant: "primary",
         text: "Ir a Nueva solicitud",
-        onClick: function () { if (opts.onNavigate) opts.onNavigate("#/solicitud/tramite"); },
+        onClick: function () { if (opts.onNavigate) opts.onNavigate("#/solicitud/paso-1"); },
       }));
       return empty;
     }

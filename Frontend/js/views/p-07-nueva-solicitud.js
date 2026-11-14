@@ -48,6 +48,10 @@
         tramites: [{
           nombre: item.nombre,
           req: (item.requisitos || []).map(function (r) { return r.nombre + (r.obligatorio ? "" : " (opcional)"); }),
+          // Detalle para las fichas de documentos: tipo documental y prioridad.
+          reqDetalle: (item.requisitos || []).map(function (r) {
+            return { nombre: r.nombre, codigo: r.tipoDocumental, obligatorio: !!r.obligatorio };
+          }),
         }],
       };
     });
@@ -67,7 +71,10 @@
     return c.tramites.filter(function (t) { return t.nombre === nombre; })[0] || null;
   }
 
+  // Se fusiona con el borrador: la identidad del paso 1 se captura antes que
+  // el trámite y no debe perderse al elegirlo.
   function saveDraft(datos) {
+    if (global.tm.draft) { global.tm.draft.mergeDraft(datos); return; }
     try { global.sessionStorage.setItem(DRAFT_KEY, JSON.stringify(datos)); } catch (e) { /* ignore */ }
   }
 
@@ -87,7 +94,7 @@
       var item = tramite.req[i];
       var esAuto = /\(A\)/.test(item);
       var li = layout.el("li", "ficha__item" + (esAuto ? " ficha__item--auto" : ""));
-      li.appendChild(layout.el("span", "ficha__marker", esAuto ? "A" : ""));
+      li.appendChild(layout.el("span", "ficha__marker" + (esAuto ? "" : " ficha__marker--bullet"), esAuto ? "A" : ""));
       li.appendChild(layout.el("span", null, item.replace(/\s*\(A\)/, "")));
       if (esAuto) li.appendChild(layout.el("span", "ficha__tag", "verificado automáticamente (futuro)"));
       list.appendChild(li);
@@ -99,7 +106,7 @@
       var list2 = layout.el("ul", "ficha__list");
       for (var j = 0; j < REQUISITOS_ART_28.length; j++) {
         var li2 = layout.el("li", "ficha__item");
-        li2.appendChild(layout.el("span", "ficha__marker", ""));
+        li2.appendChild(layout.el("span", "ficha__marker ficha__marker--bullet", ""));
         li2.appendChild(layout.el("span", null, REQUISITOS_ART_28[j]));
         list2.appendChild(li2);
       }
@@ -109,7 +116,7 @@
     card.appendChild(layout.el(
       "p",
       "ficha__note",
-      "Los requisitos marcados (A) podrían obtenerse por interoperabilidad y quedar sellados como verificados automáticamente; en el MVP el despacho lo registra en I-07. La carga de documentos se realiza en el paso 6 (P-14)."
+      "Los requisitos marcados (A) podrían obtenerse por interoperabilidad y quedar sellados como verificados automáticamente; en el MVP el despacho lo registra en I-07. Esta ficha es informativa: indica lo que debe aportar. Cada documento se adjunta en su propia ficha."
     ));
 
     container.appendChild(card);
@@ -121,7 +128,7 @@
     // del formulario después de resolver el catálogo.
     layout.clear(container);
     var inner = layout.el("div", "app-content__inner");
-    inner.appendChild(layout.pageHeader("Nueva solicitud", "Paso 1 de 11 · Seleccione el trámite a realizar"));
+    inner.appendChild(layout.pageHeader("Nueva solicitud", "Seleccione el trámite a realizar"));
 
     if (opts.onDemoState && (!api || !api.isOnline())) inner.appendChild(demoSelector(opts.onDemoState));
 
@@ -199,6 +206,20 @@
     catSelect.addEventListener("change", function () { renderTramiteSelect(catSelect.value); });
     renderTramiteSelect("");
 
+    // Al volver al paso se restaura lo ya elegido en el borrador.
+    var previo = (global.tm.draft && global.tm.draft.getDraft()) || {};
+    if (previo.categoria && getCategoria(previo.categoria)) {
+      catSelect.value = previo.categoria;
+      var tramitePrevio = renderTramiteSelect(previo.categoria);
+      if (previo.tramite && getTramite(previo.categoria, previo.tramite)) {
+        tramitePrevio.value = previo.tramite;
+        if (!opts.embedded) renderFicha(fichaWrap, previo.categoria, previo.tramite);
+      }
+    }
+    if (previo.motivo) selectMotivo.querySelector("select").value = previo.motivo;
+    if (previo.paisOrigen) selectPais.querySelector("select").value = previo.paisOrigen;
+    if (previo.presentante) radios.forEach(function (r) { r.checked = r.value === previo.presentante; });
+
     form.addEventListener("submit", function (ev) {
       ev.preventDefault();
       clearError();
@@ -245,11 +266,13 @@
         options: options,
         required: true,
         disabled: !categoriaValue,
-        helpText: "Al elegirlo se carga su ficha de requisitos.",
+        helpText: opts.embedded ? "Al elegirlo se muestra la documentación que debe aportar." : "Al elegirlo se carga su ficha de requisitos.",
       });
       tramiteWrap.appendChild(sel);
       var select = sel.querySelector("select");
-      select.addEventListener("change", function () { renderFicha(fichaWrap, categoriaValue, select.value); });
+      // En el paso agrupado la ficha la reemplazan las fichas de documentos.
+      select.addEventListener("change", function () { if (!opts.embedded) renderFicha(fichaWrap, categoriaValue, select.value); });
+      return select;
     }
 
     function setError(msg) { errorBox.textContent = msg; errorBox.classList.add("is-visible"); }
@@ -329,7 +352,11 @@
       api.request("GET", "/catalogos/tipos-tramite", { pantalla: "P-07" }, function (err, items) {
         if (err) { renderError(container, { mensaje: err.mensajeUsuario, onRetry: function () { renderP07(container, opts); } }); return; }
         CATALOGO = catalogoDesdeApi(items);
-        if (global.tm.views.p07) global.tm.views.p07.CATALOGO = CATALOGO;
+        if (global.tm.views.p07) {
+          global.tm.views.p07.CATALOGO = CATALOGO;
+          // Marca que el catálogo vigente es el del backend y no el de demostración.
+          global.tm.views.p07.catalogoEnLinea = true;
+        }
         if (!CATALOGO.length) { renderEmpty(container, { onRetry: function () { renderP07(container, opts); } }); return; }
         renderForm(container, opts);
       });

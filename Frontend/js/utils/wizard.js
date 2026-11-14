@@ -1,6 +1,6 @@
 /**
- * wizard.js — andamiaje del asistente de solicitud (P-09…P-16).
- * Ruta ↔ paso, encabezado con stepper y pie de navegación.
+ * wizard.js — andamiaje del asistente de solicitud (P-07…P-17).
+ * Ruta ↔ paso (tres pasos), encabezado con stepper y pie de navegación.
  * Script clásico: expone `window.tm.wizard`.
  */
 (function (global) {
@@ -21,15 +21,26 @@
     { route: "#/solicitud/paso-8", label: "Declaración y firma" },
   ];
 
-  // Las pantallas técnicas se agrupan en seis etapas comprensibles para el
-  // ciudadano. Se conserva cada ruta para no alterar el borrador ni el API.
+  // Las pantallas técnicas se agrupan en tres pasos para el ciudadano:
+  //   1. Identidad e información   2. Trámite y documentación   3. Revisión y pago
+  // Se conserva cada ruta para no alterar el borrador ni el API; `entry` es la
+  // ruta canónica con la que se entra a cada paso.
   var PHASES = [
-    { label: "Trámite", routes: ["#/solicitud/tramite", "#/solicitud/titularidad"] },
-    { label: "Identidad", routes: ["#/solicitud/paso-1", "#/solicitud/paso-2"] },
-    { label: "Información", routes: ["#/solicitud/paso-3", "#/solicitud/paso-4"] },
-    { label: "Documentos", routes: ["#/solicitud/paso-5", "#/solicitud/paso-6"] },
-    { label: "Pago", routes: ["#/solicitud/paso-7"] },
-    { label: "Revisión", routes: ["#/solicitud/paso-8", "#/solicitud/resumen"] },
+    {
+      label: "Identidad e información",
+      entry: "#/solicitud/paso-1",
+      routes: ["#/solicitud/paso-1", "#/solicitud/paso-2", "#/solicitud/paso-3"],
+    },
+    {
+      label: "Trámite y documentación",
+      entry: "#/solicitud/tramite",
+      routes: ["#/solicitud/tramite", "#/solicitud/titularidad", "#/solicitud/paso-4", "#/solicitud/paso-5", "#/solicitud/paso-6"],
+    },
+    {
+      label: "Revisión y pago",
+      entry: "#/solicitud/paso-7",
+      routes: ["#/solicitud/paso-7", "#/solicitud/paso-8", "#/solicitud/resumen"],
+    },
   ];
 
   var TITULARIDAD = "#/solicitud/titularidad";
@@ -48,18 +59,17 @@
     return 0;
   }
 
+  // Navegación entre los tres pasos (no entre pantallas internas).
   function nextRoute(route) {
-    if (route === TITULARIDAD) return STEPS[0].route;
-    var i = indexOf(route);
-    if (i >= 0 && i < STEPS.length - 1) return STEPS[i + 1].route;
+    var i = phaseIndex(route);
+    if (i < PHASES.length - 1) return PHASES[i + 1].entry;
     return "#/solicitud/resumen";
   }
 
   function prevRoute(route) {
-    if (route === TITULARIDAD) return "#/solicitud/tramite";
-    var i = indexOf(route);
-    if (i > 0) return STEPS[i - 1].route;
-    return TITULARIDAD;
+    var i = phaseIndex(route);
+    if (i > 0) return PHASES[i - 1].entry;
+    return "#/mis-tramites";
   }
 
   function frame(container, route) {
@@ -75,6 +85,7 @@
     inner.appendChild(stepper({
       steps: PHASES.map(function (s) { return { label: s.label }; }),
       current: i,
+      unit: "Paso",
     }));
 
     var draft = global.tm.draft.getDraft();
