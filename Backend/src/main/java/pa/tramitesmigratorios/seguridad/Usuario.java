@@ -33,6 +33,12 @@ public class Usuario {
 
 	}
 
+	public enum TipoSolicitante {
+
+		TURISTA, PASANTE_BUFETE, MIGRANTE_INDEPENDIENTE, NACIONAL
+
+	}
+
 	public enum Idioma {
 
 		ES, EN
@@ -58,6 +64,10 @@ public class Usuario {
 	private Rol rol;
 
 	@Enumerated(EnumType.STRING)
+	@Column(name = "area_institucional", nullable = false, length = 20)
+	private AreaInstitucional areaInstitucional;
+
+	@Enumerated(EnumType.STRING)
 	private EstadoCuenta estadoCuenta;
 
 	private int intentosFallidos;
@@ -68,6 +78,10 @@ public class Usuario {
 
 	@Enumerated(EnumType.STRING)
 	private TipoDocumento tipoDocumento;
+
+	@Enumerated(EnumType.STRING)
+	@Column(name = "tipo_solicitante", length = 32)
+	private TipoSolicitante tipoSolicitante;
 
 	private String numeroDocumento;
 
@@ -87,6 +101,9 @@ public class Usuario {
 
 	private String terminosIp;
 
+	@Column(name = "demo_autocompletable", nullable = false)
+	private boolean demoAutocompletable;
+
 	@ElementCollection(fetch = FetchType.EAGER)
 	@CollectionTable(name = "usuario_permiso", joinColumns = @JoinColumn(name = "usuario_id"))
 	@Column(name = "permiso")
@@ -97,15 +114,22 @@ public class Usuario {
 	}
 
 	public Usuario(String nombre, String correo, String contrasenaHash, Rol rol, Set<Permiso> permisos) {
+		this(nombre, correo, contrasenaHash, rol, permisos, AreaInstitucional.BUFETE);
+	}
+
+	public Usuario(String nombre, String correo, String contrasenaHash, Rol rol, Set<Permiso> permisos,
+			AreaInstitucional areaInstitucional) {
 		this.id = UUID.randomUUID();
 		this.nombre = nombre;
 		this.correo = normalizar(correo);
 		this.contrasenaHash = contrasenaHash;
 		this.rol = rol;
+		this.areaInstitucional = areaInstitucional == null ? AreaInstitucional.BUFETE : areaInstitucional;
 		this.estadoCuenta = EstadoCuenta.ACTIVA;
 		this.fechaCreacion = Instant.now();
 		this.idiomaNotificacion = Idioma.ES;
 		this.medioNotificacion = MedioNotificacion.CORREO;
+		this.demoAutocompletable = false;
 		// Solo el FUNCIONARIO recibe permisos a medida; los demás roles llevan los fijos de su rol.
 		this.permisos.addAll(rol == Rol.FUNCIONARIO ? permisos : rol.permisosBase());
 	}
@@ -147,9 +171,10 @@ public class Usuario {
 	}
 
 	/** Datos que el cliente declara al registrarse en el portal (P-02), con la aceptación de términos. */
-	void completarRegistro(TipoDocumento tipoDocumento, String numeroDocumento, String nacionalidad,
-			String paisResidencia, String telefono, String ipAceptacion) {
+	void completarRegistro(TipoDocumento tipoDocumento, TipoSolicitante tipoSolicitante, String numeroDocumento,
+			String nacionalidad, String paisResidencia, String telefono, String ipAceptacion) {
 		this.tipoDocumento = tipoDocumento;
+		this.tipoSolicitante = tipoSolicitante;
 		this.numeroDocumento = normalizarDocumento(numeroDocumento);
 		this.nacionalidad = nacionalidad;
 		this.paisResidencia = paisResidencia;
@@ -191,6 +216,10 @@ public class Usuario {
 		return rol;
 	}
 
+	public AreaInstitucional getAreaInstitucional() {
+		return areaInstitucional == null ? AreaInstitucional.BUFETE : areaInstitucional;
+	}
+
 	public EstadoCuenta getEstadoCuenta() {
 		return estadoCuenta;
 	}
@@ -201,6 +230,10 @@ public class Usuario {
 
 	public TipoDocumento getTipoDocumento() {
 		return tipoDocumento;
+	}
+
+	public TipoSolicitante getTipoSolicitante() {
+		return tipoSolicitante;
 	}
 
 	public String getNumeroDocumento() {
@@ -225,6 +258,10 @@ public class Usuario {
 
 	public MedioNotificacion getMedioNotificacion() {
 		return medioNotificacion;
+	}
+
+	public boolean isDemoAutocompletable() {
+		return demoAutocompletable;
 	}
 
 }

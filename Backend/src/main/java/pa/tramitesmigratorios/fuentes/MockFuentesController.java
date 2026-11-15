@@ -6,6 +6,7 @@ import java.util.function.UnaryOperator;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -19,6 +20,9 @@ import pa.tramitesmigratorios.fuentes.Fuentes.AfiliacionCss;
 import pa.tramitesmigratorios.fuentes.Fuentes.ConsultaRegistro;
 import pa.tramitesmigratorios.fuentes.Fuentes.ExpedienteSnm;
 import pa.tramitesmigratorios.fuentes.Fuentes.PersonaTe;
+import pa.tramitesmigratorios.seguridad.PoliticaAreas;
+import pa.tramitesmigratorios.seguridad.UsuarioActual;
+import pa.tramitesmigratorios.verificacion.Verificacion.Fuente;
 
 /**
  * Endpoints {@code /api/mock/*} (HU-08, backlog §5.6). El encabezado {@code X-Scenario} o el
@@ -45,31 +49,46 @@ class MockFuentesController {
 
 	@GetMapping("/te/personas/{tipoDoc}/{numero}")
 	PersonaTe te(@PathVariable String tipoDoc, @PathVariable String numero,
+			@AuthenticationPrincipal UsuarioActual usuario,
 			@RequestHeader(value = "X-Scenario", required = false) String encabezado,
 			@RequestParam(value = "scenario", required = false) String consulta) {
+		exigirArea(usuario, Fuente.TE);
 		return simular("TE", encabezado, consulta, () -> te.persona(tipoDoc, numero), PersonaTe::incompleta);
 	}
 
 	@GetMapping("/css/afiliaciones/{idPersona}")
 	AfiliacionCss css(@PathVariable String idPersona,
+			@AuthenticationPrincipal UsuarioActual usuario,
 			@RequestHeader(value = "X-Scenario", required = false) String encabezado,
 			@RequestParam(value = "scenario", required = false) String consulta) {
+		exigirArea(usuario, Fuente.CSS);
 		return simular("CSS", encabezado, consulta, () -> css.afiliacion(idPersona), AfiliacionCss::incompleta);
 	}
 
 	@GetMapping("/registro/consultas/{idPersona}")
 	ConsultaRegistro registro(@PathVariable String idPersona,
+			@AuthenticationPrincipal UsuarioActual usuario,
 			@RequestHeader(value = "X-Scenario", required = false) String encabezado,
 			@RequestParam(value = "scenario", required = false) String consulta) {
+		exigirArea(usuario, Fuente.REGISTRO_PUBLICO);
 		return simular("REGISTRO_PUBLICO", encabezado, consulta, () -> registro.consulta(idPersona),
 				ConsultaRegistro::incompleta);
 	}
 
 	@GetMapping("/snm/expedientes/{numero}")
 	ExpedienteSnm snm(@PathVariable String numero,
+			@AuthenticationPrincipal UsuarioActual usuario,
 			@RequestHeader(value = "X-Scenario", required = false) String encabezado,
 			@RequestParam(value = "scenario", required = false) String consulta) {
+		exigirArea(usuario, Fuente.SNM);
 		return simular("SNM", encabezado, consulta, () -> snm.expediente(numero), ExpedienteSnm::incompleta);
+	}
+
+	private static void exigirArea(UsuarioActual usuario, Fuente fuente) {
+		if (usuario == null || !PoliticaAreas.permiteFuente(usuario.area(), fuente)) {
+			throw ErrorApi.sinPermiso("FUENTE_FUERA_DE_AREA",
+					"Su cuenta solo puede consultar fuentes autorizadas para su área.");
+		}
 	}
 
 	private <T> T simular(String fuente, String encabezado, String consulta, Supplier<Optional<T>> fuenteDeDatos,

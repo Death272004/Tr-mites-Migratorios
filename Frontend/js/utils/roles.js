@@ -30,6 +30,23 @@
     [ROLES.ADMIN]: "Módulo interno",
   });
 
+  // El rol técnico SOLICITANTE se presenta con el tipo de solicitante
+  // declarado en el registro. Así el encabezado y el perfil describen a la
+  // persona correcta después del inicio de sesión.
+  const TIPO_SOLICITANTE_LABELS = Object.freeze({
+    TURISTA: "Turista",
+    PASANTE_BUFETE: "Pasante de bufete",
+    MIGRANTE_INDEPENDIENTE: "Migrante independiente",
+    NACIONAL: "Nacional",
+  });
+
+  const AREA_INSTITUCIONAL_LABELS = Object.freeze({
+    BUFETE: "Bufete",
+    RP: "Registro Público",
+    CSS: "Caja de Seguro Social",
+    TE: "Tribunal Electoral",
+  });
+
   const INITIAL_ROUTE = Object.freeze({
     [ROLES.SOLICITANTE]: "#/mis-tramites",
     [ROLES.FUNCIONARIO]: "#/interno/tablero",
@@ -45,5 +62,5 @@
   }
 
   global.tm = global.tm || {};
-  global.tm.roles = { ROLES, ROLE_LABELS, ROLE_CONTEXT, INITIAL_ROUTE, DEFAULT_ROLE, isInternalRole };
+  global.tm.roles = { ROLES, ROLE_LABELS, ROLE_CONTEXT, TIPO_SOLICITANTE_LABELS, AREA_INSTITUCIONAL_LABELS, INITIAL_ROUTE, DEFAULT_ROLE, isInternalRole };
 })(window);

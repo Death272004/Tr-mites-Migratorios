@@ -267,3 +267,18 @@ No confundir con los roles del sistema. Este es el acceso del equipo al reposito
 4. **Validación jurídica:** la aplicación concreta de estos accesos debe validarse según finalidad, tipo de dato y competencia institucional (Ley 81 de 2019 y su reglamentación).
 5. **Consentimiento y ARCO:** validación jurídica del modelo de consentimiento (informado y expreso) y del flujo de derechos ARCO con abogado local.
 6. **Alojamiento de datos:** definir la jurisdicción de alojamiento (preferiblemente panameña) y el acuerdo de tratamiento de datos con el proveedor de hosting.
+
+## 6.14. Áreas institucionales y pasantes
+
+Los cinco roles técnicos se conservan. areaInstitucional agrega el ámbito de trabajo de las cuentas FUNCIONARIO y admite BUFETE, RP (Registro Público), CSS (Caja de Seguro Social) y TE (Tribunal Electoral).
+
+| Cuenta | Expedientes visibles | Fuentes que puede atender | Permisos efectivos |
+| --- | --- | --- | --- |
+| FUNCIONARIO + BUFETE | Ámbito completo del bufete, según sus permisos | Todas las fuentes de la matriz | Los permisos granulares asignados: CONSULTAR, VERIFICAR, OBSERVAR, y según función RESOLVER o NOTIFICAR |
+| FUNCIONARIO + RP | Solo expedientes con una verificación RP asignada a la cuenta | Registro Público | CONSULTAR, VERIFICAR y OBSERVAR; siempre manual asistido |
+| FUNCIONARIO + CSS | Solo expedientes con una verificación CSS asignada a la cuenta | Caja de Seguro Social | CONSULTAR, VERIFICAR y OBSERVAR; siempre manual asistido |
+| FUNCIONARIO + TE | Solo expedientes con una verificación TE asignada a la cuenta | Tribunal Electoral | CONSULTAR, VERIFICAR y OBSERVAR; siempre manual asistido |
+
+El personal del bufete asigna una verificación mediante PATCH /api/expedientes/{id}/verificaciones/{verificacionId}/asignacion. El servidor valida que el usuario destino sea un FUNCIONARIO activo y que su área corresponda a la fuente. Una cuenta institucional no puede preparar verificaciones, asignarlas, reintentarlas, resolver expedientes ni notificar decisiones. Al registrar un resultado, el servidor exige modo MANUAL_ASISTIDO, fuente permitida y asignación a la cuenta que opera.
+
+La lista de expedientes y la lista de verificaciones se filtran por asignado_a_id; las consultas de fuentes simuladas también validan el área. Los adjuntos y observaciones solo pueden hacerse dentro de un expediente que la cuenta pueda leer y operar, y quedan auditados. La respuesta de perfil y de sesión incluye areaInstitucional para que el cliente pueda presentar el contexto correcto.

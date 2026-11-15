@@ -13,6 +13,10 @@ public interface VerificacionRepo extends JpaRepository<Verificacion, UUID> {
 
 	List<Verificacion> findByExpedienteIdOrderByFechaSolicitud(UUID expedienteId);
 
+	List<Verificacion> findByExpedienteIdAndAsignadoAIdOrderByFechaSolicitud(UUID expedienteId, UUID asignadoAId);
+
+	boolean existsByExpedienteIdAndAsignadoAId(UUID expedienteId, UUID asignadoAId);
+
 	Optional<Verificacion> findByIdAndExpedienteId(UUID id, UUID expedienteId);
 
 	Optional<Verificacion> findByExpedienteIdAndClaveIdempotencia(UUID expedienteId, String claveIdempotencia);

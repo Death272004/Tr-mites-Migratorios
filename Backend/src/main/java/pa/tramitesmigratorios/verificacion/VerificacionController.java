@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -47,13 +48,13 @@ class VerificacionController {
 	/** Resultado mínimo y datos técnicos; nunca la respuesta de la fuente ni datos del titular. */
 	record VerificacionDto(UUID id, UUID expedienteId, Fuente fuente, String tipoVerificacion, Modo modo,
 			Estado estado, String finalidad, Instant fechaSolicitud, Instant fechaResultado,
-			ResultadoMinimo resultadoMinimo, String referenciaOrigen, UUID responsableId, String nota,
+			ResultadoMinimo resultadoMinimo, String referenciaOrigen, UUID responsableId, UUID asignadoAId, String nota,
 			Integer intentos, Instant proximoIntento, String ultimoFallo, String correlacionId) {
 
 		static VerificacionDto de(Verificacion v) {
 			return new VerificacionDto(v.getId(), v.getExpedienteId(), v.getFuente(), v.getTipoVerificacion(),
 					v.getModo(), v.getEstado(), v.getFinalidad(), v.getFechaSolicitud(), v.getFechaResultado(),
-					v.getResultadoMinimo(), v.getReferenciaOrigen(), v.getResponsableId(), v.getNota(), v.getIntentos(),
+					v.getResultadoMinimo(), v.getReferenciaOrigen(), v.getResponsableId(), v.getAsignadoAId(), v.getNota(), v.getIntentos(),
 					v.getProximoIntento(), v.getUltimoFallo(), v.getCorrelacionId());
 		}
 
@@ -65,9 +66,12 @@ class VerificacionController {
 			Estado agregado = v.getEstado().resuelta() ? Estado.RESPONDIDA : Estado.PENDIENTE;
 			return new VerificacionDto(v.getId(), v.getExpedienteId(), v.getFuente(), v.getTipoVerificacion(),
 					v.getModo(), agregado, null, v.getFechaSolicitud(), v.getEstado().resuelta() ? v.getFechaResultado() : null,
-					null, null, null, null, null, null, null, null);
+					null, null, null, null, null, null, null, null, null);
 		}
 
+	}
+
+	record AsignacionNueva(@NotNull(message = "El usuario asignado es obligatorio.") UUID asignadoAId) {
 	}
 
 	record VerificacionNueva(@NotNull(message = "La fuente es obligatoria.") Fuente fuente,
@@ -145,6 +149,12 @@ class VerificacionController {
 	@ResponseStatus(HttpStatus.CREATED)
 	List<VerificacionDto> preparar(@AuthenticationPrincipal UsuarioActual usuario, @PathVariable UUID id) {
 		return servicio.preparar(id, usuario).stream().map(VerificacionDto::de).toList();
+	}
+
+	@PatchMapping("/api/expedientes/{id}/verificaciones/{verificacionId}/asignacion")
+	VerificacionDto asignar(@AuthenticationPrincipal UsuarioActual usuario, @PathVariable UUID id,
+			@PathVariable UUID verificacionId, @Valid @RequestBody AsignacionNueva nueva) {
+		return VerificacionDto.de(servicio.asignar(id, verificacionId, nueva.asignadoAId(), usuario));
 	}
 
 	@PostMapping("/api/expedientes/{id}/verificaciones/{verificacionId}/atencion")

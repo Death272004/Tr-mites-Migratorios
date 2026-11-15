@@ -15,7 +15,9 @@ import org.springframework.transaction.annotation.Transactional;
 import pa.tramitesmigratorios.auditoria.Auditoria;
 import pa.tramitesmigratorios.comun.ErrorApi;
 import pa.tramitesmigratorios.comun.ErrorDeCampo;
+import pa.tramitesmigratorios.seguridad.AreaInstitucional;
 import pa.tramitesmigratorios.seguridad.Usuario.EstadoCuenta;
+import pa.tramitesmigratorios.seguridad.Usuario.TipoSolicitante;
 
 /** Autenticación real (HU-12): inicio y cierre de sesión, bloqueo por intentos y cambio de contraseña. */
 @Service
@@ -32,6 +34,7 @@ public class AuthServicio {
 	private final Duration duracionToken;
 	private final int intentosMaximos;
 	private final Duration duracionBloqueo;
+	private final boolean demoAutocompletado;
 	// Se compara contra este hash cuando la cuenta no existe, para no revelarlo por el tiempo de respuesta.
 	private final String hashSenuelo;
 
@@ -39,7 +42,8 @@ public class AuthServicio {
 			AprovisionadorBuzon buzones, Auditoria auditoria,
 			@Value("${app.seguridad.token-minutos}") long tokenMinutos,
 			@Value("${app.seguridad.intentos-maximos}") int intentosMaximos,
-			@Value("${app.seguridad.bloqueo-minutos}") long bloqueoMinutos) {
+			@Value("${app.seguridad.bloqueo-minutos}") long bloqueoMinutos,
+			@Value("${app.demo.autocompletado:false}") boolean demoAutocompletado) {
 		this.usuarios = usuarios;
 		this.sesiones = sesiones;
 		this.codificador = codificador;
@@ -48,6 +52,7 @@ public class AuthServicio {
 		this.duracionToken = Duration.ofMinutes(tokenMinutos);
 		this.intentosMaximos = intentosMaximos;
 		this.duracionBloqueo = Duration.ofMinutes(bloqueoMinutos);
+		this.demoAutocompletado = demoAutocompletado;
 		this.hashSenuelo = codificador.encode(Tokens.nuevo());
 	}
 
@@ -84,6 +89,64 @@ public class AuthServicio {
 		return new SesionIniciada(token, duracionToken.toSeconds(), usuario);
 	}
 
+	/**
+	 * Inicio de sesión controlado para la demostración local. No devuelve ni recibe contraseñas:
+	 * solo funciona cuando DEMO_AUTOCOMPLETAR está habilitado y para cuentas semilla marcadas
+	 * como demo_autocompletable por la migración.
+	 */
+	@Transactional
+	public SesionIniciada iniciarSesionDemostracion(Rol rol, TipoSolicitante tipoSolicitante,
+			AreaInstitucional areaInstitucional) {
+		if (!demoAutocompletado) {
+			throw new ErrorApi(HttpStatus.NOT_FOUND, "AUTOCOMPLETADO_NO_DISPONIBLE",
+					"El autocompletado de demostración no está habilitado.");
+		}
+		if (rol == null) {
+			throw new ErrorApi(HttpStatus.BAD_REQUEST, "ENTRADA_INVALIDA", "Revise los datos enviados.");
+		}
+
+		Optional<Usuario> encontrado;
+		AreaInstitucional area = areaInstitucional == null ? AreaInstitucional.BUFETE : areaInstitucional;
+		if (rol == Rol.SOLICITANTE) {
+			if (tipoSolicitante == null) {
+				throw new ErrorApi(HttpStatus.BAD_REQUEST, "TIPO_SOLICITANTE_REQUERIDO",
+						"Seleccione el tipo de solicitante.");
+			}
+			if (area != AreaInstitucional.BUFETE) {
+				throw new ErrorApi(HttpStatus.BAD_REQUEST, "AREA_INSTITUCIONAL_NO_APLICA",
+						"El área institucional solo aplica a cuentas internas.");
+			}
+			encontrado = usuarios.findFirstByDemoAutocompletableTrueAndRolAndTipoSolicitanteAndEstadoCuentaOrderByFechaCreacionAsc(
+					rol, tipoSolicitante, EstadoCuenta.ACTIVA);
+		} else {
+			if (tipoSolicitante != null) {
+				throw new ErrorApi(HttpStatus.BAD_REQUEST, "TIPO_SOLICITANTE_NO_APLICA",
+						"El tipo de solicitante solo aplica a cuentas solicitantes.");
+			}
+			if (rol == Rol.FUNCIONARIO) {
+				encontrado = usuarios.findFirstByDemoAutocompletableTrueAndRolAndAreaInstitucionalAndEstadoCuentaOrderByFechaCreacionAsc(
+						rol, area, EstadoCuenta.ACTIVA);
+			} else {
+				if (area != AreaInstitucional.BUFETE) {
+					throw new ErrorApi(HttpStatus.BAD_REQUEST, "AREA_INSTITUCIONAL_NO_APLICA",
+							"El área institucional solo aplica a funcionarios.");
+				}
+				encontrado = usuarios.findFirstByDemoAutocompletableTrueAndRolAndEstadoCuentaOrderByFechaCreacionAsc(
+						rol, EstadoCuenta.ACTIVA);
+			}
+		}
+
+		Usuario usuario = encontrado.orElseThrow(() -> new ErrorApi(HttpStatus.NOT_FOUND,
+				"CUENTA_DEMO_NO_DISPONIBLE", "No hay una cuenta demo para esa selección."));
+		Instant ahora = Instant.now();
+		usuario.registrarAccesoCorrecto();
+		usuarios.save(usuario);
+		String token = Tokens.nuevo();
+		sesiones.save(new Sesion(usuario.getId(), Tokens.hash(token), ahora.plus(duracionToken)));
+		auditoria.exito(usuario.getId(), "INICIO_SESION_DEMO", "sesion");
+		return new SesionIniciada(token, duracionToken.toSeconds(), usuario);
+	}
+
 	/** Resuelve el token de una petición; vacío si no existe, expiró, fue revocado o la cuenta no está activa. */
 	@Transactional(readOnly = true)
 	public Optional<UsuarioActual> autenticar(String token) {
@@ -92,7 +155,8 @@ public class AuthServicio {
 			.filter(s -> s.vigente(ahora))
 			.flatMap(s -> usuarios.findById(s.getUsuarioId())
 				.filter(u -> u.getEstadoCuenta() == EstadoCuenta.ACTIVA)
-				.map(u -> new UsuarioActual(u.getId(), u.getRol(), Set.copyOf(u.getPermisos()), s.getId())));
+				.map(u -> new UsuarioActual(u.getId(), u.getRol(), Set.copyOf(u.getPermisos()), s.getId(),
+						u.getAreaInstitucional())));
 	}
 
 	@Transactional

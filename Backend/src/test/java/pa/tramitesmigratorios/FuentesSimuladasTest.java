@@ -180,7 +180,7 @@ class FuentesSimuladasTest extends PruebaApi {
 			.containsExactlyInAnyOrder("id", "expediente_id", "fuente", "tipo_verificacion", "modo", "estado", "finalidad",
 					"fecha_solicitud", "fecha_resultado", "resultado_minimo", "referencia_origen", "responsable_id", "nota",
 					// Sprint 5: solo datos técnicos de la orquestación (HU-24).
-					"version", "intentos", "proximo_intento", "ultimo_fallo", "clave_idempotencia", "correlacion_id");
+					"asignado_a_id", "version", "intentos", "proximo_intento", "ultimo_fallo", "clave_idempotencia", "correlacion_id");
 	}
 
 	// ---------- Validación mínima de un objeto JSON contra un esquema del contrato ----------

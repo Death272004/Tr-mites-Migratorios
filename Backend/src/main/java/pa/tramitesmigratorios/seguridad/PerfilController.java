@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import pa.tramitesmigratorios.seguridad.Usuario.Idioma;
 import pa.tramitesmigratorios.seguridad.Usuario.MedioNotificacion;
 import pa.tramitesmigratorios.seguridad.Usuario.TipoDocumento;
+import pa.tramitesmigratorios.seguridad.Usuario.TipoSolicitante;
 
 /** Perfil del usuario autenticado (P-05): siempre el propio, nunca el de otra cuenta. */
 @RestController
@@ -25,13 +26,14 @@ class PerfilController {
 	static final String TELEFONO_MENSAJE = "El teléfono lleva código de país y número (7 a 30 caracteres).";
 
 	record PerfilDto(UUID id, String nombre, String correo, Rol rol, TipoDocumento tipoDocumento,
-			String numeroDocumento, String nacionalidad, String paisResidencia, String telefono,
-			Idioma idiomaNotificacion, MedioNotificacion medioNotificacion) {
+			TipoSolicitante tipoSolicitante, String numeroDocumento, String nacionalidad, String paisResidencia,
+			String telefono, Idioma idiomaNotificacion, MedioNotificacion medioNotificacion,
+				AreaInstitucional areaInstitucional) {
 
 		static PerfilDto de(Usuario u) {
 			return new PerfilDto(u.getId(), u.getNombre(), u.getCorreo(), u.getRol(), u.getTipoDocumento(),
-					u.getNumeroDocumento(), u.getNacionalidad(), u.getPaisResidencia(), u.getTelefono(),
-					u.getIdiomaNotificacion(), u.getMedioNotificacion());
+					u.getTipoSolicitante(), u.getNumeroDocumento(), u.getNacionalidad(), u.getPaisResidencia(),
+					u.getTelefono(), u.getIdiomaNotificacion(), u.getMedioNotificacion(), u.getAreaInstitucional());
 		}
 
 	}

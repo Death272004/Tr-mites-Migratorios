@@ -54,6 +54,19 @@
       ],
       required: true,
     });
+
+    // Tipo de solicitante según categorización ChatGPT
+    var tipoSolicitante = field.fieldSelect({
+      id: "tipoSolicitante",
+      label: "Tipo de solicitante",
+      options: [
+        { value: "TURISTA", label: "Turista (ingreso por turismo)" },
+        { value: "PASANTE_BUFETE", label: "Pasante de bufete (representado por abogado)" },
+        { value: "MIGRANTE_INDEPENDIENTE", label: "Migrante independiente (sin representación)" },
+        { value: "NACIONAL", label: "Nacional (ciudadano del país)" },
+      ],
+      required: true,
+    });
     var correo = field.fieldText({
       id: "correoRegistro",
       label: "Usuario del correo institucional",
@@ -110,6 +123,7 @@
     form.appendChild(numDoc);
     form.appendChild(nombres);
     form.appendChild(nacionalidad);
+    form.appendChild(tipoSolicitante);
     form.appendChild(correo);
     form.appendChild(telefono);
     form.appendChild(paisRes);
@@ -157,6 +171,7 @@
         numeroDocumento: numDoc.querySelector("input").value.trim(),
         nombre: nombres.querySelector("input").value.trim(),
         nacionalidad: nacionalidad.querySelector("select").value,
+        tipoSolicitante: tipoSolicitante.querySelector("select").value,
         correo: email,
         telefono: telefono.querySelector("input").value.trim(),
         paisResidencia: paisRes.querySelector("select").value,
@@ -184,6 +199,7 @@
             return setError(err.mensajeUsuario);
           }
           if (opts.onRegistered) opts.onRegistered({ correo: email });
+
         });
     });
 

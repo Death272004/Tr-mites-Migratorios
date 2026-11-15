@@ -52,6 +52,7 @@ public final class MatrizAutorizacion {
 			new Regla(GET, "/api/expedientes/{id}/verificaciones", LECTURA_EXPEDIENTE),
 			new Regla(POST, "/api/expedientes/{id}/verificaciones", EnumSet.of(FUNCIONARIO)),
 			new Regla(POST, "/api/expedientes/{id}/verificaciones/preparacion", EnumSet.of(FUNCIONARIO)),
+			new Regla(PATCH, "/api/expedientes/{id}/verificaciones/{verificacionId}/asignacion", EnumSet.of(FUNCIONARIO)),
 			new Regla(POST, "/api/expedientes/{id}/verificaciones/{verificacionId}/atencion", EnumSet.of(FUNCIONARIO)),
 			new Regla(POST, "/api/expedientes/{id}/verificaciones/{verificacionId}/reintento", EnumSet.of(FUNCIONARIO)),
 			new Regla(GET, "/api/verificaciones/matriz", EnumSet.of(FUNCIONARIO, SUPERVISOR, AUDITOR)),

@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import jakarta.persistence.criteria.Root;
+
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,9 +22,12 @@ import pa.tramitesmigratorios.catalogo.Catalogos;
 import pa.tramitesmigratorios.comun.ErrorApi;
 import pa.tramitesmigratorios.comun.Eventos.ObservacionDelDespacho;
 import pa.tramitesmigratorios.seguridad.Permiso;
+import pa.tramitesmigratorios.seguridad.PoliticaAreas;
 import pa.tramitesmigratorios.seguridad.RepresentacionRepo;
 import pa.tramitesmigratorios.seguridad.Rol;
 import pa.tramitesmigratorios.seguridad.UsuarioActual;
+import pa.tramitesmigratorios.verificacion.Verificacion;
+import pa.tramitesmigratorios.verificacion.VerificacionRepo;
 
 /** Registro, consulta, historial y observaciones de expedientes (HU-15, HU-16, HU-20, HU-21). */
 @Service
@@ -39,10 +44,11 @@ public class ExpedienteServicio {
 	private final RepresentacionRepo representaciones;
 	private final Auditoria auditoria;
 	private final ApplicationEventPublisher eventos;
+	private final VerificacionRepo verificaciones;
 
 	ExpedienteServicio(ExpedienteRepo expedientes, HistorialEstadoRepo historial, ObservacionRepo observaciones,
 			AccesoExpedientes acceso, Catalogos catalogos, RepresentacionRepo representaciones, Auditoria auditoria,
-			ApplicationEventPublisher eventos) {
+			ApplicationEventPublisher eventos, VerificacionRepo verificaciones) {
 		this.expedientes = expedientes;
 		this.historial = historial;
 		this.observaciones = observaciones;
@@ -51,6 +57,7 @@ public class ExpedienteServicio {
 		this.representaciones = representaciones;
 		this.auditoria = auditoria;
 		this.eventos = eventos;
+		this.verificaciones = verificaciones;
 	}
 
 	/**
@@ -100,7 +107,17 @@ public class ExpedienteServicio {
 					auditoria.denegado(usuario.id(), "ACCESO_DENEGADO", "expedientes");
 					throw ErrorApi.sinPermiso();
 				}
-				yield Specification.unrestricted();
+				if (!PoliticaAreas.esInstitucional(usuario.area())) {
+					yield Specification.unrestricted();
+				}
+				yield (r, q, cb) -> {
+					var sub = q.subquery(UUID.class);
+					Root<Verificacion> v = sub.from(Verificacion.class);
+					sub.select(v.get("id")).where(
+							cb.equal(v.get("expedienteId"), r.get("id")),
+							cb.equal(v.get("asignadoAId"), usuario.id()));
+					return cb.exists(sub);
+				};
 			}
 			case SUPERVISOR, AUDITOR -> Specification.unrestricted();
 			case ADMIN -> throw ErrorApi.sinPermiso();

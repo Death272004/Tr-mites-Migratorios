@@ -39,6 +39,19 @@
     return svg;
   }
 
+  function identityLabel(user, role) {
+    const tipo = user && user.tipoSolicitante;
+    const tipos = global.tm.roles.TIPO_SOLICITANTE_LABELS || {};
+    if (role === "SOLICITANTE" && tipo && tipos[tipo]) return tipos[tipo];
+    const area = user && user.areaInstitucional;
+    const areas = global.tm.roles.AREA_INSTITUCIONAL_LABELS || {};
+    if (role === "FUNCIONARIO" && area && area !== "BUFETE") {
+      return "Pasante · " + (areas[area] || area);
+    }
+    if (role === "FUNCIONARIO" && area === "BUFETE") return "Personal del bufete";
+    return ROLE_LABELS[role] ?? role;
+  }
+
   function renderHeaderUser(container, { user, role, authenticated, onNavigate, onLogout }) {
     clear(container);
 
@@ -61,7 +74,7 @@
     identity.appendChild(profileIcon("app-context-menu__profile-icon"));
     const identityText = el("div", "app-context-menu__identity-text");
     identityText.appendChild(el("span", "app-header__user-name", user?.nombre ?? "No autenticado"));
-    identityText.appendChild(el("span", "app-header__badge", ROLE_LABELS[role] ?? role));
+    identityText.appendChild(el("span", "app-header__badge", identityLabel(user, role)));
     identity.appendChild(identityText);
     contextMenu.appendChild(identity);
 

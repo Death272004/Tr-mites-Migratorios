@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import pa.tramitesmigratorios.seguridad.AuthServicio.SesionIniciada;
 import pa.tramitesmigratorios.seguridad.CuentaServicio.DatosRegistro;
 import pa.tramitesmigratorios.seguridad.Usuario.TipoDocumento;
+import pa.tramitesmigratorios.seguridad.Usuario.TipoSolicitante;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -36,7 +37,9 @@ class AuthController {
 	}
 
 	record UsuarioDto(UUID id, String nombre, String correo, Rol rol, Set<Permiso> permisos,
-			Usuario.EstadoCuenta estadoCuenta) {
+			Usuario.EstadoCuenta estadoCuenta, TipoSolicitante tipoSolicitante, TipoDocumento tipoDocumento,
+			String numeroDocumento, String nacionalidad, String paisResidencia, String telefono,
+			AreaInstitucional areaInstitucional) {
 	}
 
 	record LoginRespuesta(String token, long expiraEn, Rol rol, UsuarioDto usuario) {
@@ -47,6 +50,7 @@ class AuthController {
 	}
 
 	record RegistroSolicitud(@NotNull(message = "El tipo de documento es obligatorio.") TipoDocumento tipoDocumento,
+			@NotNull(message = "El tipo de solicitante es obligatorio.") TipoSolicitante tipoSolicitante,
 			@NotBlank(message = "El número de documento es obligatorio.") @Pattern(regexp = "[A-Za-z0-9-]{4,40}",
 					message = "El número de documento solo admite letras, números y guiones (4 a 40).") String numeroDocumento,
 			@NotBlank(message = "El nombre es obligatorio.") @Size(max = 120,
@@ -56,8 +60,8 @@ class AuthController {
 			@NotBlank(message = "El correo es obligatorio.") @Email(
 					message = "El correo no tiene un formato válido.") @Size(max = 160,
 							message = "El correo es demasiado largo.") @Pattern(
-								regexp = "(?i)^[a-z0-9]+(?:[._-][a-z0-9]+)*@tr-utp\\.com$",
-								message = "El correo debe pertenecer al dominio @tr-utp.com.") String correo,
+									regexp = "(?i)^[a-z0-9]+(?:[._-][a-z0-9]+)*@tr-utp\\.com$",
+									message = "El correo debe pertenecer al dominio @tr-utp.com.") String correo,
 			@NotBlank(message = "El teléfono es obligatorio.") @Pattern(regexp = PerfilController.TELEFONO,
 					message = PerfilController.TELEFONO_MENSAJE) String telefono,
 			@NotBlank(message = "El país de residencia es obligatorio.") @Pattern(regexp = "[A-Z]{2}",
@@ -66,6 +70,10 @@ class AuthController {
 					message = "La contraseña es demasiado larga.") String contrasena,
 			@NotNull(message = "Debe aceptar los términos y la autorización de tratamiento de datos.") @AssertTrue(
 					message = "Debe aceptar los términos y la autorización de tratamiento de datos.") Boolean aceptaTratamientoDatos) {
+	}
+
+	record DemoAutocompletarSolicitud(@NotNull(message = "El rol es obligatorio.") Rol rol,
+			TipoSolicitante tipoSolicitante, AreaInstitucional areaInstitucional) {
 	}
 
 	record RecuperacionSolicitud(@NotBlank(message = "El correo es obligatorio.") @Email(
@@ -89,10 +97,17 @@ class AuthController {
 	@PostMapping("/login")
 	LoginRespuesta iniciarSesion(@Valid @RequestBody LoginSolicitud solicitud) {
 		SesionIniciada sesion = servicio.iniciarSesion(solicitud.correo(), solicitud.contrasena());
-		Usuario u = sesion.usuario();
-		return new LoginRespuesta(sesion.token(), sesion.expiraEn(), u.getRol(),
-				new UsuarioDto(u.getId(), u.getNombre(), u.getCorreo(), u.getRol(), u.getPermisos(),
-						u.getEstadoCuenta()));
+		return respuesta(sesion);
+	}
+
+	/**
+	 * Atajo de demostración local: crea una sesión para la cuenta semilla marcada para
+	 * autocompletado. Nunca recibe ni devuelve contraseñas y se controla por configuración.
+	 */
+	@PostMapping("/autocompletar")
+	LoginRespuesta autocompletar(@Valid @RequestBody DemoAutocompletarSolicitud solicitud) {
+		return respuesta(servicio.iniciarSesionDemostracion(solicitud.rol(), solicitud.tipoSolicitante(),
+				solicitud.areaInstitucional()));
 	}
 
 	@PostMapping("/logout")
@@ -111,11 +126,10 @@ class AuthController {
 	@PostMapping("/registro")
 	@ResponseStatus(HttpStatus.CREATED)
 	UsuarioDto registrar(@Valid @RequestBody RegistroSolicitud solicitud, HttpServletRequest peticion) {
-		Usuario u = cuentas.registrar(new DatosRegistro(solicitud.tipoDocumento(), solicitud.numeroDocumento(),
-				solicitud.nombre(), solicitud.nacionalidad(), solicitud.correo(), solicitud.telefono(),
-				solicitud.paisResidencia(), solicitud.contrasena()), peticion.getRemoteAddr());
-		return new UsuarioDto(u.getId(), u.getNombre(), u.getCorreo(), u.getRol(), u.getPermisos(),
-				u.getEstadoCuenta());
+		Usuario u = cuentas.registrar(new DatosRegistro(solicitud.tipoDocumento(), solicitud.tipoSolicitante(),
+				solicitud.numeroDocumento(), solicitud.nombre(), solicitud.nacionalidad(), solicitud.correo(),
+				solicitud.telefono(), solicitud.paisResidencia(), solicitud.contrasena()), peticion.getRemoteAddr());
+		return usuarioDto(u);
 	}
 
 	/** Responde igual exista o no la cuenta (CP-02). */
@@ -129,6 +143,17 @@ class AuthController {
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	void confirmarRecuperacion(@Valid @RequestBody RecuperacionConfirmacion solicitud) {
 		cuentas.confirmarRecuperacion(solicitud.token(), solicitud.contrasenaNueva());
+	}
+
+	private static LoginRespuesta respuesta(SesionIniciada sesion) {
+		Usuario u = sesion.usuario();
+		return new LoginRespuesta(sesion.token(), sesion.expiraEn(), u.getRol(), usuarioDto(u));
+	}
+
+	private static UsuarioDto usuarioDto(Usuario u) {
+		return new UsuarioDto(u.getId(), u.getNombre(), u.getCorreo(), u.getRol(), u.getPermisos(),
+				u.getEstadoCuenta(), u.getTipoSolicitante(), u.getTipoDocumento(), u.getNumeroDocumento(),
+				u.getNacionalidad(), u.getPaisResidencia(), u.getTelefono(), u.getAreaInstitucional());
 	}
 
 }

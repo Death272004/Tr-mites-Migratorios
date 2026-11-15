@@ -94,7 +94,7 @@ Servicios para las pantallas de acceso y cuenta (TASK-12.5). Los tres primeros s
 
 ```bash
 curl -s http://localhost:8080/api/auth/registro -H "Content-Type: application/json" -d '{
-  "tipoDocumento":"PASAPORTE","numeroDocumento":"PA1234567","nombre":"Persona Ficticia",
+  "tipoDocumento":"PASAPORTE","tipoSolicitante":"TURISTA","numeroDocumento":"PA1234567","nombre":"Persona Ficticia",
   "nacionalidad":"CO","correo":"persona@ejemplo.test","telefono":"+507 6000-0000","paisResidencia":"PA",
   "contrasena":"Clave-Segura-2026","aceptaTratamientoDatos":true}'
 ```

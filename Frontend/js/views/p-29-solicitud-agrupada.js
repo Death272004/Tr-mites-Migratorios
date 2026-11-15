@@ -88,8 +88,29 @@
       states.push(addModule(modules, group.modules[i], i + 1));
     }
 
+    var sesion = global.tm.session && global.tm.session.getSession
+      ? global.tm.session.getSession()
+      : null;
+    var usuario = sesion && sesion.datos && sesion.datos.usuario;
+    var esPasante = !!(usuario && usuario.rol === "SOLICITANTE" && usuario.tipoSolicitante === "PASANTE_BUFETE");
+    var datosCuenta = global.tm.autofill && global.tm.autofill.getAccountProfile
+      ? global.tm.autofill.getAccountProfile()
+      : null;
+    var usarDatosCuenta = !!datosCuenta && !esPasante;
+
+    // El pasante puede probar expedientes con una persona ficticia. Los demás
+    // solicitantes usan primero los datos disponibles de su propia cuenta; al
+    // pulsar Autollenar, los campos faltantes reciben valores de demostración.
+    if (groupNumber === 1 && !esPasante && global.tm.autofill && global.tm.autofill.setProfile) {
+      global.tm.autofill.setProfile("");
+    }
+
     var demoControl = global.tm.autofill.createStageControl({
-      chooseProfile: groupNumber === 1,
+      chooseProfile: groupNumber === 1 && (!usuario || esPasante),
+      accountProfile: usarDatosCuenta ? datosCuenta : null,
+      // El autorrellenado siempre requiere pulsar el botón; no se ejecuta al abrir la pantalla.
+      autoFillOnLoad: false,
+      autoFillDelay: 900,
       root: function () { return modules; },
       // El paso 2 pinta módulos al elegir el trámite: se repite el relleno
       // cuando ya cargaron para completarlos también.

@@ -19,6 +19,7 @@ import pa.tramitesmigratorios.seguridad.Usuario.EstadoCuenta;
 import pa.tramitesmigratorios.seguridad.Usuario.Idioma;
 import pa.tramitesmigratorios.seguridad.Usuario.MedioNotificacion;
 import pa.tramitesmigratorios.seguridad.Usuario.TipoDocumento;
+import pa.tramitesmigratorios.seguridad.Usuario.TipoSolicitante;
 
 /**
  * Cuenta del portal del cliente: registro (P-02), recuperación de contraseña (P-04) y perfil
@@ -27,8 +28,9 @@ import pa.tramitesmigratorios.seguridad.Usuario.TipoDocumento;
 @Service
 public class CuentaServicio {
 
-	public record DatosRegistro(TipoDocumento tipoDocumento, String numeroDocumento, String nombre,
-			String nacionalidad, String correo, String telefono, String paisResidencia, String contrasena) {
+	public record DatosRegistro(TipoDocumento tipoDocumento, TipoSolicitante tipoSolicitante, String numeroDocumento,
+			String nombre, String nacionalidad, String correo, String telefono, String paisResidencia,
+			String contrasena) {
 	}
 
 	private final UsuarioRepo usuarios;
@@ -71,8 +73,8 @@ public class CuentaServicio {
 		}
 		Usuario usuario = new Usuario(datos.nombre().trim(), datos.correo(), codificador.encode(datos.contrasena()),
 				Rol.SOLICITANTE, Set.of());
-		usuario.completarRegistro(datos.tipoDocumento(), datos.numeroDocumento(), datos.nacionalidad(),
-				datos.paisResidencia(), datos.telefono(), ip);
+		usuario.completarRegistro(datos.tipoDocumento(), datos.tipoSolicitante(), datos.numeroDocumento(),
+				datos.nacionalidad(), datos.paisResidencia(), datos.telefono(), ip);
 		buzones.sincronizar(usuario.getCorreo(), datos.contrasena());
 		usuarios.save(usuario);
 		auditoria.exito(usuario.getId(), "REGISTRO_CUENTA", "usuario/" + usuario.getId());

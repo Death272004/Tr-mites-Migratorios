@@ -2,13 +2,16 @@ package pa.tramitesmigratorios.expediente;
 
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import pa.tramitesmigratorios.auditoria.Auditoria;
 import pa.tramitesmigratorios.comun.ErrorApi;
+import pa.tramitesmigratorios.seguridad.PoliticaAreas;
 import pa.tramitesmigratorios.seguridad.Permiso;
 import pa.tramitesmigratorios.seguridad.Rol;
 import pa.tramitesmigratorios.seguridad.UsuarioActual;
+import pa.tramitesmigratorios.verificacion.VerificacionRepo;
 
 /**
  * Verificación de titularidad y ámbito sobre un expediente (HU-13, TASK-13.2). Es el único
@@ -21,10 +24,19 @@ public class AccesoExpedientes {
 
 	private final ExpedienteRepo expedientes;
 	private final Auditoria auditoria;
+	private final VerificacionRepo verificaciones;
 
-	AccesoExpedientes(ExpedienteRepo expedientes, Auditoria auditoria) {
+	/** Constructor usado por Spring: las cuentas institucionales se filtran por asignación. */
+	@Autowired
+	AccesoExpedientes(ExpedienteRepo expedientes, Auditoria auditoria, VerificacionRepo verificaciones) {
 		this.expedientes = expedientes;
 		this.auditoria = auditoria;
+		this.verificaciones = verificaciones;
+	}
+
+	/** Compatibilidad con las pruebas unitarias del dominio (solo ejercen el área BUFETE). */
+	AccesoExpedientes(ExpedienteRepo expedientes, Auditoria auditoria) {
+		this(expedientes, auditoria, null);
 	}
 
 	/**
@@ -35,7 +47,9 @@ public class AccesoExpedientes {
 		Expediente expediente = expedientes.findById(id).orElseThrow(ErrorApi::noEncontrado);
 		boolean permitido = switch (usuario.rol()) {
 			case SOLICITANTE -> expediente.perteneceA(usuario.id());
-			case FUNCIONARIO -> usuario.tiene(Permiso.CONSULTAR);
+			case FUNCIONARIO -> usuario.tiene(Permiso.CONSULTAR)
+					&& (!PoliticaAreas.esInstitucional(usuario.area())
+							|| (verificaciones != null && verificaciones.existsByExpedienteIdAndAsignadoAId(id, usuario.id())));
 			case SUPERVISOR, AUDITOR -> true;
 			case ADMIN -> false;
 		};

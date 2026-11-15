@@ -94,3 +94,4 @@ app:
   demo:
     usuarios: ${DEMO_USUARIOS:false}
     contrasena: ${DEMO_CONTRASENA:}
+    autocompletado: ${DEMO_AUTOCOMPLETAR:false}

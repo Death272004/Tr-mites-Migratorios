@@ -55,7 +55,7 @@ class ConfigSeguridad {
 			.addFilterBefore(new FiltroToken(auth), UsernamePasswordAuthenticationFilter.class)
 			.authorizeHttpRequests(reglas -> {
 				reglas.requestMatchers(HttpMethod.GET, "/actuator/health").permitAll();
-				reglas.requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/auth/registro",
+				reglas.requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/auth/autocompletar", "/api/auth/registro",
 						"/api/auth/recuperacion", "/api/auth/recuperacion/confirmacion")
 					.permitAll();
 				for (Regla regla : MatrizAutorizacion.REGLAS) {

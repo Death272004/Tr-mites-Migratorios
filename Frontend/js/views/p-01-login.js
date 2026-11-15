@@ -3,7 +3,9 @@
  * Criterios: validaciones en cliente, mensaje genérico de fallo (CP-02).
  * Online: POST /api/auth/login. El login requiere el backend y la base de datos;
  * no se mantienen contraseñas ni usuarios válidos dentro del navegador.
- * Script clásico: expone `tm.views.p01.renderP01`.
+ * El botón de autocompletado usa una sesión de demostración controlada por el backend:
+ * nunca recibe ni muestra contraseñas.
+ * Script clásico: expone tm.views.p01.renderP01.
  */
 (function (global) {
   "use strict";
@@ -11,6 +13,17 @@
   var layout = global.tm.layout;
   var field = global.tm.ui.field;
   var button = global.tm.ui.button;
+
+  var CUENTAS_DEMO = [
+    { value: "SOLICITANTE:TURISTA", label: "Solicitante — Turista" },
+    { value: "SOLICITANTE:PASANTE_BUFETE", label: "Solicitante — Pasante de bufete" },
+    { value: "SOLICITANTE:MIGRANTE_INDEPENDIENTE", label: "Solicitante — Migrante independiente" },
+    { value: "SOLICITANTE:NACIONAL", label: "Solicitante — Nacional" },
+    { value: "FUNCIONARIO", label: "Funcionario / pasante del bufete o institución" },
+    { value: "SUPERVISOR", label: "Supervisor migratorio" },
+    { value: "AUDITOR", label: "Auditor" },
+    { value: "ADMIN", label: "Administrador del sistema" },
+  ];
 
   function renderP01(container, opts) {
     opts = opts || {};
@@ -28,6 +41,32 @@
       required: true,
       helpText: "Use el correo con el que se registró",
     });
+    var correoInput = correo.querySelector("input");
+    correoInput.autocomplete = "username";
+    correoInput.setAttribute("inputmode", "email");
+
+    var rolTipo = field.fieldSelect({
+      id: "rolTipo",
+      label: "Rol / tipo de usuario",
+      options: CUENTAS_DEMO,
+      required: true,
+      helpText: "El autocompletado selecciona una cuenta ficticia existente en la base de datos local.",
+    });
+
+    var areaInstitucional = field.fieldSelect({
+      id: "areaInstitucional",
+      label: "Área institucional",
+      options: [
+        { value: "BUFETE", label: "Bufete" },
+        { value: "RP", label: "Registro Público (RP)" },
+        { value: "CSS", label: "Caja de Seguro Social (CSS)" },
+        { value: "TE", label: "Tribunal Electoral (TE)" },
+      ],
+      value: "BUFETE",
+      helpText: "Para RP, CSS y TE solo se mostrarán verificaciones asignadas de esa institución.",
+    });
+    areaInstitucional.hidden = true;
+
     var clave = field.fieldPassword({
       id: "clave",
       label: "Contraseña",
@@ -37,6 +76,8 @@
     });
 
     form.appendChild(correo);
+    form.appendChild(rolTipo);
+    form.appendChild(areaInstitucional);
     form.appendChild(clave);
 
     var errorBox = layout.el("div", "auth-error", "");
@@ -45,7 +86,9 @@
 
     var actions = layout.el("div", "auth-actions");
     var btnLogin = button({ variant: "primary", text: "Iniciar sesión", type: "submit" });
+    var btnAutoCompletar = button({ variant: "secondary", text: "Auto-completar", type: "button" });
     actions.appendChild(btnLogin);
+    actions.appendChild(btnAutoCompletar);
     form.appendChild(actions);
 
     var links = layout.el("div", "auth-links");
@@ -65,10 +108,60 @@
     links.appendChild(linkRegistro);
     form.appendChild(links);
 
+    function syncAreaSelector() {
+      var selected = rolTipo.querySelector("select").value || "";
+      var role = selected.split(":")[0];
+      areaInstitucional.hidden = role !== "FUNCIONARIO";
+      if (role !== "FUNCIONARIO") areaInstitucional.querySelector("select").value = "BUFETE";
+    }
+    rolTipo.querySelector("select").addEventListener("change", syncAreaSelector);
+    syncAreaSelector();
+
+    btnAutoCompletar.addEventListener("click", function () {
+      var selected = rolTipo.querySelector("select").value;
+      var partes = selected.split(":");
+      var body = { rol: partes[0] };
+      if (partes.length > 1 && partes[1]) body.tipoSolicitante = partes[1];
+      if (body.rol === "FUNCIONARIO") {
+        body.areaInstitucional = areaInstitucional.querySelector("select").value || "BUFETE";
+      }
+
+      clearError();
+      if (!global.tm.api.isOnline()) {
+        setError("El autocompletado requiere que el frontend esté abierto desde Docker y que el backend esté conectado.");
+        return;
+      }
+
+      setAutoLoading(true);
+      global.tm.api.request("POST", "/auth/autocompletar",
+        { pantalla: "P-01", body: body },
+        function (err, data) {
+          setAutoLoading(false);
+          if (err) return setError(err.mensajeUsuario);
+          var cuenta = data && data.usuario;
+          if (!cuenta || !cuenta.correo) return setError("No se encontró una cuenta demo para esa selección.");
+          correoInput.value = cuenta.correo;
+          correoInput.dispatchEvent(new Event("input", { bubbles: true }));
+          var claveInput = clave.querySelector("input");
+          if (claveInput) claveInput.value = "";
+          // En la vista real el callback guarda el token y navega al área correspondiente.
+          if (opts.onLoginSuccess) {
+            opts.onLoginSuccess({
+              rol: data.rol,
+              usuario: data.usuario,
+              token: data.token,
+              expiraEn: data.expiraEn,
+            });
+          } else {
+            setError("Cuenta demo seleccionada: " + cuenta.nombre + ". La contraseña no se expone en el navegador.");
+          }
+        });
+    });
+
     form.addEventListener("submit", function (ev) {
       ev.preventDefault();
 
-      var email = correo.querySelector("input").value.trim();
+      var email = correoInput.value.trim();
       var pass = clave.querySelector("input").value;
 
       if (!email) return setError("El correo es obligatorio.");
@@ -111,6 +204,11 @@
     function setLoading(loading) {
       btnLogin.disabled = loading;
       btnLogin.textContent = loading ? "Ingresando…" : "Iniciar sesión";
+    }
+    function setAutoLoading(loading) {
+      btnAutoCompletar.disabled = loading;
+      btnAutoCompletar.textContent = loading ? "Buscando…" : "Auto-completar";
+      rolTipo.querySelector("select").disabled = loading;
     }
 
     inner.appendChild(form);

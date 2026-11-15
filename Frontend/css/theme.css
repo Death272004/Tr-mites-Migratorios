@@ -457,6 +457,64 @@ body {
   font-size: 0.86rem;
 }
 
+.profile-card__audience {
+  display: grid;
+  gap: 4px;
+  padding: 18px 28px;
+  border-bottom: 1px solid var(--theme-line);
+  background: color-mix(in srgb, var(--theme-blue) 6%, var(--theme-paper));
+}
+
+.profile-card__audience-label {
+  color: var(--theme-muted);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.profile-card__audience-value {
+  color: var(--theme-blue);
+  font-size: 1.05rem;
+}
+
+.profile-card__audience-note {
+  color: var(--theme-muted);
+  font-size: 0.84rem;
+  line-height: 1.45;
+}
+
+.profile-card__public-body {
+  display: grid;
+  gap: 18px;
+  padding: 28px;
+}
+
+.profile-card__public-body p {
+  margin: 0;
+  color: var(--theme-muted);
+  line-height: 1.55;
+}
+
+.demo-fill__account {
+  display: grid;
+  gap: 5px;
+  padding: 12px 14px;
+  border: 1px solid var(--theme-line);
+  border-radius: var(--theme-radius);
+  background: color-mix(in srgb, var(--theme-blue) 6%, var(--theme-paper));
+}
+
+.demo-fill__account strong {
+  color: var(--theme-blue);
+}
+
+.demo-fill__account span {
+  color: var(--theme-muted);
+  font-size: 0.84rem;
+  line-height: 1.45;
+}
+
 .profile-card__facts {
   padding: 7px 0;
 }

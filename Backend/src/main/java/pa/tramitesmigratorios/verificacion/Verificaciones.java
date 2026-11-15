@@ -28,10 +28,12 @@ import pa.tramitesmigratorios.expediente.Expediente;
 import pa.tramitesmigratorios.expediente.ExpedienteRepo;
 import pa.tramitesmigratorios.fuentes.Escenario;
 import pa.tramitesmigratorios.privacidad.ConsentimientoServicio;
+import pa.tramitesmigratorios.seguridad.AreaInstitucional;
 import pa.tramitesmigratorios.seguridad.Permiso;
 import pa.tramitesmigratorios.seguridad.Rol;
 import pa.tramitesmigratorios.seguridad.Usuario;
 import pa.tramitesmigratorios.seguridad.UsuarioActual;
+import pa.tramitesmigratorios.seguridad.PoliticaAreas;
 import pa.tramitesmigratorios.seguridad.UsuarioRepo;
 import pa.tramitesmigratorios.verificacion.MatrizFuentes.Fila;
 import pa.tramitesmigratorios.verificacion.Verificacion.Estado;
@@ -110,6 +112,9 @@ public class Verificaciones {
 		if (!usuario.es(Rol.SOLICITANTE)) {
 			auditoria.exito(usuario.id(), "CONSULTAR_VERIFICACIONES", "expediente/" + expedienteId);
 		}
+		if (PoliticaAreas.esInstitucional(usuario.area())) {
+			return verificaciones.findByExpedienteIdAndAsignadoAIdOrderByFechaSolicitud(expedienteId, usuario.id());
+		}
 		return verificaciones.findByExpedienteIdOrderByFechaSolicitud(expedienteId);
 	}
 
@@ -119,6 +124,10 @@ public class Verificaciones {
 	 */
 	@Transactional
 	public List<Verificacion> preparar(UUID expedienteId, UsuarioActual usuario) {
+		if (PoliticaAreas.esInstitucional(usuario.area())) {
+			throw ErrorApi.sinPermiso("PREPARACION_NO_AUTORIZADA",
+					"Las cuentas institucionales solo atienden verificaciones que les fueron asignadas.");
+		}
 		Expediente expediente = abierto(expedienteId, usuario);
 		Set<String> requisitos = catalogos.requisitosDe(expediente.getTipoTramite())
 			.stream()
@@ -153,10 +162,21 @@ public class Verificaciones {
 			}
 		}
 		Fila fila = autorizar(expediente, nueva, usuario);
+		boolean institucional = PoliticaAreas.esInstitucional(usuario.area());
 		Optional<Verificacion> abierta = verificaciones.findByExpedienteId(expedienteId)
 			.stream()
-			.filter(v -> esDeLaFila(v, fila) && !v.getEstado().resuelta())
+			.filter(v -> esDeLaFila(v, fila) && !v.getEstado().resuelta()
+					&& (!institucional || usuario.id().equals(v.getAsignadoAId())))
 			.findFirst();
+		if (institucional) {
+			if (nueva.modo() != Modo.MANUAL_ASISTIDO || abierta.isEmpty()
+					|| !usuario.id().equals(abierta.get().getAsignadoAId())) {
+				auditoria.denegado(usuario.id(), "REGISTRAR_VERIFICACION", "expediente/" + expedienteId,
+						"verificación no asignada o modo no permitido");
+				throw ErrorApi.sinPermiso("VERIFICACION_NO_ASIGNADA",
+						"Solo puede completar una verificación manual asignada a su cuenta.");
+			}
+		}
 		Verificacion verificacion = abierta.orElseGet(() -> Verificacion.pendiente(expedienteId, fila.fuente(),
 				fila.tipoVerificacion(), nueva.modo(), fila.finalidad()));
 		if (verificacion.getClaveIdempotencia() == null) {
@@ -192,12 +212,44 @@ public class Verificaciones {
 		return verificaciones.findByExpedienteIdAndClaveIdempotencia(expedienteId, claveIdempotencia);
 	}
 
+	/**
+	 * Asigna una verificación de RP, CSS o TE al pasante de la institución correspondiente.
+	 * Solo el personal BUFETE con permiso de observación puede hacer la asignación.
+	 */
+	@Transactional
+	public Verificacion asignar(UUID expedienteId, UUID verificacionId, UUID asignadoAId, UsuarioActual actor) {
+		if (!actor.es(Rol.FUNCIONARIO) || PoliticaAreas.esInstitucional(actor.area())
+				|| !actor.tiene(Permiso.OBSERVAR)) {
+			auditoria.denegado(actor.id(), "ASIGNAR_VERIFICACION", "verificacion/" + verificacionId);
+			throw ErrorApi.sinPermiso("ASIGNACION_NO_AUTORIZADA",
+					"Solo el personal del bufete puede asignar verificaciones.");
+		}
+		acceso.paraOperar(expedienteId, actor, Permiso.OBSERVAR);
+		Verificacion verificacion = verificaciones.findByIdAndExpedienteId(verificacionId, expedienteId)
+				.orElseThrow(ErrorApi::noEncontrado);
+		AreaInstitucional areaRequerida = PoliticaAreas.areaParaFuente(verificacion.getFuente());
+		Usuario destino = usuarios.findById(asignadoAId).orElseThrow(ErrorApi::noEncontrado);
+		if (destino.getRol() != Rol.FUNCIONARIO || destino.getEstadoCuenta() != Usuario.EstadoCuenta.ACTIVA
+				|| areaRequerida == null || destino.getAreaInstitucional() != areaRequerida) {
+			auditoria.denegado(actor.id(), "ASIGNAR_VERIFICACION", "verificacion/" + verificacionId,
+					"área de destino no corresponde a la fuente");
+			throw ErrorApi.entradaInvalida("asignadoAId",
+					"La verificación solo puede asignarse a un pasante del área correspondiente.");
+		}
+		verificacion.asignarA(destino.getId());
+		verificacion = verificaciones.saveAndFlush(verificacion);
+		auditoria.exito(actor.id(), "ASIGNAR_VERIFICACION", "verificacion/" + verificacionId,
+				"asignadoA=" + destino.getId());
+		return verificacion;
+	}
+
 	/** Una persona del despacho toma una verificación pendiente para cotejarla a mano. */
 	@Transactional
 	public Verificacion atender(UUID expedienteId, UUID verificacionId, UsuarioActual usuario) {
 		abierto(expedienteId, usuario);
 		Verificacion verificacion = verificaciones.findByIdAndExpedienteId(verificacionId, expedienteId)
 			.orElseThrow(ErrorApi::noEncontrado);
+		verificarAsignacion(verificacion, usuario);
 		verificacion.atender(usuario.id());
 		verificacion = verificaciones.saveAndFlush(verificacion);
 		auditoria.exito(usuario.id(), "ATENDER_VERIFICACION", "verificacion/" + verificacionId, resumen(verificacion));
@@ -207,6 +259,10 @@ public class Verificaciones {
 	/** Reintento a pedido del despacho; solo en modo simulado, en REINTENTO_PROGRAMADO y dentro del tope. */
 	@Transactional
 	public Verificacion reintentar(UUID expedienteId, UUID verificacionId, Escenario escenario, UsuarioActual usuario) {
+		if (PoliticaAreas.esInstitucional(usuario.area())) {
+			throw ErrorApi.sinPermiso("REINTENTO_NO_AUTORIZADO",
+					"Los pasantes institucionales registran el resultado manual de la fuente asignada.");
+		}
 		Expediente expediente = abierto(expedienteId, usuario);
 		Verificacion verificacion = verificaciones.findByIdAndExpedienteId(verificacionId, expedienteId)
 			.orElseThrow(ErrorApi::noEncontrado);
@@ -294,6 +350,12 @@ public class Verificaciones {
 	private Fila autorizar(Expediente expediente, Nueva nueva, UsuarioActual usuario) {
 		String recurso = "expediente/" + expediente.getId();
 		Fila fila = MatrizFuentes.de(nueva.fuente()).orElse(null);
+		if (!PoliticaAreas.permiteFuente(usuario.area(), nueva.fuente())) {
+			auditoria.denegado(usuario.id(), "REGISTRAR_VERIFICACION", recurso,
+					"fuente fuera del área institucional");
+			throw ErrorApi.sinPermiso("FUENTE_FUERA_DE_AREA",
+					"Su cuenta solo puede atender verificaciones de su área institucional.");
+		}
 		if (fila == null) {
 			auditoria.denegado(usuario.id(), "REGISTRAR_VERIFICACION", recurso, "fuente=" + nueva.fuente() + " fuera de la matriz");
 			throw ErrorApi.sinPermiso("FUENTE_NO_AUTORIZADA",
@@ -335,6 +397,23 @@ public class Verificaciones {
 		if (resultado != null && !RESULTADOS.getOrDefault(fuente, Set.of()).contains(resultado)) {
 			throw ErrorApi.entradaInvalida("resultadoMinimo",
 					"Para " + fuente + " el resultado debe ser uno de " + RESULTADOS.get(fuente) + ".");
+		}
+	}
+
+	private void verificarAsignacion(Verificacion verificacion, UsuarioActual usuario) {
+		if (PoliticaAreas.esInstitucional(usuario.area())
+				&& !usuario.id().equals(verificacion.getAsignadoAId())) {
+			auditoria.denegado(usuario.id(), "ACCESO_DENEGADO", "verificacion/" + verificacion.getId(),
+					"verificación no asignada");
+			throw ErrorApi.sinPermiso("VERIFICACION_NO_ASIGNADA",
+					"La verificación no está asignada a su cuenta.");
+		}
+		if (PoliticaAreas.esInstitucional(usuario.area())
+				&& !PoliticaAreas.permiteFuente(usuario.area(), verificacion.getFuente())) {
+			auditoria.denegado(usuario.id(), "ACCESO_DENEGADO", "verificacion/" + verificacion.getId(),
+					"fuente fuera del área");
+			throw ErrorApi.sinPermiso("FUENTE_FUERA_DE_AREA",
+					"Su cuenta solo puede atender verificaciones de su área institucional.");
 		}
 	}
 

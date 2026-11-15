@@ -16,6 +16,32 @@
 
   var TIPOS_DOC = { PASAPORTE: "Pasaporte", CEDULA_E: "Cédula E", CARNE: "Carné" };
   var PAISES = { PA: "Panamá", US: "Estados Unidos", CO: "Colombia", VE: "Venezuela" };
+  var TIPOS_SOLICITANTE = {
+    TURISTA: {
+      label: "Turista",
+      titulo: "Perfil de turista",
+      descripcion: "Consultas y trámites migratorios temporales para una persona extranjera.",
+      nota: "Este perfil gestiona sus trámites temporales de ingreso y permanencia.",
+    },
+    PASANTE_BUFETE: {
+      label: "Pasante de bufete",
+      titulo: "Perfil de pasante de bufete",
+      descripcion: "Gestión de expedientes bajo la supervisión y los permisos de un abogado.",
+      nota: "Los datos de prueba solo están disponibles para este tipo de usuario y son ficticios.",
+    },
+    MIGRANTE_INDEPENDIENTE: {
+      label: "Migrante independiente",
+      titulo: "Perfil de migrante independiente",
+      descripcion: "Gestión de sus propios trámites migratorios sin intermediarios.",
+      nota: "Este perfil trabaja únicamente con sus propios datos y expedientes.",
+    },
+    NACIONAL: {
+      label: "Nacional",
+      titulo: "Perfil de nacional",
+      descripcion: "Solicitudes y gestiones para familiares o personas extranjeras.",
+      nota: "Este perfil puede iniciar gestiones para familiares extranjeros.",
+    },
+  };
   var IDIOMAS = [{ value: "ES", label: "Español" }, { value: "EN", label: "English" }];
   var MEDIOS = [
     { value: "CORREO", label: "Correo electrónico" },
@@ -41,6 +67,46 @@
     return mapa[valor] || valor || "—";
   }
 
+  function contextoPerfil(perfil) {
+    var area = perfil && perfil.areaInstitucional;
+    var areas = (global.tm.roles && global.tm.roles.AREA_INSTITUCIONAL_LABELS) || {
+      BUFETE: "Bufete",
+      RP: "Registro Público",
+      CSS: "Caja de Seguro Social",
+      TE: "Tribunal Electoral",
+    };
+    if (perfil && perfil.rol === "FUNCIONARIO" && area && area !== "BUFETE" && areas[area]) {
+      return {
+        etiqueta: "Área institucional",
+        label: areas[area],
+        titulo: "Perfil de pasante · " + areas[area],
+        descripcion: "Cuenta interna limitada a las verificaciones asignadas de " + areas[area] + ".",
+        nota: "No puede resolver trámites ni consultar expedientes fuera de las asignaciones de su área.",
+      };
+    }
+    var tipo = perfil && perfil.tipoSolicitante;
+    if (tipo && TIPOS_SOLICITANTE[tipo]) {
+      var contexto = TIPOS_SOLICITANTE[tipo];
+      return {
+        etiqueta: "Tipo de solicitante",
+        label: contexto.label,
+        titulo: contexto.titulo,
+        descripcion: contexto.descripcion,
+        nota: contexto.nota,
+      };
+    }
+    var roleLabel = global.tm.roles && global.tm.roles.ROLE_LABELS
+      ? global.tm.roles.ROLE_LABELS[perfil && perfil.rol]
+      : null;
+    return {
+      etiqueta: "Rol de acceso",
+      label: roleLabel || (perfil && perfil.rol) || "Cuenta",
+      titulo: "Perfil de la cuenta",
+      descripcion: "Información de la cuenta y preferencias de contacto.",
+      nota: "Los datos mostrados pertenecen a la sesión iniciada.",
+    };
+  }
+
   function renderP05(container, opts) {
     opts = opts || {};
     container.innerHTML = "";
@@ -63,19 +129,27 @@
     function renderPerfil(perfil, notaExito) {
       perfilActual = perfil;
       layout.clear(perfilWrap);
+      var contexto = contextoPerfil(perfil);
 
       var card = layout.el("section", "profile-card");
       var heading = layout.el("div", "profile-card__heading");
       heading.appendChild(layout.el("span", "profile-card__mark", "◆"));
       var headingCopy = layout.el("div", "profile-card__heading-copy");
-      headingCopy.appendChild(layout.el("h3", null, "Datos de la cuenta"));
-      headingCopy.appendChild(layout.el("p", null, "Información principal de la persona solicitante"));
+      headingCopy.appendChild(layout.el("h3", null, contexto.titulo));
+      headingCopy.appendChild(layout.el("p", null, contexto.descripcion));
       heading.appendChild(headingCopy);
       card.appendChild(heading);
+
+      var audience = layout.el("div", "profile-card__audience");
+      audience.appendChild(layout.el("span", "profile-card__audience-label", contexto.etiqueta));
+      audience.appendChild(layout.el("strong", "profile-card__audience-value", contexto.label));
+      audience.appendChild(layout.el("span", "profile-card__audience-note", contexto.nota));
+      card.appendChild(audience);
 
       var facts = layout.el("div", "profile-card__facts");
 
       var filas = [
+        { label: contexto.etiqueta, value: contexto.label },
         { label: "Nombres y apellidos", value: perfil.nombre },
         { label: "Tipo y número de documento", value: etiqueta(TIPOS_DOC, perfil.tipoDocumento) + " · " + (perfil.numeroDocumento || "—") },
         { label: "Nacionalidad", value: etiqueta(PAISES, perfil.nacionalidad) },
@@ -92,7 +166,7 @@
       card.appendChild(facts);
 
       // Correo: solo lectura (el backend no soporta cambio de correo en este alcance).
-      var notaCorreo = layout.el("p", "profile-card__note", "El cambio de correo electrónico estará disponible en una entrega posterior.");
+      var notaCorreo = layout.el("p", "profile-card__note", contexto.nota + " El cambio de correo electrónico estará disponible en una entrega posterior.");
       card.appendChild(notaCorreo);
 
       // Datos de contacto editables (PATCH /api/perfil).
@@ -173,8 +247,42 @@
       function showInfo(texto) { msg.textContent = texto; msg.classList.add("is-visible"); }
     }
 
+    function renderPerfilPublico() {
+      perfilActual = null;
+      layout.clear(perfilWrap);
+      layout.clear(passWrap);
+      layout.clear(consentWrap);
+
+      var card = layout.el("section", "profile-card profile-card--public");
+      var heading = layout.el("div", "profile-card__heading");
+      heading.appendChild(layout.el("span", "profile-card__mark", "◆"));
+      var copy = layout.el("div", "profile-card__heading-copy");
+      copy.appendChild(layout.el("h3", null, "Mi perfil"));
+      copy.appendChild(layout.el("p", null, "Inicie sesión para ver sus datos y el contenido correspondiente a su tipo de solicitante."));
+      heading.appendChild(copy);
+      card.appendChild(heading);
+
+      var body = layout.el("div", "profile-card__public-body");
+      body.appendChild(layout.el("p", null, "Todavía no hay una sesión iniciada. Sus datos personales solo aparecerán después de autenticarse."));
+      if (opts.onNavigate) {
+        body.appendChild(button({
+          variant: "primary",
+          text: "Iniciar sesión",
+          type: "button",
+          onClick: function () { opts.onNavigate("#/login"); },
+        }));
+      }
+      card.appendChild(body);
+      perfilWrap.appendChild(card);
+    }
+
     function cargarPerfil() {
       layout.clear(perfilWrap);
+      var autenticado = !!(global.tm.session && global.tm.session.isAuthenticated && global.tm.session.isAuthenticated());
+      if (!autenticado) {
+        renderPerfilPublico();
+        return;
+      }
       if (!global.tm.api.isOnline()) {
         renderPerfil(DEMO_PERFIL, null);
         return;
@@ -202,8 +310,10 @@
       });
     }
 
-    cargarPerfil();
+    // Se pinta primero el bloque de contraseña; la vista pública lo limpia
+    // cuando no existe una sesión para no mostrar controles protegidos.
     renderCambioContrasena(passWrap, function () { return perfilActual; });
+    cargarPerfil();
   }
 
   // ----- Cambio de contraseña (PUT /api/auth/contrasena) -----
@@ -407,16 +517,21 @@
     }
 
     render();
-    if (global.tm.api.isOnline()) {
+    var autenticado = !!(global.tm.session && global.tm.session.isAuthenticated && global.tm.session.isAuthenticated());
+    if (autenticado && global.tm.api.isOnline()) {
       global.tm.api.request("GET", "/consentimientos", { pantalla: "P-05" }, function (err, data) {
         cargando = false;
         if (err) { error = err.mensajeUsuario; render(); return; }
         consentimiento = data && data.length ? data[0] : null;
         render();
       });
-    } else {
+    } else if (autenticado) {
       cargando = false;
       consentimiento = { id: null, estado: "vigente", alcance: "Trámite de residencia permanente", finalidad: "Gestión del trámite migratorio", fecha: "2026-03-12", vigenciaHasta: "2027-03-12", responsable: "Lic. Pedro Ruiz", expreso: true };
+      render();
+    } else {
+      cargando = false;
+      error = "Inicie sesión para consultar su consentimiento.";
       render();
     }
     return consentWrap;

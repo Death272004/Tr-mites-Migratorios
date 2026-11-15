@@ -25,7 +25,7 @@ class CuentaTest extends PruebaApi {
 
 	private static String registro(String correo, String documento, String contrasena, boolean acepta) {
 		return """
-				{"tipoDocumento":"PASAPORTE","numeroDocumento":"%s","nombre":"Persona Ficticia",
+				{"tipoDocumento":"PASAPORTE","tipoSolicitante":"TURISTA","numeroDocumento":"%s","nombre":"Persona Ficticia",
 				 "nacionalidad":"CO","correo":"%s","telefono":"+507 6000-0000","paisResidencia":"PA",
 				 "contrasena":"%s","aceptaTratamientoDatos":%s}"""
 			.formatted(documento, correo, contrasena, acepta);
@@ -50,6 +50,7 @@ class CuentaTest extends PruebaApi {
 			.andExpect(jsonPath("$.id").isNotEmpty())
 			.andExpect(jsonPath("$.correo").value(correo))
 			.andExpect(jsonPath("$.rol").value("SOLICITANTE"))
+			.andExpect(jsonPath("$.tipoSolicitante").value("TURISTA"))
 			.andExpect(jsonPath("$.estadoCuenta").value("ACTIVA"))
 			.andReturn();
 
@@ -64,6 +65,7 @@ class CuentaTest extends PruebaApi {
 		obtener(token, "/api/perfil").andExpect(status().isOk())
 			.andExpect(jsonPath("$.nombre").value("Persona Ficticia"))
 			.andExpect(jsonPath("$.tipoDocumento").value("PASAPORTE"))
+			.andExpect(jsonPath("$.tipoSolicitante").value("TURISTA"))
 			.andExpect(jsonPath("$.numeroDocumento").value(documento))
 			.andExpect(jsonPath("$.nacionalidad").value("CO"))
 			.andExpect(jsonPath("$.paisResidencia").value("PA"))

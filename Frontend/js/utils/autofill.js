@@ -224,9 +224,86 @@
     return getProfile(id);
   }
 
-  function valueFor(el, profile) {
+  function splitAccountName(nombre) {
+    var partes = String(nombre || "").trim().split(/\s+/).filter(Boolean);
+    if (partes.length >= 3) {
+      return {
+        nombres: partes.slice(0, -2).join(" "),
+        primerApellido: partes[partes.length - 2],
+        segundoApellido: partes[partes.length - 1],
+      };
+    }
+    if (partes.length === 2) {
+      return { nombres: partes[0], primerApellido: partes[1], segundoApellido: "" };
+    }
+    return { nombres: partes[0] || "", primerApellido: "", segundoApellido: "" };
+  }
+
+  // Convierte la cuenta autenticada en la misma forma que usa el autorrellenado.
+  // Solo contiene los datos que el backend ya entregó al propio usuario.
+  function getAccountProfile() {
+    var session = global.tm.session && global.tm.session.getSession
+      ? global.tm.session.getSession()
+      : null;
+    var usuario = session && session.datos && session.datos.usuario;
+    if (!usuario) return null;
+
+    var nombre = String(usuario.nombre || "").trim();
+    var partes = splitAccountName(nombre);
+    var nacionalidad = usuario.nacionalidad || "";
+    var documento = usuario.numeroDocumento || "";
+    var tipoDocumento = usuario.tipoDocumento || "";
+    var values = {
+      primerapellido: partes.primerApellido,
+      segundoapellido: partes.segundoApellido,
+      nombres: partes.nombres || nombre,
+      nombrespasaporte: nombre.toUpperCase(),
+      nombre: nombre,
+      numdoctitular: documento,
+      nombretitular: nombre,
+      nombrefirmante: nombre,
+      numdoc: documento,
+      numerodocumento: documento,
+      numpasaporte: tipoDocumento === "PASAPORTE" ? documento : "",
+      docexterior: tipoDocumento === "PASAPORTE" ? "" : documento,
+      correo: usuario.correo || "",
+      correonotificacion: usuario.correo || "",
+      telefono: usuario.telefono || "",
+      telefononotificacion: usuario.telefono || "",
+    };
+    var selects = {
+      tipoDoc: tipoDocumento,
+      paisNacimiento: nacionalidad,
+      nacionalidad: nacionalidad,
+      nacionalidadPadre: nacionalidad,
+      nacionalidadMadre: nacionalidad,
+      paisEmisor: nacionalidad,
+      paisDomicilio: usuario.paisResidencia || "",
+      paisRes: usuario.paisResidencia || "",
+    };
+    return {
+      id: "cuenta-actual",
+      name: nombre || "Cuenta actual",
+      caption: "Datos disponibles de la cuenta con la que inició sesión",
+      values: values,
+      selects: selects,
+      account: true,
+    };
+  }
+
+  function valueFor(el, profile, accountOnly) {
     var key = keyOf(el);
-    if (profile && profile.values && Object.prototype.hasOwnProperty.call(profile.values, key)) return profile.values[key];
+    if (profile && profile.values && Object.prototype.hasOwnProperty.call(profile.values, key)) {
+      var accountValue = profile.values[key];
+      // La cuenta tiene prioridad. Un valor vacío significa que ese dato no
+      // está registrado y puede usar el respaldo de demostración al pulsar
+      // «Autollenar».
+      if (accountValue !== null && accountValue !== undefined && String(accountValue).trim() !== "") {
+        return accountValue;
+      }
+    }
+    // En modo cuenta se usa un valor ficticio solo como respaldo para campos
+    // que la cuenta no tiene; nunca reemplaza un dato real disponible.
     if (Object.prototype.hasOwnProperty.call(EXACT, key)) return EXACT[key];
     for (var i = 0; i < RULES.length; i++) {
       if (RULES[i].re.test(key)) return RULES[i].value;
@@ -284,6 +361,10 @@
     for (var i = 0; i < pads.length; i++) {
       var pad = pads[i];
       if (typeof pad.isDirty === "function" && pad.isDirty()) continue;
+      if (typeof pad.fillDemo === "function") {
+        if (pad.fillDemo()) result.count += 1;
+        continue;
+      }
       var canvas = pad.querySelector("canvas");
       if (!canvas) continue;
       var rect = canvas.getBoundingClientRect();
@@ -363,7 +444,8 @@
   function fill(root, options) {
     root = root || global.document.getElementById("contenido") || global.document;
     options = options || {};
-    var profile = getProfile(options.profileId);
+    var profile = options.profile || getProfile(options.profileId);
+    var accountOnly = !!options.accountOnly;
     var result = { count: 0 };
     var pending = [];
     var radioGroups = {};
@@ -375,12 +457,15 @@
       var type = String(el.type || "text").toLowerCase();
 
       if (type === "checkbox") {
-        if (el.disabled) continue;
+        // Los consentimientos y declaraciones siempre requieren acción manual.
+        if (accountOnly || el.disabled) continue;
         if (!el.checked) { el.checked = true; result.count += 1; }
         pending.push([el, "change"]);
         continue;
       }
       if (type === "radio") {
+        // Los campos de opción sí pueden recibir un valor de respaldo cuando
+        // la cuenta no contiene esa información.
         if (el.disabled) continue;
         var name = el.name || ("radio_" + i);
         (radioGroups[name] = radioGroups[name] || []).push(el);
@@ -389,7 +474,8 @@
       if (type === "file") continue;
       if (!isFillableInput(el)) continue;
 
-      var value = valueFor(el, profile);
+      var value = valueFor(el, profile, accountOnly);
+      if (accountOnly && value === "") continue;
       if (String(el.value) !== String(value)) { el.value = value; result.count += 1; }
       pending.push([el, el.tagName === "TEXTAREA" || type === "text" ? "input" : "change"]);
     }
@@ -412,6 +498,8 @@
       // completa un select vacío o uno con un valor propio de la persona ficticia.
       var actual = sel.options[sel.selectedIndex];
       if (!preferida && actual && !isPlaceholder(actual)) continue;
+      // Si la cuenta no tiene ese select, se elige la primera opción válida
+      // únicamente durante el autorrellenado solicitado.
       var opt = preferida || pickOption(sel);
       if (opt && String(sel.value) !== String(opt.value)) {
         sel.value = opt.value;
@@ -424,8 +512,11 @@
     // ejecuten las lógicas de visibilidad/progreso sin que un re-render corte el relleno.
     for (i = 0; i < pending.length; i++) dispatch(pending[i][0], pending[i][1]);
 
-    fillSignatures(root, result);
+    // Los archivos de demostración también se adjuntan cuando la cuenta
+    // autenticada no tiene un documento cargado. Nunca se reemplaza un archivo
+    // que el usuario ya adjuntó.
     fillFiles(root, result);
+    fillSignatures(root, result);
 
     return result;
   }
@@ -447,15 +538,15 @@
     options = options || {};
     var panel = global.document.createElement("section");
     panel.className = "demo-fill";
-    panel.setAttribute("aria-label", "Datos ficticios para demostración");
+    panel.setAttribute("aria-label", options.accountProfile ? "Datos disponibles de la cuenta" : "Datos ficticios para demostración");
 
     var heading = global.document.createElement("div");
     heading.className = "demo-fill__heading";
     var title = global.document.createElement("strong");
-    title.textContent = "Datos de prueba";
+    title.textContent = options.accountProfile ? "Datos de mi cuenta" : "Datos de prueba";
     var badge = global.document.createElement("span");
     badge.className = "demo-fill__badge";
-    badge.textContent = "Solo demostración";
+    badge.textContent = options.accountProfile ? "Cuenta actual" : "Solo demostración";
     heading.appendChild(title);
     heading.appendChild(badge);
     panel.appendChild(heading);
@@ -466,7 +557,21 @@
 
     function renderProfiles() {
       profileArea.innerHTML = "";
-      var active = getProfile();
+      var active = options.accountProfile || getProfile();
+
+      if (options.accountProfile) {
+        var accountBox = global.document.createElement("div");
+        accountBox.className = "demo-fill__account";
+        var accountTitle = global.document.createElement("strong");
+        accountTitle.textContent = "Datos de mi cuenta";
+        var accountText = global.document.createElement("span");
+        accountText.textContent = "Se usarán los datos disponibles de la cuenta. Al pulsar Autollenar, los campos faltantes recibirán valores ficticios de demostración para que pueda revisar el formulario.";
+        accountBox.appendChild(accountTitle);
+        accountBox.appendChild(accountText);
+        profileArea.appendChild(accountBox);
+        return;
+      }
+
       if (options.chooseProfile) {
         var activation = global.document.createElement("label");
         activation.className = "demo-fill__activation";
@@ -519,30 +624,47 @@
     var fillButton = global.document.createElement("button");
     fillButton.type = "button";
     fillButton.className = "btn demo-fill__button";
-    fillButton.textContent = "Completar este paso";
-    fillButton.addEventListener("click", function () {
-      if (!getProfile()) return;
+    fillButton.textContent = options.accountProfile ? "Completar con mis datos" : "Completar este paso";
+
+    function selectedProfile() {
+      return options.accountProfile || getProfile();
+    }
+
+    function runFill() {
+      var profile = selectedProfile();
+      if (!profile) return;
       fillButton.disabled = true;
       status.textContent = "Completando…";
-      fillStage(options.root, { profileId: getProfile().id, passes: options.passes }, function () {
+      fillStage(options.root, {
+        profile: profile,
+        accountOnly: !!options.accountProfile,
+        passes: options.passes,
+      }, function () {
         fillButton.disabled = false;
-        fillButton.textContent = "Volver a completar este paso";
-        status.textContent = "Paso completado con datos ficticios. Revise antes de continuar.";
+        fillButton.textContent = options.accountProfile ? "Volver a completar con mis datos" : "Volver a completar este paso";
+        status.textContent = options.accountProfile
+          ? "Se usaron los datos de su cuenta y valores ficticios solo donde faltaban, incluidos documentos de demostración. Revise todo antes de continuar."
+          : "Paso completado con datos ficticios y documentos de demostración. Revise antes de continuar.";
         if (options.onFilled) options.onFilled();
       });
-    });
+    }
+
+    fillButton.addEventListener("click", runFill);
     actions.appendChild(status);
     actions.appendChild(fillButton);
     panel.appendChild(actions);
 
     function updateButton() {
-      fillButton.disabled = !getProfile() || (options.isReady && !options.isReady());
+      fillButton.disabled = !selectedProfile() || (options.isReady && !options.isReady());
     }
 
     panel.refresh = function () { renderProfiles(); updateButton(); };
     panel.updateAvailability = updateButton;
     renderProfiles();
     updateButton();
+    if (options.autoFillOnLoad && options.accountProfile) {
+      global.setTimeout(runFill, options.autoFillDelay || 850);
+    }
     return panel;
   }
 
@@ -553,6 +675,7 @@
     createStageControl: createStageControl,
     profiles: PROFILES.slice(),
     getProfile: getProfile,
+    getAccountProfile: getAccountProfile,
     setProfile: setProfile,
   };
 })(window);

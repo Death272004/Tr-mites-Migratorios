@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -112,6 +113,10 @@ public class Verificacion {
 	private String referenciaOrigen;
 
 	private UUID responsableId;
+
+	/** Usuario institucional responsable de atender esta verificación, si aplica. */
+	@Column(name = "asignado_a_id")
+	private UUID asignadoAId;
 
 	private String nota;
 
@@ -299,6 +304,13 @@ public class Verificacion {
 		return responsableId;
 	}
 
+	public UUID getAsignadoAId() {
+		return asignadoAId;
+	}
+
+	public void asignarA(UUID usuarioId) {
+		this.asignadoAId = usuarioId;
+	}
 	public String getNota() {
 		return nota;
 	}

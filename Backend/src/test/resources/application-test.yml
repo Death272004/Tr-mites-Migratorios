@@ -25,3 +25,8 @@ app:
       registro-publico:
         timeout-ms: 300
         espera-base-ms: 0
+
+management:
+  health:
+    mail:
+      enabled: false

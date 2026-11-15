@@ -30,6 +30,8 @@ services:
       # Las cuentas iniciales se crean mediante Flyway (V7); el cargador Java queda apagado.
       DEMO_USUARIOS: ${DEMO_USUARIOS:-false}
       DEMO_CONTRASENA: ${DEMO_CONTRASENA:-Demo-Tramites-2026}
+      # Solo habilita el atajo local de cuentas demo; nunca devuelve contraseñas.
+      DEMO_AUTOCOMPLETAR: ${DEMO_AUTOCOMPLETAR:-true}
       # Correo institucional local. La entrega ocurre únicamente dentro de esta red Docker.
       CORREO_MODO: ${CORREO_MODO:-smtp}
       SMTP_HOST: mailserver

@@ -43,6 +43,16 @@
     },
   ];
 
+  const OPERACION_INSTITUCIONAL = {
+    title: "Verificación asignada",
+    items: [
+      { label: "Expedientes asignados", route: "#/interno/tablero" },
+      { label: "Verificaciones de mi área", route: "#/interno/verificaciones" },
+      { label: "Observaciones", route: "#/interno/observaciones" },
+      { label: "Mi perfil", route: "#/perfil" },
+    ],
+  };
+
   const OPERACION_INTERNA = {
     title: "Operación",
     items: [
@@ -98,6 +108,12 @@
   });
 
   function getNavForRole(role) {
+    if (role === ROLES.FUNCIONARIO) {
+      var ses = global.tm.session && typeof global.tm.session.getSession === "function"
+        ? global.tm.session.getSession() : null;
+      var area = ses && ses.datos && ses.datos.usuario && ses.datos.usuario.areaInstitucional;
+      if (area && area !== "BUFETE") return [OPERACION_INSTITUCIONAL];
+    }
     return NAV_BY_ROLE[role] ?? [];
   }
 

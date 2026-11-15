@@ -267,3 +267,19 @@ No confundir con los roles del sistema. Este es el acceso del equipo al reposito
 4. **Validación jurídica:** la aplicación concreta de estos accesos debe validarse según finalidad, tipo de dato y competencia institucional (Ley 81 de 2019 y su reglamentación).
 5. **Consentimiento y ARCO:** validación jurídica del modelo de consentimiento (informado y expreso) y del flujo de derechos ARCO con abogado local.
 6. **Alojamiento de datos:** definir la jurisdicción de alojamiento (preferiblemente panameña) y el acuerdo de tratamiento de datos con el proveedor de hosting.
+
+## 6.14. Presentación por tipo de cuenta y área
+
+La interfaz conserva los cinco roles técnicos y usa el contexto de sesión para presentar el alcance real:
+
+| Contexto | Presentación y acciones |
+| --- | --- |
+| Sin sesión | El encabezado y Mi perfil muestran una invitación a iniciar sesión; no se muestran datos de una cuenta |
+| Solicitante | El encabezado y el perfil muestran Turista, Pasante de bufete, Migrante independiente o Nacional |
+| Pasante de bufete | En el asistente de solicitud se habilita Datos de prueba · Solo demostración para elegir una persona ficticia |
+| Solicitante autenticado distinto de pasante | El asistente ofrece Datos de mi cuenta; los datos disponibles tienen prioridad y los campos faltantes reciben valores de respaldo al pulsar Autollenar |
+| Pasante RP, CSS o TE | El encabezado y perfil muestran su institución; el menú se reduce a expedientes asignados, verificaciones de su área, observaciones y perfil |
+
+En P-01 el selector de autocompletado distingue el tipo de solicitante. Para FUNCIONARIO aparece además el selector de área institucional. P-02 exige seleccionar uno de los cuatro tipos de solicitante antes de crear la cuenta.
+
+Autollenar no envía el formulario. Completa campos, adjunta un PDF ficticio cuando no existe un archivo y dibuja una firma de demostración cuando la pantalla contiene un pad de firma. Nunca reemplaza un archivo o una firma que el usuario ya haya introducido; el usuario debe revisar y continuar manualmente.
