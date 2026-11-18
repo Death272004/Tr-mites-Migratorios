@@ -3850,3 +3850,42 @@ html.theme-dark .doc-card__icon--danger {
 .movements [hidden] {
   display: none !important;
 }
+
+/* P-12: controles opcionales alineados y bloqueados hasta confirmar «Sí». */
+.situacion-adicional {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 24px 0;
+  padding: 20px 0;
+  border-top: 1px solid var(--theme-line);
+  border-bottom: 1px solid var(--theme-line);
+}
+.situacion-adicional .wizard-section-title {
+  margin: 0;
+}
+.situacion-adicional__toggle {
+  margin: 0;
+  min-height: 24px;
+}
+.situacion-adicional__fields {
+  width: 100%;
+  gap: 18px;
+  margin: 0 0 4px;
+}
+.situacion-adicional__fields[hidden] {
+  display: none;
+}
+.situacion-adicional__fields .form-field {
+  margin: 0;
+  gap: 8px;
+}
+.situacion-adicional__fields input:disabled {
+  cursor: not-allowed;
+  opacity: .58;
+}
+
+.situacion-prioridad {
+  margin-top: 22px;
+  margin-bottom: 12px;
+}

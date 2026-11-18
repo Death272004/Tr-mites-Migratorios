@@ -206,14 +206,25 @@
       var last = (draft.getDraft().categoria || "") + "|" + (draft.getDraft().tramite || "");
       origin.host.addEventListener("change", function (event) {
         var id = event.target && event.target.id;
-        if (id !== "categoria" && id !== "tramite") return;
+        if (id !== "categoria" && id !== "tramite" && id !== "motivo" && id !== "paisOrigen" && id !== "presentante") return;
         var categoria = origin.host.querySelector("#categoria");
         var tramite = origin.host.querySelector("#tramite");
-        var value = (categoria ? categoria.value : "") + "|" + (tramite ? tramite.value : "");
-        if (value === last) return;
+        var motivo = origin.host.querySelector("#motivo");
+        var paisOrigen = origin.host.querySelector("#paisOrigen");
+        var presentante = origin.host.querySelector('input[name="presentante"]:checked');
+        var value = (categoria ? categoria.value : "") + "|" + (tramite ? tramite.value : "") + "|" + (motivo ? motivo.value : "");
+        if (value === last && id !== "paisOrigen" && id !== "presentante") return;
         last = value;
-        draft.mergeDraft({ categoria: categoria ? categoria.value : "", tramite: tramite ? tramite.value : "" });
-        states.forEach(function (state) { if (state.module.needsTramite) renderModule(state); });
+        draft.mergeDraft({
+          categoria: categoria ? categoria.value : "",
+          tramite: tramite ? tramite.value : "",
+          motivo: motivo ? motivo.value : "",
+          paisOrigen: paisOrigen ? paisOrigen.value : "",
+          presentante: presentante ? presentante.value : "",
+        });
+        if (id === "motivo" || id === "categoria" || id === "tramite") {
+          states.forEach(function (state) { if (state.module.needsTramite) renderModule(state); });
+        }
         checkReady();
       });
     }

@@ -23,7 +23,15 @@
 
   function pickBlock(draftData) {
     var t = (draftData.tramite || "").toLowerCase();
+    var motivo = (draftData.motivo || "").toLowerCase();
     var cat = draftData.categoria || "";
+    // El motivo elegido por el solicitante es la fuente principal. Esto evita
+    // que un código/nombre de trámite desconocido caiga por defecto en laboral.
+    if (/familia/.test(motivo)) return "familia";
+    if (/estudio/.test(motivo)) return "educativo";
+    if (/inversi/.test(motivo)) return "economico";
+    if (/religi|humanitari|otro/.test(motivo)) return "especial";
+    if (/trabajo/.test(motivo)) return "laboral";
     if (/casado|familia|reagrupaci|dependiente|hijos/.test(t)) return "familia";
     if (/estudiante|investigador|docente|ciudad del saber|educati|fulbright|misionero/.test(t)) return "educativo";
     if (/inversi|dep[oó]sito|rentista|jubilado|forestal|remoto|comerciante|acciones|planilla/.test(t)) return "economico";
@@ -122,7 +130,7 @@
         value: d.nivel, required: true,
       }), function () { return byId("nivel"); });
       add(field.fieldText({ id: "carrera", label: "Carrera / programa y jornada", value: d.carrera, required: true, helpText: "Tiempo completo obligatorio." }), function () { return byId("carrera"); });
-      add(field.fieldText({ id: "matricula", label: "Matrícula vigente", value: d.matricula, required: true }), function () { return byId("matricula"); });
+      add(field.fieldText({ id: "matricula", label: "Número de matrícula vigente", value: d.matricula, required: true }), function () { return byId("matricula"); });
       add(field.fieldText({ id: "beca", label: "Beca (entidad otorgante)", value: d.beca }), function () { return byId("beca"); });
     } else if (block === "familia") {
       add(field.fieldSelect({
@@ -141,12 +149,117 @@
       add(field.fieldText({ id: "convenio", label: "Convenio con el Estado (si aplica)", value: d.convenio }), function () { return byId("convenio"); });
     }
 
-    var note = layout.el("p", "wizard-summary", "Bloque mostrado: " + titulos[block] + " (según el trámite seleccionado).");
+    var note = layout.el("p", "wizard-summary", "Bloque principal: " + titulos[block] + ". Los datos del motivo seleccionado son obligatorios.");
     body.appendChild(note);
+    body.appendChild(layout.el("h3", "wizard-section-title situacion-prioridad", "P1 · Información obligatoria del motivo seleccionado"));
     body.appendChild(wrap);
 
+    // Información adicional opcional: cada casilla habilita únicamente sus
+    // propios campos y los vuelve obligatorios mientras esté marcada.
+    var adicionales = layout.el("section", "situacion-adicional");
+    adicionales.appendChild(layout.el("h3", "wizard-section-title situacion-prioridad", "P2 · Preguntas opcionales" ));
+    adicionales.appendChild(layout.el("p", "form-field__help", "Marque solo lo que corresponda a su situación actual." ));
+
+    function optionalBlock(key, label, nodes, readers) {
+      var row = layout.el("label", "auth-check situacion-adicional__toggle");
+      var check = layout.el("input", "auth-check__input");
+      check.type = "checkbox";
+      check.id = "tiene-" + key;
+      var text = layout.el("span", "auth-check__label", label);
+      row.appendChild(check);
+      row.appendChild(text);
+      adicionales.appendChild(row);
+      var box = layout.el("div", "wizard-grid situacion-adicional__fields");
+      box.hidden = true;
+      nodes.forEach(function (node) {
+        // Un bloque opcional no debe aceptar edición ni autocompletado hasta
+        // que la persona confirme «Sí».
+        var controls = node.querySelectorAll("input, select, textarea");
+        for (var c = 0; c < controls.length; c++) {
+          controls[c].disabled = true;
+          controls[c].setAttribute("aria-disabled", "true");
+        }
+        box.appendChild(node);
+      });
+      adicionales.appendChild(box);
+      check.addEventListener("change", function () {
+        box.hidden = !check.checked;
+        var controls = box.querySelectorAll("input, select, textarea");
+        for (var c = 0; c < controls.length; c++) {
+          controls[c].disabled = !check.checked;
+          controls[c].setAttribute("aria-disabled", String(!check.checked));
+        }
+      });
+      // El bloque no participa en la validación si la respuesta es «No».
+      fields.push(function () {
+        if (!check.checked) return true;
+        for (var i = 0; i < readers.length; i++) if (!readers[i]()) return false;
+        return true;
+      });
+    }
+
+    if (block !== "laboral") {
+      var empleoNodes = [
+        field.fieldText({ id: "empleoAdicionalEmpleador", label: "Empleador / entidad contratante", required: true }),
+        field.fieldText({ id: "empleoAdicionalCargo", label: "Cargo o función", required: true }),
+        field.fieldText({ id: "empleoAdicionalPermiso", label: "Permiso de trabajo (si aplica)", required: true }),
+      ];
+      optionalBlock("empleo", "¿Trabaja actualmente o tiene una actividad laboral?", empleoNodes, [
+        function () { return byId("empleoAdicionalEmpleador"); },
+        function () { return byId("empleoAdicionalCargo"); },
+        function () { return byId("empleoAdicionalPermiso"); },
+      ]);
+    }
+
+    if (block !== "educativo") {
+      var estudioNodes = [
+        field.fieldText({ id: "estudioAdicionalInstitucion", label: "Institución educativa", required: true }),
+        field.fieldText({ id: "estudioAdicionalPrograma", label: "Programa, carrera o nivel", required: true }),
+        field.fieldText({ id: "estudioAdicionalMatricula", label: "Matrícula o constancia vigente", required: true }),
+      ];
+      optionalBlock("estudios", "¿Está matriculado actualmente en una institución educativa o programa de estudios?", estudioNodes, [
+        function () { return byId("estudioAdicionalInstitucion"); },
+        function () { return byId("estudioAdicionalPrograma"); },
+        function () { return byId("estudioAdicionalMatricula"); },
+      ]);
+    }
+
+    var seguroNodes = [
+      field.fieldText({ id: "seguroEntidad", label: "Entidad aseguradora / CSS", required: true }),
+      field.fieldText({ id: "seguroPoliza", label: "Número de póliza (si tiene póliza)", required: false }),
+      field.fieldText({ id: "seguroAfiliacion", label: "Número de afiliación (si aplica)", required: false }),
+      field.fieldText({ id: "seguroFicha", label: "Número de ficha CSS (si aplica)", required: false }),
+    ];
+    optionalBlock("seguro", "¿Tiene seguro médico o afiliación a la CSS?", seguroNodes, [
+      function () { return byId("seguroEntidad"); },
+      function () { return byId("seguroPoliza") || byId("seguroAfiliacion") || byId("seguroFicha"); },
+    ]);
+    // Límites defensivos para entradas opcionales: evitan valores excesivos y
+    // caracteres de control antes de guardar el borrador.
+    var optionalControls = adicionales.querySelectorAll("input[type=text]");
+    for (var oc = 0; oc < optionalControls.length; oc++) {
+      optionalControls[oc].maxLength = 160;
+      optionalControls[oc].pattern = "[^\\u0000-\\u001F<>]{1,160}";
+      optionalControls[oc].addEventListener("input", function () {
+        this.value = this.value.replace(/[\\u0000-\\u001F<>]/g, "").slice(0, 160);
+      });
+    }
+    body.appendChild(adicionales);
+
     var uploads = layout.el("div", "wizard-grid");
-    uploads.appendChild(global.tm.ui.fileUpload({ id: "docSituacion", label: block === "laboral" ? "Paz y salvo de la empresa (renta) / ficha CSS" : "Documento de respaldo del bloque", accept: ".pdf,.jpg,.jpeg,.png" }));
+    var docLabel = block === "laboral"
+      ? "Paz y salvo de la empresa (renta) / ficha CSS"
+      : block === "educativo"
+        ? "Constancia de matrícula o estudios vigente (PDF/JPG/PNG)"
+        : "Documento de respaldo del bloque";
+    var docUpload = global.tm.ui.fileUpload({ id: "docSituacion", label: docLabel, accept: ".pdf,.jpg,.jpeg,.png" });
+    uploads.appendChild(docUpload);
+    if (block === "educativo") {
+      fields.push(function () {
+        var input = docUpload.querySelector('input[type="file"]');
+        return !!(input && input.files && input.files.length);
+      });
+    }
     body.appendChild(uploads);
 
     var err = wizard.errorBox();
