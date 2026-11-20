@@ -110,13 +110,14 @@ flowchart LR
 
 ```text
 Tr-mites-Migratorios/
-├── Backend/              API, reglas de negocio, DTOs y pruebas
+├── Backend/              API, reglas de negocio, DTOs, OpenAPI y pruebas
 ├── Frontend/             Pantallas, estilos y flujo del usuario
 ├── QA/                   Evidencias de pruebas, seguridad y calidad
 ├── DevOps/               Entorno, CI/CD, despliegue y reproducibilidad
-├── Documentacion/        Backlog, arquitectura, roles y entregas por Sprint
+├── Documentacion/        Backlog, arquitectura, roles, usuarios demo y entregas por Sprint
+├── docs/                 Evidencias de aceptación y regresión (Sprint 7)
 ├── recursos-proyecto/    Convenciones, entornos, assets y evidencias generales
-├── docker/               Nginx y configuración del proxy
+├── docker/               Nginx, proxy y servicios de correo local
 ├── docker-compose.yml    Servicios locales del proyecto
 └── Versiones_Anteriores/ Material histórico de ramas archivadas
 ```
@@ -160,10 +161,10 @@ docker compose up --build
 
 | Servicio | Dirección |
 | --- | --- |
-| Frontend | <http://localhost:8081> |
-| Backend | <http://localhost:8080> |
+| Frontend (portal y proxy `/api`) | <http://localhost:8080> |
 | Salud del backend | <http://localhost:8080/actuator/health> |
-| Salud del frontend | <http://localhost:8081/salud> |
+| Salud del frontend | <http://localhost:8080/salud> |
+| Webmail local (Roundcube) | <http://localhost:8081> |
 | PostgreSQL | `localhost:5433` |
 
 Para detener los contenedores:
@@ -184,7 +185,7 @@ docker compose down -v
 cp .env.example .env
 ```
 
-Edita `.env` y cambia `DB_PORT`, `BACKEND_PORT` o `FRONTEND_PORT`. Ese archivo es local: no debe subirse al repositorio.
+Edita `.env` y cambia `DB_PORT`, `FRONTEND_PORT` o `WEBMAIL_PORT`. Ese archivo es local: no debe subirse al repositorio.
 
 ### Ejecutar únicamente el backend
 
@@ -281,15 +282,15 @@ La rama se integra mediante Pull Request después de verificar que el proyecto c
 | Vivian Paris | QA y seguridad |
 | Richard Rodríguez | Documentación y coordinación técnica |
 
-##  Segundo equipo y responsabilidades
+##  Segundo equipo y responsabilidades (Sprint 7)
 
 | Integrante | Responsabilidad principal |
 | --- | --- |
-| Richard Rodríguez | Product Owner |
-| Daniela Anaya | |
-| Edwin Cisnero | |
-| Leonardo Liang | |
-| Javier Pravia | |
+| Richard Rodríguez | Product Owner y documentación |
+| Edwin Cisnero | QA y pruebas de aceptación |
+| Jonathan Quinto | Backend, seguridad y contrato OpenAPI |
+| Daniela Anaya | Frontend y UX |
+| Javier Pravia | DevOps, entorno Docker y empaquetado |
 
 <p>
   <img src="https://img.shields.io/badge/Scrum-Coordinar-0B1B2B?style=flat-square" alt="Scrum">
@@ -303,12 +304,15 @@ La rama se integra mediante Pull Request después de verificar que el proyecto c
 ##  Documentación útil
 
 - [Documentación general](Documentacion/README.md)
+- [Entregables del Sprint 7 (PDF y PPTX)](Documentacion/sprint-7/README.md)
+- [Directorio de usuarios y cuentas demo](Documentacion/usuarios-proyecto.md)
+- [Contrato OpenAPI (v0.5.0)](Backend/docs/openapi.yaml)
 - [Backend y API](Backend/README.md)
 - [DevOps y despliegue](DevOps/README.md)
 - [Frontend](Frontend/README.md)
 - [QA y seguridad](QA/README.md)
+- [Evidencias de aceptación y regresión (Sprint 7)](docs/evidencias/)
 - [Evidencias técnicas](recursos-proyecto/evidencias/README.md)
-- [Evidencia QA del Sprint 5](QA/sprint-5/README.md)
 - [Documentación base](Documentacion/documentos-base/)
 - [Convenciones de Git](recursos-proyecto/CONVENCIONES-GIT.md)
 - [Entornos y secretos](recursos-proyecto/ENTORNOS-Y-SECRETOS.md)
@@ -334,12 +338,12 @@ La rama se integra mediante Pull Request después de verificar que el proyecto c
 - Probar los cambios antes de solicitar su integración.
 - Cualquier integración real requiere autorización institucional y revisión de seguridad.
 
-## Estado actual
+## Cierre del Sprint 7
 
-El proyecto cerró el Sprint 6 – Review #2 con el recorrido principal del abogado implementado, verificaciones simuladas y evidencias de calidad, seguridad, trazabilidad y DevOps documentadas.
+El proyecto completó la entrega del **Sprint 7** (24 puntos de historia: `HU-31` a `HU-34`) con 156 pruebas automatizadas en verde, correcciones de auditoría técnica y de seguridad aplicadas, contrato OpenAPI sincronizado y documentación final actualizada.
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Estado-Sprint%206%20completado-56C596?style=for-the-badge" alt="Estado: Sprint 6 completado">
+  <img src="https://img.shields.io/badge/Estado-Sprint%207%20entrega%20final-56C596?style=for-the-badge" alt="Estado: Sprint 7 entrega final">
 </p>
 
 ---
