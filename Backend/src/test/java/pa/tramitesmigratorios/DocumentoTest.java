@@ -158,7 +158,9 @@ class DocumentoTest extends PruebaApi {
 		// Al revocarlo, vuelve a bloquearse; también para el personal del despacho.
 		modificar(cliente, "/api/consentimientos/{id}", "", this.<String>leer(expreso, "$.id")).andExpect(status().isOk());
 		adjuntar(cliente, id, "ANTECEDENTES_PENALES", "antecedentes.pdf", "application/pdf", PDF).andExpect(status().isForbidden());
-		adjuntar(tokenDe(Rol.FUNCIONARIO, Permiso.CONSULTAR), id, "ANTECEDENTES_PENALES", "antecedentes.pdf", "application/pdf", PDF)
+		adjuntar(tokenDe(Rol.FUNCIONARIO, Permiso.CONSULTAR), id, "PASAPORTE", "solo-lectura.pdf", "application/pdf", PDF)
+			.andExpect(status().isForbidden());
+		adjuntar(tokenDe(Rol.FUNCIONARIO, Permiso.OBSERVAR), id, "ANTECEDENTES_PENALES", "antecedentes.pdf", "application/pdf", PDF)
 			.andExpect(status().isForbidden());
 		obtener(cliente, "/api/expedientes/{id}/documentos", id).andExpect(jsonPath("$", hasSize(2)));
 	}

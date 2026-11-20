@@ -160,4 +160,9 @@ class AutenticacionTest extends PruebaApi {
 			.isZero();
 	}
 
+	@Test
+	void elAutocompletadoDeDemostracionEstaDeshabilitadoPorDefecto() throws Exception {
+		enviar(null, "/api/auth/autocompletar", "{\"rol\":\"ADMIN\"}").andExpect(status().isUnauthorized());
+	}
+
 }

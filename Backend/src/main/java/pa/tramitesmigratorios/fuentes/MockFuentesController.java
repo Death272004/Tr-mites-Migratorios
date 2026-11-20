@@ -14,13 +14,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import pa.tramitesmigratorios.auditoria.Auditoria;
 import pa.tramitesmigratorios.comun.ErrorApi;
 import pa.tramitesmigratorios.comun.ErrorIntegracion;
 import pa.tramitesmigratorios.fuentes.Fuentes.AfiliacionCss;
 import pa.tramitesmigratorios.fuentes.Fuentes.ConsultaRegistro;
 import pa.tramitesmigratorios.fuentes.Fuentes.ExpedienteSnm;
 import pa.tramitesmigratorios.fuentes.Fuentes.PersonaTe;
+import pa.tramitesmigratorios.seguridad.Permiso;
 import pa.tramitesmigratorios.seguridad.PoliticaAreas;
+import pa.tramitesmigratorios.seguridad.Rol;
 import pa.tramitesmigratorios.seguridad.UsuarioActual;
 import pa.tramitesmigratorios.verificacion.Verificacion.Fuente;
 
@@ -36,14 +39,16 @@ class MockFuentesController {
 	private final Fuentes.Css css;
 	private final Fuentes.RegistroPublico registro;
 	private final Fuentes.Snm snm;
+	private final Auditoria auditoria;
 	private final long latenciaMs;
 
 	MockFuentesController(Fuentes.Te te, Fuentes.Css css, Fuentes.RegistroPublico registro, Fuentes.Snm snm,
-			@Value("${app.fuentes-simuladas.latencia-ms}") long latenciaMs) {
+			Auditoria auditoria, @Value("${app.fuentes-simuladas.latencia-ms}") long latenciaMs) {
 		this.te = te;
 		this.css = css;
 		this.registro = registro;
 		this.snm = snm;
+		this.auditoria = auditoria;
 		this.latenciaMs = latenciaMs;
 	}
 
@@ -52,7 +57,7 @@ class MockFuentesController {
 			@AuthenticationPrincipal UsuarioActual usuario,
 			@RequestHeader(value = "X-Scenario", required = false) String encabezado,
 			@RequestParam(value = "scenario", required = false) String consulta) {
-		exigirArea(usuario, Fuente.TE);
+		exigirAcceso(usuario, Fuente.TE, "mock/te/" + tipoDoc + "/" + numero);
 		return simular("TE", encabezado, consulta, () -> te.persona(tipoDoc, numero), PersonaTe::incompleta);
 	}
 
@@ -61,7 +66,7 @@ class MockFuentesController {
 			@AuthenticationPrincipal UsuarioActual usuario,
 			@RequestHeader(value = "X-Scenario", required = false) String encabezado,
 			@RequestParam(value = "scenario", required = false) String consulta) {
-		exigirArea(usuario, Fuente.CSS);
+		exigirAcceso(usuario, Fuente.CSS, "mock/css/" + idPersona);
 		return simular("CSS", encabezado, consulta, () -> css.afiliacion(idPersona), AfiliacionCss::incompleta);
 	}
 
@@ -70,7 +75,7 @@ class MockFuentesController {
 			@AuthenticationPrincipal UsuarioActual usuario,
 			@RequestHeader(value = "X-Scenario", required = false) String encabezado,
 			@RequestParam(value = "scenario", required = false) String consulta) {
-		exigirArea(usuario, Fuente.REGISTRO_PUBLICO);
+		exigirAcceso(usuario, Fuente.REGISTRO_PUBLICO, "mock/registro/" + idPersona);
 		return simular("REGISTRO_PUBLICO", encabezado, consulta, () -> registro.consulta(idPersona),
 				ConsultaRegistro::incompleta);
 	}
@@ -80,15 +85,23 @@ class MockFuentesController {
 			@AuthenticationPrincipal UsuarioActual usuario,
 			@RequestHeader(value = "X-Scenario", required = false) String encabezado,
 			@RequestParam(value = "scenario", required = false) String consulta) {
-		exigirArea(usuario, Fuente.SNM);
+		exigirAcceso(usuario, Fuente.SNM, "mock/snm/" + numero);
 		return simular("SNM", encabezado, consulta, () -> snm.expediente(numero), ExpedienteSnm::incompleta);
 	}
 
-	private static void exigirArea(UsuarioActual usuario, Fuente fuente) {
+	private void exigirAcceso(UsuarioActual usuario, Fuente fuente, String recurso) {
 		if (usuario == null || !PoliticaAreas.permiteFuente(usuario.area(), fuente)) {
+			if (usuario != null) {
+				auditoria.denegado(usuario.id(), "CONSULTAR_FUENTE_SIMULADA", recurso);
+			}
 			throw ErrorApi.sinPermiso("FUENTE_FUERA_DE_AREA",
 					"Su cuenta solo puede consultar fuentes autorizadas para su área.");
 		}
+		if (usuario.es(Rol.FUNCIONARIO) && !usuario.tiene(Permiso.VERIFICAR)) {
+			auditoria.denegado(usuario.id(), "CONSULTAR_FUENTE_SIMULADA", recurso);
+			throw ErrorApi.sinPermiso();
+		}
+		auditoria.exito(usuario.id(), "CONSULTAR_FUENTE_SIMULADA", recurso);
 	}
 
 	private <T> T simular(String fuente, String encabezado, String consulta, Supplier<Optional<T>> fuenteDeDatos,

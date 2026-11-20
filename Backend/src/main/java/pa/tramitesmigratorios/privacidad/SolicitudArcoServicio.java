@@ -16,6 +16,8 @@ import pa.tramitesmigratorios.comun.Eventos.SolicitudArcoActualizada;
 import pa.tramitesmigratorios.comun.Eventos.SolicitudArcoRegistrada;
 import pa.tramitesmigratorios.privacidad.SolicitudArco.Estado;
 import pa.tramitesmigratorios.privacidad.SolicitudArco.Tipo;
+import pa.tramitesmigratorios.seguridad.Permiso;
+import pa.tramitesmigratorios.seguridad.PoliticaAreas;
 import pa.tramitesmigratorios.seguridad.Rol;
 import pa.tramitesmigratorios.seguridad.Usuario;
 import pa.tramitesmigratorios.seguridad.UsuarioActual;
@@ -52,6 +54,7 @@ public class SolicitudArcoServicio {
 
 	@Transactional(readOnly = true)
 	public List<SolicitudArco> listar(Estado estado, Boolean fueraDePlazo, UsuarioActual usuario) {
+		exigirBufeteYPermiso(usuario, Permiso.CONSULTAR, "CONSULTAR_SOLICITUDES_ARCO", "solicitudes-arco");
 		List<SolicitudArco> base = usuario.es(Rol.SOLICITANTE)
 				? solicitudes.findByTitularIdOrderByFechaCreacionDesc(usuario.id())
 				: solicitudes.findAllByOrderByFechaCreacionDesc();
@@ -65,6 +68,7 @@ public class SolicitudArcoServicio {
 	/** Una solicitud ajena responde igual que una inexistente (titularidad, CP-03). */
 	@Transactional(readOnly = true)
 	public SolicitudArco obtener(UUID id, UsuarioActual usuario) {
+		exigirBufeteYPermiso(usuario, Permiso.CONSULTAR, "CONSULTAR_SOLICITUD_ARCO", "solicitud-arco/" + id);
 		return solicitudes.findById(id)
 			.filter(s -> !usuario.es(Rol.SOLICITANTE) || s.getTitularId().equals(usuario.id()))
 			.orElseThrow(ErrorApi::noEncontrado);
@@ -73,6 +77,7 @@ public class SolicitudArcoServicio {
 	@Transactional
 	public SolicitudArco atender(UUID id, Estado nuevo, UUID responsableId, String motivoRechazo,
 			UsuarioActual usuario) {
+		exigirBufeteYPermiso(usuario, Permiso.OBSERVAR, "ATENDER_SOLICITUD_ARCO", "solicitud-arco/" + id);
 		SolicitudArco solicitud = solicitudes.findById(id).orElseThrow(ErrorApi::noEncontrado);
 		if (!solicitud.getEstado().puedePasarA(nuevo)) {
 			throw ErrorApi.conflicto("TRANSICION_NO_PERMITIDA",
@@ -84,7 +89,9 @@ public class SolicitudArcoServicio {
 		}
 		UUID responsable = responsableId != null ? responsableId
 				: solicitud.getResponsableId() != null ? solicitud.getResponsableId() : usuario.id();
-		boolean esDelDespacho = usuarios.findById(responsable).map(Usuario::getRol).filter(Rol.FUNCIONARIO::equals).isPresent();
+		boolean esDelDespacho = usuarios.findById(responsable)
+			.filter(u -> u.getRol() == Rol.FUNCIONARIO && !PoliticaAreas.esInstitucional(u.getAreaInstitucional()))
+			.isPresent();
 		if (!esDelDespacho) {
 			throw ErrorApi.entradaInvalida("responsableId", "El responsable debe ser personal del despacho.");
 		}
@@ -93,6 +100,21 @@ public class SolicitudArcoServicio {
 				"tipo=" + solicitud.getTipo() + "; estado=" + nuevo);
 		eventos.publishEvent(new SolicitudArcoActualizada(id, solicitud.getTitularId(), solicitud.getTipo().name(), nuevo.name()));
 		return solicitud;
+	}
+
+	private void exigirBufeteYPermiso(UsuarioActual usuario, Permiso permiso, String operacion, String recurso) {
+		if (usuario.es(Rol.SOLICITANTE)) {
+			return;
+		}
+		if (PoliticaAreas.esInstitucional(usuario.area())) {
+			auditoria.denegado(usuario.id(), operacion, recurso);
+			throw ErrorApi.sinPermiso("AREA_NO_AUTORIZADA",
+					"Las cuentas institucionales externas no pueden consultar ni atender solicitudes ARCO del bufete.");
+		}
+		if (usuario.es(Rol.FUNCIONARIO) && !usuario.tiene(permiso)) {
+			auditoria.denegado(usuario.id(), operacion, recurso);
+			throw ErrorApi.sinPermiso();
+		}
 	}
 
 }

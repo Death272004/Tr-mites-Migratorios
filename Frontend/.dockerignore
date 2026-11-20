@@ -1,6 +1,8 @@
-# No publicar documentación ni metadatos del repositorio en el contenedor web.
+# No publicar documentación, reportes internos ni metadatos del repositorio en el contenedor web.
 *.md
 *.txt
 .gitkeep
 Dockerfile
 .dockerignore
+Reporte/
+qa/

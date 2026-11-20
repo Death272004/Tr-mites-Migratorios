@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import pa.tramitesmigratorios.auditoria.Auditoria;
 import pa.tramitesmigratorios.comun.ErrorApi;
@@ -180,10 +182,10 @@ public class AuthServicio {
 			throw new ErrorApi(HttpStatus.BAD_REQUEST, "ENTRADA_INVALIDA", "Revise los datos enviados.",
 					faltas.stream().map(f -> new ErrorDeCampo("contrasenaNueva", f)).toList());
 		}
-		buzones.sincronizar(usuario.getCorreo(), contrasenaNueva);
 		usuario.cambiarContrasena(codificador.encode(contrasenaNueva));
 		// Las demás sesiones abiertas dejan de servir; la actual continúa.
 		sesiones.revocarOtras(usuario.getId(), actual.sesionId());
+		sincronizarBuzonTrasCommit(usuario.getCorreo(), contrasenaNueva);
 		auditoria.exito(actual.id(), "CAMBIO_CONTRASENA", "usuario/" + actual.id());
 	}
 
@@ -194,8 +196,23 @@ public class AuthServicio {
 		if (!faltas.isEmpty()) {
 			throw new IllegalArgumentException("La contraseña no cumple la política: " + String.join(" ", faltas));
 		}
-		buzones.sincronizar(correo, contrasena);
-		return usuarios.save(new Usuario(nombre, correo, codificador.encode(contrasena), rol, permisos));
+		Usuario guardado = usuarios.save(new Usuario(nombre, correo, codificador.encode(contrasena), rol, permisos));
+		sincronizarBuzonTrasCommit(correo, contrasena);
+		return guardado;
+	}
+
+	private void sincronizarBuzonTrasCommit(String direccion, String contrasena) {
+		if (TransactionSynchronizationManager.isSynchronizationActive()) {
+			TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+				@Override
+				public void afterCommit() {
+					buzones.sincronizar(direccion, contrasena);
+				}
+			});
+		}
+		else {
+			buzones.sincronizar(direccion, contrasena);
+		}
 	}
 
 	/** Mensaje genérico: no revela si la cuenta existe, está bloqueada o la contraseña falló (CP-02). */

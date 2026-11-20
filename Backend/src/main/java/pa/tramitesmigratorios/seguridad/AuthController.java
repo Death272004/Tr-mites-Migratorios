@@ -58,10 +58,10 @@ class AuthController {
 					message = "El número de documento solo admite letras, números y guiones (4 a 40).") String numeroDocumento,
 			@NotBlank(message = "El primer nombre es obligatorio.") @Size(max = 60,
 					message = "El primer nombre es demasiado largo.") String primerNombre,
-			String segundoNombre,
+			@Size(max = 60, message = "El segundo nombre es demasiado largo.") String segundoNombre,
 			@NotBlank(message = "El primer apellido es obligatorio.") @Size(max = 60,
 					message = "El primer apellido es demasiado largo.") String primerApellido,
-			String segundoApellido,
+			@Size(max = 60, message = "El segundo apellido es demasiado largo.") String segundoApellido,
 			@NotNull(message = "La fecha de nacimiento es obligatoria.") @Past(message = "La fecha de nacimiento debe ser anterior a hoy.") LocalDate fechaNacimiento,
 			@NotBlank(message = "La nacionalidad es obligatoria.") @Pattern(regexp = "[A-Z]{2}",
 					message = "La nacionalidad es un código de país de dos letras.") String nacionalidad,
@@ -108,16 +108,6 @@ class AuthController {
 		return respuesta(sesion);
 	}
 
-	/**
-	 * Atajo de demostración local: crea una sesión para la cuenta semilla marcada para
-	 * autocompletado. Nunca recibe ni devuelve contraseñas y se controla por configuración.
-	 */
-	@PostMapping("/autocompletar")
-	LoginRespuesta autocompletar(@Valid @RequestBody DemoAutocompletarSolicitud solicitud) {
-		return respuesta(servicio.iniciarSesionDemostracion(solicitud.rol(), solicitud.tipoSolicitante(),
-				solicitud.areaInstitucional()));
-	}
-
 	@PostMapping("/logout")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	void cerrarSesion(@AuthenticationPrincipal UsuarioActual usuario) {
@@ -154,7 +144,7 @@ class AuthController {
 		cuentas.confirmarRecuperacion(solicitud.token(), solicitud.contrasenaNueva());
 	}
 
-	private static LoginRespuesta respuesta(SesionIniciada sesion) {
+	static LoginRespuesta respuesta(SesionIniciada sesion) {
 		Usuario u = sesion.usuario();
 		return new LoginRespuesta(sesion.token(), sesion.expiraEn(), u.getRol(), usuarioDto(u));
 	}

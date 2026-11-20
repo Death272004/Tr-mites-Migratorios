@@ -6,7 +6,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/Ingeniería%20de%20Software%20III-2026-F28C28?style=for-the-badge" alt="Ingeniería de Software III 2026">
-  <img src="https://img.shields.io/badge/Sprints-0%20a%206-8B5CF6?style=for-the-badge" alt="Sprints 0 a 6">
+  <img src="https://img.shields.io/badge/Sprints-0%20a%207-8B5CF6?style=for-the-badge" alt="Sprints 0 a 7">
   <img src="https://img.shields.io/badge/MVP-datos%20ficticios-56C596?style=for-the-badge" alt="MVP con datos ficticios">
 </p>
 
@@ -60,6 +60,8 @@ Alcance importante: cualquier convenio o integración automática dependerá de 
 | [Sprint 4](sprint-4/README.md) | Historias, triple restricción, QA, factura y presentación. |
 | [Sprint 5](sprint-5/README.md) | Refinamiento del MVP, presupuesto y presentación. |
 | [Sprint 6](sprint-6/README.md) | Review #2, documento del cierre y presentación técnica. |
+| [Sprint 7](sprint-7/README.md) | Aceptación, auditoría técnica y de seguridad, documento acumulativo y presentación final. |
+| [Usuarios demo](usuarios-proyecto.md) | Directorio de cuentas semilla, roles, áreas institucionales y credenciales locales. |
 
 ##  Documentos por rama de trabajo
 

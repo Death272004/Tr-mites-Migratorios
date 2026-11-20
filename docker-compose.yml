@@ -30,7 +30,9 @@ services:
       # Las cuentas iniciales se crean mediante Flyway (V7); el cargador Java queda apagado.
       DEMO_USUARIOS: ${DEMO_USUARIOS:-false}
       DEMO_CONTRASENA: ${DEMO_CONTRASENA:-Demo-Tramites-2026}
-      # Solo habilita el atajo local de cuentas demo; nunca devuelve contraseñas.
+      # Activado en desarrollo local para inicio de sesión rápido con cuentas semilla demo.
+      # Para entornos reales o auditoría, definir SPRING_PROFILES_ACTIVE= y DEMO_AUTOCOMPLETAR=false.
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-demo}
       DEMO_AUTOCOMPLETAR: ${DEMO_AUTOCOMPLETAR:-true}
       # Correo institucional local. La entrega ocurre únicamente dentro de esta red Docker.
       CORREO_MODO: ${CORREO_MODO:-smtp}

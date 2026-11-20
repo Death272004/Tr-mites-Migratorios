@@ -14,16 +14,23 @@
 
   var DEFAULT_HTTP_BASE = "/api";
 
+  function rutaRelativaSegura(valor) {
+    if (typeof valor !== "string") return undefined;
+    var limpio = valor.trim();
+    return /^\/(?!\/)/.test(limpio) ? limpio : undefined;
+  }
+
   function override() {
     try {
       var params = new global.URLSearchParams(global.location.search || "");
       if (params.has("api")) {
-        var valor = params.get("api");
-        return valor === "" || valor === "off" ? null : valor;
+        // S-04: solo se permiten rutas relativas del mismo origen (inician con '/' y nunca '//').
+        var segura = rutaRelativaSegura(params.get("api"));
+        if (segura !== undefined) return segura;
       }
     } catch (e) { /* entorno sin URLSearchParams */ }
     if (typeof global.TM_API_BASE_URL !== "undefined") {
-      return global.TM_API_BASE_URL || null;
+      return rutaRelativaSegura(global.TM_API_BASE_URL) || null;
     }
     return undefined; // sin override: decidir por origen
   }

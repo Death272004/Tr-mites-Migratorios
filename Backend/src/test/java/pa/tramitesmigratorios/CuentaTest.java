@@ -25,7 +25,8 @@ class CuentaTest extends PruebaApi {
 
 	private static String registro(String correo, String documento, String contrasena, boolean acepta) {
 		return """
-				{"tipoDocumento":"PASAPORTE","tipoSolicitante":"TURISTA","numeroDocumento":"%s","nombre":"Persona Ficticia",
+				{"tipoDocumento":"PASAPORTE","tipoSolicitante":"TURISTA","numeroDocumento":"%s",
+				 "primerNombre":"Persona","primerApellido":"Ficticia","fechaNacimiento":"1995-05-15",
 				 "nacionalidad":"CO","correo":"%s","telefono":"+507 6000-0000","paisResidencia":"PA",
 				 "contrasena":"%s","aceptaTratamientoDatos":%s}"""
 			.formatted(documento, correo, contrasena, acepta);
@@ -64,6 +65,9 @@ class CuentaTest extends PruebaApi {
 		String token = iniciarSesion(correo, CLAVE);
 		obtener(token, "/api/perfil").andExpect(status().isOk())
 			.andExpect(jsonPath("$.nombre").value("Persona Ficticia"))
+			.andExpect(jsonPath("$.primerNombre").value("Persona"))
+			.andExpect(jsonPath("$.primerApellido").value("Ficticia"))
+			.andExpect(jsonPath("$.fechaNacimiento").value("1995-05-15"))
 			.andExpect(jsonPath("$.tipoDocumento").value("PASAPORTE"))
 			.andExpect(jsonPath("$.tipoSolicitante").value("TURISTA"))
 			.andExpect(jsonPath("$.numeroDocumento").value(documento))

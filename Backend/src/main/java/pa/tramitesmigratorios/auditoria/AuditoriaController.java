@@ -116,7 +116,7 @@ class AuditoriaController {
 	/** Entre comillas y sin fórmulas: una hoja de cálculo no debe ejecutar el contenido. */
 	private static String celda(String valor) {
 		String texto = valor == null ? "" : valor;
-		if (!texto.isEmpty() && "=+-@".indexOf(texto.charAt(0)) >= 0) {
+		if (!texto.isEmpty() && "=+-@\t\r".indexOf(texto.charAt(0)) >= 0) {
 			texto = "'" + texto;
 		}
 		return '"' + texto.replace("\"", "\"\"") + '"';

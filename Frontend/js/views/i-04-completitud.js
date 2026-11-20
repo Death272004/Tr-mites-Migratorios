@@ -61,9 +61,18 @@
             if (docErr) { callback(docErr); return; }
             var docs = documentos || [];
             for (var i = 0; i < docs.length; i++) {
-              d.requisitos.push({ nombre: docs[i].tipoDocumental || docs[i].nombreArchivo || "Documento", casilla: docs[i].nombreArchivo || "Cargado", estado: docs[i].estadoRevision === "APROBADO" ? "Completo" : "Incompleto", motivo: docs[i].estadoRevision || "" });
+              d.requisitos.push({
+                docId: docs[i].id,
+                nombreArchivo: docs[i].nombreArchivo || "documento",
+                nombre: docs[i].tipoDocumental || docs[i].nombreArchivo || "Documento",
+                casilla: docs[i].nombreArchivo || "Cargado",
+                estado: docs[i].estadoRevision === "APROBADO" ? "Completo" : "Incompleto",
+                motivo: docs[i].estadoRevision || ""
+              });
             }
-            req = d.requisitos.map(function (r) { return { nombre: r.nombre, casilla: r.casilla, estado: r.estado, motivo: r.motivo }; });
+            req = d.requisitos.map(function (r) {
+              return { docId: r.docId, nombreArchivo: r.nombreArchivo, nombre: r.nombre, casilla: r.casilla, estado: r.estado, motivo: r.motivo };
+            });
             callback(null);
           });
         });
@@ -148,6 +157,31 @@
           main.appendChild(layout.el("span", "checklist__name", r.nombre));
           main.appendChild(layout.el("span", "checklist__meta", r.casilla + (r.motivo ? " · " + r.motivo : "")));
           item.appendChild(main);
+          if (r.docId && d.id && api && api.isOnline() && !(api.isDemoSession && api.isDemoSession())) {
+            item.appendChild(button({
+              variant: "ghost",
+              text: "Descargar",
+              onClick: function () {
+                api.download("/expedientes/" + encodeURIComponent(d.id) + "/documentos/" + encodeURIComponent(r.docId) + "/contenido", {}, function (dlErr, blob) {
+                  if (dlErr) {
+                    var box = inner.querySelector(".auth-error");
+                    if (box) { box.textContent = dlErr.mensajeUsuario || "No se pudo descargar el documento."; box.classList.add("is-visible"); }
+                    return;
+                  }
+                  if (blob && global.URL && global.URL.createObjectURL) {
+                    var url = global.URL.createObjectURL(blob);
+                    var a = document.createElement("a");
+                    a.href = url;
+                    a.download = r.nombreArchivo || "documento";
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    setTimeout(function () { global.URL.revokeObjectURL(url); }, 1000);
+                  }
+                });
+              }
+            }));
+          }
           item.appendChild(inlineSelect(optionsTo(["Completo", "Incompleto"]), r.estado, function (v) {
             r.estado = v;
             renderContent();

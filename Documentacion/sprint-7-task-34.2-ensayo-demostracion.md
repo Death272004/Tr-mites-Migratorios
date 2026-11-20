@@ -24,9 +24,9 @@ El ensayo técnico no sustituye la interacción visual del navegador. Deben comp
 2. Mantener abierta la sesión correcta antes de probar cada rol.
 3. Registrar consentimiento antes de ejecutar verificaciones.
 4. Mostrar que un error técnico no equivale a resultado negativo.
-5. No presentar CP-12 como aprobado; permanece bloqueado por falta de respuesta HTTP de descarga protegida.
+5. Mostrar la descarga protegida de documentos desde `I-04`, `I-06` o `P-19` y capturar la evidencia HTTP de CP-12 (`200` autorizado, `401` sin sesión, `403`/`404` sin permiso).
 6. Mostrar las limitaciones del MVP al finalizar.
 
 ## Estado
 
-**Ensayo técnico completado; ensayo visual pendiente de ejecutar en navegador.** No se modificó código ni se hizo commit o push.
+**Ensayo técnico completado; ensayo visual y captura final de CP-04/CP-12 pendientes de ejecutar en navegador.** No se hizo commit ni push.

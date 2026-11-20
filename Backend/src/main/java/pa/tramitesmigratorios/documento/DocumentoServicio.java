@@ -54,7 +54,7 @@ public class DocumentoServicio {
 
 	@Transactional
 	public Cargado adjuntar(UUID expedienteId, String tipoDocumental, MultipartFile archivo, UsuarioActual usuario) {
-		Expediente expediente = acceso.paraOperar(expedienteId, usuario, Permiso.CONSULTAR);
+		Expediente expediente = acceso.paraOperar(expedienteId, usuario, Permiso.OBSERVAR);
 		if (expediente.getEstado().esTerminal()) {
 			throw ErrorApi.conflicto("EXPEDIENTE_CERRADO", "El expediente ya no admite documentos.");
 		}

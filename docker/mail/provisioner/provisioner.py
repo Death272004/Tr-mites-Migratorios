@@ -127,7 +127,7 @@ class Manejador(BaseHTTPRequestHandler):
             contrasena = str(datos.get("contrasena", ""))
             if not CORREO_VALIDO.fullmatch(correo):
                 raise ValueError("Correo institucional inválido")
-            if not 10 <= len(contrasena) <= 200:
+            if not 10 <= len(contrasena) <= 200 or any(c in contrasena for c in ("\r", "\n", "\x00")):
                 raise ValueError("Contraseña inválida")
             actualizada = guardar_cuenta(correo, contrasena)
             self.enviar_json(

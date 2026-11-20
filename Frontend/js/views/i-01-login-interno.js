@@ -201,6 +201,12 @@
               if (err && err.status !== 401) return setError(err.mensajeUsuario);
               if (err) return registrarFallo();
               if (!data || !data.token || data.rol === "SOLICITANTE") {
+                if (data && data.token) {
+                  global.tm.api.request("POST", "/auth/logout", {
+                    pantalla: "I-01",
+                    headers: { Authorization: "Bearer " + data.token }
+                  }, function () {});
+                }
                 return setError("Esta cuenta no tiene acceso al módulo interno. Use el portal del cliente.");
               }
               sesionBackend = data;
@@ -271,7 +277,15 @@
       var cuenta = sesionBackend.usuario || {};
       opts.onInternalLoginSuccess({
         rol: sesionBackend.rol,
-        usuario: { id: cuenta.id, nombre: cuenta.nombre, correo: cuenta.correo, permisos: cuenta.permisos, estacion: datos.estacion, ip: datos.ip },
+        usuario: {
+          id: cuenta.id,
+          nombre: cuenta.nombre,
+          correo: cuenta.correo,
+          permisos: cuenta.permisos,
+          areaInstitucional: cuenta.areaInstitucional || "BUFETE",
+          estacion: datos.estacion,
+          ip: datos.ip
+        },
         token: sesionBackend.token,
         expiraEn: sesionBackend.expiraEn,
       });

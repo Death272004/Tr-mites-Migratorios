@@ -14,6 +14,8 @@ import pa.tramitesmigratorios.auditoria.Auditoria;
 import pa.tramitesmigratorios.comun.ErrorApi;
 import pa.tramitesmigratorios.comun.Eventos.ConsentimientoRevocado;
 import pa.tramitesmigratorios.privacidad.Consentimiento.Estado;
+import pa.tramitesmigratorios.seguridad.Permiso;
+import pa.tramitesmigratorios.seguridad.PoliticaAreas;
 import pa.tramitesmigratorios.seguridad.Rol;
 import pa.tramitesmigratorios.seguridad.Usuario;
 import pa.tramitesmigratorios.seguridad.UsuarioActual;
@@ -48,6 +50,7 @@ public class ConsentimientoServicio {
 
 	@Transactional
 	public Consentimiento registrar(Nuevo nuevo, UsuarioActual usuario) {
+		exigirBufeteYPermiso(usuario, Permiso.OBSERVAR, "REGISTRAR_CONSENTIMIENTO", "titular/" + nuevo.titularId());
 		if (usuario.es(Rol.SOLICITANTE) && !usuario.id().equals(nuevo.titularId())) {
 			auditoria.denegado(usuario.id(), "REGISTRAR_CONSENTIMIENTO", "titular/" + nuevo.titularId());
 			throw ErrorApi.sinPermiso();
@@ -70,6 +73,8 @@ public class ConsentimientoServicio {
 
 	@Transactional(readOnly = true)
 	public List<Consentimiento> listar(UUID titularId, Estado estado, UsuarioActual usuario) {
+		exigirBufeteYPermiso(usuario, Permiso.CONSULTAR, "CONSULTAR_CONSENTIMIENTOS",
+				titularId != null ? "titular/" + titularId : "consentimientos");
 		UUID titular = usuario.es(Rol.SOLICITANTE) ? usuario.id() : titularId;
 		if (usuario.es(Rol.SOLICITANTE) && titularId != null && !titularId.equals(usuario.id())) {
 			auditoria.denegado(usuario.id(), "CONSULTAR_CONSENTIMIENTOS", "titular/" + titularId);
@@ -83,6 +88,7 @@ public class ConsentimientoServicio {
 
 	@Transactional
 	public Consentimiento revocar(UUID id, UsuarioActual usuario) {
+		exigirBufeteYPermiso(usuario, Permiso.OBSERVAR, "REVOCAR_CONSENTIMIENTO", "consentimiento/" + id);
 		Consentimiento consentimiento = consentimientos.findById(id)
 			.filter(c -> !usuario.es(Rol.SOLICITANTE) || c.getTitularId().equals(usuario.id()))
 			.orElseThrow(ErrorApi::noEncontrado);
@@ -94,6 +100,21 @@ public class ConsentimientoServicio {
 				"finalidad=" + consentimiento.getFinalidad() + "; alcance=" + consentimiento.getAlcance());
 		eventos.publishEvent(new ConsentimientoRevocado(id));
 		return consentimiento;
+	}
+
+	private void exigirBufeteYPermiso(UsuarioActual usuario, Permiso permiso, String operacion, String recurso) {
+		if (usuario.es(Rol.SOLICITANTE)) {
+			return;
+		}
+		if (PoliticaAreas.esInstitucional(usuario.area())) {
+			auditoria.denegado(usuario.id(), operacion, recurso);
+			throw ErrorApi.sinPermiso("AREA_NO_AUTORIZADA",
+					"Las cuentas institucionales externas no pueden gestionar consentimientos del bufete.");
+		}
+		if (usuario.es(Rol.FUNCIONARIO) && !usuario.tiene(permiso)) {
+			auditoria.denegado(usuario.id(), operacion, recurso);
+			throw ErrorApi.sinPermiso();
+		}
 	}
 
 	/** ¿El titular tiene algún consentimiento vigente? Sin él, el tratamiento se limita a lo contractual. */

@@ -357,7 +357,54 @@
     container.appendChild(block);
   }
 
-  function renderContent(container, opts, estado, verifsLista, verifError) {
+  function renderDocumentosBloque(container, expedienteId, docsLista) {
+    if (!expedienteId || !Array.isArray(docsLista) || docsLista.length === 0) return;
+    var block = layout.el("div", "seguimiento-block");
+    block.appendChild(layout.el("h2", "seguimiento-block__title", "Documentos del expediente"));
+    var errBox = layout.el("div", "auth-error", "");
+    errBox.setAttribute("aria-live", "polite");
+    block.appendChild(errBox);
+    var rows = docsLista.map(function (doc) {
+      var btn = button({
+        variant: "ghost",
+        text: "Descargar",
+        onClick: function () {
+          errBox.textContent = "";
+          errBox.classList.remove("is-visible");
+          api.download("/expedientes/" + encodeURIComponent(expedienteId) + "/documentos/" + encodeURIComponent(doc.id) + "/contenido", {}, function (err, blob) {
+            if (err) {
+              errBox.textContent = err.mensajeUsuario || "No se pudo descargar el documento.";
+              errBox.classList.add("is-visible");
+              return;
+            }
+            if (blob && global.URL && global.URL.createObjectURL) {
+              var url = global.URL.createObjectURL(blob);
+              var a = document.createElement("a");
+              a.href = url;
+              a.download = doc.nombreArchivo || "documento";
+              document.body.appendChild(a);
+              a.click();
+              document.body.removeChild(a);
+              setTimeout(function () { global.URL.revokeObjectURL(url); }, 1000);
+            }
+          });
+        }
+      });
+      return [
+        { text: doc.tipoDocumental || "—" },
+        { text: doc.nombreArchivo || "documento" },
+        { text: doc.estadoRevision || "PENDIENTE" },
+        { node: btn }
+      ];
+    });
+    block.appendChild(global.tm.ui.table({
+      headers: [{ label: "Tipo" }, { label: "Archivo" }, { label: "Revisión" }, { label: "Descarga" }],
+      rows: rows
+    }));
+    container.appendChild(block);
+  }
+
+  function renderContent(container, opts, estado, verifsLista, verifError, docsLista, expedienteId) {
     layout.clear(container);
     var inner = layout.el("div", "app-content__inner");
 
@@ -417,6 +464,7 @@
     inner.appendChild(tlBlock);
 
     renderVerificacionesBloque(inner, verifsLista || [], verifError);
+    renderDocumentosBloque(inner, expedienteId, docsLista || []);
 
     var nota = layout.el("p", "seguimiento-note", "Estados visibles para el titular: " + ESTADOS_VISIBLES.join(" → ") + ".");
     inner.appendChild(nota);
@@ -500,7 +548,9 @@
           if (historyErr) { renderError(container, { mensaje: historyErr.mensajeUsuario, onRetry: function () { renderP19(container, opts); } }); return; }
           var estado = estadoDesdeApi(dto, historial);
           api.request("GET", "/expedientes/" + encodeURIComponent(seleccionado.id) + "/verificaciones", { pantalla: "P-19" }, function (verr, vlist) {
-            renderContent(container, opts, estado, Array.isArray(vlist) ? vlist : [], verr || null);
+            api.request("GET", "/expedientes/" + encodeURIComponent(seleccionado.id) + "/documentos", { pantalla: "P-19" }, function (derr, dlist) {
+              renderContent(container, opts, estado, Array.isArray(vlist) ? vlist : [], verr || null, !derr && Array.isArray(dlist) ? dlist : [], seleccionado.id);
+            });
           });
         });
       });

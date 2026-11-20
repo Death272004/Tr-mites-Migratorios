@@ -4,7 +4,10 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.Year;
 import java.time.ZoneOffset;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
@@ -25,6 +28,8 @@ import pa.tramitesmigratorios.seguridad.Permiso;
 import pa.tramitesmigratorios.seguridad.PoliticaAreas;
 import pa.tramitesmigratorios.seguridad.RepresentacionRepo;
 import pa.tramitesmigratorios.seguridad.Rol;
+import pa.tramitesmigratorios.seguridad.Usuario;
+import pa.tramitesmigratorios.seguridad.Usuario.TipoSolicitante;
 import pa.tramitesmigratorios.seguridad.UsuarioActual;
 import pa.tramitesmigratorios.seguridad.UsuarioRepo;
 import pa.tramitesmigratorios.verificacion.Verificacion;
@@ -86,10 +91,10 @@ public class ExpedienteServicio {
 			throw ErrorApi.sinPermiso("SIN_REPRESENTACION",
 					"No tiene una representación acreditada para presentar en nombre de ese titular.");
 		}
-		validarTitularidadDatos(titular, datosSolicitud, usuario);
+		Map<String, Object> datosNormalizados = validarTitularidadDatos(titular, datosSolicitud, usuario);
 		String numero = "EXP-%d-%06d".formatted(Year.now().getValue(), expedientes.siguienteNumero());
 		Expediente expediente = expedientes
-			.save(new Expediente(numero, titular, usuario.id(), tipo, EstadoExpediente.RECIBIDO, datosSolicitud));
+			.save(new Expediente(numero, titular, usuario.id(), tipo, EstadoExpediente.RECIBIDO, datosNormalizados));
 		historial.save(new HistorialEstado(expediente.getId(), null, EstadoExpediente.RECIBIDO, usuario.id(),
 				"Presentación de la solicitud"));
 		auditoria.exito(usuario.id(), "CREAR_EXPEDIENTE", "expediente/" + expediente.getId(), "tipoTramite=" + tipo);
@@ -97,20 +102,100 @@ public class ExpedienteServicio {
 	}
 
 
-	private void validarTitularidadDatos(UUID titular, Map<String, Object> datosSolicitud, UsuarioActual usuario) {
-		if (!titular.equals(usuario.id()) || datosSolicitud == null || usuario.rol() == Rol.FUNCIONARIO) return;
+	private Map<String, Object> validarTitularidadDatos(UUID titular, Map<String, Object> datosSolicitud,
+			UsuarioActual usuario) {
+		if (!titular.equals(usuario.id()) || datosSolicitud == null || usuario.rol() == Rol.FUNCIONARIO) {
+			return datosSolicitud;
+		}
 		Object raw = datosSolicitud.get("datosPersonales");
-		if (!(raw instanceof Map<?, ?> personales)) return;
+		if (!(raw instanceof Map<?, ?> personales)) {
+			return datosSolicitud;
+		}
+		Usuario cuenta = usuarios.findById(usuario.id()).orElse(null);
+		if (cuenta == null || cuenta.getTipoSolicitante() == TipoSolicitante.PASANTE_BUFETE) {
+			return datosSolicitud;
+		}
+
 		String nombres = texto(personales.get("nombres"));
 		String primerApellido = texto(personales.get("primerApellido"));
 		String segundoApellido = texto(personales.get("segundoApellido"));
-		String capturado = normalizar((nombres + " " + primerApellido + " " + segundoApellido).trim());
-		String cuenta = usuarios.findById(usuario.id()).map(u -> normalizar(u.getNombre())).orElse("");
-		if (cuenta.isBlank() || capturado.isBlank()) return;
-		if (!coincideNombre(capturado, cuenta)) {
-			auditoria.denegado(usuario.id(), "CREAR_EXPEDIENTE", "titular/datos-inconsistentes");
-			throw ErrorApi.entradaInvalida("datosPersonales", "Los datos del titular deben coincidir con la cuenta autenticada.");
+		String apellidos = primerApellido.isEmpty() && segundoApellido.isEmpty()
+				? texto(personales.get("apellidos"))
+				: (primerApellido + " " + segundoApellido).trim();
+		String capturado = normalizar((nombres + " " + apellidos).trim());
+		String nombreCuenta = normalizar(nombreCompletoCuenta(cuenta));
+		if (capturado.isBlank() || (!nombreCuenta.isBlank() && !coincideNombreExacto(capturado, nombreCuenta))) {
+			rechazarTitularidad(usuario);
 		}
+
+		validarCampoIdentidad(personales, "fechaNacimiento",
+				cuenta.getFechaNacimiento() == null ? null : cuenta.getFechaNacimiento().toString(), false, usuario);
+		validarCampoIdentidad(personales, "nacionalidad", cuenta.getNacionalidad(), false, usuario);
+		validarCampoIdentidad(personales, "sexo", cuenta.getSexo(), false, usuario);
+		validarCampoIdentidad(personales, "lugarNacimiento", cuenta.getLugarNacimiento(), true, usuario);
+		validarCampoIdentidad(personales, "numeroDocumento", cuenta.getNumeroDocumento(), false, usuario);
+		validarCampoIdentidad(personales, "tipoDocumento",
+				cuenta.getTipoDocumento() == null ? null : cuenta.getTipoDocumento().name(), false, usuario);
+
+		Map<String, Object> copia = new HashMap<>(datosSolicitud);
+		Map<String, Object> personalesCopia = new HashMap<>();
+		for (Map.Entry<?, ?> entry : personales.entrySet()) {
+			if (entry.getKey() != null) {
+				personalesCopia.put(String.valueOf(entry.getKey()), entry.getValue());
+			}
+		}
+		if (cuenta.getFechaNacimiento() != null) {
+			personalesCopia.put("fechaNacimiento", cuenta.getFechaNacimiento().toString());
+		}
+		if (cuenta.getNacionalidad() != null && !cuenta.getNacionalidad().isBlank()) {
+			personalesCopia.put("nacionalidad", cuenta.getNacionalidad());
+		}
+		if (cuenta.getSexo() != null && !cuenta.getSexo().isBlank()) {
+			personalesCopia.put("sexo", cuenta.getSexo());
+		}
+		if (cuenta.getLugarNacimiento() != null && !cuenta.getLugarNacimiento().isBlank()) {
+			personalesCopia.put("lugarNacimiento", cuenta.getLugarNacimiento());
+		}
+		if (cuenta.getNumeroDocumento() != null && !cuenta.getNumeroDocumento().isBlank()) {
+			personalesCopia.put("numeroDocumento", cuenta.getNumeroDocumento());
+		}
+		if (cuenta.getTipoDocumento() != null) {
+			personalesCopia.put("tipoDocumento", cuenta.getTipoDocumento().name());
+		}
+		copia.put("datosPersonales", personalesCopia);
+		return copia;
+	}
+
+	private void validarCampoIdentidad(Map<?, ?> personales, String campo, String esperado, boolean normalizarTexto,
+			UsuarioActual usuario) {
+		if (esperado == null || esperado.isBlank() || !personales.containsKey(campo)) {
+			return;
+		}
+		String recibido = texto(personales.get(campo));
+		boolean igual = normalizarTexto
+				? normalizar(recibido).equals(normalizar(esperado))
+				: recibido.equalsIgnoreCase(esperado.trim());
+		if (recibido.isBlank() || !igual) {
+			rechazarTitularidad(usuario);
+		}
+	}
+
+	private void rechazarTitularidad(UsuarioActual usuario) {
+		auditoria.denegado(usuario.id(), "CREAR_EXPEDIENTE", "titular/datos-inconsistentes");
+		throw ErrorApi.entradaInvalida("datosPersonales",
+				"Los datos del titular deben coincidir con la cuenta autenticada.");
+	}
+
+	private static String nombreCompletoCuenta(Usuario cuenta) {
+		if (cuenta.getPrimerNombre() != null && !cuenta.getPrimerNombre().isBlank()
+				&& cuenta.getPrimerApellido() != null && !cuenta.getPrimerApellido().isBlank()) {
+			return String.join(" ", java.util.stream.Stream.of(cuenta.getPrimerNombre(), cuenta.getSegundoNombre(),
+					cuenta.getPrimerApellido(), cuenta.getSegundoApellido())
+				.filter(v -> v != null && !v.isBlank())
+				.map(String::trim)
+				.toList());
+		}
+		return cuenta.getNombre() == null ? "" : cuenta.getNombre();
 	}
 
 	private static String texto(Object valor) {
@@ -119,14 +204,20 @@ public class ExpedienteServicio {
 
 	private static String normalizar(String valor) {
 		return java.text.Normalizer.normalize(valor == null ? "" : valor, java.text.Normalizer.Form.NFD)
-			.replaceAll("\\p{M}", "").toLowerCase(java.util.Locale.ROOT).replaceAll("[^a-z0-9 ]", " ")
+			.replaceAll("\\p{M}", "").toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9 ]", " ")
 			.replaceAll("\\s+", " ").trim();
 	}
 
-	private static boolean coincideNombre(String capturado, String cuenta) {
-		java.util.Set<String> capturados = new java.util.HashSet<>(java.util.Arrays.asList(capturado.split(" ")));
-		for (String token : cuenta.split(" ")) if (!capturados.contains(token)) return false;
-		return true;
+	private static boolean coincideNombreExacto(String capturado, String cuenta) {
+		List<String> tokensCapturados = Arrays.stream(capturado.split(" "))
+			.filter(s -> !s.isBlank())
+			.sorted()
+			.toList();
+		List<String> tokensCuenta = Arrays.stream(cuenta.split(" "))
+			.filter(s -> !s.isBlank())
+			.sorted()
+			.toList();
+		return tokensCapturados.equals(tokensCuenta);
 	}
 
 	/** Solo los expedientes accesibles al usuario según su rol y la titularidad (HU-16 CA-1). */

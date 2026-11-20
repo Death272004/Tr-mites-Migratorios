@@ -104,4 +104,16 @@ class AutorizacionTest extends PruebaApi {
 		obtener(sinPermisos, "/api/expedientes").andExpect(status().isForbidden());
 	}
 
+	@Test
+	void unPasanteInstitucionalNoPuedeCambiarElEstadoDelExpedienteDelBufete() throws Exception {
+		String cliente = tokenDe(Rol.SOLICITANTE);
+		String id = expediente(cliente, TRAMITE_SIMPLE);
+		Usuario pasanteRp = usuario(Rol.FUNCIONARIO, Permiso.CONSULTAR, Permiso.OBSERVAR, Permiso.VERIFICAR);
+		jdbc.update("UPDATE usuario SET area_institucional = 'RP' WHERE id = ?", pasanteRp.getId());
+
+		modificar(token(pasanteRp), "/api/expedientes/{id}/estado",
+				"{\"estadoNuevo\":\"EN_ANALISIS\",\"motivo\":\"Intento externo\",\"version\":0}", id)
+			.andExpect(status().isForbidden());
+	}
+
 }

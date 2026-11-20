@@ -14,7 +14,7 @@ Se completó la documentación de aceptación, manual técnico, manual de usuari
 
 ## Métricas y alcance
 
-La suite automatizada registrada contiene 152 pruebas sin fallos. Docker mantiene backend, base de datos y frontend saludables en el entorno local. CP-12 sigue bloqueado porque no se obtuvo una respuesta HTTP de descarga protegida.
+La suite automatizada tras las correcciones de auditoría contiene **156 pruebas sin fallos** (`0` fallos, `0` errores, `0` omitidas; `BUILD SUCCESS`), incluyendo pruebas de regresión de seguridad (aislamiento de áreas `RP`/`CSS`/`TE`, validación estricta de titularidad, excepción `PASANTE_BUFETE`, permisos granulares y descarga protegida). Docker mantiene backend, base de datos, correo local y frontend saludables. El endpoint protegido de descarga `/contenido` ya fue conectado en `I-04`, `I-06` y `P-19`, pendiente únicamente de capturar la evidencia visual de CP-12 en navegador.
 
 ## Limitaciones
 
@@ -22,7 +22,7 @@ El MVP usa datos ficticios y fuentes RP, CSS, TE y SNM simuladas o asistidas. No
 
 ## Recomendaciones
 
-Ejecutar la instalación aislada, repetir CP-12 contra un documento persistido y crear la etiqueta Git solo después de la aceptación del Product Owner.
+Ejecutar la instalación aislada, capturar en navegador las evidencias finales de CP-04 y CP-12 tras las correcciones aplicadas y crear la etiqueta Git solo después de la aceptación del Product Owner.
 
 ## Estado
 

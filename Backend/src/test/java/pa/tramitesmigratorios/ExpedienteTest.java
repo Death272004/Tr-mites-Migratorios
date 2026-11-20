@@ -56,7 +56,7 @@ class ExpedienteTest extends PruebaApi {
 				  "tipoTramite": "RESIDENCIA_TEMPORAL",
 				  "datosSolicitud": {
 				    "motivo": "Trabajo",
-				    "datosPersonales": {"nombres": "Ana", "apellidos": "Prueba"},
+				    "datosPersonales": {"nombres": "Usuario", "primerApellido": "ficticio"},
 				    "pagos": {"modalidad": "SIMULADO", "pagado": true, "total": 50}
 				  }
 				}
@@ -65,17 +65,47 @@ class ExpedienteTest extends PruebaApi {
 		MvcResult creado = enviar(token, "/api/expedientes", cuerpo)
 			.andExpect(status().isCreated())
 			.andExpect(jsonPath("$.datosSolicitud.motivo").value("Trabajo"))
-			.andExpect(jsonPath("$.datosSolicitud.datosPersonales.nombres").value("Ana"))
+			.andExpect(jsonPath("$.datosSolicitud.datosPersonales.nombres").value("Usuario"))
 			.andExpect(jsonPath("$.datosSolicitud.pagos.total").value(50))
 			.andReturn();
 		String id = leer(creado, "$.id");
 
 		obtener(token, "/api/expedientes/{id}", id)
 			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.datosSolicitud.datosPersonales.apellidos").value("Prueba"));
+			.andExpect(jsonPath("$.datosSolicitud.datosPersonales.primerApellido").value("ficticio"));
 		assertThat(jdbc.queryForObject(
 				"SELECT datos_solicitud->>'motivo' FROM expediente WHERE id = ?::uuid", String.class, id))
 			.isEqualTo("Trabajo");
+	}
+
+	@Test
+	void validaEstrictamenteLosDatosDelTitularYPermitePasanteDeBufete() throws Exception {
+		Usuario cliente = usuario(Rol.SOLICITANTE);
+		jdbc.update(
+				"UPDATE usuario SET primer_nombre='Carla', primer_apellido='Perez', nombre='Carla Perez', fecha_nacimiento='1992-06-12', nacionalidad='CO', sexo='F' WHERE id = ?",
+				cliente.getId());
+		String tokenCliente = token(cliente);
+
+		// Campos vacíos o nombres extra inventados se rechazan (S-03).
+		enviar(tokenCliente, "/api/expedientes",
+				"{\"tipoTramite\":\"RESIDENCIA_TEMPORAL\",\"datosSolicitud\":{\"datosPersonales\":{\"nombres\":\"\",\"primerApellido\":\"\"}}}")
+			.andExpect(status().isBadRequest());
+		enviar(tokenCliente, "/api/expedientes",
+				"{\"tipoTramite\":\"RESIDENCIA_TEMPORAL\",\"datosSolicitud\":{\"datosPersonales\":{\"nombres\":\"Carla Inventada\",\"primerApellido\":\"Perez\"}}}")
+			.andExpect(status().isBadRequest());
+		enviar(tokenCliente, "/api/expedientes",
+				"{\"tipoTramite\":\"RESIDENCIA_TEMPORAL\",\"datosSolicitud\":{\"datosPersonales\":{\"nombres\":\"Carla\",\"primerApellido\":\"Perez\",\"fechaNacimiento\":\"1980-01-01\"}}}")
+			.andExpect(status().isBadRequest());
+		enviar(tokenCliente, "/api/expedientes",
+				"{\"tipoTramite\":\"RESIDENCIA_TEMPORAL\",\"datosSolicitud\":{\"datosPersonales\":{\"nombres\":\"Carla\",\"primerApellido\":\"Perez\",\"fechaNacimiento\":\"1992-06-12\",\"nacionalidad\":\"CO\",\"sexo\":\"F\"}}}")
+			.andExpect(status().isCreated());
+
+		// Pasante de bufete puede enviar persona ficticia de demostración (F-03).
+		Usuario pasante = usuario(Rol.SOLICITANTE);
+		jdbc.update("UPDATE usuario SET tipo_solicitante = 'PASANTE_BUFETE' WHERE id = ?", pasante.getId());
+		enviar(token(pasante), "/api/expedientes",
+				"{\"tipoTramite\":\"RESIDENCIA_TEMPORAL\",\"datosSolicitud\":{\"datosPersonales\":{\"nombres\":\"Ana Demo\",\"primerApellido\":\"Ficticia\"}}}")
+			.andExpect(status().isCreated());
 	}
 
 	@Test

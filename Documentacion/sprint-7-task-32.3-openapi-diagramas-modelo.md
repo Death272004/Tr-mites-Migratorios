@@ -6,7 +6,7 @@ Esta tarea consolida el contrato REST (`Backend/docs/openapi.yaml`), la arquitec
 
 ## Contrato OpenAPI
 
-La especificación vigente está en `Backend/docs/openapi.yaml`, versión 0.5.0. Describe autenticación, perfil, expedientes, documentos, estados, observaciones, verificaciones, consentimientos y solicitudes ARCO. Todo cambio futuro debe actualizar el changelog de API.
+La especificación vigente está en `Backend/docs/openapi.yaml`, versión 0.5.0, sincronizada con los cambios del Sprint 7 (`POST /api/auth/autocompletar` bajo perfil `demo`, `PATCH /api/expedientes/{id}/verificaciones/{verificacionId}/asignacion` y los campos de identidad personal y área institucional en `Usuario`, `RegistroSolicitud` y `Perfil`). Todo cambio futuro debe actualizar el changelog de API.
 
 ## Arquitectura
 

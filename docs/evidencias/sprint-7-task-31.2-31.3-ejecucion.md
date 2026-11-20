@@ -12,33 +12,26 @@ Se ejecutó la suite automatizada del backend para validar autenticación, autor
 
 Se repitió la suite completa como regresión sobre el estado actual del proyecto.
 
-## Resultado
+## Resultado (actualización post-auditoría · 2026-11-19)
 
-- Tests run: 152
+- Tests run: 156
 - Failures: 0
 - Errors: 0
 - Skipped: 0
 - Resultado Maven: BUILD SUCCESS
-- Tiempo total registrado: 01:20 min
+- Tiempo total registrado: 01:09 min
+
+Incluye las pruebas de regresión agregadas tras la auditoría técnica y de seguridad (`ExpedienteTest`, `PrivacidadTest`, `FuentesSimuladasTest`, `DocumentoTest`, `AutenticacionTest`, `AutorizacionTest` y `CuentaTest`).
 
 ## Evidencia reproducible
 
-El resultado completo quedó registrado durante la ejecución de Maven en `/tmp/sprint7-tests.log` del equipo local. La salida final contiene `BUILD SUCCESS` y los contadores anteriores.
+Comando ejecutado: `./Backend/mvnw -f Backend/pom.xml test` sobre PostgreSQL real (Testcontainers). Además se validó la sintaxis de los módulos JS modificados con `node --check`, `provisioner.py` con `python3 -m py_compile` y el contrato OpenAPI con `FuentesSimuladasTest` (6/6 en verde).
 
 ## Alcance pendiente
 
-Esta evidencia cubre la suite automatizada del backend. Aún deben agregarse evidencias manuales de navegador, adjuntos, permisos por rol y recorrido completo del solicitante antes de aceptar globalmente HU-31.
+Esta evidencia cubre la suite automatizada del backend. Aún deben agregarse evidencias manuales de navegador (especialmente la re-prueba visual de CP-04 y CP-12) antes de aceptar globalmente HU-31.
 
-## Verificación manual local (2026-11-19)
+## Historial de hallazgos manuales previos (corregidos en código)
 
-- El backend y la base de datos se levantaron con Docker.
-- La interfaz frontend no quedó publicada en `localhost:8080` durante esta sesión; por ello no se registran como aprobadas las pruebas manuales de navegador, adjuntos, roles ni recorrido completo.
-- Estado de esos casos: BLOQUEADO hasta que frontend esté disponible y QA pueda capturar la evidencia.
-
-## Resultado manual adicional: CP-04
-
-**Estado:** Fallido / bloqueado por INC-31-04-001. Durante la creación de un trámite con la cuenta de Migrante Independiente `Leonardo Liang`, el formulario permitió guardar datos personales incompatibles (`Daniela Daniela Daniela`). La aceptación queda bloqueada hasta corregir la validación de titularidad y repetir la prueba.
-
-## CP-04 — segunda ejecución manual
-
-La cuenta Turista `Daniela Anaya` mostró campos identificatorios editables y permitió introducir `hola`. El caso queda **Fallido** en frontend hasta que esos campos se bloqueen para solicitantes normales. El modo de prueba del Pasante de Bufete permanece permitido.
+- **CP-04 (`INC-31-04-001`):** Se corrigió la validación estricta de identidad en `ExpedienteServicio.validarTitularidadDatos`, la excepción controlada para `PASANTE_BUFETE` y el bloqueo condicional en `P-09` (evitando el soft-lock de `sexo`/`lugarNacimiento` en cuentas nuevas). Pendiente de repetir captura visual en navegador.
+- **CP-12 (`INC-31-12-001`):** Se conectó el endpoint real protegido `GET /api/expedientes/{id}/documentos/{documentoId}/contenido` en `I-04`, `I-06` y `P-19`. Pendiente de repetir captura de red en navegador.

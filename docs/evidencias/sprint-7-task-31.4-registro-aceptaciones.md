@@ -3,7 +3,7 @@
 **Sprint:** 7 · Aceptación, documentación y entrega
 **Responsable:** Product Owner
 **Fecha de apertura:** 2026-11-19
-**Estado:** HU-31 aceptada con observación · pendiente de HU-32 a HU-34
+**Estado:** En validación post-auditoría · correcciones técnicas aplicadas localmente, pendiente de re-ejecución manual QA y decisión final del PO
 
 ## Propósito
 
@@ -13,16 +13,17 @@ Registrar la decisión del Product Owner sobre cada historia del Sprint 7 despu�
 
 | Historia | Alcance | Estado de aceptación | Bloqueo actual | Errores conocidos | Evidencia | Decisión del PO |
 |---|---|---|---|---|---|---|
-| HU-31 | Pruebas de aceptación y regresión | Aceptada con observación | CP-12 bloqueado por falta de endpoint real de descarga. | CP-12 sin evidencia HTTP del endpoint protegido. | Matriz TASK-31.1; ejecución TASK-31.2/31.3; informes HU28/HU29; capturas CP-12. | Aceptada con observación por el Product Owner |
-| HU-32 | Documentación técnica y de usuario | Pendiente | Falta revisar la documentación final contra el código y los criterios. | Ninguno confirmado en esta fecha. | Pendiente de revisión DOC-01…DOC-04. | Pendiente |
-| HU-33 | Instalación limpia y empaquetado | Pendiente | Falta verificar instalación limpia, semillas y paquete final. | Ninguno confirmado en esta fecha. | Pendiente de INST-01…INST-05. | Pendiente |
-| HU-34 | Demostración y evaluación final | Pendiente | Falta preparar y ejecutar la demostración con evidencias. | Ninguno confirmado en esta fecha. | Pendiente de DEMO-01…DEMO-04. | Pendiente |
+| HU-31 | Pruebas de aceptación y regresión | Pendiente de re-validación QA | Pendiente repetir CP-04 y CP-12 en navegador tras correcciones de auditoría. | INC-31-12-001 (descarga `/contenido` ya conectada en frontend I-04/I-06/P-19) e INC-31-04-001 (validación estricta de identidad y excepción `PASANTE_BUFETE` ya corregidas en código). | Suite automatizada: 156 pruebas en verde (`BUILD SUCCESS`); informes HU28/HU29. | Pendiente de validación final del PO |
+| HU-32 | Documentación técnica y de usuario | Pendiente | Revisar `openapi.yaml` y `README.md` actualizados en revisión de cierre. | Ninguno confirmado tras corrección D-02/D-03. | `Backend/docs/openapi.yaml`, `README.md`, `Documentacion/`. | Pendiente |
+| HU-33 | Instalación limpia y empaquetado | Pendiente | Falta validación final del paquete regenerado sin `Backend/target/`. | Ninguno confirmado tras corrección D-01. | `entregas/tramites-migratorios-sprint-7.tar.gz` y `Documentacion/sprint-7-task-33.3-paquete-entrega.md`. | Pendiente |
+| HU-34 | Demostración y evaluación final | Pendiente | Falta ejecutar la demostración final con evidencias. | Ninguno confirmado en esta fecha. | Pendiente de DEMO-01…DEMO-04. | Pendiente |
 
 ## Registro detallado de incidencias
 
 | ID | Historia/caso | Tipo | Descripción | Severidad | Responsable | Estado | Evidencia | Acción siguiente |
 |---|---|---|---|---|---|---|---|---|
-| INC-31-12-001 | CP-12 | Bloqueo de evidencia | La captura muestra ERR_FILE_NOT_FOUND de un archivo local, no una respuesta HTTP del endpoint protegido. | Media | Edwin (QA) | Abierto | Capturas CP-12 del PO | Repetir con documento persistido y Network. |
+| INC-31-12-001 | CP-12 | Bloqueo de evidencia | La captura anterior mostraba `ERR_FILE_NOT_FOUND` porque el frontend no tenía conectado el endpoint real `GET /api/expedientes/{id}/documentos/{documentoId}/contenido`. | Media | Edwin (QA) | Corregido en código / pendiente re-prueba | Descarga conectada en `I-04`, `I-06` y `P-19`; validado en `DocumentoTest`. | Repetir CP-12 en navegador con documento persistido y captura de Network (`200`, `401`, `403`/`404`). |
+| INC-31-04-001 | CP-04 | Validación de identidad | Solicitantes normales podían enviar datos personales inconsistentes y cuentas recién registradas quedaban bloqueadas en P-09 (`sexo`/`lugarNacimiento`). | Alta | Equipo Dev / QA | Corregido en código / pendiente re-prueba | `ExpedienteTest` y `P-09` corregidos (156 pruebas en verde). | Repetir CP-04 en navegador con solicitante normal y `PASANTE_BUFETE`. |
 
 ## Reglas de decisión
 
@@ -42,23 +43,22 @@ Registrar la decisión del Product Owner sobre cada historia del Sprint 7 despu�
 
 ## Decisión del Product Owner
 
-- **HU-31:** Aceptada con observación. CP-01 a CP-09 consolidados; CP-10 y CP-11 aprobados mediante informes existentes; CP-12 permanece bloqueado por falta de endpoint real de descarga.
+- **HU-31:** Pendiente de validación final del PO tras re-ejecutar CP-04 y CP-12 en navegador (suite automatizada en verde con 156 pruebas).
 - **HU-32:** Pendiente.
 - **HU-33:** Pendiente.
 - **HU-34:** Pendiente.
-- **Aceptación global del Sprint 7:** Pendiente de HU-32, HU-33 y HU-34.
+- **Aceptación global del Sprint 7:** Pendiente de validación final del PO sobre HU-31 a HU-34.
 
 > Este archivo es local y no se publicará hasta la validación del Product Owner.
 
 ## Actualización posterior a TASK-31.2 y TASK-31.3
 
-- TASK-31.2: 152 pruebas automatizadas, 0 fallos, 0 errores y 0 omitidas.
-- TASK-31.3: regresión automatizada completa en verde (`BUILD SUCCESS`).
+- TASK-31.2 / TASK-31.3 (post-auditoría): 156 pruebas automatizadas, 0 fallos, 0 errores y 0 omitidas (`BUILD SUCCESS`).
 - CP-10: evidencia existente en `QA/sprint-6/rendimiento/HU29-informe.md`; métricas dentro del umbral.
 - CP-11: evidencia existente en `QA/sprint-6/seguridad/HU28-informe.md`; 0 críticos/altos abiertos.
-- CP-12: bloqueado por falta de respuesta HTTP del endpoint protegido.
+- CP-12: descarga protegida `/contenido` conectada en `I-04`, `I-06` y `P-19`; pendiente de captura HTTP en navegador.
 - Evidencia: `docs/evidencias/sprint-7-task-31.2-31.3-ejecucion.md`.
-- Decisión HU-31: pendiente de completar las pruebas manuales y la revisión del Product Owner.
+- Decisión HU-31: pendiente de completar la re-validación visual de CP-04/CP-12 y la revisión del Product Owner.
 
 ## Hallazgo de validación manual
 

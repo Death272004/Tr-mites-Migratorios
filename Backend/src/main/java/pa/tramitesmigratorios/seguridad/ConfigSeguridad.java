@@ -46,7 +46,8 @@ class ConfigSeguridad {
 	}
 
 	@Bean
-	SecurityFilterChain cadena(HttpSecurity http, AuthServicio auth, Auditoria auditoria) throws Exception {
+	SecurityFilterChain cadena(HttpSecurity http, AuthServicio auth, Auditoria auditoria,
+			@Value("${app.demo.autocompletado:false}") boolean demoAutocompletado) throws Exception {
 		http.csrf(csrf -> csrf.disable())
 			.sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 			.formLogin(f -> f.disable())
@@ -55,9 +56,12 @@ class ConfigSeguridad {
 			.addFilterBefore(new FiltroToken(auth), UsernamePasswordAuthenticationFilter.class)
 			.authorizeHttpRequests(reglas -> {
 				reglas.requestMatchers(HttpMethod.GET, "/actuator/health").permitAll();
-				reglas.requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/auth/autocompletar", "/api/auth/registro",
+				reglas.requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/auth/registro",
 						"/api/auth/recuperacion", "/api/auth/recuperacion/confirmacion")
 					.permitAll();
+				if (demoAutocompletado) {
+					reglas.requestMatchers(HttpMethod.POST, "/api/auth/autocompletar").permitAll();
+				}
 				for (Regla regla : MatrizAutorizacion.REGLAS) {
 					reglas.requestMatchers(regla.metodo(), regla.ruta())
 						.hasAnyRole(regla.roles().stream().map(Rol::name).toArray(String[]::new));

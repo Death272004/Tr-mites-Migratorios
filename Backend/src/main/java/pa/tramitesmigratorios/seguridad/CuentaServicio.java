@@ -3,6 +3,7 @@ package pa.tramitesmigratorios.seguridad;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.Period;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -12,6 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import pa.tramitesmigratorios.auditoria.Auditoria;
 import pa.tramitesmigratorios.comun.ErrorApi;
@@ -60,6 +63,13 @@ public class CuentaServicio {
 	/** El registro público solo crea cuentas SOLICITANTE; el rol nunca llega en la petición. */
 	@Transactional
 	public Usuario registrar(DatosRegistro datos, String ip) {
+		if (datos.fechaNacimiento() != null) {
+			int edad = Period.between(datos.fechaNacimiento(), LocalDate.now()).getYears();
+			if (edad < 16 || edad > 120) {
+				throw ErrorApi.entradaInvalida("fechaNacimiento",
+						"La edad del solicitante debe estar entre 16 y 120 años.");
+			}
+		}
 		List<String> faltas = PoliticaContrasena.incumplimientos(datos.contrasena(), datos.correo());
 		if (!faltas.isEmpty()) {
 			throw contrasenaInvalida("contrasena", faltas);
@@ -79,8 +89,8 @@ public class CuentaServicio {
 		usuario.completarRegistro(datos.tipoDocumento(), datos.tipoSolicitante(), datos.numeroDocumento(),
 				datos.nacionalidad(), datos.paisResidencia(), datos.telefono(), ip);
 		usuario.completarDatosPersonales(datos.primerNombre(), datos.segundoNombre(), datos.primerApellido(), datos.segundoApellido(), datos.fechaNacimiento);
-		buzones.sincronizar(usuario.getCorreo(), datos.contrasena());
-		usuarios.save(usuario);
+		usuarios.saveAndFlush(usuario);
+		sincronizarBuzonTrasCommit(usuario.getCorreo(), datos.contrasena());
 		auditoria.exito(usuario.getId(), "REGISTRO_CUENTA", "usuario/" + usuario.getId());
 		return usuario;
 	}
@@ -127,12 +137,12 @@ public class CuentaServicio {
 			// El enlace no se consume: el titular puede reintentar con otra contraseña.
 			throw contrasenaInvalida("contrasenaNueva", faltas);
 		}
-		buzones.sincronizar(usuario.getCorreo(), contrasenaNueva);
 		usuario.cambiarContrasena(codificador.encode(contrasenaNueva));
 		// Quien recupera la contraseña también sale del bloqueo temporal por intentos.
 		usuario.registrarAccesoCorrecto();
 		enlace.get().usar();
 		sesiones.revocarTodas(usuario.getId());
+		sincronizarBuzonTrasCommit(usuario.getCorreo(), contrasenaNueva);
 		auditoria.exito(usuario.getId(), "RECUPERACION_CONFIRMADA", "usuario/" + usuario.getId());
 	}
 
@@ -149,6 +159,20 @@ public class CuentaServicio {
 		usuario.actualizarContacto(telefono, idiomaNotificacion, medioNotificacion);
 		auditoria.exito(actual.id(), "ACTUALIZACION_PERFIL", "usuario/" + actual.id());
 		return usuario;
+	}
+
+	private void sincronizarBuzonTrasCommit(String direccion, String contrasena) {
+		if (TransactionSynchronizationManager.isSynchronizationActive()) {
+			TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+				@Override
+				public void afterCommit() {
+					buzones.sincronizar(direccion, contrasena);
+				}
+			});
+		}
+		else {
+			buzones.sincronizar(direccion, contrasena);
+		}
 	}
 
 	private static ErrorApi contrasenaInvalida(String campo, List<String> faltas) {

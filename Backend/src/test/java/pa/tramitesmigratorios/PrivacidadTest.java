@@ -81,7 +81,7 @@ class PrivacidadTest extends PruebaApi {
 	@Test
 	void elConsentimientoValidaSusCamposYQueElTitularSeaUnCliente() throws Exception {
 		Usuario titular = usuario(Rol.SOLICITANTE);
-		Usuario recepcion = usuario(Rol.FUNCIONARIO, Permiso.CONSULTAR);
+		Usuario recepcion = usuario(Rol.FUNCIONARIO, Permiso.CONSULTAR, Permiso.OBSERVAR);
 
 		enviar(token(titular), "/api/consentimientos", "{\"titularId\":\"%s\",\"finalidad\":\" \",\"expreso\":true}".formatted(titular.getId()))
 			.andExpect(status().isBadRequest())
@@ -99,7 +99,7 @@ class PrivacidadTest extends PruebaApi {
 	void laSolicitudArcoSigueSuCicloYElClienteSoloVeLasSuyas() throws Exception {
 		Usuario titular = usuario(Rol.SOLICITANTE);
 		String cliente = token(titular);
-		Usuario analista = usuario(Rol.FUNCIONARIO, Permiso.CONSULTAR);
+		Usuario analista = usuario(Rol.FUNCIONARIO, Permiso.CONSULTAR, Permiso.OBSERVAR);
 		String despacho = token(analista);
 
 		MvcResult creada = enviar(cliente, "/api/solicitudes-arco",
@@ -152,7 +152,7 @@ class PrivacidadTest extends PruebaApi {
 	@Test
 	void elRechazoExigeMotivoYElVencimientoSoloEsUnaAlerta() throws Exception {
 		String cliente = tokenDe(Rol.SOLICITANTE);
-		String despacho = tokenDe(Rol.FUNCIONARIO, Permiso.CONSULTAR);
+		String despacho = tokenDe(Rol.FUNCIONARIO, Permiso.CONSULTAR, Permiso.OBSERVAR);
 		String id = leer(enviar(cliente, "/api/solicitudes-arco", "{\"tipo\":\"CANCELACION\",\"descripcion\":\"Solicito eliminar mis datos.\"}")
 			.andReturn(), "$.id");
 
@@ -176,6 +176,33 @@ class PrivacidadTest extends PruebaApi {
 		enviar(cliente, "/api/solicitudes-arco", "{\"tipo\":\"BORRAR\",\"descripcion\":\"x\"}").andExpect(status().isBadRequest());
 		enviar(cliente, "/api/solicitudes-arco", "{\"tipo\":\"ACCESO\",\"descripcion\":\"\"}").andExpect(status().isBadRequest())
 			.andExpect(jsonPath("$.errores[0].campo").value("descripcion"));
+	}
+
+	@Test
+	void lasCuentasInstitucionalesYFuncionariosSinEscrituraNoGestionanPrivacidadDelBufete() throws Exception {
+		Usuario titular = usuario(Rol.SOLICITANTE);
+		String cliente = token(titular);
+		String consentId = leer(enviar(cliente, "/api/consentimientos", consentimiento(titular, true)).andReturn(), "$.id");
+		String arcoId = leer(enviar(cliente, "/api/solicitudes-arco", "{\"tipo\":\"ACCESO\",\"descripcion\":\"Quiero mis datos.\"}").andReturn(), "$.id");
+
+		// Pasante institucional (RP) bloqueado en consentimientos y ARCO (S-02).
+		Usuario pasanteRp = usuario(Rol.FUNCIONARIO, Permiso.CONSULTAR, Permiso.OBSERVAR, Permiso.VERIFICAR);
+		jdbc.update("UPDATE usuario SET area_institucional = 'RP' WHERE id = ?", pasanteRp.getId());
+		String tokenRp = token(pasanteRp);
+		obtener(tokenRp, "/api/consentimientos").andExpect(status().isForbidden());
+		enviar(tokenRp, "/api/consentimientos", consentimiento(titular, false)).andExpect(status().isForbidden());
+		modificar(tokenRp, "/api/consentimientos/{id}", "", consentId).andExpect(status().isForbidden());
+		obtener(tokenRp, "/api/solicitudes-arco").andExpect(status().isForbidden());
+		obtener(tokenRp, "/api/solicitudes-arco/{id}", arcoId).andExpect(status().isForbidden());
+		modificar(tokenRp, "/api/solicitudes-arco/{id}", "{\"estado\":\"EN_ATENCION\"}", arcoId).andExpect(status().isForbidden());
+
+		// Funcionario del bufete con solo CONSULTAR puede leer, pero no escribir ni revocar.
+		String soloLectura = tokenDe(Rol.FUNCIONARIO, Permiso.CONSULTAR);
+		obtener(soloLectura, "/api/consentimientos?titularId=" + titular.getId()).andExpect(status().isOk());
+		enviar(soloLectura, "/api/consentimientos", consentimiento(titular, false)).andExpect(status().isForbidden());
+		modificar(soloLectura, "/api/consentimientos/{id}", "", consentId).andExpect(status().isForbidden());
+		obtener(soloLectura, "/api/solicitudes-arco/{id}", arcoId).andExpect(status().isOk());
+		modificar(soloLectura, "/api/solicitudes-arco/{id}", "{\"estado\":\"EN_ATENCION\"}", arcoId).andExpect(status().isForbidden());
 	}
 
 }

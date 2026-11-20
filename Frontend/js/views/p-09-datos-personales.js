@@ -77,10 +77,9 @@
     var cuentaSelects = cuenta && cuenta.selects ? cuenta.selects : {};
     var sesionPerfil = global.tm.session && global.tm.session.getSession ? global.tm.session.getSession() : null;
     var usuarioPerfil = sesionPerfil && sesionPerfil.datos ? sesionPerfil.datos.usuario : null;
+    var bloqueadosPorCuenta = {};
     if (cuenta && (!usuarioPerfil || usuarioPerfil.tipoSolicitante !== "PASANTE_BUFETE")) {
-      d = Object.assign({}, d, {
-        // En una cuenta normal se usan únicamente datos entregados por la cuenta.
-        // No conservar valores del borrador para evitar mezclar datos de prueba.
+      var desdeCuenta = {
         primerApellido: cuentaValues.primerapellido || "",
         segundoApellido: cuentaValues.segundoapellido || "",
         nombres: cuentaValues.nombres || "",
@@ -90,12 +89,16 @@
         lugarNacimiento: cuentaValues.lugarnacimiento || "",
         nacionalidad: cuentaSelects.nacionalidad || "",
         sexo: cuentaSelects.sexo || "",
-        estadoCivil: cuentaSelects.estadoCivil || "",
-        nombrePadre: cuentaValues.nombrepadre || "",
-        nacionalidadPadre: cuentaSelects.nacionalidadPadre || "",
-        nombreMadre: cuentaValues.nombremadre || "",
-        nacionalidadMadre: cuentaSelects.nacionalidadMadre || ""
+        estadoCivil: cuentaSelects.estadoCivil || ""
+      };
+      var actualizado = Object.assign({}, d);
+      Object.keys(desdeCuenta).forEach(function (k) {
+        if (desdeCuenta[k]) {
+          actualizado[k] = desdeCuenta[k];
+          bloqueadosPorCuenta[k] = true;
+        }
       });
+      d = actualizado;
     }
 
     var grid = layout.el("div", "wizard-grid");
@@ -138,7 +141,7 @@
       ["primerApellido", "segundoApellido", "nombres", "nombresPasaporte", "fechaNacimiento",
         "paisNacimiento", "lugarNacimiento", "nacionalidad", "sexo"].forEach(function (id) {
         var control = document.getElementById(id);
-        if (control) {
+        if (control && bloqueadosPorCuenta[id]) {
           if (control.tagName === "SELECT") control.disabled = true;
           else control.readOnly = true;
           control.setAttribute("aria-readonly", "true");

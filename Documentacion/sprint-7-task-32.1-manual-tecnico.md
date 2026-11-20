@@ -66,7 +66,9 @@ Si un puerto está ocupado, copia `.env.example` a `.env` y cambia `FRONTEND_POR
 
 ## 6. Variables de entorno
 
-`DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_PORT`, `FRONTEND_PORT`, `DOCUMENTOS_DIR`, `DEMO_AUTOCOMPLETAR`, `CORREO_MODO`, `SMTP_HOST`, `SMTP_PORT` y `MAIL_PROVISIONER_TOKEN`.
+`DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_PORT`, `FRONTEND_PORT`, `DOCUMENTOS_DIR`, `SPRING_PROFILES_ACTIVE`, `DEMO_AUTOCOMPLETAR`, `CORREO_MODO`, `SMTP_HOST`, `SMTP_PORT` y `MAIL_PROVISIONER_TOKEN`.
+
+El atajo `POST /api/auth/autocompletar` está restringido al perfil `@Profile("demo")` y exige `DEMO_AUTOCOMPLETAR=true`. En `application.yml` y `.env.example` queda desactivado por defecto (`false`); en `docker-compose.yml` se habilita únicamente para pruebas locales rápidas.
 
 Los secretos deben permanecer fuera del repositorio.
 
@@ -128,10 +130,11 @@ Antes de desplegar se deben configurar secretos fuera del repositorio, respaldar
 
 ## 12. Limitaciones
 
-Las fuentes institucionales son simuladas o manuales; el MVP no es una conexión institucional ni una decisión migratoria oficial. Los datos demo no representan personas reales. CP-12 de HU-31 mantiene pendiente la validación del endpoint real de descarga.
+Las fuentes institucionales son simuladas o manuales; el MVP no es una conexión institucional ni una decisión migratoria oficial. Los datos demo no representan personas reales. El endpoint protegido de descarga (`GET /api/expedientes/{id}/documentos/{documentoId}/contenido`) ya está conectado en `I-04`, `I-06` y `P-19` y validado en `DocumentoTest`; queda pendiente registrar la evidencia visual en navegador para cerrar CP-12.
 
 ## 13. Referencias
 
+- `Documentacion/usuarios-proyecto.md`
 - `Documentacion/documentos-base/01-propuesta-de-arquitectura.md`
 - `Documentacion/documentos-base/06-roles-y-accesos.md`
 - `docs/evidencias/sprint-6-validacion-local-2026-10-29.md`

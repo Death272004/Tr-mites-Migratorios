@@ -30,6 +30,7 @@ import pa.tramitesmigratorios.comun.Eventos.EstadoCambiado;
 import pa.tramitesmigratorios.documento.DocumentoRepo;
 import pa.tramitesmigratorios.expediente.EstadoExpediente.Resultado;
 import pa.tramitesmigratorios.seguridad.Permiso;
+import pa.tramitesmigratorios.seguridad.PoliticaAreas;
 import pa.tramitesmigratorios.seguridad.UsuarioActual;
 import pa.tramitesmigratorios.verificacion.VerificacionRepo;
 
@@ -110,6 +111,11 @@ public class Transiciones {
 	@Transactional
 	public Expediente cambiar(UUID id, EstadoExpediente nuevo, Resultado resultado, String motivo, long versionLeida,
 			UsuarioActual usuario) {
+		if (PoliticaAreas.esInstitucional(usuario.area())) {
+			auditoria.denegado(usuario.id(), "CAMBIAR_ESTADO", "expediente/" + id);
+			throw ErrorApi.sinPermiso("AREA_NO_AUTORIZADA",
+					"Las cuentas institucionales externas no pueden cambiar el estado del expediente.");
+		}
 		Expediente expediente = acceso.paraOperar(id, usuario, permisoPara(nuevo));
 		if (nuevo == RESUELTO && resultado == null) {
 			throw ErrorApi.entradaInvalida("resultado", "Indique si la resolución es APROBADA o NEGADA.");

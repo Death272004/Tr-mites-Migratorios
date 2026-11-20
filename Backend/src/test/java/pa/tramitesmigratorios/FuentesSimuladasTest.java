@@ -126,7 +126,7 @@ class FuentesSimuladasTest extends PruebaApi {
 	@Test
 	void elSnmSimuladoEsCoherenteConLosExpedientesDeLaPlataforma() throws Exception {
 		String cliente = tokenDe(Rol.SOLICITANTE);
-		String despacho = tokenDe(Rol.FUNCIONARIO, Permiso.CONSULTAR, Permiso.OBSERVAR);
+		String despacho = tokenDe(Rol.FUNCIONARIO, Permiso.CONSULTAR, Permiso.OBSERVAR, Permiso.VERIFICAR);
 		MvcResult creado = enviar(cliente, "/api/expedientes", "{\"tipoTramite\":\"%s\"}".formatted(TRAMITE_SIMPLE)).andReturn();
 		String id = leer(creado, "$.id");
 		String numero = leer(creado, "$.numero");
@@ -148,6 +148,7 @@ class FuentesSimuladasTest extends PruebaApi {
 		obtener(null, te).andExpect(status().isUnauthorized());
 		obtener(tokenDe(Rol.SOLICITANTE), te).andExpect(status().isForbidden());
 		obtener(tokenDe(Rol.AUDITOR), te).andExpect(status().isForbidden());
+		obtener(tokenDe(Rol.FUNCIONARIO, Permiso.CONSULTAR), te).andExpect(status().isForbidden());
 	}
 
 	/** CA-8: el registro manual asistido y el modo simulado producen la misma entidad de verificación. */

@@ -83,6 +83,45 @@ paths:
         "500":
           $ref: "#/components/responses/ErrorInterno"
 
+  /api/auth/autocompletar:
+    post:
+      tags: [Autenticación]
+      operationId: autocompletarDemo
+      summary: Atajo de inicio de sesión para demostración local (solo perfil demo)
+      description: |
+        Desactivado por defecto por seguridad (`DEMO_AUTOCOMPLETAR=false` y restringido al perfil
+        `demo`). Solo crea sesión para cuentas semilla marcadas como `demo_autocompletable`.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [rol]
+              properties:
+                rol:
+                  $ref: "#/components/schemas/Rol"
+                tipoSolicitante:
+                  type: string
+                  enum: [TURISTA, PASANTE_BUFETE, MIGRANTE_INDEPENDIENTE, NACIONAL]
+                areaInstitucional:
+                  type: string
+                  enum: [BUFETE, RP, CSS, TE]
+      responses:
+        "200":
+          description: Sesión demo iniciada.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginRespuesta"
+        "400":
+          $ref: "#/components/responses/EntradaInvalida"
+        "401":
+          $ref: "#/components/responses/NoAutenticado"
+        "404":
+          $ref: "#/components/responses/NoEncontrado"
+
   /api/auth/logout:
     post:
       tags: [Autenticación]
@@ -767,6 +806,46 @@ paths:
           $ref: "#/components/responses/NoEncontrado"
         "409":
           $ref: "#/components/responses/Conflicto"
+        "500":
+          $ref: "#/components/responses/ErrorInterno"
+
+  /api/expedientes/{id}/verificaciones/{verificacionId}/asignacion:
+    patch:
+      tags: [Verificaciones]
+      operationId: asignarVerificacion
+      summary: Asignar una verificación a una cuenta institucional o del bufete
+      description: |
+        Asigna la verificación a un funcionario autorizado para la fuente correspondiente.
+      x-roles: [FUNCIONARIO, SUPERVISOR]
+      parameters:
+        - $ref: "#/components/parameters/ExpedienteId"
+        - $ref: "#/components/parameters/VerificacionId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                asignadoAId:
+                  type: string
+                  format: uuid
+                  nullable: true
+      responses:
+        "200":
+          description: Verificación asignada.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Verificacion"
+        "400":
+          $ref: "#/components/responses/EntradaInvalida"
+        "401":
+          $ref: "#/components/responses/NoAutenticado"
+        "403":
+          $ref: "#/components/responses/SinPermiso"
+        "404":
+          $ref: "#/components/responses/NoEncontrado"
         "500":
           $ref: "#/components/responses/ErrorInterno"
 
@@ -1646,6 +1725,39 @@ components:
             $ref: "#/components/schemas/Permiso"
         estadoCuenta:
           $ref: "#/components/schemas/EstadoCuenta"
+        tipoSolicitante:
+          type: string
+          enum: [TURISTA, PASANTE_BUFETE, MIGRANTE_INDEPENDIENTE, NACIONAL]
+        tipoDocumento:
+          $ref: "#/components/schemas/TipoDocumento"
+        numeroDocumento:
+          type: string
+        nacionalidad:
+          type: string
+        paisResidencia:
+          type: string
+        telefono:
+          type: string
+        primerNombre:
+          type: string
+        segundoNombre:
+          type: string
+        primerApellido:
+          type: string
+        segundoApellido:
+          type: string
+        fechaNacimiento:
+          type: string
+          format: date
+        sexo:
+          type: string
+        estadoCivil:
+          type: string
+        lugarNacimiento:
+          type: string
+        areaInstitucional:
+          type: string
+          enum: [BUFETE, RP, CSS, TE]
 
     Expediente:
       type: object
@@ -2006,8 +2118,11 @@ components:
       type: object
       required:
         - tipoDocumento
+        - tipoSolicitante
         - numeroDocumento
-        - nombre
+        - primerNombre
+        - primerApellido
+        - fechaNacimiento
         - nacionalidad
         - correo
         - telefono
@@ -2017,14 +2132,29 @@ components:
       properties:
         tipoDocumento:
           $ref: "#/components/schemas/TipoDocumento"
+        tipoSolicitante:
+          type: string
+          enum: [TURISTA, PASANTE_BUFETE, MIGRANTE_INDEPENDIENTE, NACIONAL]
         numeroDocumento:
           type: string
           pattern: "^[A-Za-z0-9-]{4,40}$"
           description: Único junto con el tipo; se guarda en mayúsculas.
-        nombre:
+        primerNombre:
           type: string
-          maxLength: 120
-          description: Nombres y apellidos, como en el documento.
+          maxLength: 60
+        segundoNombre:
+          type: string
+          maxLength: 60
+        primerApellido:
+          type: string
+          maxLength: 60
+        segundoApellido:
+          type: string
+          maxLength: 60
+        fechaNacimiento:
+          type: string
+          format: date
+          description: Fecha de nacimiento del solicitante (edad entre 16 y 120 años).
         nacionalidad:
           type: string
           pattern: "^[A-Z]{2}$"
@@ -2092,6 +2222,9 @@ components:
           $ref: "#/components/schemas/Rol"
         tipoDocumento:
           $ref: "#/components/schemas/TipoDocumento"
+        tipoSolicitante:
+          type: string
+          enum: [TURISTA, PASANTE_BUFETE, MIGRANTE_INDEPENDIENTE, NACIONAL]
         numeroDocumento:
           type: string
         nacionalidad:
@@ -2100,10 +2233,30 @@ components:
           type: string
         telefono:
           type: string
+        primerNombre:
+          type: string
+        segundoNombre:
+          type: string
+        primerApellido:
+          type: string
+        segundoApellido:
+          type: string
+        fechaNacimiento:
+          type: string
+          format: date
+        sexo:
+          type: string
+        estadoCivil:
+          type: string
+        lugarNacimiento:
+          type: string
         idiomaNotificacion:
           $ref: "#/components/schemas/IdiomaNotificacion"
         medioNotificacion:
           $ref: "#/components/schemas/MedioNotificacion"
+        areaInstitucional:
+          type: string
+          enum: [BUFETE, RP, CSS, TE]
 
     PerfilCambio:
       type: object

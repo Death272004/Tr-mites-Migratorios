@@ -1,5 +1,6 @@
 package pa.tramitesmigratorios.seguridad;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 import jakarta.validation.Valid;
@@ -27,13 +28,17 @@ class PerfilController {
 
 	record PerfilDto(UUID id, String nombre, String correo, Rol rol, TipoDocumento tipoDocumento,
 			TipoSolicitante tipoSolicitante, String numeroDocumento, String nacionalidad, String paisResidencia,
-			String telefono, Idioma idiomaNotificacion, MedioNotificacion medioNotificacion,
-				AreaInstitucional areaInstitucional) {
+			String telefono, String primerNombre, String segundoNombre, String primerApellido, String segundoApellido,
+			LocalDate fechaNacimiento, String sexo, String estadoCivil, String lugarNacimiento,
+			Idioma idiomaNotificacion, MedioNotificacion medioNotificacion, AreaInstitucional areaInstitucional) {
 
 		static PerfilDto de(Usuario u) {
 			return new PerfilDto(u.getId(), u.getNombre(), u.getCorreo(), u.getRol(), u.getTipoDocumento(),
 					u.getTipoSolicitante(), u.getNumeroDocumento(), u.getNacionalidad(), u.getPaisResidencia(),
-					u.getTelefono(), u.getIdiomaNotificacion(), u.getMedioNotificacion(), u.getAreaInstitucional());
+					u.getTelefono(), u.getPrimerNombre(), u.getSegundoNombre(), u.getPrimerApellido(),
+					u.getSegundoApellido(), u.getFechaNacimiento(), u.getSexo(), u.getEstadoCivil(),
+					u.getLugarNacimiento(), u.getIdiomaNotificacion(), u.getMedioNotificacion(),
+					u.getAreaInstitucional());
 		}
 
 	}

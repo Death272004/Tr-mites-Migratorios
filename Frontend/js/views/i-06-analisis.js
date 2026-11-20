@@ -81,6 +81,31 @@
           if (r.estado === "Vencido") meta += (meta ? " · " : "") + "vencido";
           if (meta) main.appendChild(layout.el("span", "checklist__meta", meta));
           item.appendChild(main);
+          if (r.docId && d.id && global.tm.api && global.tm.api.isOnline() && !(global.tm.api.isDemoSession && global.tm.api.isDemoSession())) {
+            item.appendChild(button({
+              variant: "ghost",
+              text: "Descargar",
+              onClick: function () {
+                global.tm.api.download("/expedientes/" + encodeURIComponent(d.id) + "/documentos/" + encodeURIComponent(r.docId) + "/contenido", {}, function (dlErr, blob) {
+                  if (dlErr) {
+                    var box = container.querySelector(".auth-error");
+                    if (box) { box.textContent = dlErr.mensajeUsuario || "No se pudo descargar el documento."; box.classList.add("is-visible"); }
+                    return;
+                  }
+                  if (blob && global.URL && global.URL.createObjectURL) {
+                    var url = global.URL.createObjectURL(blob);
+                    var a = document.createElement("a");
+                    a.href = url;
+                    a.download = r.nombreArchivo || "documento";
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    setTimeout(function () { global.URL.revokeObjectURL(url); }, 1000);
+                  }
+                });
+              }
+            }));
+          }
           item.appendChild(inlineSelect(optionsTo(["Conforme", "Observado", "Vencido"]), r.estado, function (v) { r.estado = v; renderContent(); }));
           list.appendChild(item);
         })(arr[i]);
@@ -181,6 +206,8 @@
           errBox.classList.remove("is-visible");
           var ta = inner.querySelector("#obsAnalista");
           var texto = ta ? ta.value.trim() : "";
+          var dt = inner.querySelector("#dictamen");
+          var dictamenTexto = dt ? dt.value.trim() : "";
           var vencidos = comunes.concat(especificos).filter(function (r) { return r.estado === "Vencido" || r.estado === "Observado"; });
           if (conforme === "NO" && !texto) {
             errBox.textContent = "Indique la observación del analista para los ítems no conformes.";
@@ -192,11 +219,53 @@
             errBox.classList.add("is-visible");
             return;
           }
-          resultado = conforme === "SI"
-            ? { estado: "ADMITIDO", detalle: "Solicitud conforme. Verificaciones requeridas: " + (requeridas.join(", ") || "ninguna") + "." }
-            : { estado: "CON OBSERVACIONES", detalle: "Se emitirá una observación (I-08) por los ítems marcados." };
-          historial.push({ fecha: "2026-10-11", evento: "DICTAMEN — " + resultado.estado });
-          renderContent();
+          var hoy = new Date().toISOString().slice(0, 10);
+          function completarVista(estadoVisible) {
+            resultado = conforme === "SI"
+              ? { estado: estadoVisible || "ADMITIDO", detalle: "Solicitud conforme. Verificaciones requeridas: " + (requeridas.join(", ") || "ninguna") + "." }
+              : { estado: estadoVisible || "CON OBSERVACIONES", detalle: "Se emitió una observación (I-08) por los ítems marcados." };
+            d.estadoActual = resultado.estado;
+            var nuevoEvento = { fecha: hoy, evento: "DICTAMEN — " + resultado.estado };
+            historial.push(nuevoEvento);
+            d.historial = historial.slice();
+            renderContent();
+          }
+          var api = global.tm.api;
+          if (!(api && api.isOnline() && !(api.isDemoSession && api.isDemoSession()) && d.id)) {
+            completarVista();
+            return;
+          }
+          var estadoNuevo = conforme === "SI" ? "ADMITIDO" : "CON_OBSERVACIONES";
+          var motivo = texto || dictamenTexto || (conforme === "SI" ? "Solicitud conforme tras análisis técnico (I-06)." : "Observaciones emitidas en análisis (I-06).");
+          function aplicarCambioEstado() {
+            api.request("PATCH", "/expedientes/" + encodeURIComponent(d.id) + "/estado", {
+              pantalla: "I-06",
+              body: { estadoNuevo: estadoNuevo, motivo: motivo, version: d.version }
+            }, function (stateErr, actualizado) {
+              if (stateErr) {
+                errBox.textContent = stateErr.mensajeUsuario || "No se pudo guardar el dictamen en el backend.";
+                errBox.classList.add("is-visible");
+                return;
+              }
+              d.version = actualizado && actualizado.version != null ? actualizado.version : d.version;
+              completarVista(actualizado && actualizado.estado ? actualizado.estado : estadoNuevo);
+            });
+          }
+          if (texto) {
+            api.request("POST", "/expedientes/" + encodeURIComponent(d.id) + "/observaciones", {
+              pantalla: "I-06",
+              body: { texto: texto }
+            }, function (obsErr) {
+              if (obsErr) {
+                errBox.textContent = obsErr.mensajeUsuario || "No se pudo registrar la observación.";
+                errBox.classList.add("is-visible");
+                return;
+              }
+              aplicarCambioEstado();
+            });
+          } else {
+            aplicarCambioEstado();
+          }
         },
       });
       actions.appendChild(perms.can(perms.PERMS.OBSERVAR) ? dictamenBtn : perms.notice(perms.PERMS.OBSERVAR, "Solo un rol con permiso «observar» puede emitir el dictamen."));
@@ -250,16 +319,31 @@
         if (err) { callback(err); return; }
         var lista = page && page.contenido ? page.contenido : [];
         var expediente = lista.filter(function (e) { return e.estado === "EN_ANALISIS" || e.estado === "ADMITIDO"; })[0] || lista[0];
-        if (!expediente) { d.expediente = "—"; d.tramite = "—"; d.requisitosComunes = []; d.requisitosEspecificos = []; callback(); return; }
+        if (!expediente) { d.id = null; d.expediente = "—"; d.tramite = "—"; d.requisitosComunes = []; d.requisitosEspecificos = []; comunes = []; especificos = []; historial = []; callback(); return; }
+        d.id = expediente.id;
+        d.version = expediente.version;
         d.expediente = expediente.numero || expediente.id;
         d.tramite = expediente.tipoTramite || "—";
         d.estadoActual = expediente.estado || "—";
         global.tm.api.request("GET", "/expedientes/" + encodeURIComponent(expediente.id) + "/historial", { pantalla: "I-06" }, function (histErr, hist) {
-          if (!histErr && Array.isArray(hist)) d.historial = hist.map(function (h) { return { fecha: h.fecha, evento: (h.estadoAnterior || "") + " → " + h.estadoNuevo + (h.motivo ? " — " + h.motivo : "") }; });
+          if (!histErr && Array.isArray(hist)) {
+            d.historial = hist.map(function (h) { return { fecha: h.fecha, evento: (h.estadoAnterior || "") + " → " + h.estadoNuevo + (h.motivo ? " — " + h.motivo : "") }; });
+            historial = d.historial.map(function (h) { return { fecha: h.fecha, evento: h.evento }; });
+          }
           global.tm.api.request("GET", "/expedientes/" + encodeURIComponent(expediente.id) + "/documentos", { pantalla: "I-06" }, function (docErr, docs) {
             var documentos = !docErr && Array.isArray(docs) ? docs : [];
-            d.requisitosComunes = documentos.map(function (doc) { return { nombre: doc.tipoDocumental || doc.nombre || "Documento", estado: "Conforme", vigencia: doc.fechaCarga || "Cargado" }; });
+            d.requisitosComunes = documentos.map(function (doc) {
+              return {
+                docId: doc.id,
+                nombreArchivo: doc.nombreArchivo || "documento",
+                nombre: doc.tipoDocumental || doc.nombreArchivo || "Documento",
+                estado: doc.estadoRevision === "RECHAZADO" ? "Observado" : "Conforme",
+                vigencia: doc.fechaCarga || "Cargado"
+              };
+            });
             d.requisitosEspecificos = [];
+            comunes = d.requisitosComunes.map(function (r) { return Object.assign({}, r); });
+            especificos = [];
             d.verificaciones = d.verificaciones || [];
             callback();
           });

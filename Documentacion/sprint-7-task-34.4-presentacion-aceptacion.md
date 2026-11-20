@@ -15,9 +15,9 @@
 
 | Historia | Estado propuesto | Observación |
 |---|---|---|
-| HU-31 | Aceptada con observación | CP-12 bloqueado por falta de evidencia HTTP |
-| HU-32 | Documentada | Manuales, OpenAPI, diagramas e informes preparados |
-| HU-33 | Aceptada con observación | Instalación local verificada; falta máquina completamente limpia |
+| HU-31 | Pendiente de re-validación QA | 156 pruebas automatizadas en verde; CP-04 y CP-12 corregidos en código, pendientes de captura final en navegador |
+| HU-32 | Documentada | Manuales, directorio de usuarios, OpenAPI, diagramas e informes sincronizados |
+| HU-33 | Pendiente de validación final | Paquete `.tar.gz` regenerado limpio (sin `Backend/target/` ni `postfix-accounts.cf`); falta prueba en máquina limpia |
 | HU-34 | Pendiente de presentación | Guion e informe preparados |
 
 ## Decisión final

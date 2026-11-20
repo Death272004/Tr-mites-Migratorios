@@ -34,9 +34,9 @@ Las fuentes RP, CSS, TE y SNM se manejan como simuladas o asistidas en el MVP. U
 2. Los datos de demostración del Pasante de Bufete están aislados del flujo de cuentas reales.
 3. La identidad del solicitante se valida en backend antes de guardar el expediente.
 4. Los documentos y verificaciones deben conservar trazabilidad.
-5. CP-12 permanece bloqueado mientras no exista evidencia HTTP de una descarga protegida; `ERR_FILE_NOT_FOUND` no se interpreta como respuesta de autorización.
+5. El endpoint protegido de descarga (`GET /api/expedientes/{id}/documentos/{documentoId}/contenido`) quedó conectado en el frontend (`I-04`, `I-06`, `P-19`) y validado en `DocumentoTest`; CP-12 queda pendiente únicamente de capturar la evidencia HTTP en navegador.
 6. No se publican cambios en GitHub sin validación explícita del Product Owner.
 
 ## Estado de TASK-32.4
 
-**Completada documentalmente y pendiente de revisión del Product Owner.** Las referencias apuntan a archivos existentes del repositorio local. No se modificó código, no se hizo commit y no se hizo push.
+**Actualizada localmente tras auditoría y pendiente de revisión del Product Owner.** Las referencias apuntan a archivos existentes del repositorio local. No se hizo commit ni push.

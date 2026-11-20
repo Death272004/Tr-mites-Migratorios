@@ -6,15 +6,15 @@ Se generó localmente:
 
 `entregas/tramites-migratorios-sprint-7.tar.gz`
 
-Incluye el código y la documentación de `Backend`, `Frontend`, `Documentacion`, `QA`, `DevOps`, `docker`, `docker-compose.yml`, `README.md` y `.gitignore`.
+Incluye el código y la documentación de `Backend`, `Frontend`, `Documentacion`, `docs`, `QA`, `DevOps`, `docker`, `recursos-proyecto`, `docker-compose.yml`, `.env.example`, `iniciarApps.sh`, `iniciarApps.bat`, `README.md` y `.gitignore`.
 
-Se excluyeron `.git`, `Versiones_Anteriores`, artefactos de compilación y la carpeta de entregas para evitar incluir historial o copias innecesarias.
+Se excluyeron `.git`, `Versiones_Anteriores`, `Backend/target` (artefactos de compilación y almacenamiento temporal de pruebas), `docker/mail/config/postfix-accounts.cf`, `.vento-backups` y la carpeta `entregas` para evitar incluir historial, credenciales locales o copias innecesarias.
 
 ## Integridad
 
 SHA-256 del paquete actual:
 
-`937f2d11c289a63fc5a72d4f55e8abfcae160ab15daa05f0a3a4863a3d30b1d3`
+`39851e59192ac2710418bbdc444708c2d67f4a14f1a31c881905a35266d093cb`
 
 También pasó `git diff --check`.
 
