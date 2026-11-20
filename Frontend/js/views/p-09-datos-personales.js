@@ -71,6 +71,32 @@
     var body = wizard.frame(container, ROUTE);
     body.appendChild(demoSelector(opts));
     var d = draft.getDraft().datosPersonales || {};
+    var cuenta = global.tm.autofill && global.tm.autofill.getAccountProfile
+      ? global.tm.autofill.getAccountProfile() : null;
+    var cuentaValues = cuenta && cuenta.values ? cuenta.values : {};
+    var cuentaSelects = cuenta && cuenta.selects ? cuenta.selects : {};
+    var sesionPerfil = global.tm.session && global.tm.session.getSession ? global.tm.session.getSession() : null;
+    var usuarioPerfil = sesionPerfil && sesionPerfil.datos ? sesionPerfil.datos.usuario : null;
+    if (cuenta && (!usuarioPerfil || usuarioPerfil.tipoSolicitante !== "PASANTE_BUFETE")) {
+      d = Object.assign({}, d, {
+        // En una cuenta normal se usan únicamente datos entregados por la cuenta.
+        // No conservar valores del borrador para evitar mezclar datos de prueba.
+        primerApellido: cuentaValues.primerapellido || "",
+        segundoApellido: cuentaValues.segundoapellido || "",
+        nombres: cuentaValues.nombres || "",
+        nombresPasaporte: cuentaValues.nombrespasaporte || "",
+        fechaNacimiento: cuentaValues.fechanacimiento || "",
+        paisNacimiento: cuentaSelects.paisNacimiento || "",
+        lugarNacimiento: cuentaValues.lugarnacimiento || "",
+        nacionalidad: cuentaSelects.nacionalidad || "",
+        sexo: cuentaSelects.sexo || "",
+        estadoCivil: cuentaSelects.estadoCivil || "",
+        nombrePadre: cuentaValues.nombrepadre || "",
+        nacionalidadPadre: cuentaSelects.nacionalidadPadre || "",
+        nombreMadre: cuentaValues.nombremadre || "",
+        nacionalidadMadre: cuentaSelects.nacionalidadMadre || ""
+      });
+    }
 
     var grid = layout.el("div", "wizard-grid");
 
@@ -98,6 +124,28 @@
     add(field.fieldSelect({ id: "nacionalidadMadre", label: "Nacionalidad de la madre", options: data.paisOptions("Seleccione…"), value: d.nacionalidadMadre, required: true }));
 
     body.appendChild(grid);
+
+    // Los solicitantes normales deben usar la identidad de su cuenta. Solo el
+    // pasante de bufete en modo demostración puede editar una persona ficticia.
+    var sesionActual = global.tm.session && global.tm.session.getSession ? global.tm.session.getSession() : null;
+    var usuarioActual = sesionActual && sesionActual.datos && sesionActual.datos.usuario;
+    var esPasanteBufete = !!(usuarioActual && usuarioActual.rol === "SOLICITANTE" &&
+      usuarioActual.tipoSolicitante === "PASANTE_BUFETE");
+    // El pasante de bufete trabaja con datos de demostración y puede editar
+    // P-09. El selector de persona ficticia puede activarse después de renderizar
+    // el paso, por eso no se debe bloquear la pantalla esperando ese selector.
+    if (!esPasanteBufete) {
+      ["primerApellido", "segundoApellido", "nombres", "nombresPasaporte", "fechaNacimiento",
+        "paisNacimiento", "lugarNacimiento", "nacionalidad", "sexo"].forEach(function (id) {
+        var control = document.getElementById(id);
+        if (control) {
+          if (control.tagName === "SELECT") control.disabled = true;
+          else control.readOnly = true;
+          control.setAttribute("aria-readonly", "true");
+          control.setAttribute("title", "Dato protegido de la cuenta autenticada");
+        }
+      });
+    }
 
     var matrimonio = layout.el("fieldset", "wizard-section");
     matrimonio.appendChild(layout.el("legend", "wizard-section-title", "Cónyuge (si está casado/a)"));

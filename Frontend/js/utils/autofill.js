@@ -254,10 +254,11 @@
     var documento = usuario.numeroDocumento || "";
     var tipoDocumento = usuario.tipoDocumento || "";
     var values = {
-      primerapellido: partes.primerApellido,
-      segundoapellido: partes.segundoApellido,
-      nombres: partes.nombres || nombre,
+      primerapellido: usuario.primerApellido || partes.primerApellido,
+      segundoapellido: usuario.segundoApellido || partes.segundoApellido,
+      nombres: [usuario.primerNombre, usuario.segundoNombre].filter(Boolean).join(" ") || partes.nombres || nombre,
       nombrespasaporte: nombre.toUpperCase(),
+      fechanacimiento: usuario.fechaNacimiento || "",
       nombre: nombre,
       numdoctitular: documento,
       nombretitular: nombre,
@@ -270,6 +271,9 @@
       correonotificacion: usuario.correo || "",
       telefono: usuario.telefono || "",
       telefononotificacion: usuario.telefono || "",
+      nombrepadre: usuario.nombrePadre || "",
+      nombremadre: usuario.nombreMadre || "",
+      lugarnacimiento: usuario.lugarNacimiento || "",
     };
     var selects = {
       tipoDoc: tipoDocumento,
@@ -278,6 +282,8 @@
       nacionalidadPadre: nacionalidad,
       nacionalidadMadre: nacionalidad,
       paisEmisor: nacionalidad,
+      sexo: usuario.sexo || "",
+      estadoCivil: usuario.estadoCivil || "",
       paisDomicilio: usuario.paisResidencia || "",
       paisRes: usuario.paisResidencia || "",
     };

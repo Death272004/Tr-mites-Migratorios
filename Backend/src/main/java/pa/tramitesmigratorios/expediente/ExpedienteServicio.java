@@ -26,6 +26,7 @@ import pa.tramitesmigratorios.seguridad.PoliticaAreas;
 import pa.tramitesmigratorios.seguridad.RepresentacionRepo;
 import pa.tramitesmigratorios.seguridad.Rol;
 import pa.tramitesmigratorios.seguridad.UsuarioActual;
+import pa.tramitesmigratorios.seguridad.UsuarioRepo;
 import pa.tramitesmigratorios.verificacion.Verificacion;
 import pa.tramitesmigratorios.verificacion.VerificacionRepo;
 
@@ -45,10 +46,11 @@ public class ExpedienteServicio {
 	private final Auditoria auditoria;
 	private final ApplicationEventPublisher eventos;
 	private final VerificacionRepo verificaciones;
+	private final UsuarioRepo usuarios;
 
 	ExpedienteServicio(ExpedienteRepo expedientes, HistorialEstadoRepo historial, ObservacionRepo observaciones,
 			AccesoExpedientes acceso, Catalogos catalogos, RepresentacionRepo representaciones, Auditoria auditoria,
-			ApplicationEventPublisher eventos, VerificacionRepo verificaciones) {
+			ApplicationEventPublisher eventos, VerificacionRepo verificaciones, UsuarioRepo usuarios) {
 		this.expedientes = expedientes;
 		this.historial = historial;
 		this.observaciones = observaciones;
@@ -58,6 +60,7 @@ public class ExpedienteServicio {
 		this.auditoria = auditoria;
 		this.eventos = eventos;
 		this.verificaciones = verificaciones;
+		this.usuarios = usuarios;
 	}
 
 	/**
@@ -83,6 +86,7 @@ public class ExpedienteServicio {
 			throw ErrorApi.sinPermiso("SIN_REPRESENTACION",
 					"No tiene una representación acreditada para presentar en nombre de ese titular.");
 		}
+		validarTitularidadDatos(titular, datosSolicitud, usuario);
 		String numero = "EXP-%d-%06d".formatted(Year.now().getValue(), expedientes.siguienteNumero());
 		Expediente expediente = expedientes
 			.save(new Expediente(numero, titular, usuario.id(), tipo, EstadoExpediente.RECIBIDO, datosSolicitud));
@@ -90,6 +94,39 @@ public class ExpedienteServicio {
 				"Presentación de la solicitud"));
 		auditoria.exito(usuario.id(), "CREAR_EXPEDIENTE", "expediente/" + expediente.getId(), "tipoTramite=" + tipo);
 		return expediente;
+	}
+
+
+	private void validarTitularidadDatos(UUID titular, Map<String, Object> datosSolicitud, UsuarioActual usuario) {
+		if (!titular.equals(usuario.id()) || datosSolicitud == null || usuario.rol() == Rol.FUNCIONARIO) return;
+		Object raw = datosSolicitud.get("datosPersonales");
+		if (!(raw instanceof Map<?, ?> personales)) return;
+		String nombres = texto(personales.get("nombres"));
+		String primerApellido = texto(personales.get("primerApellido"));
+		String segundoApellido = texto(personales.get("segundoApellido"));
+		String capturado = normalizar((nombres + " " + primerApellido + " " + segundoApellido).trim());
+		String cuenta = usuarios.findById(usuario.id()).map(u -> normalizar(u.getNombre())).orElse("");
+		if (cuenta.isBlank() || capturado.isBlank()) return;
+		if (!coincideNombre(capturado, cuenta)) {
+			auditoria.denegado(usuario.id(), "CREAR_EXPEDIENTE", "titular/datos-inconsistentes");
+			throw ErrorApi.entradaInvalida("datosPersonales", "Los datos del titular deben coincidir con la cuenta autenticada.");
+		}
+	}
+
+	private static String texto(Object valor) {
+		return valor == null ? "" : String.valueOf(valor).trim();
+	}
+
+	private static String normalizar(String valor) {
+		return java.text.Normalizer.normalize(valor == null ? "" : valor, java.text.Normalizer.Form.NFD)
+			.replaceAll("\\p{M}", "").toLowerCase(java.util.Locale.ROOT).replaceAll("[^a-z0-9 ]", " ")
+			.replaceAll("\\s+", " ").trim();
+	}
+
+	private static boolean coincideNombre(String capturado, String cuenta) {
+		java.util.Set<String> capturados = new java.util.HashSet<>(java.util.Arrays.asList(capturado.split(" ")));
+		for (String token : cuenta.split(" ")) if (!capturados.contains(token)) return false;
+		return true;
 	}
 
 	/** Solo los expedientes accesibles al usuario según su rol y la titularidad (HU-16 CA-1). */

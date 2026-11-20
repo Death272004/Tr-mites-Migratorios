@@ -1,6 +1,6 @@
 # Evidencia de validación técnica del Sprint 3
 
-**Fecha:** 2026-10-19  
+**Fecha:** 2026-10-19
 **Rama de trabajo:** `sprint-3-completo`
 **Base:** `origin/main` (`a95899f`)
 **Datos:** únicamente usuarios, documentos y expedientes ficticios de desarrollo.

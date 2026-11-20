@@ -2,6 +2,7 @@ package pa.tramitesmigratorios.seguridad;
 
 import java.util.Set;
 import java.util.UUID;
+import java.time.LocalDate;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -9,6 +10,7 @@ import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
@@ -39,7 +41,8 @@ class AuthController {
 	record UsuarioDto(UUID id, String nombre, String correo, Rol rol, Set<Permiso> permisos,
 			Usuario.EstadoCuenta estadoCuenta, TipoSolicitante tipoSolicitante, TipoDocumento tipoDocumento,
 			String numeroDocumento, String nacionalidad, String paisResidencia, String telefono,
-			AreaInstitucional areaInstitucional) {
+			String primerNombre, String segundoNombre, String primerApellido, String segundoApellido,
+			java.time.LocalDate fechaNacimiento, String sexo, String estadoCivil, String lugarNacimiento, AreaInstitucional areaInstitucional) {
 	}
 
 	record LoginRespuesta(String token, long expiraEn, Rol rol, UsuarioDto usuario) {
@@ -53,8 +56,13 @@ class AuthController {
 			@NotNull(message = "El tipo de solicitante es obligatorio.") TipoSolicitante tipoSolicitante,
 			@NotBlank(message = "El número de documento es obligatorio.") @Pattern(regexp = "[A-Za-z0-9-]{4,40}",
 					message = "El número de documento solo admite letras, números y guiones (4 a 40).") String numeroDocumento,
-			@NotBlank(message = "El nombre es obligatorio.") @Size(max = 120,
-					message = "El nombre es demasiado largo.") String nombre,
+			@NotBlank(message = "El primer nombre es obligatorio.") @Size(max = 60,
+					message = "El primer nombre es demasiado largo.") String primerNombre,
+			String segundoNombre,
+			@NotBlank(message = "El primer apellido es obligatorio.") @Size(max = 60,
+					message = "El primer apellido es demasiado largo.") String primerApellido,
+			String segundoApellido,
+			@NotNull(message = "La fecha de nacimiento es obligatoria.") @Past(message = "La fecha de nacimiento debe ser anterior a hoy.") LocalDate fechaNacimiento,
 			@NotBlank(message = "La nacionalidad es obligatoria.") @Pattern(regexp = "[A-Z]{2}",
 					message = "La nacionalidad es un código de país de dos letras.") String nacionalidad,
 			@NotBlank(message = "El correo es obligatorio.") @Email(
@@ -127,7 +135,8 @@ class AuthController {
 	@ResponseStatus(HttpStatus.CREATED)
 	UsuarioDto registrar(@Valid @RequestBody RegistroSolicitud solicitud, HttpServletRequest peticion) {
 		Usuario u = cuentas.registrar(new DatosRegistro(solicitud.tipoDocumento(), solicitud.tipoSolicitante(),
-				solicitud.numeroDocumento(), solicitud.nombre(), solicitud.nacionalidad(), solicitud.correo(),
+				solicitud.numeroDocumento(), solicitud.primerNombre(), solicitud.segundoNombre(), solicitud.primerApellido(),
+				solicitud.segundoApellido(), solicitud.fechaNacimiento(), solicitud.nacionalidad(), solicitud.correo(),
 				solicitud.telefono(), solicitud.paisResidencia(), solicitud.contrasena()), peticion.getRemoteAddr());
 		return usuarioDto(u);
 	}
@@ -153,7 +162,8 @@ class AuthController {
 	private static UsuarioDto usuarioDto(Usuario u) {
 		return new UsuarioDto(u.getId(), u.getNombre(), u.getCorreo(), u.getRol(), u.getPermisos(),
 				u.getEstadoCuenta(), u.getTipoSolicitante(), u.getTipoDocumento(), u.getNumeroDocumento(),
-				u.getNacionalidad(), u.getPaisResidencia(), u.getTelefono(), u.getAreaInstitucional());
+				u.getNacionalidad(), u.getPaisResidencia(), u.getTelefono(), u.getPrimerNombre(), u.getSegundoNombre(),
+				u.getPrimerApellido(), u.getSegundoApellido(), u.getFechaNacimiento(), u.getSexo(), u.getEstadoCivil(), u.getLugarNacimiento(), u.getAreaInstitucional());
 	}
 
 }

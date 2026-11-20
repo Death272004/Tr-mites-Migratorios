@@ -42,7 +42,11 @@
       required: true,
       helpText: "Letras, números y guiones (4 a 40 caracteres)",
     });
-    var nombres = field.fieldText({ id: "nombres", label: "Nombres y apellidos", required: true });
+    var primerNombre = field.fieldText({ id: "primerNombre", label: "Primer nombre", required: true });
+    var segundoNombre = field.fieldText({ id: "segundoNombre", label: "Segundo nombre (si tiene)" });
+    var primerApellido = field.fieldText({ id: "primerApellido", label: "Primer apellido", required: true });
+    var segundoApellido = field.fieldText({ id: "segundoApellido", label: "Segundo apellido (si tiene)" });
+    var fechaNacimiento = field.fieldDate({ id: "fechaNacimiento", label: "Fecha de nacimiento", required: true, helpText: "Debe ser una fecha real anterior a hoy." });
     var nacionalidad = field.fieldSelect({
       id: "nacionalidad",
       label: "Nacionalidad",
@@ -121,7 +125,11 @@
 
     form.appendChild(tipoDoc);
     form.appendChild(numDoc);
-    form.appendChild(nombres);
+    form.appendChild(primerNombre);
+    form.appendChild(segundoNombre);
+    form.appendChild(primerApellido);
+    form.appendChild(segundoApellido);
+    form.appendChild(fechaNacimiento);
     form.appendChild(nacionalidad);
     form.appendChild(tipoSolicitante);
     form.appendChild(correo);
@@ -159,8 +167,10 @@
       var p1 = clave.querySelector("input").value;
       var p2 = clave2.querySelector("input").value;
       var acepta = leyChk.checked;
+      var fecha = fechaNacimiento.querySelector("input").value;
 
       if (!validarUsuarioCorreo(usuarioCorreo)) return;
+      if (!validarFechaNacimiento(fecha)) return;
       var faltas = global.tm.validacion.incumplimientos(p1, email);
       if (faltas.length) return setError(faltas[0]);
       if (p1 !== p2) return setError("Las contraseñas no coinciden.");
@@ -169,7 +179,11 @@
       var solicitud = {
         tipoDocumento: tipoDoc.querySelector("select").value,
         numeroDocumento: numDoc.querySelector("input").value.trim(),
-        nombre: nombres.querySelector("input").value.trim(),
+        primerNombre: primerNombre.querySelector("input").value.trim(),
+        segundoNombre: segundoNombre.querySelector("input").value.trim(),
+        primerApellido: primerApellido.querySelector("input").value.trim(),
+        segundoApellido: segundoApellido.querySelector("input").value.trim(),
+        fechaNacimiento: fecha,
         nacionalidad: nacionalidad.querySelector("select").value,
         tipoSolicitante: tipoSolicitante.querySelector("select").value,
         correo: email,
@@ -202,6 +216,20 @@
 
         });
     });
+
+    function validarFechaNacimiento(valor) {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(valor)) { setError("Ingrese su fecha de nacimiento."); return false; }
+      var fecha = new Date(valor + "T00:00:00Z");
+      var hoy = new Date(); hoy.setUTCHours(0, 0, 0, 0);
+      if (Number.isNaN(fecha.getTime()) || fecha.toISOString().slice(0, 10) !== valor || fecha >= hoy) {
+        setError("La fecha de nacimiento debe ser real y anterior a hoy."); return false;
+      }
+      var edad = hoy.getUTCFullYear() - fecha.getUTCFullYear();
+      var cumple = new Date(Date.UTC(hoy.getUTCFullYear(), fecha.getUTCMonth(), fecha.getUTCDate()));
+      if (cumple > hoy) edad--;
+      if (edad < 16 || edad > 120) { setError("La edad debe estar entre 16 y 120 años."); return false; }
+      return true;
+    }
 
     function setError(msg) { errorBox.textContent = msg; errorBox.classList.add("is-visible"); }
     function clearError() { errorBox.textContent = ""; errorBox.classList.remove("is-visible"); }

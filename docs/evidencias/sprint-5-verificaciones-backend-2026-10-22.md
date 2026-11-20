@@ -1,9 +1,9 @@
 # Evidencia de validación — Sprint 5 Backend (HU-23, HU-24, HU-25)
 
-**Rama:** `feature/hu-23-25-verificaciones` (PR #13 contra `Backend`)  
-**Commit probado:** `3756581`  
-**Fecha:** 2026-10-22  
-**Ejecución:** GitHub Actions, workflow `Backend - pruebas`, run [39816552000](https://github.com/Death272004/Tr-mites-Migratorios/actions/runs/39816552000)  
+**Rama:** `feature/hu-23-25-verificaciones` (PR #13 contra `Backend`)
+**Commit probado:** `3756581`
+**Fecha:** 2026-10-22
+**Ejecución:** GitHub Actions, workflow `Backend - pruebas`, run [39816552000](https://github.com/Death272004/Tr-mites-Migratorios/actions/runs/39816552000)
 **Reportes:** artefacto `reportes-pruebas-backend` de esa ejecución (Surefire, 30 días)
 
 ## Comando

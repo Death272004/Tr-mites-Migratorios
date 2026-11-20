@@ -1,8 +1,8 @@
 # Evidencia de validación local — Sprint 4
 
-**Rama:** `sprint-4-cierre`  
-**Base:** `origin/main` en `c33d132`  
-**Fecha:** 2026-10-19  
+**Rama:** `sprint-4-cierre`
+**Base:** `origin/main` en `c33d132`
+**Fecha:** 2026-10-19
 **Alcance:** validación y cierre técnico local. No se publicó esta rama en `main` ni se actualizó TeamTrack.
 
 ## Trabajo integrado

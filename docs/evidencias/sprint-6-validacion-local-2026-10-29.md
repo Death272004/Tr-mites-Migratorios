@@ -1,7 +1,7 @@
 # Sprint 6 — Validación técnica local
 
-Fecha de ejecución: 29 de octubre de 2026  
-Rama revisada: `DevOps`  
+Fecha de ejecución: 29 de octubre de 2026
+Rama revisada: `DevOps`
 Propósito: reunir la evidencia reproducible del Review #2 sin presentar como terminadas las actividades que requieren participantes reales.
 
 ## Resultado de la revisión

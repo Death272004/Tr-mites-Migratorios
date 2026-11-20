@@ -2,6 +2,7 @@ package pa.tramitesmigratorios.seguridad;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -29,7 +30,8 @@ import pa.tramitesmigratorios.seguridad.Usuario.TipoSolicitante;
 public class CuentaServicio {
 
 	public record DatosRegistro(TipoDocumento tipoDocumento, TipoSolicitante tipoSolicitante, String numeroDocumento,
-			String nombre, String nacionalidad, String correo, String telefono, String paisResidencia,
+			String primerNombre, String segundoNombre, String primerApellido, String segundoApellido,
+			LocalDate fechaNacimiento, String nacionalidad, String correo, String telefono, String paisResidencia,
 			String contrasena) {
 	}
 
@@ -71,10 +73,12 @@ public class CuentaServicio {
 			auditoria.fallo(null, "REGISTRO_CUENTA", "usuario", "Documento ya registrado");
 			throw ErrorApi.conflicto("DOCUMENTO_YA_REGISTRADO", "Ya existe una cuenta con ese documento.");
 		}
-		Usuario usuario = new Usuario(datos.nombre().trim(), datos.correo(), codificador.encode(datos.contrasena()),
+		String nombreCompleto = String.join(" ", java.util.stream.Stream.of(datos.primerNombre(), datos.segundoNombre(), datos.primerApellido(), datos.segundoApellido()).filter(v -> v != null && !v.isBlank()).map(String::trim).toList());
+		Usuario usuario = new Usuario(nombreCompleto, datos.correo(), codificador.encode(datos.contrasena()),
 				Rol.SOLICITANTE, Set.of());
 		usuario.completarRegistro(datos.tipoDocumento(), datos.tipoSolicitante(), datos.numeroDocumento(),
 				datos.nacionalidad(), datos.paisResidencia(), datos.telefono(), ip);
+		usuario.completarDatosPersonales(datos.primerNombre(), datos.segundoNombre(), datos.primerApellido(), datos.segundoApellido(), datos.fechaNacimiento);
 		buzones.sincronizar(usuario.getCorreo(), datos.contrasena());
 		usuarios.save(usuario);
 		auditoria.exito(usuario.getId(), "REGISTRO_CUENTA", "usuario/" + usuario.getId());

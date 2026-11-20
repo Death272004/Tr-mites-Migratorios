@@ -1,8 +1,8 @@
 # Evidencia de cierre técnico del Sprint 2
 
-**Fecha:** 2026-10-19  
-**Rama de trabajo:** `sprint-2-cierre`  
-**Base revisada:** `integracion/frontend-backend` (`a0a4200`)  
+**Fecha:** 2026-10-19
+**Rama de trabajo:** `sprint-2-cierre`
+**Base revisada:** `integracion/frontend-backend` (`a0a4200`)
 **Datos:** únicamente usuarios y datos ficticios de desarrollo.
 
 ## Entregables comprobados

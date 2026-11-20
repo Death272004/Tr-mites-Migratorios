@@ -1,6 +1,7 @@
 package pa.tramitesmigratorios.seguridad;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.EnumSet;
 import java.util.Locale;
 import java.util.Set;
@@ -55,6 +56,15 @@ public class Usuario {
 	private UUID id;
 
 	private String nombre;
+
+	private String primerNombre;
+	private String segundoNombre;
+	private String primerApellido;
+	private String segundoApellido;
+	private LocalDate fechaNacimiento;
+	private String sexo;
+	private String estadoCivil;
+	private String lugarNacimiento;
 
 	private String correo;
 
@@ -183,6 +193,14 @@ public class Usuario {
 		this.terminosIp = ipAceptacion;
 	}
 
+	void completarDatosPersonales(String primerNombre, String segundoNombre, String primerApellido, String segundoApellido, LocalDate fechaNacimiento) {
+		this.primerNombre = primerNombre == null ? null : primerNombre.trim();
+		this.segundoNombre = segundoNombre == null ? null : segundoNombre.trim();
+		this.primerApellido = primerApellido == null ? null : primerApellido.trim();
+		this.segundoApellido = segundoApellido == null ? null : segundoApellido.trim();
+		this.fechaNacimiento = fechaNacimiento;
+	}
+
 	/** Datos de contacto editables desde el perfil (P-05); lo que llega nulo se conserva. */
 	void actualizarContacto(String telefono, Idioma idiomaNotificacion, MedioNotificacion medioNotificacion) {
 		if (telefono != null) {
@@ -203,6 +221,15 @@ public class Usuario {
 	public String getNombre() {
 		return nombre;
 	}
+
+	public String getPrimerNombre() { return primerNombre; }
+	public String getSegundoNombre() { return segundoNombre; }
+	public String getPrimerApellido() { return primerApellido; }
+	public String getSegundoApellido() { return segundoApellido; }
+	public LocalDate getFechaNacimiento() { return fechaNacimiento; }
+	public String getSexo() { return sexo; }
+	public String getEstadoCivil() { return estadoCivil; }
+	public String getLugarNacimiento() { return lugarNacimiento; }
 
 	public String getCorreo() {
 		return correo;
