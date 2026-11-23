@@ -14,7 +14,7 @@ Se excluyeron `.git`, `Versiones_Anteriores`, `Backend/target` (artefactos de co
 
 SHA-256 del paquete actual:
 
-`39851e59192ac2710418bbdc444708c2d67f4a14f1a31c881905a35266d093cb`
+`62b2b91a9387040372c818418c1463cfbdb73e7dd819e35712b4edb3283ae7ba`
 
 También pasó `git diff --check`.
 

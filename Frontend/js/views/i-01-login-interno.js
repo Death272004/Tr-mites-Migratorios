@@ -18,12 +18,12 @@
 
   var FALLBACK = {
     usuarios: [
-      { rol: "FUNCIONARIO", rolLabel: "Funcionario (abogado analista)", usuario: "analista", clave: "Interno123!" },
-      { rol: "SUPERVISOR", rolLabel: "Supervisor", usuario: "supervisor", clave: "Interno123!" },
-      { rol: "AUDITOR", rolLabel: "Auditor", usuario: "auditor", clave: "Interno123!" },
-      { rol: "ADMIN", rolLabel: "Administrador", usuario: "admin", clave: "Interno123!" },
+      { rol: "FUNCIONARIO", rolLabel: "Funcionario (abogado analista)", usuario: "analista" },
+      { rol: "SUPERVISOR", rolLabel: "Supervisor", usuario: "supervisor" },
+      { rol: "AUDITOR", rolLabel: "Auditor", usuario: "auditor" },
+      { rol: "ADMIN", rolLabel: "Administrador", usuario: "admin" },
     ],
-    mfa: { longitud: 6, codigoDemo: "123456" },
+    mfa: { longitud: 6 },
     estacion: "WKS-DEMO-01",
     ip: "10.0.0.24",
   };
@@ -218,7 +218,7 @@
         }
         setTimeout(function () {
           setLoading(false);
-          if (u === perfil.usuario && c === perfil.clave) {
+          if (u === perfil.usuario && validatePass(c)) {
             toStep2();
           } else {
             registrarFallo();
