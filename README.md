@@ -9,7 +9,7 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Proyecto-Universitario-0B1B2B?style=for-the-badge" alt="Proyecto universitario">
   <img src="https://img.shields.io/badge/Ingeniería%20de%20Software%20III-2026-F28C28?style=for-the-badge" alt="Ingeniería de Software III">
-  <img src="https://img.shields.io/badge/Sprint%207-entrega%20final-56C596?style=for-the-badge" alt="Sprint 7 entrega final">
+  <img src="https://img.shields.io/badge/Cierre%20Semestral-Sprints%200%20a%2010-56C596?style=for-the-badge" alt="Cierre Semestral Sprints 0 a 10">
   <img src="https://img.shields.io/badge/Java-17-F28C28?style=for-the-badge&logo=openjdk&logoColor=white" alt="Java 17">
   <img src="https://img.shields.io/badge/Docker-Compose-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker Compose">
   <img src="https://img.shields.io/badge/QA-JMeter%20%2B%20ZAP-8B5CF6?style=for-the-badge" alt="QA con JMeter y ZAP">
@@ -37,14 +37,14 @@
 Este repositorio contiene el proyecto integrador de **Ingeniería de Software III**. La solución se construye como un MVP: primero demostramos el flujo principal de forma segura y trazable, y después dejamos preparadas las bases para futuras integraciones.
 
 <p>
-  <img src="https://img.shields.io/badge/Estado-Sprint%207%20en%20cierre-56C596?style=flat-square" alt="Sprint 7 en cierre">
+  <img src="https://img.shields.io/badge/Estado-Cierre%20Semestral%20(S0%E2%80%93S10)-56C596?style=flat-square" alt="Estado: Cierre Semestral S0-S10">
   <img src="https://img.shields.io/badge/Datos-Ficticios-F28C28?style=flat-square" alt="Datos ficticios">
   <img src="https://img.shields.io/badge/Arquitectura-Interoperable-2496ED?style=flat-square" alt="Arquitectura interoperable">
 </p>
 
 ##  Estado actual
 
-El proyecto se encuentra en cierre del **Sprint 7 (Aceptación, documentación y entrega)** con un MVP funcional, endurecido tras auditoría técnica y de seguridad, y verificable localmente mediante Docker Compose y suite automatizada de 156 pruebas en verde. El flujo principal de acceso, expedientes, documentos (incluyendo descarga protegida), verificaciones por área institucional y trazabilidad está implementado con datos ficticios y servicios simulados.
+El proyecto alcanzó el **Cierre Semestral (Sprints 0 a 10 consolidados)** con un producto validado para demostración comercial y examen final (`http://localhost:8080`), endurecido tras auditoría técnica y de seguridad (`S-01..S-09`, `F-01..F-06`), verificable localmente mediante Docker Compose y suite automatizada de 156 pruebas en verde más 10/10 casos HTTP críticos en vivo (`CP-01..CP-09, CP-12`). El flujo principal de acceso, expedientes en 12 estados, documentos (incluyendo descarga protegida), citas, correo SMTP/Roundcube (`http://localhost:8081`), verificaciones por área institucional y trazabilidad Ley 81 está implementado con datos ficticios y servicios simulados.
 
 También quedaron documentadas las validaciones de calidad, seguridad, rendimiento y usabilidad mediante pruebas automatizadas, OWASP ZAP, Apache JMeter y evidencias de QA. `main` y `DevOps` contienen la misma versión estable del proyecto; las ramas temporales de integración fueron archivadas en `Versiones_Anteriores`.
 
@@ -304,6 +304,7 @@ La rama se integra mediante Pull Request después de verificar que el proyecto c
 ##  Documentación útil
 
 - [Documentación general](Documentacion/README.md)
+- [Entregables del Sprint Final Semestral (S8–S10)](Documentacion/sprint-final/README.md)
 - [Entregables del Sprint 7 (PDF y PPTX)](Documentacion/sprint-7/README.md)
 - [Directorio de usuarios y cuentas demo](Documentacion/usuarios-proyecto.md)
 - [Contrato OpenAPI (v0.5.0)](Backend/docs/openapi.yaml)
@@ -338,12 +339,12 @@ La rama se integra mediante Pull Request después de verificar que el proyecto c
 - Probar los cambios antes de solicitar su integración.
 - Cualquier integración real requiere autorización institucional y revisión de seguridad.
 
-## Cierre del Sprint 7
+## Cierre Semestral (Sprints 0 a 10)
 
-El proyecto completó la entrega del **Sprint 7** (24 puntos de historia: `HU-31` a `HU-34`) con 156 pruebas automatizadas en verde, correcciones de auditoría técnica y de seguridad aplicadas, contrato OpenAPI sincronizado y documentación final actualizada.
+El proyecto completó la fase consolidada de **Sprints 8, 9 y 10 (Sprint Final Semestral)** manteniendo la continuidad del equipo y del Product Owner actual, con `38,570 LOC` / `32,089 ELOC`, `156` pruebas automatizadas Maven en verde, `10/10` casos HTTP en vivo verificados, contrato OpenAPI `v0.5.0` sincronizado (`35` rutas / `43` operaciones), presentación comercial de cierre (3 láminas), factura consolidada en Neuronix (`73,272 N` Sprint Final · `946,948 N` total del proyecto) y guion de sustentación de 15 minutos.
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Estado-Sprint%207%20entrega%20final-56C596?style=for-the-badge" alt="Estado: Sprint 7 entrega final">
+  <img src="https://img.shields.io/badge/Estado-Cierre%20Semestral%20S0%E2%80%93S10-56C596?style=for-the-badge" alt="Estado: Cierre Semestral S0-S10">
 </p>
 
 ---
