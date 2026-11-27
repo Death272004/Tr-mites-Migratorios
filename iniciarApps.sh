@@ -3,8 +3,13 @@
 set -Eeuo pipefail
 
 RAIZ="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PORTAL_URL="http://localhost:8080/login"
-CORREO_URL="http://localhost:8081"
+if getent hosts tramites.tr-utp.com >/dev/null 2>&1; then
+  PORTAL_URL="http://tramites.tr-utp.com/login"
+  CORREO_URL="http://correo.tr-utp.com"
+else
+  PORTAL_URL="http://localhost:8080/login"
+  CORREO_URL="http://localhost:8081"
+fi
 
 cd "$RAIZ"
 
@@ -71,9 +76,11 @@ abrir_url() {
 echo "Deteniendo una ejecución anterior de Trámites Migratorios..."
 docker compose down --remove-orphans >/dev/null 2>&1 || true
 
+liberar_puerto 80
 liberar_puerto 8080
 liberar_puerto 8081
 
+export DOMAIN_PORT=80
 export FRONTEND_PORT=8080
 export WEBMAIL_PORT=8081
 

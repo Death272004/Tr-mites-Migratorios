@@ -39,7 +39,7 @@ services:
       SMTP_HOST: mailserver
       SMTP_PORT: 25
       CORREO_REMITENTE: no.reply@tr-utp.com
-      PORTAL_URL: http://localhost:${FRONTEND_PORT:-8080}
+      PORTAL_URL: ${PORTAL_URL:-http://tramites.tr-utp.com}
       BUZON_APROVISIONAMIENTO: "true"
       BUZON_APROVISIONADOR_URL: http://mail-provisioner:8080
       BUZON_APROVISIONADOR_TOKEN: ${MAIL_PROVISIONER_TOKEN:-tr-utp-provisioner-local-only}
@@ -68,6 +68,7 @@ services:
     volumes:
       - ./docker/nginx.conf:/etc/nginx/conf.d/default.conf:ro
     ports:
+      - "127.0.0.1:${DOMAIN_PORT:-80}:80"
       - "127.0.0.1:${FRONTEND_PORT:-8080}:80"
     depends_on:
       backend:

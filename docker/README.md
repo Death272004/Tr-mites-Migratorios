@@ -52,13 +52,16 @@ docker compose up --build
 Después abre:
 
 ```text
-http://localhost:8081/html/index.html#/login
+http://tramites.tr-utp.com/html/index.html#/login
 ```
+
+*(o `http://localhost:8080/html/index.html#/login` sin `/etc/hosts`, y `http://correo.tr-utp.com` / `http://localhost:8081` para Roundcube).*
 
 Para comprobar Nginx directamente:
 
 ```bash
-curl http://localhost:8081/salud
+curl http://tramites.tr-utp.com/salud
+# o sin dominio local: curl http://localhost:8080/salud
 ```
 
 El resultado esperado es `ok`.
